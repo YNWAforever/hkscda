@@ -18,7 +18,7 @@ test("generic estate deletion actor refusal maps to safe private 403", async () 
     request: new Request("https://example.invalid/cms", {
       method: "DELETE",
       headers: { "content-type": "application/json", "x-request-id": "synthetic-request-id" },
-      body: JSON.stringify({ id: "00000000-0000-4000-8000-000000000002" }),
+      body: JSON.stringify({ id: "00000000-0000-4000-8000-000000000002", reason: "closed" }),
     }),
   });
   expect(response.status).toBe(403);
@@ -52,7 +52,7 @@ for (const [name, error, status] of [
       request: new Request("https://example.invalid/cms", {
         method: "DELETE",
         headers: { "content-type": "application/json", "x-request-id": "synthetic-request-id" },
-        body: JSON.stringify({ id: "00000000-0000-4000-8000-000000000002" }),
+        body: JSON.stringify({ id: "00000000-0000-4000-8000-000000000002", reason: "closed" }),
       }),
     });
     expect(response.status).toBe(status);

@@ -22,6 +22,7 @@ export const governanceCopy = defineAdminCopy({
       date: (value: string) => formatAdminDateOrNull(value, "zh") ?? String(value),
     },
     stepDownFailed: "卸任操作失敗，請再試一次。",
+    stepDownConsequence: "",
     form: {
       name: "姓名",
       position: "職銜",
@@ -50,6 +51,8 @@ export const governanceCopy = defineAdminCopy({
       date: (value: string) => formatAdminDate(value, "en"),
     },
     stepDownFailed: "Could not mark the member as stepped down. Try again.",
+    stepDownConsequence:
+      "Marking a member as stepped down removes them from the public team list. The record stays on this screen as stepped down.",
     form: {
       name: "Name",
       position: "Position",

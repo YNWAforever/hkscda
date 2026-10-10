@@ -2,6 +2,7 @@ import { z } from "zod";
 import { readAdminJson } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
+import { documentDeleteSchema } from "./schemas";
 import { DocumentConflictError } from "./service";
 
 type DocumentAdmin = { authUserId: string };
@@ -15,7 +16,7 @@ type DocumentHandlerService = {
   updateAsset(input: { actorUserId: string; assetId: string; input: unknown }): Promise<unknown>;
   publishAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
   unpublishAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
-  deleteAsset(input: { actorUserId: string; assetId: string }): Promise<unknown>;
+  deleteAsset(input: { actorUserId: string; assetId: string; reason: string }): Promise<unknown>;
   createUploadTarget(input: unknown): Promise<unknown>;
   listAnnualReports(): Promise<unknown>;
   createAnnualReport(input: { actorUserId: string; input: unknown }): Promise<unknown>;
@@ -26,7 +27,11 @@ type DocumentHandlerService = {
   }): Promise<unknown>;
   publishAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
   unpublishAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
-  deleteAnnualReport(input: { actorUserId: string; reportId: string }): Promise<unknown>;
+  deleteAnnualReport(input: {
+    actorUserId: string;
+    reportId: string;
+    reason: string;
+  }): Promise<unknown>;
 };
 
 type CreateDocumentHandlersArgs = {
@@ -163,10 +168,9 @@ export function createDocumentHandlers({
     deleteAsset({ request, params }: HandlerContext) {
       return withDocumentErrors(async () => {
         const admin = await requireDocumentAdmin(request);
-        await service.deleteAsset({
-          actorUserId: admin.authUserId,
-          assetId: requiredId(params),
-        });
+        const assetId = requiredId(params);
+        const { reason } = documentDeleteSchema.parse(await jsonBody(request));
+        await service.deleteAsset({ actorUserId: admin.authUserId, assetId, reason });
         return jsonResponse({ ok: true });
       });
     },
@@ -234,10 +238,9 @@ export function createDocumentHandlers({
     deleteAnnualReport({ request, params }: HandlerContext) {
       return withDocumentErrors(async () => {
         const admin = await requireDocumentAdmin(request);
-        await service.deleteAnnualReport({
-          actorUserId: admin.authUserId,
-          reportId: requiredId(params),
-        });
+        const reportId = requiredId(params);
+        const { reason } = documentDeleteSchema.parse(await jsonBody(request));
+        await service.deleteAnnualReport({ actorUserId: admin.authUserId, reportId, reason });
         return jsonResponse({ ok: true });
       });
     },

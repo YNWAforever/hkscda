@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { requiredReasonSchema } from "../admin/requiredReason";
 
 const optionalId = z.string().uuid().optional();
 const sortOrder = z.coerce.number().int().min(0);
@@ -154,7 +155,10 @@ export const adoptionInformationMutationSchema = z.discriminatedUnion("resource"
   z.object({ resource: z.literal("careTopic"), input: careTopicInputSchema }),
 ]);
 
-export const deleteEstateRequestSchema = z.object({ id: adoptionInformationIdSchema });
+export const deleteEstateRequestSchema = z.object({
+  id: adoptionInformationIdSchema,
+  reason: requiredReasonSchema,
+});
 
 export type AdoptionFeeInput = z.infer<typeof adoptionFeeInputSchema>;
 export type UpdateFeeContentInput = z.infer<typeof updateFeeContentInputSchema>;

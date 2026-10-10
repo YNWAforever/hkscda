@@ -9,6 +9,10 @@ import type {
   SupporterDetail as SupporterDetailData,
 } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
+import { voidReceiptRequest, type VoidReceiptRequest } from "../donations/paymentsReconcileLogic";
+import { sendReceiptVoid } from "../donations/receiptVoid";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { DestinationHeading } from "../DestinationHeading";
@@ -54,6 +58,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   const labels = useAdminCopy(crmLabelCopy);
   const format = useAdminCopy(crmFormatCopy);
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("all");
+  const [voidTarget, setVoidTarget] = useState<{ id: string; receiptNo: string } | null>(null);
   const queryClient = useQueryClient();
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["crm-supporter", supporterId],
@@ -77,11 +82,7 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   });
 
   const voidReceiptMutation = useMutation({
-    mutationFn: (receiptId: string) =>
-      fetchAdminJson(`/api/admin/receipts/${receiptId}/void`, {
-        method: "POST",
-        body: JSON.stringify({ supporterId }),
-      }),
+    mutationFn: (request: VoidReceiptRequest) => sendReceiptVoid(request, language, supporterId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] });
     },
@@ -114,6 +115,22 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
 
   return (
     <div className="space-y-6 p-6">
+      {/* required-reason: receipt.void */}
+      <ConfirmActionDialog
+        open={voidTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setVoidTarget(null);
+        }}
+        title={copy.voidReceipt}
+        consequence={copy.confirmVoid(voidTarget?.receiptNo ?? "")}
+        confirmLabel={copy.voidReceipt}
+        destructive
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = voidReceiptRequest(voidTarget, reason);
+          if (request) await voidReceiptMutation.mutateAsync(request);
+        }}
+      />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button asChild variant="ghost" size="sm" className="min-h-[44px] sm:min-h-0">
           <Link to="/admin/supporters">
@@ -258,7 +275,9 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                       variant="outline"
                       size="sm"
                       className="min-h-[44px] sm:min-h-0"
-                      onClick={() => voidReceiptMutation.mutate(receipt.id)}
+                      onClick={() =>
+                        setVoidTarget({ id: receipt.id, receiptNo: receipt.receiptNo })
+                      }
                       disabled={voidReceiptMutation.isPending}
                     >
                       <FileX className="h-4 w-4" />
@@ -268,11 +287,6 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
                 </div>
               ))}
             </div>
-            {voidReceiptMutation.error && (
-              <p role="alert" className="mt-3 text-sm text-[var(--color-destructive)]">
-                {adminErrorMessage(voidReceiptMutation.error, language)}
-              </p>
-            )}
           </section>
         </div>
       </div>

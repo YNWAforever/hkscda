@@ -982,12 +982,13 @@ export async function voidReceipt(
   client: SupabaseClient,
   receiptId: string,
   actorUserId: string,
-  context: ReceiptActionContext = {},
+  options: { supporterId?: string; reason: string },
 ) {
   const { data, error } = await client.rpc("void_receipt_with_audit", {
     p_receipt_id: receiptId,
     p_actor: actorUserId,
-    p_supporter_id: context.supporterId ?? null,
+    p_supporter_id: options.supporterId ?? null,
+    p_reason: options.reason,
   });
   if (error) throw error;
   const row = (data as Array<{ receipt_id: string; pdf_url: string | null }> | null)?.[0];

@@ -286,11 +286,12 @@ describe("team and governance in English", () => {
     ]);
   });
 
-  test("says what to do after a failed step down", () => {
+  test("leaves a failed step down to the confirm dialog, with no inline message under the table", () => {
     reset();
     state.mutationError = new Error("boom");
     const markup = renderAdminInEnglish(<GovernanceManagement />);
-    expect(markup).toContain("Could not mark the member as stepped down. Try again.");
+    expect(markup).not.toContain("Could not mark the member as stepped down");
+    expect(markup).not.toContain('role="alert"');
     reset();
   });
 
@@ -361,7 +362,7 @@ describe("team and governance in English", () => {
       ">取消</button>",
     ]);
     state.mutationError = new Error("boom");
-    expect(renderAdminInChinese(<GovernanceManagement />)).toContain("卸任操作失敗，請再試一次。");
+    expect(renderAdminInChinese(<GovernanceManagement />)).not.toContain("卸任操作失敗");
     reset();
   });
 });

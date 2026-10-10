@@ -99,6 +99,7 @@ test.each(["conflict", "capacity_full"])(
         actorUserId: "actor-1",
         expectedUpdatedAt: "2026-09-05T00:00:00Z",
         status: "approved",
+        reason: null,
       });
       throw new Error("Expected conflict");
     } catch (error) {
@@ -115,11 +116,31 @@ test.each(["conflict", "capacity_full"])(
           p_status: "approved",
           p_internal_notes: null,
           p_update_internal_notes: false,
+          p_reason: null,
         },
       },
     ]);
   },
 );
+test("a rejection passes its reason to the audited status RPC", async () => {
+  const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+  const repo = createSupabaseVolunteerRepository({
+    rpc: async (name: string, args: Record<string, unknown>) => {
+      calls.push({ name, args });
+      return { data: { kind: "conflict" }, error: null };
+    },
+  } as never);
+  await repo
+    .updateRegistrationStatus({
+      registrationId: "registration-1",
+      actorUserId: "actor-1",
+      expectedUpdatedAt: "2026-09-05T00:00:00Z",
+      status: "rejected",
+      reason: "no-show history",
+    })
+    .catch(() => undefined);
+  expect(calls[0].args).toMatchObject({ p_status: "rejected", p_reason: "no-show history" });
+});
 test("capacity reduction uses the audited activity RPC with expected version", async () => {
   const calls: unknown[] = [];
   const repo = createSupabaseVolunteerRepository({
@@ -162,6 +183,7 @@ test("explicit empty notes are distinguished from omitted notes", async () => {
       expectedUpdatedAt: "version",
       status: "approved",
       internalNotes: null,
+      reason: null,
     });
   } catch (error) {
     expect((error as Response).status).toBe(409);

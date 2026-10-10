@@ -1,3 +1,4 @@
+import { statusDeleteSchema } from "../schemas";
 import { jsonBody, jsonResponse, requiredUuid, withErrors } from "./shared.server";
 import type {
   AdoptionCoordinatorService,
@@ -65,7 +66,8 @@ export function createStatusHandlers(deps: {
     return withErrors(async () => {
       const statusId = requiredUuid(params, "id");
       const admin = await requireStatusAdmin(request);
-      await service.deleteStatus({ actorUserId: admin.authUserId, statusId });
+      const { reason } = statusDeleteSchema.parse(await jsonBody(request));
+      await service.deleteStatus({ actorUserId: admin.authUserId, statusId, reason });
       return jsonResponse({ ok: true });
     });
   }

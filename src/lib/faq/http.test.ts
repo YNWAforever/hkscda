@@ -108,11 +108,55 @@ describe("createAdminFaqHandlers", () => {
     const response = await handlers.deactivate({
       request: request("http://localhost/x", {
         method: "DELETE",
-        body: JSON.stringify({ id: "e1" }),
+        body: JSON.stringify({ id: "e1", reason: "  duplicate of another question " }),
       }),
     });
     expect(response.status).toBe(200);
-    expect(service.deactivate).toHaveBeenCalledWith({ actorUserId: actorId, id: "e1" });
+    expect(service.deactivate).toHaveBeenCalledWith({
+      actorUserId: actorId,
+      id: "e1",
+      reason: "duplicate of another question",
+    });
+  });
+
+  // required-reason: faq.deactivate
+  test("deactivate rejects a missing, blank or over-long reason with 400 before the service", async () => {
+    const service = createService();
+    const handlers = createAdminFaqHandlers({ requireFaqAdmin: mock(async () => admin), service });
+    for (const body of [
+      { id: "e1" },
+      { id: "e1", reason: "   " },
+      { id: "e1", reason: "x".repeat(501) },
+      { id: "e1", reason: 7 },
+    ]) {
+      const response = await handlers.deactivate({
+        request: request("http://localhost/x", { method: "DELETE", body: JSON.stringify(body) }),
+      });
+      expect(response.status).toBe(400);
+    }
+    const noBody = await handlers.deactivate({
+      request: request("http://localhost/x", { method: "DELETE" }),
+    });
+    expect(noBody.status).toBe(400);
+    expect(service.deactivate).not.toHaveBeenCalled();
+  });
+
+  // required-reason: faq.deactivate
+  test("deactivate passes the trimmed reason through", async () => {
+    const service = createService();
+    const handlers = createAdminFaqHandlers({ requireFaqAdmin: mock(async () => admin), service });
+    const response = await handlers.deactivate({
+      request: request("http://localhost/x", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "e1", reason: "  out of date  " }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(service.deactivate).toHaveBeenCalledWith({
+      actorUserId: actorId,
+      id: "e1",
+      reason: "out of date",
+    });
   });
 
   test("an unexpected error falls through to a generic 500", async () => {

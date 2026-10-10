@@ -255,6 +255,7 @@ test("staff status command carries actor and version into one repository mutatio
       expectedUpdatedAt: registration.updatedAt,
       status: "approved",
       internalNotes: "Reviewed",
+      reason: null,
     },
   ]);
   expect(auditLogs).toEqual([]);

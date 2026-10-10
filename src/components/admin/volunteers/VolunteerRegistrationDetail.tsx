@@ -6,14 +6,23 @@ import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerActionEligibility } from "../../../lib/volunteers/actionEligibility";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { volunteerRegistrationStatusLabel } from "../../../lib/volunteers/labels";
-import type { VolunteerRegistrationDetail as VolunteerRegistrationDetailType } from "../../../lib/volunteers/types";
+import type {
+  VolunteerRegistrationDetail as VolunteerRegistrationDetailType,
+  VolunteerRegistrationStatus,
+} from "../../../lib/volunteers/types";
 import { useAdminLanguage } from "../adminI18n";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { DestinationHeading } from "../DestinationHeading";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure } from "../LoadFailure";
-import { availableRegistrationTransitions, isDestructiveTransition } from "./volunteerAdminLogic";
+import {
+  availableRegistrationTransitions,
+  isDestructiveTransition,
+  rejectionRequest,
+} from "./volunteerAdminLogic";
+import { sendRegistrationStatusChange } from "./registrationStatusChange";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
@@ -49,7 +58,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   const queryClient = useQueryClient();
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
-  const [rejectStatus, setRejectStatus] = useState<string | null>(null);
+  const [rejectStatus, setRejectStatus] = useState<VolunteerRegistrationStatus | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["volunteer-registration", registrationId],
     queryFn: () =>
@@ -68,11 +77,12 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
     Boolean(data?.registration && data.registration.attendanceStatus !== "not_marked");
 
   const updateStatus = useMutation({
-    mutationFn: (status: string) =>
-      fetchAdminJson(`/api/admin/volunteers/registrations/${registrationId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status, expectedUpdatedAt: data?.registration.updatedAt }),
-      }),
+    mutationFn: ({ status, reason }: { status: string; reason?: string }) =>
+      sendRegistrationStatusChange(
+        registrationId,
+        { status, expectedUpdatedAt: data?.registration.updatedAt, reason },
+        language,
+      ),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
       void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
@@ -155,6 +165,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
+      {/* required-reason: volunteer_registration.reject */}
       <ConfirmActionDialog
         open={rejectStatus !== null}
         onOpenChange={(open) => {
@@ -164,9 +175,10 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         consequence={copy.confirmReject(registration.contactName)}
         confirmLabel={copy.rejectVerb}
         destructive
-        reason="none"
-        onConfirm={async () => {
-          if (rejectStatus !== null) await updateStatus.mutateAsync(rejectStatus);
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = rejectionRequest(rejectStatus, reason);
+          if (request) await updateStatus.mutateAsync(request);
         }}
       />
       <Link
@@ -226,7 +238,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           <DetailItem label={text.notes} value={registration.notes ?? text.none} />
         </div>
 
-        {updateStatus.error && updateStatus.variables !== "rejected" && (
+        {updateStatus.error && updateStatus.variables?.status !== "rejected" && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
             {volunteerAdminErrorMessage(updateStatus.error, language)}
           </p>
@@ -273,7 +285,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
                   setRejectStatus(status);
                   return;
                 }
-                updateStatus.mutate(status);
+                updateStatus.mutate({ status });
               }}
               className={
                 isDestructiveTransition(status)

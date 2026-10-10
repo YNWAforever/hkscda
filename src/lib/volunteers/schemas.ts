@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { requiredReasonSchema } from "../admin/requiredReason";
 import {
   volunteerActivityStatuses,
   volunteerActivityTypes,
@@ -78,11 +79,35 @@ export const adminActivityUpdateSchema = adminActivityInputSchema
   .partial()
   .extend({ expectedUpdatedAt: z.string().datetime({ offset: true }) });
 
-export const adminRegistrationStatusSchema = z.object({
-  expectedUpdatedAt: z.string().datetime({ offset: true }),
-  status: z.enum(volunteerRegistrationStatuses),
-  internalNotes: optionalTrimmed.optional(),
-});
+/**
+ * A status change. Rejecting needs a reason (trimmed, 1-500 characters; SP-5b-2); every other
+ * status takes none and parses to `reason: null`.
+ */
+export const adminRegistrationStatusSchema = z
+  .object({
+    expectedUpdatedAt: z.string().datetime({ offset: true }),
+    status: z.enum(volunteerRegistrationStatuses),
+    internalNotes: optionalTrimmed.optional(),
+    reason: z.string().optional().nullable(),
+  })
+  .superRefine((value, ctx) => {
+    const reason = requiredReasonSchema.safeParse(value.reason ?? "");
+    const given = (value.reason ?? "").trim() !== "";
+    if ((value.status === "rejected" || given) && !reason.success) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reason"],
+        message:
+          value.status === "rejected"
+            ? "Rejecting a registration requires a reason of 1 to 500 characters"
+            : "A reason is at most 500 characters",
+      });
+    }
+  })
+  .transform((value) => ({
+    ...value,
+    reason: value.reason?.trim() ? value.reason.trim() : null,
+  }));
 
 export const adminAttendanceUpdateSchema = z
   .object({

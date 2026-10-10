@@ -430,7 +430,6 @@ describe("pledge detail drawer in English", () => {
       "Approve",
       "Reject",
       // cancel
-      "Cancellation note",
       "Cancel sponsorship",
       // animals
       "Confirmed sponsored animals",
@@ -866,7 +865,6 @@ describe("sponsorship copy", () => {
       pageErrors.assignAnimal,
       pageErrors.endAssignment,
       pageErrors.proofReviewChanged,
-      pageErrors.cancel,
       pageErrors.recordPayment,
       reminderDraftCopy.en.failed,
       financeCopy.en.loadFailed,

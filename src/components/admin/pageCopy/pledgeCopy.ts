@@ -74,7 +74,6 @@ export const pledgePageCopy = defineAdminCopy({
         followup: "跟進分派失敗，請重新載入後再試。",
         followupConflict: "跟進資料已有更新，請核對目前職員後再分派。",
         followupUnknown: "未能確認分派結果；請重新整理或重試原有分派。",
-        cancel: "取消失敗",
         recordPayment: "記錄付款失敗",
       },
       recordPayment: {
@@ -92,6 +91,7 @@ export const pledgePageCopy = defineAdminCopy({
         noteLabel: "備註",
         approve: "核實通過",
         reject: "拒絕",
+        rejectConsequence: "",
       },
       assignments: {
         title: "已確認助養動物",
@@ -121,8 +121,8 @@ export const pledgePageCopy = defineAdminCopy({
         open: (fileName: string) => `開啟付款證明（${fileName}）`,
       },
       cancel: {
-        noteLabel: "取消備註",
         action: "取消助養",
+        confirmConsequence: "",
       },
       proofHistory: {
         title: "付款證明記錄",
@@ -200,7 +200,6 @@ export const pledgePageCopy = defineAdminCopy({
           "Follow-up details changed. Check the current owner before assigning again.",
         followupUnknown:
           "The assignment result could not be confirmed. Refresh or retry the original assignment.",
-        cancel: "Could not cancel the sponsorship. Refresh the page and try again.",
         recordPayment: "Could not record the payment. Check the details and try again.",
       },
       recordPayment: {
@@ -218,6 +217,8 @@ export const pledgePageCopy = defineAdminCopy({
         noteLabel: "Note",
         approve: "Approve",
         reject: "Reject",
+        rejectConsequence:
+          "Rejecting this payment proof moves the sponsorship to follow-up. The supporter is emailed when an address is on file.",
       },
       assignments: {
         title: "Confirmed sponsored animals",
@@ -249,8 +250,9 @@ export const pledgePageCopy = defineAdminCopy({
         open: (fileName: string) => `Open payment proof (${fileName})`,
       },
       cancel: {
-        noteLabel: "Cancellation note",
         action: "Cancel sponsorship",
+        confirmConsequence:
+          "Cancelling ends this sponsorship. The supporter is emailed when an address is on file.",
       },
       proofHistory: {
         title: "Payment proof history",

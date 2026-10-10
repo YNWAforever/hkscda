@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { requiredReasonSchema } from "../admin/requiredReason";
 import {
   annualReportInputSchema,
   documentAssetInputSchema,
@@ -51,7 +52,7 @@ export type DocumentRepository = {
     isPublished: boolean,
     actorUserId?: string | null,
   ): Promise<AnnualReport>;
-  deleteAnnualReport(id: string, actorUserId?: string | null): Promise<void>;
+  deleteAnnualReport(id: string, actorUserId?: string | null, reason?: string): Promise<void>;
   listPublishedSlots(slotKeys: string[]): Promise<DocumentSlot[]>;
   listAssets(search: DocumentListSearch): Promise<{ items: DocumentAsset[]; total: number }>;
   getAssetById(id: string): Promise<DocumentAsset | null>;
@@ -69,7 +70,7 @@ export type DocumentRepository = {
   countAssetReferences(id: string): Promise<number>;
   hasPublishedSlotReference(id: string): Promise<boolean>;
   hasPublishedKnowledgeReference(id: string): Promise<boolean>;
-  deleteAsset(id: string, actorUserId?: string | null): Promise<void>;
+  deleteAsset(id: string, actorUserId?: string | null, reason?: string): Promise<void>;
   createSignedUploadUrl(objectPath: string): Promise<{ token: string; path: string }>;
   verifyObject(objectPath: string): Promise<boolean>;
   insertAuditLog(row: DocumentAuditLogInsert): Promise<void>;
@@ -242,15 +243,20 @@ export function createDocumentService({
       return report;
     },
 
-    async deleteAnnualReport({ actorUserId, reportId }: ActorInput & { reportId: string }) {
+    async deleteAnnualReport({
+      actorUserId,
+      reportId,
+      reason,
+    }: ActorInput & { reportId: string; reason: string }) {
       const parsedReportId = documentIdSchema.parse(reportId);
-      await repo.deleteAnnualReport(parsedReportId, actorUserId);
+      const parsedReason = requiredReasonSchema.parse(reason);
+      await repo.deleteAnnualReport(parsedReportId, actorUserId, parsedReason);
       await audit({
         actor_user_id: actorUserId,
         action: "annual_report.delete",
         entity: "annual_report",
         entity_id: parsedReportId,
-        detail: {},
+        detail: { reason: parsedReason },
       });
     },
 
@@ -354,19 +360,20 @@ export function createDocumentService({
       return unpublished;
     },
 
-    async deleteAsset({ actorUserId, assetId }: AssetActionArgs) {
+    async deleteAsset({ actorUserId, assetId, reason }: AssetActionArgs & { reason: string }) {
       const parsedAssetId = documentIdSchema.parse(assetId);
+      const parsedReason = requiredReasonSchema.parse(reason);
       if ((await repo.countAssetReferences(parsedAssetId)) > 0) {
         throw new DocumentConflictError("Document asset is still referenced");
       }
 
-      await repo.deleteAsset(parsedAssetId, actorUserId);
+      await repo.deleteAsset(parsedAssetId, actorUserId, parsedReason);
       await audit({
         actor_user_id: actorUserId,
         action: "document.delete",
         entity: "document_asset",
         entity_id: parsedAssetId,
-        detail: {},
+        detail: { reason: parsedReason },
       });
     },
 

@@ -277,6 +277,7 @@ describe("registrations and activities", () => {
             actorUserId: "admin-1",
             expectedUpdatedAt: "2026-09-05T00:00:00Z",
             status: "approved",
+            reason: null,
           }),
         updateAttendance: ({ registrationId }: { registrationId: string }) =>
           repository.updateAttendance({

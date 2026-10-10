@@ -27,7 +27,16 @@ import { StatusBadge } from "../StatusBadge";
 import { DestinationHeading } from "../DestinationHeading";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { fetchCoordinatorJson } from "./api";
+import {
+  caseStatusChangeRequest,
+  inlineCaseStatusFailure,
+  isClosingStatusChoice,
+  sendCaseStatusChange,
+  type CaseStatusChangeRequest,
+} from "./caseStatusChange";
 import { openPendingPhotoWindow, openSignedPhotoUrl } from "./caseDetailPhotoWindow";
 import { caseDetailCopy } from "./caseDetailCopy";
 import { filterStatusesByCategory, findApprovedMatches, formatFallback } from "./caseWorkflowLogic";
@@ -453,6 +462,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   const queryClient = useQueryClient();
   const [selectedStatusId, setSelectedStatusId] = useState("");
   const [statusNote, setStatusNote] = useState("");
+  const [closeOpen, setCloseOpen] = useState(false);
 
   const caseQueryKey = useMemo(() => ["adoption-case", caseId] as const, [caseId]);
 
@@ -497,28 +507,38 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
     await queryClient.invalidateQueries({ queryKey: caseQueryKey });
   }
 
-  const statusMutation = useMutation<StatusUpdateResponse, Error, void>({
-    mutationFn: () =>
-      fetchCoordinatorJson<StatusUpdateResponse>(
-        `/api/admin/adoptions/cases/${encodeURIComponent(caseId)}/status`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            statusId: selectedStatusId,
-            note: statusNote.trim() || undefined,
-          }),
-        },
-      ),
+  const statusMutation = useMutation<StatusUpdateResponse, Error, CaseStatusChangeRequest>({
+    mutationFn: (request) => sendCaseStatusChange(request),
     onSuccess: async () => {
       setStatusNote("");
       await invalidateCase();
     },
   });
 
+  const closing = isClosingStatusChoice(statuses, selectedStatusId);
+  // A failed closing change shows in its dialog only, not a second time under the form.
+  const inlineFailure = inlineCaseStatusFailure(
+    statuses,
+    statusMutation.error,
+    statusMutation.variables,
+  );
+
   function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedStatusId || statusMutation.isPending) return;
-    statusMutation.mutate();
+    // A closing status asks for its reason first; the dialog sends the change.
+    if (closing) {
+      setCloseOpen(true);
+      return;
+    }
+    const request = caseStatusChangeRequest({
+      caseId,
+      statusId: selectedStatusId,
+      closing: false,
+      note: statusNote,
+      reason: null,
+    });
+    if (request) statusMutation.mutate(request);
   }
 
   if (caseLoading) {
@@ -669,6 +689,28 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
       </Section>
 
       <Section title={copy.sections.statusControls}>
+        {/* The inline note is disabled while a closing status is chosen; what it holds opens the dialog's reason. */}
+        {/* required-reason: adoption_case.close */}
+        <ConfirmActionDialog
+          open={closeOpen}
+          onOpenChange={setCloseOpen}
+          title={copy.saveStatus}
+          consequence={copy.closeConsequence}
+          confirmLabel={copy.saveStatus}
+          destructive
+          reason={requiredReasonDialog}
+          initialReason={statusNote}
+          onConfirm={async (reason) => {
+            const request = caseStatusChangeRequest({
+              caseId,
+              statusId: selectedStatusId,
+              closing: true,
+              note: statusNote,
+              reason,
+            });
+            if (request) await statusMutation.mutateAsync(request);
+          }}
+        />
         <form
           onSubmit={handleStatusSubmit}
           className="grid gap-4 p-4 lg:grid-cols-[260px_1fr_auto]"
@@ -694,6 +736,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
               id="case-status-note"
               value={statusNote}
               onChange={(event) => setStatusNote(event.target.value)}
+              disabled={closing}
               className="min-h-9"
               placeholder={copy.optionalStatusNote}
             />
@@ -704,9 +747,9 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
               {copy.saveStatus}
             </Button>
           </div>
-          {statusMutation.error && (
+          {inlineFailure && (
             <p className="text-sm text-[var(--color-error)]" role="alert">
-              {adminErrorMessage(statusMutation.error, language) ?? ""}
+              {adminErrorMessage(inlineFailure, language) ?? ""}
             </p>
           )}
         </form>

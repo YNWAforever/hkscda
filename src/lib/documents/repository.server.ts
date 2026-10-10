@@ -357,9 +357,15 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAnnualReport(client, data);
     },
 
-    async deleteAnnualReport(id: string, actorUserId?: string | null) {
+    async deleteAnnualReport(id: string, actorUserId?: string | null, reason?: string) {
       if (actorUserId !== undefined) {
-        await runAtomicMutation("mutate_annual_report_with_audit", "delete", id, {}, actorUserId);
+        await runAtomicMutation(
+          "mutate_annual_report_with_audit",
+          "delete",
+          id,
+          reason === undefined ? {} : { reason },
+          actorUserId,
+        );
         return;
       }
       const { error } = await client.from("annual_reports").delete().eq("id", id);
@@ -490,9 +496,15 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       return requireMappedAsset(client, data);
     },
 
-    async deleteAsset(id: string, actorUserId?: string | null) {
+    async deleteAsset(id: string, actorUserId?: string | null, reason?: string) {
       if (actorUserId !== undefined) {
-        await runAtomicMutation("mutate_document_asset_with_audit", "delete", id, {}, actorUserId);
+        await runAtomicMutation(
+          "mutate_document_asset_with_audit",
+          "delete",
+          id,
+          reason === undefined ? {} : { reason },
+          actorUserId,
+        );
         return;
       }
       const { error } = await client.from("document_assets").delete().eq("id", id);

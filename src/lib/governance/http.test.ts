@@ -87,7 +87,7 @@ describe("createAdminGovernanceHandlers", () => {
     await handlers.deactivate({
       request: new Request("http://x/api/admin/governance", {
         method: "DELETE",
-        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111" }),
+        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111", reason: "x" }),
       }),
     });
     expect(actorIds).toEqual(["auth-1", "auth-1"]);
@@ -102,7 +102,7 @@ describe("createAdminGovernanceHandlers", () => {
     const response = await handlers.deactivate({
       request: new Request("http://x/api/admin/governance", {
         method: "DELETE",
-        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111" }),
+        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111", reason: "x" }),
       }),
     });
     expect(response.status).toBe(404);
@@ -118,6 +118,51 @@ describe("createAdminGovernanceHandlers", () => {
     });
 
     expect(response.status).toBe(400);
+  });
+
+  // required-reason: board_member.deactivate
+  test("deactivate passes the trimmed reason to the service", async () => {
+    const calls: Array<{ actorUserId: string; id: string; reason: string }> = [];
+    const handlers = createHandlers({
+      deactivate: async (input) => {
+        calls.push(input);
+      },
+    });
+    const response = await handlers.deactivate({
+      request: new Request("http://x/api/admin/governance", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "11111111-1111-4111-8111-111111111111", reason: " closed " }),
+      }),
+    });
+    expect(response.status).toBe(200);
+    expect(calls).toEqual([
+      { actorUserId: "auth-1", id: "11111111-1111-4111-8111-111111111111", reason: "closed" },
+    ]);
+  });
+
+  // required-reason: board_member.deactivate
+  test("deactivate rejects a missing, blank or over-long reason with 400 before the service", async () => {
+    let called = false;
+    const handlers = createHandlers({
+      deactivate: async () => {
+        called = true;
+      },
+    });
+    const id = "11111111-1111-4111-8111-111111111111";
+    for (const body of [{ id }, { id, reason: "   " }, { id, reason: "x".repeat(501) }]) {
+      const response = await handlers.deactivate({
+        request: new Request("http://x/api/admin/governance", {
+          method: "DELETE",
+          body: JSON.stringify(body),
+        }),
+      });
+      expect(response.status).toBe(400);
+    }
+    const noBody = await handlers.deactivate({
+      request: new Request("http://x/api/admin/governance", { method: "DELETE" }),
+    });
+    expect(noBody.status).toBe(400);
+    expect(called).toBe(false);
   });
 
   test("a thrown Response from requireGovernanceAdmin is returned as-is (e.g. 403 for a non-admin role)", async () => {

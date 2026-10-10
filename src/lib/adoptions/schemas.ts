@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { requiredReasonSchema } from "../admin/requiredReason";
+
 export const statusCategories = [
   "adoption_case",
   "animal_lifecycle",
@@ -62,6 +64,9 @@ export const statusInputSchema = z.object({
 export const statusUpdateSchema = statusInputSchema.partial().extend({
   delete: z.boolean().optional(),
 });
+
+/** The body of a status DELETE: the reason staff gave, trimmed, 1 to 500 characters. */
+export const statusDeleteSchema = z.object({ reason: requiredReasonSchema });
 
 export const caseSearchSchema = z.object({
   q: optionalTrimmed,

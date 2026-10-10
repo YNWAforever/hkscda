@@ -24,9 +24,17 @@ export function createFaqService({ repo }: { repo: FaqRepository }) {
       return repo.upsert(id ? { id, ...rest } : rest, actorUserId);
     },
 
-    async deactivate({ actorUserId, id }: { actorUserId: string; id: string }) {
-      const parsed = deactivateFaqEntrySchema.parse({ id });
-      await repo.deactivate(parsed.id, actorUserId);
+    async deactivate({
+      actorUserId,
+      id,
+      reason,
+    }: {
+      actorUserId: string;
+      id: string;
+      reason: string;
+    }) {
+      const parsed = deactivateFaqEntrySchema.parse({ id, reason });
+      await repo.deactivate(parsed.id, actorUserId, parsed.reason);
     },
   };
 }

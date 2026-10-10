@@ -9,9 +9,16 @@ import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../..
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { localizedText } from "../i18n/localizedText";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { LoadFailure } from "../LoadFailure";
 import { FaqAnswerTester } from "./FaqAnswerTester";
 import { faqCopy } from "./faqCopy";
+import {
+  faqDeactivateRequest,
+  sendFaqDeactivate,
+  type FaqDeactivateRequest,
+} from "./faqDeactivate";
 import { FaqSearchGapsReport } from "./FaqSearchGapsReport";
 
 export const ADMIN_FAQ_QUERY_KEY = ["admin-faq"] as const;
@@ -91,6 +98,7 @@ export function FaqManagement() {
   const { language } = useAdminLanguage();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState<FaqDraft | null>(null);
+  const [deactivateTarget, setDeactivateTarget] = useState<string | null>(null);
   // The draft form renders below the whole FAQ table, so opening it from a button
   // higher up the page would otherwise look like nothing happened. This counts
   // openings so the form is revealed on each one, including a second "add question from this"
@@ -132,11 +140,7 @@ export function FaqManagement() {
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (id: string) =>
-      fetchAdminJson<{ ok: true }>("/api/admin/faq", {
-        method: "DELETE",
-        body: JSON.stringify({ id }),
-      }),
+    mutationFn: (request: FaqDeactivateRequest) => sendFaqDeactivate(request, language),
     onSuccess: () => invalidateFaqQueries(queryClient),
   });
 
@@ -148,6 +152,22 @@ export function FaqManagement() {
 
   return (
     <div className="space-y-6">
+      {/* required-reason: faq.deactivate */}
+      <ConfirmActionDialog
+        open={deactivateTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeactivateTarget(null);
+        }}
+        title={copy.disable}
+        consequence={copy.disableConsequence}
+        confirmLabel={copy.disable}
+        destructive
+        reason={requiredReasonDialog}
+        onConfirm={async (reason) => {
+          const request = faqDeactivateRequest(deactivateTarget, reason);
+          if (request) await deactivateMutation.mutateAsync(request);
+        }}
+      />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{copy.title}</h1>
         <button
@@ -228,7 +248,7 @@ export function FaqManagement() {
                       <Button
                         variant="outline"
                         type="button"
-                        onClick={() => deactivateMutation.mutate(entry.id)}
+                        onClick={() => setDeactivateTarget(entry.id)}
                         disabled={deactivateMutation.isPending}
                       >
                         {copy.disable}
@@ -240,11 +260,6 @@ export function FaqManagement() {
             ))}
           </tbody>
         </table>
-      ) : null}
-      {deactivateMutation.isError ? (
-        <p role="alert" className="text-sm text-[var(--color-error)]">
-          {copy.disableFailed}
-        </p>
       ) : null}
 
       {draft ? (

@@ -99,10 +99,11 @@ export function createSupabaseFaqRepository(client: SupabaseClient): FaqReposito
       return mapped;
     },
 
-    async deactivate(id: string, actorUserId: string): Promise<void> {
+    async deactivate(id: string, actorUserId: string, reason: string): Promise<void> {
       const { error } = await client.rpc("deactivate_faq_entry_with_audit", {
         p_actor_user_id: actorUserId,
         p_id: id,
+        p_reason: reason,
       });
       if (error) throw error;
     },

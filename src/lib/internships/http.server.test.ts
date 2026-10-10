@@ -88,3 +88,58 @@ describe("internship command request size", () => {
     expect(received).toEqual({ action: "mine" });
   });
 });
+
+describe("rejecting an internship application needs a reason", () => {
+  const review = {
+    action: "review",
+    application_id: "11111111-2222-4333-8444-555555555555",
+    expected_revision: 1,
+    idempotency_key: "66666666-7777-4888-8999-000000000000",
+    status: "rejected",
+    student_verified: false,
+    evidence: "",
+  };
+  function build() {
+    const commands: object[] = [];
+    const service = createInternshipService({
+      command: async (_actor, command) => {
+        commands.push(command);
+        return { kind: "updated" };
+      },
+    });
+    const http = createInternshipHttp({ service, authenticate: async () => "staff-id" });
+    const post = (body: unknown) =>
+      http.post(
+        new Request("https://example.invalid/api/admin/internships", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+        true,
+      );
+    return { commands, post };
+  }
+
+  // required-reason: internship.reject
+  test("a rejection reaches the command with the trimmed reason", async () => {
+    const { commands, post } = build();
+    const response = await post({ ...review, reason: "  not a veterinary student  " });
+    expect(response.status).toBe(200);
+    expect(commands).toHaveLength(1);
+    expect(commands[0]).toMatchObject({ status: "rejected", reason: "not a veterinary student" });
+  });
+
+  test("a whitespace-only reason is a 400 and never reaches the command", async () => {
+    const { commands, post } = build();
+    expect((await post({ ...review, reason: "   " })).status).toBe(400);
+    expect((await post(review)).status).toBe(400);
+    expect(commands).toHaveLength(0);
+  });
+
+  test("a reason over 500 characters is a 400 and never reaches the command", async () => {
+    const { commands, post } = build();
+    expect((await post({ ...review, reason: "x".repeat(501) })).status).toBe(400);
+    expect((await post({ ...review, reason: "x".repeat(500) })).status).toBe(200);
+    expect(commands).toHaveLength(1);
+  });
+});

@@ -919,7 +919,7 @@ describe("createSponsorshipAdminService", () => {
     await service.reviewProof({
       actorUserId,
       pledgeId,
-      input: { ...exactReview, decision: "reject" },
+      input: { ...exactReview, decision: "reject", note: "Blurry" },
     });
 
     // A rejected payment pays for nothing, so it confirms nothing.
@@ -938,9 +938,9 @@ describe("createSponsorshipAdminService", () => {
       sendPledgeStatusUpdateEmail: createFakeSender().sendPledgeStatusUpdateEmail,
     });
 
-    await expect(service.cancelPledge({ actorUserId, pledgeId, input: {} })).rejects.toThrow(
-      "Sponsorship pledge is already cancelled",
-    );
+    await expect(
+      service.cancelPledge({ actorUserId, pledgeId, input: { note: "Sponsor left" } }),
+    ).rejects.toThrow("Sponsorship pledge is already cancelled");
     expect(repo.cancelPledge).not.toHaveBeenCalled();
   });
 
@@ -1004,7 +1004,7 @@ describe("createSponsorshipAdminService", () => {
     });
 
     await expect(
-      service.cancelPledge({ actorUserId, pledgeId, input: {} }),
+      service.cancelPledge({ actorUserId, pledgeId, input: { note: "Sponsor left" } }),
     ).resolves.toBeUndefined();
     expect(repo.cancelPledge).toHaveBeenCalled();
   });

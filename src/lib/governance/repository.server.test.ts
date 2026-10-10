@@ -220,7 +220,7 @@ describe("atomic governance mutations", () => {
     const repo = createSupabaseGovernanceRepository(client);
     const id = "11111111-1111-4111-8111-111111111111";
 
-    await repo.deactivate(id, "auth-1");
+    await repo.deactivate(id, "auth-1", "term ended");
 
     expect(client.calls).toContainEqual({
       name: "rpc",
@@ -230,7 +230,7 @@ describe("atomic governance mutations", () => {
         p_entity: "board_member",
         p_operation: "deactivate",
         p_id: id,
-        p_payload: {},
+        p_payload: { reason: "term ended" },
       },
     });
   });

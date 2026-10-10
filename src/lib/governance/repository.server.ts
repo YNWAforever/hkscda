@@ -112,14 +112,14 @@ export function createSupabaseGovernanceRepository(client: SupabaseClient): Gove
       return mapped;
     },
 
-    async deactivate(id: string, actorUserId?: string): Promise<void> {
+    async deactivate(id: string, actorUserId: string | undefined, reason: string): Promise<void> {
       if (!actorUserId) throw new Error("Actor user ID required");
       const { error } = await client.rpc("mutate_admin_content_with_audit", {
         p_actor_user_id: actorUserId,
         p_entity: "board_member",
         p_operation: "deactivate",
         p_id: id,
-        p_payload: {},
+        p_payload: { reason },
       });
       if (error) throw error;
     },

@@ -87,7 +87,7 @@ test("rejects invalid asset IDs before repository work", async () => {
     service.unpublishAsset({ actorUserId: "admin", assetId: invalidId }),
   );
   await expectInvalidDocumentIdRejected((service) =>
-    service.deleteAsset({ actorUserId: "admin", assetId: invalidId }),
+    service.deleteAsset({ actorUserId: "admin", assetId: invalidId, reason: "duplicate upload" }),
   );
 });
 
@@ -164,7 +164,7 @@ describe("createDocumentService", () => {
     });
     await service.publishAsset({ actorUserId: "admin", assetId });
     await service.unpublishAsset({ actorUserId: "admin", assetId });
-    await service.deleteAsset({ actorUserId: "admin", assetId });
+    await service.deleteAsset({ actorUserId: "admin", assetId, reason: "duplicate upload" });
 
     expect(repo.createAsset).toHaveBeenCalledWith(
       expect.objectContaining({ title: "Annual Report 2025/26" }),
@@ -207,9 +207,9 @@ describe("createDocumentService", () => {
     const { repo } = createRepo({ countAssetReferences: mock(async () => 2) });
     const service = createDocumentService({ repo });
 
-    await expect(service.deleteAsset({ actorUserId: "admin", assetId })).rejects.toBeInstanceOf(
-      DocumentConflictError,
-    );
+    await expect(
+      service.deleteAsset({ actorUserId: "admin", assetId, reason: "duplicate upload" }),
+    ).rejects.toBeInstanceOf(DocumentConflictError);
     expect(repo.deleteAsset).not.toHaveBeenCalled();
   });
 
@@ -300,7 +300,11 @@ test("updates, publishes, unpublishes, and deletes annual reports with audit log
   });
   await service.publishAnnualReport({ actorUserId: "admin", reportId });
   await service.unpublishAnnualReport({ actorUserId: "admin", reportId });
-  await service.deleteAnnualReport({ actorUserId: "admin", reportId });
+  await service.deleteAnnualReport({
+    actorUserId: "admin",
+    reportId,
+    reason: "published in error",
+  });
 
   expect(repo.updateAnnualReport).toHaveBeenCalledWith(
     reportId,
@@ -316,6 +320,48 @@ test("updates, publishes, unpublishes, and deletes annual reports with audit log
     "annual_report.unpublish",
     "annual_report.delete",
   ]);
+  expect(auditLogs.at(-1)?.detail).toEqual({ reason: "published in error" });
+});
+
+describe("deleting a document or annual report needs a reason", () => {
+  const blank = ["", "   "];
+  const tooLong = "x".repeat(501);
+
+  test("the trimmed reason reaches the repository and the audit detail", async () => {
+    const { repo, auditLogs } = createRepo();
+    const service = createDocumentService({ repo });
+    await service.deleteAsset({ actorUserId: "admin", assetId, reason: "  duplicate upload  " });
+    await service.deleteAnnualReport({ actorUserId: "admin", reportId, reason: " filed twice " });
+    expect(repo.deleteAsset).toHaveBeenCalledWith(assetId, "admin", "duplicate upload");
+    expect(repo.deleteAnnualReport).toHaveBeenCalledWith(reportId, "admin", "filed twice");
+    expect(auditLogs.map((row) => row.detail)).toEqual([
+      { reason: "duplicate upload" },
+      { reason: "filed twice" },
+    ]);
+  });
+
+  test("a blank or 501-character reason is rejected before the repository is touched", async () => {
+    const { repo } = createRepo();
+    const service = createDocumentService({ repo });
+    for (const reason of [...blank, tooLong]) {
+      await expect(
+        service.deleteAsset({ actorUserId: "admin", assetId, reason }),
+      ).rejects.toThrow();
+      await expect(
+        service.deleteAnnualReport({ actorUserId: "admin", reportId, reason }),
+      ).rejects.toThrow();
+    }
+    expect(repo.deleteAsset).not.toHaveBeenCalled();
+    expect(repo.deleteAnnualReport).not.toHaveBeenCalled();
+  });
+
+  test("the atomic path leaves the audit to the RPC", async () => {
+    const { repo } = createRepo({ usesAtomicAudit: true });
+    const service = createDocumentService({ repo });
+    await service.deleteAsset({ actorUserId: assetId, assetId, reason: "duplicate upload" });
+    expect(repo.deleteAsset).toHaveBeenCalledWith(assetId, assetId, "duplicate upload");
+    expect(repo.insertAuditLog).not.toHaveBeenCalled();
+  });
 });
 
 test("rejects empty asset and annual-report patches", async () => {
