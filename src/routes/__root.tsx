@@ -137,6 +137,9 @@ function RootComponent() {
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
   const isAdoptionWizard = /^\/adoption\/apply\/?$/.test(location.pathname);
+  // The pledge form lists the selection itself; the tray's 開始助養 would only
+  // repeat it and cover the form's own submit button on a phone.
+  const isSponsorPledge = /^\/sponsors\/pledge\/?$/.test(location.pathname);
   // Task pages (an application, a pledge, a donation, a status lookup) keep the
   // footer links but drop its closing statement and calls to action, which
   // would only pull someone away from a form they are part-way through.
@@ -161,7 +164,7 @@ function RootComponent() {
         <Outlet />
       </div>
       <Footer />
-      {isAdoptionWizard ? null : <ShortlistTray />}
+      {isAdoptionWizard || isSponsorPledge ? null : <ShortlistTray />}
       <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
     </div>

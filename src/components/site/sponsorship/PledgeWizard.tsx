@@ -765,7 +765,9 @@ export function PledgeWizard() {
         </label>
 
         <fieldset className="space-y-3 rounded-md bg-[var(--color-surface-offset)] p-4">
-          <legend className="text-sm font-bold">Consent and terms</legend>
+          <legend className="text-sm font-bold">
+            {language === "zh-HK" ? "同意事項及條款" : "Consent and terms"}
+          </legend>
           <label className="flex items-start gap-3 text-sm">
             <input
               id="pledge-email-consent"
@@ -836,7 +838,9 @@ export function PledgeWizard() {
           aria-label={language === "zh-HK" ? "助養承諾摘要" : "Sponsorship commitment summary"}
           className="space-y-2 rounded-md border border-[var(--color-border)] p-4 text-sm"
         >
-          <h2 className="font-bold">{language === "zh-HK" ? "提交前確認" : "Before you submit"}</h2>
+          <h2 className="text-xl font-bold">
+            {language === "zh-HK" ? "提交前確認" : "Before you submit"}
+          </h2>
           <p>
             {language === "zh-HK"
               ? "整份助養承諾每月總額："
