@@ -37,3 +37,21 @@ export function publicUrl(path = "/"): string {
   if (!path.startsWith("/")) return `${PUBLIC_SITE_ORIGIN}/${path}`;
   return `${PUBLIC_SITE_ORIGIN}${path}`;
 }
+
+/** The share image for a page with no photo of its own. */
+export const DEFAULT_SHARE_IMAGE = "/brand/hkscda-logo-primary.jpg";
+
+/**
+ * Absolute URL for an image that may be stored root-relative, bundled by Vite
+ * (`/assets/…`), or missing. Social crawlers resolve nothing: an Open Graph
+ * image must be absolute or the share card goes blank.
+ */
+export function absolutePublicUrl(value: string | null | undefined): string {
+  const trimmed = value?.trim();
+  if (!trimmed) return publicUrl(DEFAULT_SHARE_IMAGE);
+  try {
+    return new URL(trimmed, PUBLIC_SITE_ORIGIN).toString();
+  } catch {
+    return publicUrl(DEFAULT_SHARE_IMAGE);
+  }
+}

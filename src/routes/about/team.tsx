@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
@@ -11,16 +11,12 @@ import { brand } from "../../lib/brand/brand";
 export const Route = createFileRoute("/about/team")({
   loader: resilientPublicLoader(() => getPublicBoardRoster()),
   errorComponent: TeamLoadError,
-  head: () => ({
-    meta: [
-      { title: "團隊與管治 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content: "香港拯救貓狗協會的管治架構、義工團隊，以及聯絡團隊的方法。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/about/team") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "團隊與管治",
+      description: "香港拯救貓狗協會的管治架構、義工團隊，以及聯絡團隊的方法。",
+      path: "/about/team",
+    }),
   component: TeamRoute,
 });
 

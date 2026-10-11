@@ -1,5 +1,5 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 import { PublicStateShell } from "../components/site/PublicStateShell";
 import { PublicPageFrame } from "../components/site/PublicPageFrame";
@@ -10,17 +10,13 @@ import type { KnowledgePost } from "../lib/knowledge/types";
 
 export const Route = createFileRoute("/knowledge")({
   loader: resilientPublicLoader(() => getPublicKnowledgePage()),
-  head: () => ({
-    meta: [
-      { title: "知識資源 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content:
-          "領養前後的照顧指南、寵物保險與實用資源，由香港拯救貓狗協會整理，方便新舊主人查閱。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/knowledge") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "知識資源",
+      description:
+        "領養前後的照顧指南、寵物保險與實用資源，由香港拯救貓狗協會整理，方便新舊主人查閱。",
+      path: "/knowledge",
+    }),
   component: KnowledgePage,
 });
 

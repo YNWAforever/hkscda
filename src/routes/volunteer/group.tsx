@@ -1,21 +1,17 @@
 import { TaskPageHeader } from "../../components/site/TaskPageHeader";
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicFormFrame } from "../../components/site/PublicFormFrame";
 import { GroupEnquiryForm } from "../../components/site/volunteer/GroupEnquiryForm";
 
 export const Route = createFileRoute("/volunteer/group")({
-  head: () => ({
-    meta: [
-      { title: "團體活動查詢 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content: "本頁僅供註冊團體使用。提交團體義工工作坊、入校講座或貓狗舍教育參觀活動查詢。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/volunteer/group") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "團體活動查詢",
+      description: "本頁僅供註冊團體使用。提交團體義工工作坊、入校講座或貓狗舍教育參觀活動查詢。",
+      path: "/volunteer/group",
+    }),
   component: VolunteerGroupPage,
 });
 

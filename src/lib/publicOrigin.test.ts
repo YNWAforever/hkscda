@@ -1,6 +1,11 @@
 import { describe, expect, test } from "bun:test";
 
-import { PUBLIC_SITE_ORIGIN, publicUrl } from "./publicOrigin";
+import {
+  absolutePublicUrl,
+  DEFAULT_SHARE_IMAGE,
+  PUBLIC_SITE_ORIGIN,
+  publicUrl,
+} from "./publicOrigin";
 
 describe("public site origin", () => {
   test("is a bare origin with no trailing slash and no path", () => {
@@ -19,6 +24,16 @@ describe("public site origin", () => {
   test("never emits a doubled slash", () => {
     for (const path of ["/", "/stories", "/about/team"]) {
       expect(publicUrl(path).replace("https://", "")).not.toContain("//");
+    }
+  });
+
+  test("makes share images absolute, falling back to the logo", () => {
+    expect(absolutePublicUrl("/assets/dog.jpg")).toBe(PUBLIC_SITE_ORIGIN + "/assets/dog.jpg");
+    expect(absolutePublicUrl("https://cdn.example.org/a.jpg")).toBe(
+      "https://cdn.example.org/a.jpg",
+    );
+    for (const missing of [null, undefined, "", "  "]) {
+      expect(absolutePublicUrl(missing)).toBe(publicUrl(DEFAULT_SHARE_IMAGE));
     }
   });
 });

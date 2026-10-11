@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
@@ -13,16 +13,13 @@ const pageDescription =
 export const Route = createFileRoute("/report/adoption")({
   loader: resilientPublicLoader(() => getAdoptionImpactReport()),
   errorComponent: AdoptionImpactReportLoadError,
-  head: () => ({
-    meta: [
-      { title: "領養工作成效 · 香港拯救貓狗協會 HKSCDA" },
-      { name: "description", content: pageDescription },
-      { property: "og:title", content: "領養工作成效 · HKSCDA" },
-      { property: "og:description", content: "累計成功領養總數及過去12個月數字，每月更新。" },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/report/adoption") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "領養工作成效",
+      description: pageDescription,
+      shareDescription: "累計成功領養總數及過去12個月數字，每月更新。",
+      path: "/report/adoption",
+    }),
   component: AdoptionImpactReportRoute,
 });
 
