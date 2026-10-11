@@ -657,7 +657,7 @@ export function ApplicationWizard() {
   return (
     <main className="bg-[var(--color-bg)] py-8">
       <div className="container-wide">
-        <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <TaskPageHeader kicker="正式領養申請 · 七個步驟" title="領養申請">
             <p>
               開始前請準備聯絡及住屋資料、照顧安排、可探望日期，以及家居安全相片；相片請勿包含證件或門牌。
@@ -675,7 +675,7 @@ export function ApplicationWizard() {
                     ? "此裝置會保存草稿"
                     : "草稿保存預設關閉"}
           </p>
-        </header>
+        </div>
 
         <section className="mb-4 space-y-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-sm">
           {draftOffer && (
