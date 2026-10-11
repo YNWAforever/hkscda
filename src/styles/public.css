@@ -34,38 +34,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    translate: 0 0.4em;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
 @keyframes hero-draw {
   to {
     stroke-dashoffset: 0;
-  }
-}
-
-@keyframes hero-unveil {
-  from {
-    clip-path: inset(14% 0 0 0 round 999px 999px 16px 16px);
-  }
-  to {
-    clip-path: inset(0 0 0 0 round 999px 999px 16px 16px);
-  }
-}
-
-@keyframes hero-settle {
-  from {
-    scale: 1.08;
-  }
-  to {
-    scale: 1;
   }
 }
 
@@ -939,50 +910,20 @@
     font-weight: 700;
   }
 
+  /* Motion stays on the accents (the drawn underline, the seal) and on content
+     below the fold. The headline, lead and photograph are the page's largest
+     paint: fading or clipping them in held Chrome's LCP until the entrance
+     finished (/animals/cat on a throttled phone: 4.4s with the entrance, 2.1s
+     without), so they are on screen from the first frame. */
   @media (prefers-reduced-motion: no-preference) {
-    .hero-line,
-    .hero-lead,
-    .hero-actions,
-    .hero-copy .trust-cue {
-      animation: hero-rise 560ms var(--public-ease-out) both;
-    }
-
-    .hero-line:nth-child(2) {
-      animation-delay: 70ms;
-    }
-
-    .hero-line:nth-child(3) {
-      animation-delay: 140ms;
-    }
-
-    .hero-lead {
-      animation-delay: 240ms;
-    }
-
-    .hero-actions {
-      animation-delay: 310ms;
-    }
-
-    .hero-copy .trust-cue {
-      animation-delay: 380ms;
-    }
-
     .hero-mark path {
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
-      animation: hero-draw 620ms var(--public-ease-out) 560ms forwards;
-    }
-
-    .hero-photo {
-      animation: hero-unveil 900ms var(--public-ease-out) both;
-    }
-
-    .hero-photo img {
-      animation: hero-settle 1400ms var(--public-ease-out) both;
+      animation: hero-draw 620ms var(--public-ease-out) 280ms forwards;
     }
 
     .hero-seal {
-      animation: hero-pop 520ms var(--public-ease-out) 520ms both;
+      animation: hero-pop 480ms var(--public-ease-out) 200ms both;
     }
 
     @supports (animation-timeline: scroll()) {
@@ -2144,11 +2085,6 @@
     object-fit: cover;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .detail-gallery > img {
-      animation: hero-rise 560ms var(--public-ease-out) both;
-    }
-  }
 
   .detail-image-fallback strong {
     margin-top: 18px;
@@ -3042,31 +2978,7 @@
       var(--public-radius);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .page-hero-copy > * {
-      animation: hero-rise 520ms var(--public-ease-out) both;
-    }
 
-    .page-hero-copy > :nth-child(2) {
-      animation-delay: 60ms;
-    }
-
-    .page-hero-copy > :nth-child(3) {
-      animation-delay: 140ms;
-    }
-
-    .page-hero-copy > :nth-child(n + 4) {
-      animation-delay: 220ms;
-    }
-
-    .page-hero-photo {
-      animation: hero-unveil 860ms var(--public-ease-out) both;
-    }
-
-    .page-hero-photo img {
-      animation: hero-settle 1300ms var(--public-ease-out) both;
-    }
-  }
 
   .page-highlights {
     padding: 0 0 72px;
