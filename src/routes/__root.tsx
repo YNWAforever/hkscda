@@ -4,25 +4,22 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useRouter,
   useRouterState,
   HeadContent,
   Scripts,
-  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { HelpWidget } from "../components/site/help/HelpWidget";
-import { PublicStateShell } from "../components/site/PublicStateShell";
+import { RouteError } from "../components/site/RouteError";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
 import { PublicFixedActionsProvider } from "../components/site/fixedActions/PublicFixedActions";
 import { ContextualDonationPrompt } from "../components/site/donations/ContextualDonationPrompt";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { organizationSchema, websiteSchema } from "../lib/schema";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 
@@ -61,38 +58,6 @@ function NotFoundComponent() {
         </div>
       </section>
     </main>
-  );
-}
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
-  console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
-
-  return (
-    <PublicStateShell
-      role="alert"
-      title="頁面未能載入"
-      description="系統出現問題。您可以嘗試重新整理或返回主頁。"
-      action={
-        <div className="flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="btn-primary min-h-11 px-5"
-          >
-            重新整理
-          </button>
-          <Link to="/" className="btn-secondary min-h-11 px-5">
-            返回主頁
-          </Link>
-        </div>
-      }
-    />
   );
 }
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -147,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  errorComponent: RouteError,
 });
 
 function RootShell({ children }: { children: ReactNode }) {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { parseInternshipIntake } from "./internshipIntake";
 import { resolveAvailableShelter } from "./resolveInternshipShelter";
 import {
   VerifiedEmailSignIn,
@@ -75,8 +76,11 @@ export function InternshipForm() {
   const refresh = async () => setApplications((await post({ action: "mine" })).applications);
   useEffect(() => {
     void fetch("/api/internships")
-      .then((r) => r.json())
-      .then(setIntake)
+      .then(async (response) => {
+        const parsed = response.ok ? parseInternshipIntake(await response.json()) : null;
+        if (!parsed) throw new Error("Unexpected internship intake");
+        setIntake(parsed);
+      })
       .catch(() => setError("未能載入實習安排"));
   }, []);
   useEffect(() => {
@@ -315,8 +319,22 @@ export function InternshipForm() {
           )}
         </>
       )}
-      {error && <p role="alert">{error}</p>}
-      {notice && <p role="status">{notice}</p>}
+      {error && (
+        <p
+          role="alert"
+          className="rounded-lg border-l-4 border-[var(--color-error)] bg-[var(--color-error-highlight)] p-4 text-sm font-semibold text-[var(--color-error)]"
+        >
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p
+          role="status"
+          className="rounded-lg border-l-4 border-[var(--color-success)] bg-[var(--color-success-highlight)] p-4 text-sm font-semibold text-[var(--color-success)]"
+        >
+          {notice}
+        </p>
+      )}
     </section>
   );
 }
