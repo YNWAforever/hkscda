@@ -278,7 +278,7 @@ export function PolicySignup() {
     >
       <div className="volunteer-centre-heading">
         <div>
-          <p className="eyebrow">YOUR VOLUNTEER SPACE</p>
+          <p className="eyebrow">你的義工空間</p>
           <h2 id="verified-signup-title">我的義工中心</h2>
           <p>從第一次登記，到每一次服務，都在這裡。</p>
         </div>

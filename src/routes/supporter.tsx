@@ -1,3 +1,4 @@
+import { TaskPageHeader } from "../components/site/TaskPageHeader";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { pageHead } from "@/lib/pageHead";
@@ -158,10 +159,11 @@ export function SupporterPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-5 py-12">
-      <h1 className="text-3xl font-semibold">找回支持者紀錄</h1>
-      <p className="mt-4 text-[var(--color-text-muted)]">
-        使用電郵驗證身份，以找回領養、助養及收條紀錄。如該電郵有關聯紀錄，請查看收件匣及垃圾郵件；我們不會在此頁確認帳戶是否存在。
-      </p>
+      <TaskPageHeader kicker="支持者紀錄" title="找回支持者紀錄">
+        <p>
+          使用電郵驗證身份，以找回領養、助養及收條紀錄。如該電郵有關聯紀錄，請查看收件匣及垃圾郵件；我們不會在此頁確認帳戶是否存在。
+        </p>
+      </TaskPageHeader>
       {stage === "verified" ? (
         accessToken ? (
           <SupporterPortal accessToken={accessToken} />

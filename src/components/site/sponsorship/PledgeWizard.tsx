@@ -1,3 +1,4 @@
+import { TaskPageHeader } from "../TaskPageHeader";
 import { Link } from "@tanstack/react-router";
 import { Loader2, ReceiptText } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -32,7 +33,9 @@ const copy = {
   "zh-HK": {
     pledgeEyebrow: "動物助養",
     pledgeTitle: "確認助養承諾",
-    empty: "您尚未選擇任何助養動物。",
+    empty: "尚未選擇助養動物",
+    emptyHint: "先在助養區揀選想支持的動物，再回到這裏確認每月助養金額。",
+    browseSponsors: "瀏覽助養動物",
     backToSponsors: "返回助養區",
     tierTitle: "每月助養金額",
     customAmount: "自訂金額",
@@ -71,6 +74,9 @@ const copy = {
     pledgeEyebrow: "Animal Sponsorship",
     pledgeTitle: "Confirm Your Sponsorship Pledge",
     empty: "You have not selected any sponsor animals yet.",
+    emptyHint:
+      "Choose the animals you would like to support first, then come back to confirm a monthly amount.",
+    browseSponsors: "Browse sponsor animals",
     backToSponsors: "Back to sponsorship",
     tierTitle: "Monthly sponsorship amount",
     customAmount: "Custom amount",
@@ -406,10 +412,12 @@ export function PledgeWizard() {
 
   if (sponsorshipItems.length === 0 && !result) {
     return (
-      <main className="max-w-2xl mx-auto px-4 py-16 text-center space-y-4">
-        <h1 className="font-display text-2xl font-bold text-[var(--color-panel)]">{t.empty}</h1>
-        <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
-          ← {t.backToSponsors}
+      <main className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <TaskPageHeader kicker={t.pledgeEyebrow} title={t.empty} align="center">
+          <p>{t.emptyHint}</p>
+        </TaskPageHeader>
+        <Link to="/sponsors" className="btn-primary min-h-11 px-6">
+          {t.browseSponsors}
         </Link>
       </main>
     );
@@ -433,22 +441,21 @@ export function PledgeWizard() {
             ? "首月及其後每月支持按職員核實安排處理，不會自動扣款。更改或停止請附參考編號電郵 info@hkscda.com。"
             : "Staff will confirm first and later monthly payments; no automatic charge. Email info@hkscda.com with your reference to change or stop."}
         </p>
-        <a href={result.statusUrl} className="text-[var(--color-primary)] underline">
-          {t.viewStatus}
-        </a>
-        <Link to="/sponsors" className="text-[var(--color-primary)] hover:underline">
-          ← {t.backToSponsors}
-        </Link>
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
+          <a href={result.statusUrl} className="btn-primary min-h-11 px-6">
+            {t.viewStatus}
+          </a>
+          <Link to="/sponsors" className="btn-secondary min-h-11 px-6">
+            {t.backToSponsors}
+          </Link>
+        </div>
       </main>
     );
   }
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <p className="text-sm font-semibold text-[var(--color-primary)]">{t.pledgeEyebrow}</p>
-        <h1 className="text-3xl font-bold text-[var(--color-panel)]">{t.pledgeTitle}</h1>
-      </div>
+      <TaskPageHeader kicker={t.pledgeEyebrow} title={t.pledgeTitle} />
       {error && (
         <div
           ref={errorSummaryRef}

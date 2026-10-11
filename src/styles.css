@@ -105,6 +105,15 @@
   --color-dog-bg: #f0f2ef;
   --color-chart-series-1: #2f6f84;
   --color-chart-series-2: #66734f;
+  /* The approved radius set is 8px, 16px and pill. Inside the public shell the
+     Tailwind radius scale collapses onto it, so rounded-sm/md/lg (controls,
+     inputs, chips) are 8px and rounded-xl/2xl (cards, panels) are 16px, without
+     touching the admin surface, which keeps the default scale. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1rem;
   --public-radius-sm: 0.5rem;
   --public-radius: 1rem;
   --public-radius-lg: 1.5rem;
@@ -201,6 +210,12 @@
   color: var(--color-text);
   background: var(--color-bg);
   padding-bottom: var(--public-content-bottom-offset, 0px);
+}
+
+/* The bare `rounded` utility is a literal 4px rather than a token; on public
+   pages it joins the same 8px control radius as rounded-sm/md/lg. */
+.site-shell .rounded {
+  border-radius: var(--radius-sm);
 }
 
 /* With a footer present, the footer carries the fixed-action clearance itself,

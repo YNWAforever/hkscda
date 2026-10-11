@@ -1694,6 +1694,14 @@
     opacity: 0;
   }
 
+  /* A printed page or saved PDF has no scrolling to reveal anything, so
+     content still waiting below the reader's scroll position prints as normal. */
+  @media print {
+    [data-reveal-state="pending"] {
+      opacity: 1;
+    }
+  }
+
   [data-reveal-state="shown"] {
     animation: reveal-rise 640ms var(--public-ease-out) both;
     animation-delay: calc(var(--reveal-index, 0) * 80ms);
@@ -2534,7 +2542,7 @@
     }
 
     .brand-lockup small {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
     }
 
     .home-hero {
@@ -2596,7 +2604,7 @@
     }
 
     .hero-seal-core small {
-      font-size: 0.62rem;
+      font-size: 0.7rem;
     }
 
     .home-heading {
@@ -2848,6 +2856,69 @@
     content: "";
     mask-image: radial-gradient(circle, var(--color-text) 30%, transparent 70%);
     translate: 0 -50%;
+  }
+
+  .task-header {
+    margin: 0 0 32px;
+    padding-top: clamp(16px, 3vw, 32px);
+  }
+
+  .task-header-center {
+    text-align: center;
+  }
+
+  .task-header-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    color: var(--color-primary);
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+  }
+
+  .task-header-kicker::before {
+    width: 28px;
+    height: 2px;
+    flex: none;
+    border-radius: var(--public-radius-pill);
+    background: var(--color-secondary);
+    content: "";
+  }
+
+  .task-header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+  }
+
+  .task-header-lead {
+    display: grid;
+    gap: 8px;
+    max-width: 40em;
+    margin-top: 16px;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .task-header-center .task-header-lead {
+    margin-inline: auto;
+  }
+
+  .task-header-lead p {
+    margin: 0;
+  }
+
+  .volunteer-operations-public {
+    max-width: 960px;
+    padding-block: clamp(16px, 3vw, 40px) 64px;
+  }
+
+  .volunteer-operations-public h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
   }
 
   .not-found-hero {

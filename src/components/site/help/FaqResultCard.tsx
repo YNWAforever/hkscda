@@ -29,11 +29,11 @@ export function FaqResultCard({
   return (
     <article className="min-w-0 max-w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-[var(--color-primary-highlight)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-primary)]">
+        <span className="rounded-full bg-[var(--color-primary-highlight)] px-2.5 py-1 text-xs font-bold text-[var(--color-primary)]">
           {text.categoryLabel}
         </span>
         {faq.sensitive && (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--color-text-muted)]">
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--color-text-muted)]">
             <BadgeInfo className="h-3 w-3" aria-hidden="true" />
             {language === "zh-HK" ? "固定審批答案" : "Approved answer"}
           </span>
