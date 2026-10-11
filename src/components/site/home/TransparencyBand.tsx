@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 import { brand } from "../../../lib/brand/brand";
+import { revealOrder } from "../revealOnScroll";
 
 /**
  * Ported from hkscdagpt app/page.tsx (transparency-section). Every figure in the
@@ -11,13 +13,14 @@ export function TransparencyBand() {
   return (
     <section className="section transparency-section" aria-labelledby="transparency-title">
       <div className="public-container transparency-grid">
-        <div className="transparency-copy">
-          <p className="eyebrow eyebrow-light">透明與問責</p>
+        <div className="transparency-copy" data-reveal>
+          <p className="home-kicker home-kicker-inverse">透明與問責</p>
           <h2 id="transparency-title">善意需要信任，信任需要資料。</h2>
           <p>查看協會的年報、審計與工作成效；如需核實捐助、領養或求助安排，可直接聯絡團隊。</p>
           <div className="transparency-actions">
-            <Link className="button button-light" to="/report/audit">
+            <Link className="button button-light button-arrow" to="/report/audit">
               查看年報及審計
+              <ArrowRight aria-hidden="true" />
             </Link>
             <Link className="text-link text-link-light" to="/report/adoption">
               領養工作成效 <span aria-hidden="true">→</span>
@@ -27,7 +30,7 @@ export function TransparencyBand() {
             </a>
           </div>
         </div>
-        <aside className="trust-panel" aria-label="協會資料">
+        <aside className="trust-panel" aria-label="協會資料" data-reveal style={revealOrder(1)}>
           <dl>
             <div>
               <dt>成立</dt>

@@ -16,7 +16,7 @@ export function RescueMap({ points, apiKey }: RescueMapProps) {
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
             <MapPinned className="h-4 w-4" aria-hidden="true" />
-            Rescue Map
+            救援足跡
           </div>
           <h2 className="font-display text-3xl font-bold text-[var(--color-panel)]">
             公開救援地圖

@@ -32,6 +32,13 @@ describe("Footer navigation", () => {
     expect(html).toContain("public-footer-link");
   });
 
+  test("closes every page on the core message and its two actions", async () => {
+    const html = await markup();
+    expect(html).toContain("支持領養");
+    expect(html).toContain("等於拯救生命。");
+    expect(html).toMatch(/footer-statement[\s\S]*href="\/animals\/cat"[\s\S]*href="\/donate"/);
+  });
+
   test("marks itself inert-able for the mobile drawer", async () => {
     // The header sets [inert] on [data-site-footer] while the drawer is open.
     expect(await markup()).toContain("data-site-footer");

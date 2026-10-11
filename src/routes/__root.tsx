@@ -4,72 +4,60 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
-  useRouter,
   useRouterState,
   HeadContent,
   Scripts,
-  type ErrorComponentProps,
 } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { HelpWidget } from "../components/site/help/HelpWidget";
-import { PublicStateShell } from "../components/site/PublicStateShell";
+import { RouteError } from "../components/site/RouteError";
 import { ShortlistProvider } from "../components/site/ShortlistProvider";
 import { ShortlistTray } from "../components/site/ShortlistTray";
 import { PublicFixedActionsProvider } from "../components/site/fixedActions/PublicFixedActions";
 import { ContextualDonationPrompt } from "../components/site/donations/ContextualDonationPrompt";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { organizationSchema, websiteSchema } from "../lib/schema";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
     <main>
-      <PublicStateShell
-        title="找不到頁面"
-        description="您要找的頁面不存在或已移動。"
-        action={
-          <Link to="/" className="btn-primary min-h-11 px-5">
-            返回主頁
-          </Link>
-        }
-      />
-    </main>
-  );
-}
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
-  console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
-
-  return (
-    <PublicStateShell
-      role="alert"
-      title="頁面未能載入"
-      description="系統出現問題。您可以嘗試重新整理或返回主頁。"
-      action={
-        <div className="flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="btn-primary min-h-11 px-5"
-          >
-            重新整理
-          </button>
-          <Link to="/" className="btn-secondary min-h-11 px-5">
-            返回主頁
-          </Link>
+      <section className="page-hero not-found-hero" aria-labelledby="not-found-title">
+        <div className="public-container page-hero-grid">
+          <div className="page-hero-copy">
+            <p className="eyebrow">404 · 找不到頁面</p>
+            <h1 id="not-found-title">這一頁走失了。</h1>
+            <p>您要找的頁面不存在或已移動。可以由主頁重新開始，或直接前往以下常用頁面。</p>
+            <div className="hero-actions">
+              <Link to="/" className="button button-primary">
+                返回主頁
+              </Link>
+              <Link to="/help" className="button button-secondary">
+                求助及常見問題
+              </Link>
+            </div>
+            <nav className="next-step-links not-found-links" aria-label="常用頁面">
+              <Link className="pill-link" to="/animals/cat">
+                <span>待領養貓貓</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link className="pill-link" to="/animals/dog">
+                <span>待領養狗狗</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link className="pill-link" to="/donate">
+                <span>支持救援</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </nav>
+          </div>
         </div>
-      }
-    />
+      </section>
+    </main>
   );
 }
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -124,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  errorComponent: RouteError,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -149,6 +137,15 @@ function RootComponent() {
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
   const isAdoptionWizard = /^\/adoption\/apply\/?$/.test(location.pathname);
+  // The pledge form lists the selection itself; the tray's 開始助養 would only
+  // repeat it and cover the form's own submit button on a phone.
+  const isSponsorPledge = /^\/sponsors\/pledge\/?$/.test(location.pathname);
+  // Task pages (an application, a pledge, a donation, a status lookup) keep the
+  // footer links but drop its closing statement and calls to action, which
+  // would only pull someone away from a form they are part-way through.
+  const isFocusedFlow =
+    /^\/(adoption\/apply|sponsors\/pledge|donate)\/?$/.test(location.pathname) ||
+    location.pathname.includes("/status/");
   const analyticsPagePath = redactSensitivePagePath(location.pathname);
 
   useEffect(() => {
@@ -161,13 +158,13 @@ function RootComponent() {
   }, [analyticsPagePath]);
 
   const publicContent = (
-    <div className="site-shell min-h-dvh">
+    <div className="site-shell min-h-dvh" data-focused-flow={isFocusedFlow || undefined}>
       <Header />
       <div id="main-content" tabIndex={-1} data-site-content>
         <Outlet />
       </div>
       <Footer />
-      {isAdoptionWizard ? null : <ShortlistTray />}
+      {isAdoptionWizard || isSponsorPledge ? null : <ShortlistTray />}
       <ContextualDonationPrompt pathname={location.pathname} />
       <HelpWidget />
     </div>

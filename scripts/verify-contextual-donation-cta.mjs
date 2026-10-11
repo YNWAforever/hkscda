@@ -143,7 +143,7 @@ async function verifyRoutesAndHelp(browser) {
     await page.goto(`${baseUrl}/stories`, { waitUntil: "domcontentloaded" });
     await page.locator("main").waitFor({ state: "visible", timeout: 10_000 });
     await page.getByText("Public Stories", { exact: true }).waitFor({ state: "visible" });
-    await page.getByText("Rescue Map", { exact: true }).waitFor({ state: "visible" });
+    await page.getByText("救援足跡", { exact: true }).waitFor({ state: "visible" });
 
     await page.goto(`${baseUrl}/about`, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(10_500);

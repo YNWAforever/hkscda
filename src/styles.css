@@ -142,6 +142,11 @@
   --public-eyebrow-light: #a8deef;
   --public-handoff-actions: #b8e8f6;
   --public-home-hero: rgba(5, 100, 142, 0.15);
+  --public-hero-wash-blue: rgba(5, 100, 142, 0.09);
+  --public-hero-wash-magenta: rgba(166, 28, 86, 0.06);
+  --public-impact-wash: rgba(168, 222, 239, 0.16);
+  /* One easing for public motion: fast out, long settle. */
+  --public-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --public-on-dark-10: rgba(255, 255, 255, 0.1);
   --public-on-dark-12: rgba(255, 255, 255, 0.12);
   --public-on-dark-13: rgba(255, 255, 255, 0.13);
@@ -196,6 +201,13 @@
   color: var(--color-text);
   background: var(--color-bg);
   padding-bottom: var(--public-content-bottom-offset, 0px);
+}
+
+/* With a footer present, the footer carries the fixed-action clearance itself,
+   so the space below the last link keeps the footer's background instead of
+   showing a band of page colour. */
+.site-shell:has([data-site-footer]) {
+  padding-bottom: 0;
 }
 
 .admin-shell {
@@ -331,6 +343,19 @@
 .site-shell .btn-primary:hover,
 .site-shell .btn-secondary:hover {
   transform: translateY(-2px);
+}
+
+/* On public pages the secondary action is the blue outline, the same as the
+   home page's .button-secondary. Magenta stays reserved for support and urgent
+   actions (docs/brand-guidelines.md), so a second action no longer reads as a
+   donation prompt. */
+.site-shell .btn-secondary {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.site-shell .btn-secondary:hover {
+  background: var(--color-primary-highlight);
 }
 
 @utility btn-accent {
@@ -504,7 +529,47 @@
 .public-animal-card:hover {
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   box-shadow: var(--public-shadow-raised);
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+}
+
+.public-animal-card .animal-profile-photo-card img {
+  transition: scale 700ms var(--public-ease-out, ease);
+}
+
+.public-animal-card:hover .animal-profile-photo-card img {
+  scale: 1.04;
+}
+
+/* On cards the facts read as a row of chips: each value already says what it
+   is (母, 約 3 個月, 已絕育, 適合新手), so the visible labels only made the card
+   taller than its photograph. The labels stay in the markup for screen readers;
+   the detail page keeps the labelled grid. */
+.public-animal-card .animal-profile-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.public-animal-card .animal-profile-facts > div {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--public-radius-pill);
+  background: var(--color-surface-offset);
+}
+
+.public-animal-card .animal-profile-facts dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.public-animal-card .animal-profile-facts dd {
+  font-size: 0.8125rem;
 }
 
 .public-route-card {
@@ -846,9 +911,13 @@
 }
 .animal-profile-photo-detail {
   width: 100%;
-  max-width: 400px;
-  height: 280px;
+  height: auto;
+  aspect-ratio: auto;
+  flex: none;
   min-height: 0;
+  overflow: visible;
+  border-radius: 0;
+  background: none;
 }
 .animal-profile-photo-detail .detail-image-fallback {
   min-height: 0;
@@ -921,6 +990,24 @@
 
 .animal-profile-photo-empty small {
   font: inherit;
+}
+
+.animal-profile-photo-empty strong {
+  max-width: 90%;
+  overflow: hidden;
+  color: var(--color-primary-hover);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.animal-profile-photo-detail .animal-profile-photo-empty strong {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.animal-profile-photo-empty svg + strong {
+  margin-top: 4px;
 }
 
 .animal-listing-hero .page-hero-grid {

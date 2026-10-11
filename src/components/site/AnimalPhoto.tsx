@@ -66,6 +66,9 @@ export function AnimalPhoto({
           }
         >
           <Icon aria-hidden="true" />
+          {/* The name is already the card or page heading; here it only keeps
+              the placeholder from reading as an empty square. */}
+          <strong aria-hidden="true">{animal.name}</strong>
           <small>暫未有相片</small>
         </div>
       )}

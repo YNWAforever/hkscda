@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 import { AnimalCard } from "../AnimalCard";
 import { PublicStateShell } from "../PublicStateShell";
+import { revealOrder } from "../revealOnScroll";
+import { HomeSectionHeading } from "./HomeSectionHeading";
 import type { Animal } from "../../../types/animal";
 
 /**
@@ -23,18 +26,24 @@ export function FeaturedAnimals({
       aria-labelledby="featured-title"
     >
       <div className="public-container">
-        <div className="section-heading split-heading">
-          <div>
-            <p className="eyebrow">等待一個家</p>
-            <h2 id="featured-title">先了解牠，再開始領養。</h2>
-          </div>
-          <p>每張動物卡只顯示已公開資料；相片、狀態與內容均以協會最新發佈記錄為準。</p>
-        </div>
+        <HomeSectionHeading
+          id="featured-title"
+          kicker="等待一個家"
+          title="先了解牠，再開始領養。"
+          lead="每張動物卡只顯示已公開資料；相片、狀態與內容均以協會最新發佈記錄為準。"
+        />
 
         {animals.length ? (
           <div className="animal-grid home-animal-grid">
             {animals.map((animal, index) => (
-              <AnimalCard key={animal.id} animal={animal} priority={index === 0} />
+              <div
+                key={animal.id}
+                className="home-animal-cell"
+                data-reveal
+                style={revealOrder(index)}
+              >
+                <AnimalCard animal={animal} priority={index === 0} />
+              </div>
             ))}
           </div>
         ) : (
@@ -54,12 +63,14 @@ export function FeaturedAnimals({
           />
         )}
 
-        <div className="section-actions">
-          <Link className="text-link" to="/animals/cat">
-            查看全部貓隻 <span aria-hidden="true">→</span>
+        <div className="section-actions home-species-links">
+          <Link className="pill-link" to="/animals/cat">
+            <span>查看全部貓隻</span>
+            <ArrowRight aria-hidden="true" />
           </Link>
-          <Link className="text-link" to="/animals/dog">
-            查看全部狗隻 <span aria-hidden="true">→</span>
+          <Link className="pill-link" to="/animals/dog">
+            <span>查看全部狗隻</span>
+            <ArrowRight aria-hidden="true" />
           </Link>
         </div>
       </div>
