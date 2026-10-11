@@ -16,13 +16,13 @@ export function KnowledgeGrid({ posts }: { posts: KnowledgePost[] }) {
   if (visiblePosts.length === 0) {
     return (
       <p className="rounded-lg border border-[var(--color-border)] p-6 text-[var(--color-text-muted)]">
-        No knowledge resources are published yet.
+        暫未有已發佈的飼養知識資源。
       </p>
     );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Knowledge resources">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="飼養知識資源">
       {visiblePosts.map((post) => (
         <article
           key={post.id}
@@ -36,7 +36,7 @@ export function KnowledgeGrid({ posts }: { posts: KnowledgePost[] }) {
             <p className="text-sm leading-6 text-[var(--color-text-muted)]">{post.shortIntro}</p>
             {post.sourceName ? (
               <p className="text-xs font-semibold text-[var(--color-text-muted)]">
-                Source: {post.sourceName}
+                資料來源：{post.sourceName}
               </p>
             ) : null}
           </div>

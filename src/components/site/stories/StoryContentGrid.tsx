@@ -36,7 +36,7 @@ export function StoryContentGrid({ items }: StoryContentGridProps) {
       <div className="container-wide space-y-5">
         <div>
           <div className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">
-            Promotion Center
+            最新動態
           </div>
           <h2 className="mt-2 font-display text-3xl font-bold text-[var(--color-panel)]">
             活動、義賣與報告

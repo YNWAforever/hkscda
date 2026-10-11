@@ -345,6 +345,19 @@
   transform: translateY(-2px);
 }
 
+/* On public pages the secondary action is the blue outline, the same as the
+   home page's .button-secondary. Magenta stays reserved for support and urgent
+   actions (docs/brand-guidelines.md), so a second action no longer reads as a
+   donation prompt. */
+.site-shell .btn-secondary {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.site-shell .btn-secondary:hover {
+  background: var(--color-primary-highlight);
+}
+
 @utility btn-accent {
   display: inline-flex;
   min-height: 44px;
@@ -898,9 +911,13 @@
 }
 .animal-profile-photo-detail {
   width: 100%;
-  max-width: 400px;
-  height: 280px;
+  height: auto;
+  aspect-ratio: auto;
+  flex: none;
   min-height: 0;
+  overflow: visible;
+  border-radius: 0;
+  background: none;
 }
 .animal-profile-photo-detail .detail-image-fallback {
   min-height: 0;
@@ -973,6 +990,24 @@
 
 .animal-profile-photo-empty small {
   font: inherit;
+}
+
+.animal-profile-photo-empty strong {
+  max-width: 90%;
+  overflow: hidden;
+  color: var(--color-primary-hover);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.animal-profile-photo-detail .animal-profile-photo-empty strong {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.animal-profile-photo-empty svg + strong {
+  margin-top: 4px;
 }
 
 .animal-listing-hero .page-hero-grid {

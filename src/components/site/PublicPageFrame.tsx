@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
 
 export type PublicPageAction = {
@@ -207,17 +208,20 @@ export function PublicPageFrame({
             <p className="eyebrow">下一步</p>
             <h2>選擇適合你的參與方式。</h2>
           </div>
-          <div className="section-actions">
-            <Link className="text-link" to="/animals/cat">
-              尋找領養動物 <span aria-hidden="true">→</span>
+          <nav className="next-step-links" aria-label="下一步">
+            <Link className="pill-link" to="/animals/cat">
+              <span>尋找領養動物</span>
+              <ArrowRight aria-hidden="true" />
             </Link>
-            <Link className="text-link" to="/volunteer">
-              成為義工 <span aria-hidden="true">→</span>
+            <Link className="pill-link" to="/volunteer">
+              <span>成為義工</span>
+              <ArrowRight aria-hidden="true" />
             </Link>
-            <Link className="text-link" to="/donate">
-              支持救援 <span aria-hidden="true">→</span>
+            <Link className="pill-link" to="/donate">
+              <span>支持救援</span>
+              <ArrowRight aria-hidden="true" />
             </Link>
-          </div>
+          </nav>
         </div>
       </section>
     </main>

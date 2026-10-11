@@ -64,11 +64,11 @@ export function FeaturedAnimals({
         )}
 
         <div className="section-actions home-species-links">
-          <Link className="home-species-link" to="/animals/cat">
+          <Link className="pill-link" to="/animals/cat">
             <span>查看全部貓隻</span>
             <ArrowRight aria-hidden="true" />
           </Link>
-          <Link className="home-species-link" to="/animals/dog">
+          <Link className="pill-link" to="/animals/dog">
             <span>查看全部狗隻</span>
             <ArrowRight aria-hidden="true" />
           </Link>

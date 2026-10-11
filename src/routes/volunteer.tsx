@@ -2,7 +2,17 @@ import "../components/site/volunteer/volunteer-centre.css";
 import { PolicySignup } from "../components/site/volunteer/PolicySignup";
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
-import { CalendarDays, Cat, Dog, Heart, House, Scissors, UserPlus, Users } from "lucide-react";
+import {
+  CalendarDays,
+  Cat,
+  ChevronDown,
+  Dog,
+  Heart,
+  House,
+  Scissors,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 import { PublicFormFrame } from "../components/site/PublicFormFrame";
 const volunteerRoles = [
@@ -82,34 +92,47 @@ export function VolunteerPage() {
 function VolunteerDirectoryPage() {
   return (
     <>
-      <section className="public-container py-10 space-y-5">
-        <p className="eyebrow">一起照顧貓狗</p>
-        <h1>加入義工團隊</h1>
-        <p>選擇合適的服務時間，一起為等待家的貓狗出一分力。</p>
-        <div className="flex flex-wrap gap-3">
-          <a className="btn-primary" href="#volunteer-centre">
-            <CalendarDays size={18} />
-            瀏覽服務場次
-          </a>
-          <a className="btn-secondary" href="#volunteer-login">
-            首次參與：登記身份
-          </a>
-          <a className="btn-secondary" href="#volunteer-login">
-            已有義工身份：登入
-          </a>
-          <a className="btn-secondary" href="/volunteer/group">
-            <Users size={18} />
-            團體服務查詢
-          </a>
+      <section className="page-hero" aria-labelledby="volunteer-title">
+        <div className="public-container page-hero-grid">
+          <div className="page-hero-copy">
+            <p className="eyebrow">一起照顧貓狗</p>
+            <h1 id="volunteer-title">加入義工團隊</h1>
+            <p>選擇合適的服務時間，一起為等待家的貓狗出一分力。</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="#volunteer-centre">
+                <CalendarDays size={18} aria-hidden="true" />
+                瀏覽服務場次
+              </a>
+              <a className="button button-secondary" href="#volunteer-login">
+                首次參與：登記身份
+              </a>
+            </div>
+            <div className="volunteer-hero-links">
+              <a className="text-link" href="#volunteer-login">
+                已有義工身份：登入 <span aria-hidden="true">→</span>
+              </a>
+              <a className="text-link" href="/volunteer/group">
+                <Users size={18} aria-hidden="true" />
+                團體服務查詢 <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
-      <PolicySignup />
-      <details className="public-container py-8">
-        <summary>了解義工服務類別</summary>
-        <div className="grid gap-4 md:grid-cols-3">
+      <div className="public-container">
+        <PolicySignup />
+      </div>
+      <details className="public-container volunteer-roles">
+        <summary>
+          了解義工服務類別
+          <ChevronDown aria-hidden="true" />
+        </summary>
+        <div className="volunteer-role-grid">
           {volunteerRoles.map(({ Icon, title, desc }) => (
-            <article key={title}>
-              <Icon />
+            <article key={title} className="volunteer-role-card">
+              <span className="volunteer-role-icon" aria-hidden="true">
+                <Icon />
+              </span>
               <h2>{title}</h2>
               <p>{desc}</p>
             </article>

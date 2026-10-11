@@ -115,6 +115,16 @@
     max-width: 720px;
   }
 
+  /* Inside the public shell, the older container-wide utility sits on the same
+     grid as .public-container. It was a 1200px box with its own padding (often
+     re-padded by px-4 sm:px-6 lg:px-8), so those sections started 24-32px
+     inside the hero and the home bands on every wide screen. */
+  .container-wide {
+    width: min(1200px, calc(100% - 48px));
+    max-width: none;
+    padding-inline: 0;
+  }
+
   .section {
     padding: 96px 0;
   }
@@ -136,20 +146,39 @@
     color: var(--public-eyebrow-light);
   }
 
-  h1,
-  h2,
-  h3,
-  p {
-    overflow-wrap: break-word;
-  }
+  /* Element defaults sit in the base layer. Unlayered, they outranked every
+     Tailwind utility, so a heading's own text-lg / text-2xl / mt-3 was
+     silently replaced by the section-display size (a privacy-policy clause
+     title rendered at 49px). Component rules in this file stay unlayered and
+     still win; utilities on a heading now win over these defaults. */
+  @layer base {
+    h1,
+    h2,
+    h3,
+    p {
+      overflow-wrap: break-word;
+    }
 
-  h1,
-  h2,
-  h3 {
-    margin-top: 0;
-    line-height: 1.18;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    h1 {
+      font-size: clamp(2.45rem, 5.2vw, 5rem);
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3.4vw, 3.6rem);
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
   }
 
   /* Display headings break at punctuation and spaces, never between two
@@ -166,18 +195,6 @@
 
   main [id] {
     scroll-margin-top: 96px;
-  }
-
-  h1 {
-    font-size: clamp(2.45rem, 5.2vw, 5rem);
-  }
-
-  h2 {
-    font-size: clamp(2rem, 3.4vw, 3.6rem);
-  }
-
-  h3 {
-    font-size: 1.25rem;
   }
 
   .section-heading {
@@ -672,11 +689,22 @@
   }
 
   .drawer-footer {
+    display: grid;
     flex: 0 0 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
     padding: 14px 20px max(16px, env(safe-area-inset-bottom));
     border-top: 1px solid var(--color-border);
     background: var(--color-bg);
     box-shadow: 0 -10px 24px var(--public-bar-shadow-color);
+  }
+
+  /* Both drawer actions take an equal half, so neither reads as an
+     afterthought to the other. */
+  .drawer-footer > a {
+    width: 100%;
+    min-height: 52px;
+    padding-inline: 12px;
   }
 
   .drawer-donate {
@@ -1274,7 +1302,7 @@
     margin-top: 40px;
   }
 
-  .home-species-link {
+  .pill-link {
     display: inline-flex;
     min-height: 52px;
     align-items: center;
@@ -1289,7 +1317,7 @@
       box-shadow 320ms ease;
   }
 
-  .home-species-link svg {
+  .pill-link svg {
     width: 38px;
     height: 38px;
     padding: 10px;
@@ -1301,12 +1329,12 @@
       background 320ms ease;
   }
 
-  .home-species-link:hover {
+  .pill-link:hover {
     border-color: var(--color-primary);
     box-shadow: var(--public-shadow-soft);
   }
 
-  .home-species-link:hover svg {
+  .pill-link:hover svg {
     background: var(--color-secondary);
     translate: 3px 0;
   }
@@ -2082,18 +2110,44 @@
     grid-row: 1;
   }
 
+  /* The portrait leads the detail page at the column's full width; approved
+     gallery photos follow as a row of thumbnails rather than being clipped
+     inside the portrait's 4:3 box. */
   .detail-gallery {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .detail-gallery > img,
+  .detail-gallery > .detail-image-fallback {
+    grid-column: 1 / -1;
+    width: 100%;
     aspect-ratio: 4 / 3;
     border-radius: var(--public-radius);
-    background: var(--color-primary-highlight);
     box-shadow: var(--public-shadow-raised);
-    overflow: hidden;
+    object-fit: cover;
   }
 
   .detail-gallery > img {
+    background: var(--color-primary-highlight);
+  }
+
+  .detail-gallery > figure {
+    margin: 0;
+  }
+
+  .detail-gallery > figure img {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--public-radius-sm);
     object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .detail-gallery > img {
+      animation: hero-rise 560ms var(--public-ease-out) both;
+    }
   }
 
   .detail-image-fallback strong {
@@ -2118,6 +2172,12 @@
   .detail-disclosure h2 {
     margin-bottom: 14px;
     font-size: 2rem;
+  }
+
+  /* Profile sections answer one question each (性格, 照顧與健康需要) in a line
+     or two; they sit a step below the page's own section heading. */
+  .animal-profile-story h2 {
+    font-size: 1.375rem;
   }
 
   .detail-story > p:not(.eyebrow),
@@ -2460,15 +2520,31 @@
       padding-top: 0;
     }
 
+    /* One column: the animal's photograph first, then its name, facts and
+       shortlist action, then the profile sections. The wrapper around the
+       photo and sections is flattened so the panel can sit between them. */
+    .detail-grid {
+      row-gap: 0;
+    }
+
     .detail-panel {
       position: static;
+      grid-row: auto;
       grid-column: 1;
-      grid-row: 1;
+      margin-bottom: 8px;
     }
 
     .detail-main {
-      grid-column: 1;
-      grid-row: 2;
+      display: contents;
+    }
+
+    .detail-main > * {
+      order: 1;
+    }
+
+    .detail-main > .detail-gallery {
+      order: -1;
+      margin-bottom: 24px;
     }
 
     .handoff-note {
@@ -2491,6 +2567,7 @@
 
   @media (max-width: 640px) {
     .public-container,
+    .container-wide,
     .header-shell {
       width: min(100% - 32px, 1200px);
     }
@@ -2582,7 +2659,7 @@
       margin-bottom: 32px;
     }
 
-    .home-species-link {
+    .pill-link {
       width: 100%;
       justify-content: space-between;
     }
@@ -2673,7 +2750,8 @@
       font-size: clamp(2.2rem, 12vw, 2.6rem);
     }
 
-    .detail-gallery {
+    .detail-gallery > img,
+    .detail-gallery > .detail-image-fallback {
       aspect-ratio: 1 / 1;
     }
 
@@ -2711,7 +2789,6 @@
       grid-template-columns: 1fr;
     }
 
-    .fact-list div,
     .opportunity-card dl div,
     .page-context-panel dl div,
     .trust-panel dl div {
@@ -2720,9 +2797,23 @@
       gap: 4px;
     }
 
-    .fact-list dd,
     .opportunity-card dd,
     .trust-panel dd {
+      text-align: left;
+    }
+  }
+
+  /* The animal fact list keeps label and value on one row down to 360px (the
+     values are short: C01, 已絕育, 約 3 個月); stacking them at 390px doubled
+     the panel's height on the most common phone width. */
+  @media (max-width: 359px) {
+    .fact-list div {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .fact-list dd {
       text-align: left;
     }
   }
@@ -2787,6 +2878,127 @@
     color: var(--color-primary-hover);
     font-size: 0.74rem;
     font-weight: 800;
+  }
+
+  /* A hero with no photograph keeps its right half from reading as empty: a
+     quiet ripple of rings, the same line weight as the home hero's circle. */
+  .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .page-hero:not(:has(.page-hero-photo))::after {
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    right: -160px;
+    width: 640px;
+    height: 640px;
+    border-radius: 50%;
+    background: repeating-radial-gradient(
+      circle,
+      transparent 0 71px,
+      var(--public-home-hero) 71px 72px
+    );
+    content: "";
+    mask-image: radial-gradient(circle, var(--color-text) 30%, transparent 70%);
+    translate: 0 -50%;
+  }
+
+  .volunteer-hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin-top: 12px;
+  }
+
+  .volunteer-roles {
+    padding-block: 32px 64px;
+  }
+
+  .volunteer-roles summary {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--public-radius-pill);
+    background: var(--color-surface);
+    cursor: pointer;
+    font-weight: 800;
+    list-style: none;
+  }
+
+  .volunteer-roles summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .volunteer-roles summary svg {
+    width: 18px;
+    height: 18px;
+    transition: rotate 320ms var(--public-ease-out);
+  }
+
+  .volunteer-roles[open] summary svg {
+    rotate: 180deg;
+  }
+
+  .volunteer-role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .volunteer-role-card {
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--public-radius);
+    background: var(--color-surface);
+  }
+
+  .volunteer-role-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-primary-highlight);
+    color: var(--color-primary);
+  }
+
+  .volunteer-role-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .volunteer-role-card h2 {
+    margin: 20px 0 8px;
+    font-size: 1.25rem;
+  }
+
+  .volunteer-role-card p {
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.75;
+  }
+
+  @media (max-width: 900px) {
+    .page-hero:not(:has(.page-hero-photo))::after {
+      display: none;
+    }
+
+    .volunteer-role-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .volunteer-role-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   /* Inner pages share the home hero's family: the same ruled kicker, the same
@@ -3033,6 +3245,29 @@
   .next-step-shell h2 {
     margin-bottom: 0;
     font-size: clamp(1.8rem, 3vw, 2.8rem);
+  }
+
+  .next-step-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .next-step-shell .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+  }
+
+  .next-step-shell .eyebrow::before {
+    width: 28px;
+    height: 2px;
+    border-radius: var(--public-radius-pill);
+    background: var(--color-secondary);
+    content: "";
   }
 
   .compact-collection-hero {

@@ -63,7 +63,7 @@ describe("KnowledgeGrid", () => {
     expect(markup).toContain("HK01 pet care guide");
     expect(markup).toContain("10Life pet insurance comparison");
     expect(markup).toContain("What you need to know after adoption");
-    expect(markup).toContain("Source: HK01");
+    expect(markup).toContain("資料來源：HK01");
     expect(markup).toContain("下載 PDF / Download PDF");
     expect(markup).toContain("了解更多 / Read More");
     expect(markup).toContain('target="_blank"');
