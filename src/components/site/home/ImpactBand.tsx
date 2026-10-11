@@ -1,4 +1,7 @@
 import type { PublicImpactItem } from "../../../lib/animals/publicImpact";
+import { revealOrder } from "../revealOnScroll";
+
+const numberFormat = new Intl.NumberFormat("zh-HK");
 
 function formatDate(value: string | null) {
   if (!value) return null;
@@ -25,22 +28,29 @@ export function ImpactBand({ items, asOf }: { items: PublicImpactItem[]; asOf: s
   return (
     <section className="impact-section" aria-labelledby="impact-title">
       <div className="public-container impact-shell">
-        <div>
-          <p className="eyebrow eyebrow-light">公開數據</p>
+        <div className="impact-intro" data-reveal>
+          <p className="home-kicker home-kicker-inverse">公開數據</p>
           <h2 id="impact-title">看得見的工作，查得到的資料。</h2>
         </div>
         {items.length && asOfLabel ? (
           <div className="impact-data">
-            {items.map((item) => (
-              <div key={item.label}>
-                <strong>{item.value}</strong>
-                <span>{item.label}</span>
-              </div>
-            ))}
-            <p>資料截至 {asOfLabel}</p>
+            <dl>
+              {items.map((item, index) => (
+                <div key={item.label} data-reveal style={revealOrder(index)}>
+                  <dt>{item.label}</dt>
+                  <dd>
+                    <span className="impact-figure">{numberFormat.format(item.value)}</span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p>
+              <span className="impact-live" aria-hidden="true" />
+              資料截至 {asOfLabel}
+            </p>
           </div>
         ) : (
-          <div className="impact-unavailable">
+          <div className="impact-unavailable" data-reveal>
             <strong>暫未發佈</strong>
             <p>即時數據接駁完成前，不會以零值、舊數字或估算數字代替。</p>
           </div>

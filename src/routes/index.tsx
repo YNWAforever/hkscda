@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useRef } from "react";
 import { publicUrl } from "@/lib/publicOrigin";
 
 import { HomeHero } from "../components/site/home/HomeHero";
@@ -9,6 +10,7 @@ import { AdoptionStepsBand } from "../components/site/home/AdoptionStepsBand";
 import { FeaturedStory } from "../components/site/home/FeaturedStory";
 import { HelpCards } from "../components/site/home/HelpCards";
 import { TransparencyBand } from "../components/site/home/TransparencyBand";
+import { useRevealOnScroll } from "../components/site/revealOnScroll";
 import { getPublicAnimalListing } from "../lib/animals/publicListing.functions";
 import { getPublicImpactItems } from "../lib/animals/publicImpact.functions";
 import { getFeaturedPublicStory } from "../lib/content/publicStoriesPage.functions";
@@ -78,9 +80,11 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { featuredAnimals, animalLoadFailed, impact, featuredStory } = Route.useLoaderData();
+  const mainRef = useRef<HTMLElement>(null);
+  useRevealOnScroll(mainRef);
 
   return (
-    <main>
+    <main ref={mainRef} className="home-main">
       <HomeHero />
       <FeaturedAnimals animals={featuredAnimals} loadFailed={animalLoadFailed} />
       <ImpactBand items={impact.items} asOf={impact.asOf} />

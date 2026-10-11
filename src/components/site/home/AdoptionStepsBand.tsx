@@ -1,4 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+
+import { revealOrder } from "../revealOnScroll";
+import { HomeSectionHeading } from "./HomeSectionHeading";
 
 const STEPS: [string, string, string][] = [
   ["01", "瀏覽動物", "按種類與年齡了解目前公開的貓狗資料。"],
@@ -24,27 +28,28 @@ export function AdoptionStepsBand() {
   return (
     <section className="section steps-section" aria-labelledby="steps-title">
       <div className="public-container">
-        <div className="section-heading centered-heading">
-          <p className="eyebrow">領養流程一覽</p>
-          <h2 id="steps-title">由認識牠到接牠回家，四個步驟。</h2>
-          <p>
-            以下為簡要說明。正式申請包括家訪資料、相片上載及身分驗證；申請途中可儲存草稿，提交後亦可隨時查詢進度。
-          </p>
-        </div>
+        <HomeSectionHeading
+          id="steps-title"
+          kicker="領養流程一覽"
+          title="由認識牠到接牠回家，四個步驟。"
+          lead="以下為簡要說明。正式申請包括家訪資料、相片上載及身分驗證；申請途中可儲存草稿，提交後亦可隨時查詢進度。"
+          action={
+            <Link className="button button-primary button-arrow" to="/adoption/instructions">
+              了解完整領養流程
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          }
+        />
         <ol className="steps-grid">
-          {STEPS.map(([number, title, description]) => (
-            <li key={number}>
-              <span>{number}</span>
+          {STEPS.map(([number, title, description], index) => (
+            <li key={number} data-reveal style={revealOrder(index)}>
+              <span className="steps-marker" aria-hidden="true" />
+              <span className="steps-number">{number}</span>
               <h3>{title}</h3>
               <p>{description}</p>
             </li>
           ))}
         </ol>
-        <div className="center-action">
-          <Link className="button button-primary" to="/adoption/instructions">
-            了解完整領養流程
-          </Link>
-        </div>
       </div>
     </section>
   );

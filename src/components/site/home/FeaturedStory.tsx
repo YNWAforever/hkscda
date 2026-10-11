@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 import type { PublicStorySummary } from "../../../lib/content/publicStoriesPage.types";
 import fallbackImg from "@/assets/dog-recovering.jpg";
+import { revealOrder } from "../revealOnScroll";
 
 function formatDate(value: string | null) {
   if (!value) return null;
@@ -29,15 +31,17 @@ export function FeaturedStory({ story }: { story: PublicStorySummary | null }) {
   return (
     <section className="section story-section section-warm" aria-labelledby="story-title">
       <div className="public-container story-grid">
-        <div className="story-photo">
+        <figure className="story-photo" data-reveal>
           <img
             src={story?.coverImageUrl || fallbackImg}
             alt={story ? story.title : "接受照護、等待康復的獲救狗隻"}
             loading="lazy"
+            decoding="async"
           />
-        </div>
-        <div className="story-copy">
-          <p className="eyebrow">救援故事</p>
+          <figcaption>{story ? "精選救援故事" : "真實 HKSCDA 救援相片"}</figcaption>
+        </figure>
+        <div className="story-copy" data-reveal style={revealOrder(1)}>
+          <p className="home-kicker">救援故事</p>
           {story ? (
             <>
               <h2 id="story-title">{story.title}</h2>
@@ -47,8 +51,9 @@ export function FeaturedStory({ story }: { story: PublicStorySummary | null }) {
                 {region ? " · " + region : ""}
               </p>
               <div className="story-actions">
-                <Link className="button button-primary" to={"/stories/" + story.slug}>
+                <Link className="button button-primary button-arrow" to={"/stories/" + story.slug}>
                   閱讀故事
+                  <ArrowRight aria-hidden="true" />
                 </Link>
                 <Link className="text-link" to="/stories">
                   瀏覽故事庫 <span aria-hidden="true">→</span>
@@ -57,13 +62,16 @@ export function FeaturedStory({ story }: { story: PublicStorySummary | null }) {
             </>
           ) : (
             <>
-              <h2 id="story-title">暫未發佈精選故事。</h2>
+              <h2 id="story-title">每一隻獲救動物，都有自己的故事。</h2>
               <p className="story-summary">
-                故事庫暫未有可顯示的精選內容，因此保留真實救援相片與故事入口，不以示例個案代替真實經歷。
+                精選故事暫未發佈。故事庫只收錄經核實的真實個案，不以示例個案代替真實經歷。
               </p>
-              <Link className="button button-primary" to="/stories">
-                瀏覽故事庫
-              </Link>
+              <div className="story-actions">
+                <Link className="button button-primary button-arrow" to="/stories">
+                  瀏覽故事庫
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+              </div>
             </>
           )}
         </div>

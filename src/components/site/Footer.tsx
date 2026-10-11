@@ -12,11 +12,29 @@ import { brand } from "../../lib/brand/brand";
  * Registration and contact details come from the brand constants so the footer and
  * the home trust panel cannot drift apart.
  *
+ * The closing statement is the brand's core message (docs/brand-guidelines.md),
+ * set large so every public page ends on the same two actions.
+ *
  * data-site-footer is required: the header's drawer marks it inert while open.
  */
 export function Footer() {
   return (
     <footer className="site-footer" data-site-footer>
+      <div className="public-container footer-statement">
+        <p className="footer-motto">
+          <span>支持領養</span>
+          <span>等於拯救生命。</span>
+        </p>
+        <div className="footer-statement-actions">
+          <Link to="/animals/cat" className="button button-primary">
+            查看待領養動物
+          </Link>
+          <Link to="/donate" className="button button-accent">
+            立即捐助
+          </Link>
+        </div>
+      </div>
+
       <div className="public-container footer-grid">
         <div className="footer-brand">
           <BrandLogo />
