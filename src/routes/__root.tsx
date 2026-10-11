@@ -10,6 +10,7 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
@@ -28,15 +29,37 @@ import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 function NotFoundComponent() {
   return (
     <main>
-      <PublicStateShell
-        title="找不到頁面"
-        description="您要找的頁面不存在或已移動。"
-        action={
-          <Link to="/" className="btn-primary min-h-11 px-5">
-            返回主頁
-          </Link>
-        }
-      />
+      <section className="page-hero not-found-hero" aria-labelledby="not-found-title">
+        <div className="public-container page-hero-grid">
+          <div className="page-hero-copy">
+            <p className="eyebrow">404 · 找不到頁面</p>
+            <h1 id="not-found-title">這一頁走失了。</h1>
+            <p>您要找的頁面不存在或已移動。可以由主頁重新開始，或直接前往以下常用頁面。</p>
+            <div className="hero-actions">
+              <Link to="/" className="button button-primary">
+                返回主頁
+              </Link>
+              <Link to="/help" className="button button-secondary">
+                求助及常見問題
+              </Link>
+            </div>
+            <nav className="next-step-links not-found-links" aria-label="常用頁面">
+              <Link className="pill-link" to="/animals/cat">
+                <span>待領養貓貓</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link className="pill-link" to="/animals/dog">
+                <span>待領養狗狗</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link className="pill-link" to="/donate">
+                <span>支持救援</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

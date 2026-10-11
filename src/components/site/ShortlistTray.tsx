@@ -23,7 +23,7 @@ export function ShortlistTray() {
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
     >
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+        <div className="flex min-w-0 flex-[1_1_14rem] items-center gap-2">
           <Heart className="h-5 w-5 shrink-0 text-[var(--color-primary)]" />
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--color-panel)]">
@@ -57,7 +57,7 @@ export function ShortlistTray() {
               key={item.id}
               type="button"
               onClick={() => removeItem(item.id)}
-              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-medium text-[var(--color-panel)]"
+              className="inline-flex max-w-32 items-center gap-1 rounded-full bg-[var(--color-secondary)] px-3 py-1 text-xs font-medium text-[var(--color-text-inverse)]"
               aria-label={`移除 ${item.name}`}
               title={`移除 ${item.name}`}
             >

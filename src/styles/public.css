@@ -2906,6 +2906,14 @@
     translate: 0 -50%;
   }
 
+  .not-found-hero {
+    padding-block: clamp(72px, 10vw, 136px);
+  }
+
+  .not-found-links {
+    margin-top: 32px;
+  }
+
   .volunteer-hero-links {
     display: flex;
     flex-wrap: wrap;
