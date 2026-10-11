@@ -441,8 +441,11 @@
     .adoption-journey-section,
     .story-map-visual,
     [class*="bg-[var(--color-panel"]
-  ) {
-  --public-focus-ring: var(--public-focus-ring-inverse);
+  )
+  :focus-visible {
+  /* Descendants only: a dark control on a light surface has its ring drawn on
+     the light surface around it, so it keeps the magenta ring. */
+  outline-color: var(--public-focus-ring-inverse);
 }
 
 .public-site-header {
