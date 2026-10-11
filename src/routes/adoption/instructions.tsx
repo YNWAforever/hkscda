@@ -180,7 +180,7 @@ export function AdoptionInstructionsContent({ data }: { data: PublicAdoptionPage
               type="button"
               aria-pressed={language === value}
               onClick={() => setLanguage(value)}
-              className="rounded-full border border-[var(--color-border)] px-3 py-1 text-sm font-semibold aria-pressed:border-[var(--color-primary)] aria-pressed:text-[var(--color-primary)]"
+              className="inline-flex min-h-11 items-center rounded-full border border-[var(--color-border)] px-4 text-sm font-semibold aria-pressed:border-[var(--color-primary)] aria-pressed:text-[var(--color-primary)]"
             >
               {value === "zh-HK" ? "中文" : "English"}
             </button>

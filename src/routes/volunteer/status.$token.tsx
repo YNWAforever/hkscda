@@ -39,12 +39,12 @@ export function VolunteerStatusView({ token }: { token: string }) {
           error?: string;
           registration?: VolunteerStatus;
         };
-        if (!response.ok || !body.registration) {
-          throw new Error(body.error ?? "找不到此義工登記");
-        }
+        // The API's error text is for logs and is in English; the visitor is
+        // told the same thing in their language whatever the server said.
+        if (!response.ok || !body.registration) throw new Error("not found");
         setStatus(body.registration);
       })
-      .catch((caught) => setError(caught instanceof Error ? caught.message : "暫時未能載入"))
+      .catch(() => setError("連結可能已過期或輸入錯誤。如需協助，請聯絡協會職員。"))
       .finally(() => setLoading(false));
   }, [token]);
 

@@ -1,3 +1,4 @@
+import { TaskPageHeader } from "./TaskPageHeader";
 import { useCallback, useEffect, useState } from "react";
 import { parseInternshipIntake } from "./internshipIntake";
 import { resolveAvailableShelter } from "./resolveInternshipShelter";
@@ -105,9 +106,12 @@ export function InternshipForm() {
   };
   return (
     <section className="mx-auto max-w-3xl space-y-5 p-5">
-      <h1 className="text-3xl font-bold">{intake?.settings.name ?? "獸醫學生實習申請"}</h1>
-      <p>實習由職員獨立審核院校及課程證據，不按一般義工級別或出席次數批准。</p>
-      <p className="whitespace-pre-wrap">{intake?.settings.instructions}</p>
+      <TaskPageHeader kicker="獸醫學生實習" title={intake?.settings.name ?? "獸醫學生實習申請"}>
+        <p>實習由職員獨立審核院校及課程證據，不按一般義工級別或出席次數批准。</p>
+        {intake?.settings.instructions ? (
+          <p className="whitespace-pre-wrap">{intake.settings.instructions}</p>
+        ) : null}
+      </TaskPageHeader>
       {!token ? (
         <VerifiedEmailSignIn />
       ) : (

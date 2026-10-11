@@ -575,7 +575,7 @@ export function DonatePage({
                     。捐款用於糧食、醫療、絕育及領養工作。
                   </p>
                   <a
-                    className="font-semibold text-[var(--color-primary)] hover:underline"
+                    className="inline-flex min-h-11 items-center font-semibold text-[var(--color-primary)] hover:underline"
                     href={`mailto:${brand.org.donationEmail}`}
                   >
                     {brand.org.donationEmail}
@@ -611,7 +611,7 @@ export function DonatePage({
                     type="button"
                     aria-pressed={language === lang}
                     onClick={() => setLanguage(lang)}
-                    className={`rounded-full px-3 py-1.5 transition-colors ${
+                    className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full px-3 transition-colors ${
                       language === lang
                         ? "bg-[var(--color-primary)] text-white"
                         : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"

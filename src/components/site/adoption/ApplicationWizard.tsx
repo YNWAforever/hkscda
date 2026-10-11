@@ -1,3 +1,4 @@
+import { TaskPageHeader } from "../TaskPageHeader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import {
@@ -657,16 +658,12 @@ export function ApplicationWizard() {
     <main className="bg-[var(--color-bg)] py-8">
       <div className="container-wide">
         <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-[var(--color-primary)]">Public adoption</p>
-            <h1 className="text-3xl font-bold text-[var(--color-panel)]">領養申請</h1>
-            <p className="mt-2 max-w-2xl text-sm text-[var(--color-text-muted)]">
+          <TaskPageHeader kicker="正式領養申請 · 七個步驟" title="領養申請">
+            <p>
               開始前請準備聯絡及住屋資料、照顧安排、可探望日期，以及家居安全相片；相片請勿包含證件或門牌。
             </p>
-            <p className="mt-1 max-w-2xl text-sm text-[var(--color-text-muted)]">
-              草稿只會在你選擇後儲存於此裝置，7 日後自動清除；相片、同意及驗證資料不會保存。
-            </p>
-          </div>
+            <p>草稿只會在你選擇後儲存於此裝置，7 日後自動清除；相片、同意及驗證資料不會保存。</p>
+          </TaskPageHeader>
           <p className="text-xs text-[var(--color-text-muted)]" role="status">
             {draftStatus === "restored"
               ? "已載入本機草稿"

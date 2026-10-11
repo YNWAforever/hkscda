@@ -45,7 +45,10 @@ export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
       <section className="section">
         <div className="public-container space-y-8">
           <nav className="text-sm text-[var(--color-text-muted)]" aria-label="麵包屑導航">
-            <Link to="/" className="transition-colors hover:text-[var(--color-primary)]">
+            <Link
+              to="/"
+              className="inline-flex min-h-11 items-center transition-colors hover:text-[var(--color-primary)]"
+            >
               主頁
             </Link>
             <span className="mx-2">/</span>

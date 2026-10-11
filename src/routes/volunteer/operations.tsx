@@ -9,5 +9,11 @@ export const Route = createFileRoute("/volunteer/operations")({
       description: "提交團體義工申請，或為已確認的義工時段申請改期。",
       path: "/volunteer/operations",
     }),
-  component: () => <VolunteerOperations publicMode />,
+  // The workspace is shared with the admin calendar; on the public site it sits
+  // on the page grid and takes the public task-page heading size.
+  component: () => (
+    <main className="public-container volunteer-operations-public">
+      <VolunteerOperations publicMode />
+    </main>
+  ),
 });

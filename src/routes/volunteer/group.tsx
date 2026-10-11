@@ -1,3 +1,4 @@
+import { TaskPageHeader } from "../../components/site/TaskPageHeader";
 import { createFileRoute } from "@tanstack/react-router";
 import { publicUrl } from "@/lib/publicOrigin";
 
@@ -26,13 +27,12 @@ export function VolunteerGroupPage() {
       trustNote="你的個人資料只會用於處理團體活動查詢及聯絡，不會作其他用途。"
     >
       <main className="mx-auto max-w-3xl px-4 py-8 space-y-6">
-        <div className="space-y-3">
-          <h1 className="font-display text-3xl font-bold lg:text-5xl">團體活動查詢</h1>
-          <p className="text-[var(--color-text-muted)]">本頁僅供註冊團體使用。</p>
-          <p className="text-sm text-[var(--color-text-muted)]">
+        <TaskPageHeader kicker="企業及團體參與" title="團體活動查詢">
+          <p>本頁僅供註冊團體使用。</p>
+          <p>
             如學校、企業或機構希望安排義工工作坊、入校講座或教育參觀，請填寫以下資料，我們會按查詢內容回覆。
           </p>
-        </div>
+        </TaskPageHeader>
         <GroupEnquiryForm />
       </main>
     </PublicFormFrame>
