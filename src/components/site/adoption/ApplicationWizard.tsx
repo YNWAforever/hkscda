@@ -737,7 +737,11 @@ export function ApplicationWizard() {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <ol className="grid gap-2 sm:grid-cols-2 xl:grid-cols-7">
+              {/* On a phone the seven labels stacked into a full screen before the
+                  form began; there the row shows numbers only (the progress bar
+                  and the step heading below name the current step) and the
+                  labels stay available to screen readers. */}
+              <ol className="grid grid-cols-7 gap-1.5 sm:grid-cols-2 sm:gap-2 xl:grid-cols-7">
                 {WIZARD_STEPS.map((step, index) => {
                   const complete = index < currentStepIndex;
                   const active = index === currentStepIndex;
@@ -746,7 +750,7 @@ export function ApplicationWizard() {
                       key={step.id}
                       aria-current={active ? "step" : undefined}
                       className={cn(
-                        "rounded-md border px-3 py-2 text-xs",
+                        "rounded-md border px-1 py-1.5 text-center text-xs sm:px-3 sm:py-2 sm:text-left",
                         active
                           ? "border-[var(--color-primary)] bg-[var(--color-primary-highlight)] text-[var(--color-panel)]"
                           : complete
@@ -755,9 +759,10 @@ export function ApplicationWizard() {
                       )}
                     >
                       <span className="block font-semibold">
-                        {index + 1}. {step.zh}
+                        {index + 1}
+                        <span className="sr-only sm:not-sr-only">. {step.zh}</span>
                       </span>
-                      <span>{step.en}</span>
+                      <span className="sr-only sm:not-sr-only">{step.en}</span>
                     </li>
                   );
                 })}

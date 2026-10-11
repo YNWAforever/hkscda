@@ -137,6 +137,12 @@ function RootComponent() {
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
   const isAdoptionWizard = /^\/adoption\/apply\/?$/.test(location.pathname);
+  // Task pages (an application, a pledge, a donation, a status lookup) keep the
+  // footer links but drop its closing statement and calls to action, which
+  // would only pull someone away from a form they are part-way through.
+  const isFocusedFlow =
+    /^\/(adoption\/apply|sponsors\/pledge|donate)\/?$/.test(location.pathname) ||
+    location.pathname.includes("/status/");
   const analyticsPagePath = redactSensitivePagePath(location.pathname);
 
   useEffect(() => {
@@ -149,7 +155,7 @@ function RootComponent() {
   }, [analyticsPagePath]);
 
   const publicContent = (
-    <div className="site-shell min-h-dvh">
+    <div className="site-shell min-h-dvh" data-focused-flow={isFocusedFlow || undefined}>
       <Header />
       <div id="main-content" tabIndex={-1} data-site-content>
         <Outlet />

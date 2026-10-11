@@ -2319,6 +2319,14 @@
     border-bottom: 1px solid var(--color-border);
   }
 
+  [data-focused-flow] .footer-statement {
+    display: none;
+  }
+
+  [data-focused-flow] .site-footer {
+    padding-top: 56px;
+  }
+
   .footer-motto {
     margin: 0;
     color: var(--color-primary-hover);
