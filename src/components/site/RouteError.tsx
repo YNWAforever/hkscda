@@ -1,7 +1,8 @@
-import { Link, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState, type ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { reportLovableError } from "../../lib/lovable-error-reporting";
+import { AdminRouteError } from "../admin/AdminRouteError";
 
 /**
  * The router's default error boundary as well as the root's. As the default,
@@ -9,7 +10,18 @@ import { reportLovableError } from "../../lib/lovable-error-reporting";
  * root boundary only shows this on its own when the shell itself failed, which
  * is why it carries .site-shell for the public tokens.
  */
-export function RouteError({ error, reset }: ErrorComponentProps) {
+export function RouteError(props: ErrorComponentProps) {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  // The default boundary covers /admin too, which has its own bilingual failure
+  // state; the public page below is Chinese-only and links to the public home.
+  return pathname.startsWith("/admin") ? (
+    <AdminRouteError {...props} />
+  ) : (
+    <PublicRouteError {...props} />
+  );
+}
+
+function PublicRouteError({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
