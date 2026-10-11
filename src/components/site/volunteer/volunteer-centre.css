@@ -156,7 +156,7 @@
   min-height: 44px;
 }
 .volunteer-centre :is(button, a, input, select, textarea):focus-visible {
-  outline: 3px solid var(--color-accent);
+  outline: 3px solid var(--public-focus-ring);
   outline-offset: 3px;
 }
 .volunteer-centre button:disabled {

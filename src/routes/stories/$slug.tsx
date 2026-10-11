@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
+import { absolutePublicUrl, PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { PublicStateShell } from "../../components/site/PublicStateShell";
 import { StoryDetail } from "../../components/site/stories/StoryDetail";
@@ -12,15 +12,6 @@ const readStoryDetail = createStoryDetailReader({
   getStory: (slug) => getPublicStory({ data: { slug } }),
   getRelated: (slug) => getRelatedStories({ data: { slug } }),
 });
-
-function absolutePublicUrl(value: string | null) {
-  if (!value) return `${ORIGIN}/brand/hkscda-logo-primary.jpg`;
-  try {
-    return new URL(value, ORIGIN).toString();
-  } catch {
-    return `${ORIGIN}/brand/hkscda-logo-primary.jpg`;
-  }
-}
 
 export const Route = createFileRoute("/stories/$slug")({
   loader: async ({ params }) => {

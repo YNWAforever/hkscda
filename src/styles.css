@@ -126,7 +126,10 @@
   --public-scrim: rgba(4, 29, 40, 0.55);
   --public-drawer-shadow-color: rgba(4, 29, 40, 0.2);
   --public-bar-shadow-color: rgba(22, 44, 54, 0.05);
-  --public-focus-ring: #f1b7d0;
+  /* Focus rings need 3:1 against whatever they sit on (WCAG 1.4.11). Magenta
+     clears that on every light surface; dark bands swap in the soft pink. */
+  --public-focus-ring: var(--color-secondary);
+  --public-focus-ring-inverse: #f1b7d0;
   /*
    * Literals the ported design system would otherwise hardcode. Names come from
    * the most specific class that uses each value; --public-on-dark-NN and
@@ -427,6 +430,19 @@
 .site-shell :focus-visible {
   outline: 3px solid var(--public-focus-ring);
   outline-offset: 3px;
+}
+
+.site-shell
+  :is(
+    .transparency-section,
+    .secure-handoff,
+    .candidate-ready-section,
+    .adoption-guide-toc,
+    .adoption-journey-section,
+    .story-map-visual,
+    [class*="bg-[var(--color-panel"]
+  ) {
+  --public-focus-ring: var(--public-focus-ring-inverse);
 }
 
 .public-site-header {
@@ -1071,7 +1087,7 @@
   color: var(--color-surface);
 }
 .animal-listing-hero .species-nav a:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 3px solid var(--public-focus-ring);
   outline-offset: 3px;
 }
 @media (max-width: 639px) {

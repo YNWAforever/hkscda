@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import {
   BadgeCheck,
   Building,
@@ -55,22 +55,13 @@ export const Route = createFileRoute("/donate")({
     ]);
     return { slots, checkoutState };
   }),
-  head: () => ({
-    meta: [
-      { title: "捐助我們 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content: "了解香港拯救貓狗協會的善款用途、收條安排，以及經職員確認的捐款下一步。",
-      },
-      { property: "og:title", content: "捐助我們 · HKSCDA" },
-      {
-        property: "og:description",
-        content: "了解善款用途、收條安排及經職員確認的捐款下一步。",
-      },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/donate") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "捐助我們",
+      description: "了解香港拯救貓狗協會的善款用途、收條安排，以及經職員確認的捐款下一步。",
+      shareDescription: "了解善款用途、收條安排及經職員確認的捐款下一步。",
+      path: "/donate",
+    }),
   component: DonateRoute,
 });
 

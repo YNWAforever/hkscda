@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
+import { absolutePublicUrl, PUBLIC_SITE_ORIGIN } from "@/lib/publicOrigin";
 
 import { AnimalDetail } from "../../components/site/AnimalDetail";
 import { PublicStateShell } from "../../components/site/PublicStateShell";
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/animals/cat_/$id")({
       : "待領養貓貓 · 香港拯救貓狗協會 HKSCDA";
     const description =
       loaderData?.description ?? "查看香港拯救貓狗協會目前公開、正在等待家庭的貓貓資料。";
-    const image = loaderData?.image_url ?? `${ORIGIN}/brand/hkscda-logo-primary.jpg`;
+    const image = absolutePublicUrl(loaderData?.image_url);
     const canonical = `${ORIGIN}/animals/cat/${encodeURIComponent(params.id)}`;
     return {
       meta: [

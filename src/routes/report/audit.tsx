@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { ExternalLink, FileText } from "lucide-react";
 import { PublicPageFrame } from "@/components/site/PublicPageFrame";
 import { brand } from "@/lib/brand/brand";
@@ -15,16 +15,7 @@ const pageDescription = "我們每年發表協會年度報告電子書，分享�
 export const Route = createFileRoute("/report/audit")({
   loader: resilientPublicLoader(asContextFreeRouteLoader(loadPublishedAnnualReports)),
   errorComponent: AnnualReportLoadError,
-  head: () => ({
-    meta: [
-      { title: `${pageTitle} · 香港拯救貓狗協會 HKSCDA` },
-      { name: "description", content: pageDescription },
-      { property: "og:title", content: `${pageTitle} · HKSCDA` },
-      { property: "og:description", content: pageDescription },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/report/audit") }],
-  }),
+  head: () => pageHead({ title: pageTitle, description: pageDescription, path: "/report/audit" }),
   component: AnnualReportRoute,
 });
 

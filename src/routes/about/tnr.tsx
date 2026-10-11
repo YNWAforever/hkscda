@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { brand } from "../../lib/brand/brand";
@@ -7,17 +7,13 @@ import { getTnrPageContent } from "../../lib/aboutPages/publicPage.functions";
 import type { TnrPageContent } from "../../lib/aboutPages/types";
 
 export const Route = createFileRoute("/about/tnr")({
-  head: () => ({
-    meta: [
-      { title: "TNR 捕捉絕育放回 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content:
-          "TNR 是管理社區流浪貓的人道方法：誘捕、絕育、原地放回，並配合持續照顧逐步減少繁殖壓力。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/about/tnr") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "TNR 捕捉絕育放回",
+      description:
+        "TNR 是管理社區流浪貓的人道方法：誘捕、絕育、原地放回，並配合持續照顧逐步減少繁殖壓力。",
+      path: "/about/tnr",
+    }),
   loader: () => getTnrPageContent(),
   component: TNRPage,
 });

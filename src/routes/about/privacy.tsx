@@ -1,19 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PublicPageFrame } from "../../components/site/PublicPageFrame";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 
 export const Route = createFileRoute("/about/privacy")({
-  head: () => ({
-    meta: [
-      { title: "私隱聲明 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content: "香港拯救貓狗協會私隱聲明：說明我們如何收集、使用及保護您的個人資料。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/about/privacy") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "私隱聲明",
+      description: "香港拯救貓狗協會私隱聲明：說明我們如何收集、使用及保護您的個人資料。",
+      path: "/about/privacy",
+    }),
   component: PrivacyPage,
 });
 

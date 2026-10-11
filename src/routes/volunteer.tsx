@@ -1,7 +1,7 @@
 import "../components/site/volunteer/volunteer-centre.css";
 import { PolicySignup } from "../components/site/volunteer/PolicySignup";
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { ownPageHead, pageHead, type HeadMatchContext } from "@/lib/pageHead";
 import {
   CalendarDays,
   Cat,
@@ -49,23 +49,17 @@ const volunteerRoles = [
 ];
 
 export const Route = createFileRoute("/volunteer")({
-  head: () => ({
-    meta: [
-      { title: "加入義工團隊 · 香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "description",
-        content:
+  head: (ctx: HeadMatchContext) =>
+    ownPageHead(
+      ctx,
+      pageHead({
+        title: "加入義工團隊",
+        description:
           "加入香港拯救貓狗協會義工團隊。暫托家庭、貓狗舍義工、TNR行動、領養日義工等多種義工機會。一起拯救生命。",
-      },
-      { property: "og:title", content: "加入義工團隊 · HKSCDA" },
-      {
-        property: "og:description",
-        content: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。",
-      },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/volunteer") }],
-  }),
+        shareDescription: "多種義工機會：暫托、貓舍、狗舍、TNR、領養日。一起為毛孩出力。",
+        path: "/volunteer",
+      }),
+    ),
   component: VolunteerPage,
 });
 

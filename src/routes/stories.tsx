@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
-import { publicUrl } from "@/lib/publicOrigin";
+import { ownPageHead, pageHead, type HeadMatchContext } from "@/lib/pageHead";
 import { resilientPublicLoader } from "../lib/routing/resilientLoader";
 import { PublicPageFrame } from "../components/site/PublicPageFrame";
 import { PublicStateShell } from "../components/site/PublicStateShell";
@@ -18,27 +18,19 @@ export function createStoriesLoader(load: StoriesLoader) {
 
 const loadStories = createStoriesLoader(() => getPublicStoriesPage());
 
-const storiesHead = () => ({
-  meta: [
-    { title: "救援個案 · 香港拯救貓狗協會 HKSCDA" },
-    {
-      name: "description",
-      content: "瀏覽香港拯救貓狗協會公開救援個案、區域救援地圖、活動、義賣與報告。",
-    },
-    { property: "og:title", content: "救援個案 · HKSCDA" },
-    {
-      property: "og:description",
-      content: "追蹤貓狗救援、康復、領養與協會活動報告。",
-    },
-    { property: "og:type", content: "website" },
-  ],
-  links: [{ rel: "canonical", href: publicUrl("/stories") }],
-});
-
 export const Route = createFileRoute("/stories")({
   loader: resilientPublicLoader(loadStories),
   errorComponent: StoriesLoadError,
-  head: storiesHead,
+  head: (ctx: HeadMatchContext) =>
+    ownPageHead(
+      ctx,
+      pageHead({
+        title: "救援個案",
+        description: "瀏覽香港拯救貓狗協會公開救援個案、區域救援地圖、活動、義賣與報告。",
+        shareDescription: "追蹤貓狗救援、康復、領養與協會活動報告。",
+        path: "/stories",
+      }),
+    ),
   component: StoriesPage,
 });
 

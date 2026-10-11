@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PublicPageFrame } from "../components/site/PublicPageFrame";
-import { publicUrl } from "@/lib/publicOrigin";
+import { pageHead } from "@/lib/pageHead";
 import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -17,16 +17,12 @@ import { publicFaqsQueryOptions } from "../lib/help/usePublicFaqs";
 
 export const Route = createFileRoute("/help")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicFaqsQueryOptions()),
-  head: () => ({
-    meta: [
-      { title: "常見問題與客服 | HKSCDA" },
-      {
-        name: "description",
-        content: "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
-      },
-    ],
-    links: [{ rel: "canonical", href: publicUrl("/help") }],
-  }),
+  head: () =>
+    pageHead({
+      title: "常見問題與客服",
+      description: "HKSCDA 常見問題中心，解答助養、領養、捐款、報稅收據及聯絡職員問題。",
+      path: "/help",
+    }),
   component: HelpPage,
 });
 

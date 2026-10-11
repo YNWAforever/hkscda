@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
-import { publicUrl } from "@/lib/publicOrigin";
+import { absolutePublicUrl, publicUrl } from "@/lib/publicOrigin";
 
 import { HomeHero } from "../components/site/home/HomeHero";
 import { FeaturedAnimals } from "../components/site/home/FeaturedAnimals";
@@ -70,7 +70,9 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "支持領養 · 拯救生命 · 不殺機構",
       },
-      { property: "og:image", content: heroImg },
+      { property: "og:url", content: publicUrl("/") },
+      { property: "og:image", content: absolutePublicUrl(heroImg) },
+      { name: "twitter:image", content: absolutePublicUrl(heroImg) },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: publicUrl("/") }],
