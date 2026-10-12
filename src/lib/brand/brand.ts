@@ -5,6 +5,8 @@ export const brand = {
   slogan: "領養代替購買",
   logo: {
     src: "/brand/hkscda-logo-primary.jpg",
+    /** A Lanczos-resized copy of the primary, for marks at 64px or below. */
+    smallSrc: "/brand/hkscda-logo-192.jpg",
     alt: "香港拯救貓狗協會 HKSCDA",
     width: 960,
     height: 960,

@@ -18,6 +18,9 @@ import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { PublicStatusBadge } from "../../components/site/PublicStatusBadge";
 import { SectionHeading } from "../../components/site/SectionHeading";
 import heroImg from "@/assets/dog-smiling.jpg";
+import heroImg480 from "@/assets/dog-smiling-480.jpg";
+import heroImg768 from "@/assets/dog-smiling-768.jpg";
+import heroImg1024 from "@/assets/dog-smiling-1024.jpg";
 
 export const Route = createFileRoute("/about/")({
   // The description is the hero copy the page renders: the CMS content, or the
@@ -152,7 +155,8 @@ export function AboutContent({
       eyebrow={page.hero.eyebrow}
       title={page.hero.title}
       description={page.hero.description}
-      image={heroImg}
+      image={heroImg1024}
+      imageSrcSet={`${heroImg480} 480w, ${heroImg768} 768w, ${heroImg1024} 1024w, ${heroImg} 1500w`}
       imageAlt="在協會犬舍外開心迎接訪客的獲救唐狗"
       actions={[
         { label: "查看待領養動物", to: "/animals/cat" },

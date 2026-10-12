@@ -59,6 +59,7 @@ export function PublicPageFrame({
   description,
   actions = [],
   image,
+  imageSrcSet,
   imageAlt,
   highlights = [],
   chapters = [],
@@ -71,6 +72,8 @@ export function PublicPageFrame({
   description: string;
   actions?: PublicPageAction[];
   image?: string;
+  /** Width-described variants of `image`; the hero photo is at most 620px wide. */
+  imageSrcSet?: string;
   imageAlt?: string;
   highlights?: PublicPageHighlight[];
   chapters?: PublicPageChapter[];
@@ -108,7 +111,18 @@ export function PublicPageFrame({
           </div>
           {image ? (
             <figure className="page-hero-photo">
-              <img src={image} alt={imageAlt ?? ""} />
+              <img
+                src={image}
+                srcSet={imageSrcSet}
+                // Mirrors .page-hero-photo: full width less the gutters until it
+                // reaches its 620px cap at 652px, capped to 900px, then 486px.
+                sizes={
+                  imageSrcSet
+                    ? "(max-width: 652px) calc(100vw - 32px), (max-width: 900px) 620px, 486px"
+                    : undefined
+                }
+                alt={imageAlt ?? ""}
+              />
               <figcaption>HKSCDA 救援相片</figcaption>
             </figure>
           ) : null}
