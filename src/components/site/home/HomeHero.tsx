@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowRight, ShieldCheck } from "lucide-react";
 
 import { brand } from "../../../lib/brand/brand";
+import { keepTail } from "../keepTail";
 import heroImg from "@/assets/dog-smiling.jpg";
 import heroImg480 from "@/assets/dog-smiling-480.jpg";
 import heroImg768 from "@/assets/dog-smiling-768.jpg";
@@ -38,7 +39,7 @@ export function HomeHero() {
             </span>
           </h1>
           <p className="hero-lead">
-            從即時救援、醫療與絕育，到負責任領養，讓流浪貓狗重新得到安全、照顧與歸屬。
+            {keepTail("從即時救援、醫療與絕育，到負責任領養，讓流浪貓狗重新得到安全、照顧與歸屬。")}
           </p>
           <div className="hero-actions">
             <a className="button button-primary button-arrow" href="#featured-animals">

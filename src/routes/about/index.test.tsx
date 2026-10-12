@@ -84,7 +84,8 @@ describe("/about head", () => {
     const { meta } = aboutHead({ loaderData: { content: null } });
     const markup = renderToStaticMarkup(<AboutContent impact={[]} content={null} />);
 
-    expect(markup).toContain(DEFAULT_HERO_DESCRIPTION);
+    // Compare the visible text: the closing phrase sits in a keep-tail span.
+    expect(markup.replace(/<[^>]+>/g, "")).toContain(DEFAULT_HERO_DESCRIPTION);
     expect(meta).toContainEqual({ name: "description", content: DEFAULT_HERO_DESCRIPTION });
     expect(meta).toContainEqual({ property: "og:description", content: DEFAULT_HERO_DESCRIPTION });
     expect(meta).toContainEqual({ name: "twitter:description", content: DEFAULT_HERO_DESCRIPTION });

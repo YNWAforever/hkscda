@@ -1,4 +1,5 @@
 import { TaskPageHeader } from "../components/site/TaskPageHeader";
+import { keepTail } from "../components/site/keepTail";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { pageHead } from "@/lib/pageHead";
@@ -161,7 +162,9 @@ export function SupporterPage() {
     <main className="mx-auto max-w-2xl px-5 py-12">
       <TaskPageHeader kicker="支持者紀錄" title="找回支持者紀錄">
         <p>
-          使用電郵驗證身份，以找回領養、助養及收條紀錄。如該電郵有關聯紀錄，請查看收件匣及垃圾郵件；我們不會在此頁確認帳戶是否存在。
+          {keepTail(
+            "使用電郵驗證身份，以找回領養、助養及收條紀錄。如該電郵有關聯紀錄，請查看收件匣及垃圾郵件；我們不會在此頁確認帳戶是否存在。",
+          )}
         </p>
       </TaskPageHeader>
       {stage === "verified" ? (

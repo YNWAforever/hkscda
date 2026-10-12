@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { pageHead } from "@/lib/pageHead";
+import { keepTail } from "../../components/site/keepTail";
 import {
   ArrowRight,
   CheckCircle2,
@@ -163,7 +164,7 @@ export function AboutContent({
           <div>
             <SectionHeading eyebrow={page.mission.eyebrow} title={page.mission.title} />
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--color-text-muted)]">
-              {page.mission.body}
+              {keepTail(page.mission.body)}
             </p>
           </div>
           <div className="border-l-4 border-[var(--color-secondary)] pl-6">
@@ -263,7 +264,7 @@ export function AboutContent({
               title={page.responsibleAdoption.title}
             />
             <p className="mt-5 leading-relaxed text-[var(--color-text-muted)]">
-              {page.responsibleAdoption.body}
+              {keepTail(page.responsibleAdoption.body)}
             </p>
             <a href="/adoption/instructions" className="btn-secondary mt-6 min-h-11 px-5">
               {page.responsibleAdoption.linkLabel}

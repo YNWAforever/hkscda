@@ -164,6 +164,11 @@
     word-break: keep-all;
   }
 
+  /* See keepTail(): the closing phrase of a lead never wraps on its own. */
+  .keep-tail {
+    white-space: nowrap;
+  }
+
   main [id] {
     scroll-margin-top: 96px;
   }
