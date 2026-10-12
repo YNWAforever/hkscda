@@ -15,6 +15,10 @@ describe("keepTail", () => {
     expect(tail("我們相信負責任的領養需要透明資訊、耐心配對和社區共同參與。")).toBe("共同參與。");
   });
 
+  test("reaches back past a clause shorter than four characters", () => {
+    expect(tail("如有任何查詢，歡迎隨時與我們聯絡。謝謝。")).toBe("聯絡。謝謝。");
+  });
+
   test("leaves short text alone", () => {
     expect(tailStart("立即捐助")).toBe(-1);
     expect(renderToStaticMarkup(<>{keepTail("立即捐助。")}</>)).toBe("立即捐助。");
