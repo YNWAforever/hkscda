@@ -21,6 +21,7 @@ import { ContextualDonationPrompt } from "../components/site/donations/Contextua
 
 import appCss from "../styles.css?url";
 import { organizationSchema, websiteSchema } from "../lib/schema";
+import { brand } from "../lib/brand/brand";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 
 function NotFoundComponent() {
@@ -95,8 +96,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/jpeg", href: "/brand/hkscda-logo-primary.jpg" },
-      { rel: "apple-touch-icon", href: "/brand/hkscda-logo-primary.jpg" },
+      // Icons use the 192px copy: browsers fetch them on every page, and the
+      // 960px primary is ten times the bytes for a tab or home-screen mark.
+      { rel: "icon", type: "image/jpeg", sizes: "192x192", href: brand.logo.smallSrc },
+      { rel: "apple-touch-icon", href: brand.logo.smallSrc },
     ],
     scripts: [
       {

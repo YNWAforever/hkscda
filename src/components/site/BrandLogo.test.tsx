@@ -13,4 +13,13 @@ describe("BrandLogo", () => {
     expect(markup).toContain("object-contain");
     expect(markup).toContain('loading="eager"');
   });
+
+  test("offers the small copy so a 64px mark never downloads the 960px file", () => {
+    const markup = renderToStaticMarkup(<BrandLogo />);
+
+    expect(markup).toContain(
+      'srcSet="/brand/hkscda-logo-192.jpg 192w, /brand/hkscda-logo-primary.jpg 960w"',
+    );
+    expect(markup).toContain('sizes="64px"');
+  });
 });

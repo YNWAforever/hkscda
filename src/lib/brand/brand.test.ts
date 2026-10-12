@@ -14,4 +14,11 @@ describe("HKSCDA brand contract", () => {
     expect(asset.type).toBe("image/jpeg");
     expect(asset.size).toBeGreaterThan(50_000);
   });
+
+  test("ships the small logo copy beside it", async () => {
+    const asset = Bun.file(`public${brand.logo.smallSrc}`);
+    expect(asset.type).toBe("image/jpeg");
+    expect(asset.size).toBeGreaterThan(5_000);
+    expect(asset.size).toBeLessThan(20_000);
+  });
 });
