@@ -72,7 +72,7 @@ export function PublicPageFrame({
   description: string;
   actions?: PublicPageAction[];
   image?: string;
-  /** Width-described variants of `image`; the hero photo is at most 486px wide. */
+  /** Width-described variants of `image`; the hero photo is at most 620px wide. */
   imageSrcSet?: string;
   imageAlt?: string;
   highlights?: PublicPageHighlight[];
@@ -114,7 +114,13 @@ export function PublicPageFrame({
               <img
                 src={image}
                 srcSet={imageSrcSet}
-                sizes={imageSrcSet ? "(max-width: 900px) calc(100vw - 32px), 486px" : undefined}
+                // Mirrors .page-hero-photo: full width less the gutters until it
+                // reaches its 620px cap at 652px, capped to 900px, then 486px.
+                sizes={
+                  imageSrcSet
+                    ? "(max-width: 652px) calc(100vw - 32px), (max-width: 900px) 620px, 486px"
+                    : undefined
+                }
                 alt={imageAlt ?? ""}
               />
               <figcaption>HKSCDA 救援相片</figcaption>
