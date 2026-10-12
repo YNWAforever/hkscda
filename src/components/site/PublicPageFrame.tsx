@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { keepTail } from "./keepTail";
 
 export type PublicPageAction = {
   label: string;
@@ -85,7 +86,7 @@ export function PublicPageFrame({
           <div className="page-hero-copy">
             <p className="eyebrow">{eyebrow}</p>
             <h1 id="page-title">{title}</h1>
-            <p>{description}</p>
+            <p>{keepTail(description)}</p>
             {actions.length ? (
               <div className="hero-actions">
                 {actions.map((action, index) => (

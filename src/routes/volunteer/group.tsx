@@ -1,4 +1,5 @@
 import { TaskPageHeader } from "../../components/site/TaskPageHeader";
+import { keepTail } from "../../components/site/keepTail";
 import { createFileRoute } from "@tanstack/react-router";
 import { pageHead } from "@/lib/pageHead";
 
@@ -26,7 +27,9 @@ export function VolunteerGroupPage() {
         <TaskPageHeader kicker="企業及團體參與" title="團體活動查詢">
           <p>本頁僅供註冊團體使用。</p>
           <p>
-            如學校、企業或機構希望安排義工工作坊、入校講座或教育參觀，請填寫以下資料，我們會按查詢內容回覆。
+            {keepTail(
+              "如學校、企業或機構希望安排義工工作坊、入校講座或教育參觀，請填寫以下資料，我們會按查詢內容回覆。",
+            )}
           </p>
         </TaskPageHeader>
         <GroupEnquiryForm />

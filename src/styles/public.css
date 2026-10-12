@@ -130,6 +130,15 @@
       overflow-wrap: break-word;
     }
 
+    /* Chinese wraps between any two characters; pretty wrapping stops a
+       paragraph ending on a single character (孤字) where it is supported. */
+    p,
+    li,
+    dd,
+    figcaption {
+      text-wrap: pretty;
+    }
+
     h1,
     h2,
     h3 {
@@ -162,6 +171,11 @@
   .home-main h2,
   .footer-motto {
     word-break: keep-all;
+  }
+
+  /* See keepTail(): the closing phrase of a lead never wraps on its own. */
+  .keep-tail {
+    white-space: nowrap;
   }
 
   main [id] {

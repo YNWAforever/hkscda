@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { revealOrder } from "../revealOnScroll";
+import { keepTail } from "../keepTail";
 
 /**
  * One heading anatomy for every home band: a ruled kicker, the H2, and an
@@ -30,7 +31,7 @@ export function HomeSectionHeading({
       </div>
       {lead || action ? (
         <div className="home-heading-aside" data-reveal style={revealOrder(1)}>
-          {lead ? <p>{lead}</p> : null}
+          {lead ? <p>{typeof lead === "string" ? keepTail(lead) : lead}</p> : null}
           {action}
         </div>
       ) : null}
