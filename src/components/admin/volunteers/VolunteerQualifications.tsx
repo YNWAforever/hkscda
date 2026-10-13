@@ -1,5 +1,7 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { distinguishProfileId } from "./profileIdentity";
 import { VolunteerLegacyReconciliation } from "./VolunteerLegacyReconciliation";
 import { useEffect, useState } from "react";
 import { QualificationProfileSearch } from "./QualificationProfileSearch";
@@ -38,10 +40,11 @@ type Data = {
   credentials: Credential[];
   credential_definitions: { key: string; label: string }[];
 };
-const post = <T,>(body: object) =>
+const post = <T,>(body: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/qualifications", {
     method: "POST",
     body: JSON.stringify(body),
+    signal,
   });
 const inputClass = "min-h-11 rounded border border-[var(--color-border)] p-2";
 const tierKeys = ["newcomer", "regular", "senior"] as const;
@@ -56,7 +59,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const [legacyOpened, setLegacyOpened] = useState(false);
   const query = useQuery({
     queryKey: volunteerQueryKeys.key("qualifications"),
-    queryFn: () => post<Data>({ action: "list" }),
+    queryFn: ({ signal }) => post<Data>({ action: "list" }, signal),
   });
   const [selected, setSelected] = useState(() => {
     if (initial?.profileId !== undefined) return initial.profileId;
@@ -112,10 +115,10 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   };
   return (
     <section className="space-y-6">
-      <header>
+      <VolunteerPageHeading pageId="qualifications">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p>{copy.intro}</p>
-      </header>
+      </VolunteerPageHeading>
       <nav className="flex gap-4">
         <a href="/admin/volunteers/people">{copy.links.directory}</a>
         <a href="/admin/volunteers/calendar">{copy.links.calendar}</a>
@@ -142,7 +145,8 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
           <option value="">{copy.chooseOption}</option>
           {query.data?.profiles.map((p) => (
             <option key={p.id} value={p.id}>
-              {copy.option(p.display_name, copy.status(p.status), tiers[p.tier])}
+              {copy.option(p.display_name, copy.status(p.status), tiers[p.tier])} ·{" "}
+              {distinguishProfileId(p.id, query.data?.profiles.map((profile) => profile.id) ?? [])}
             </option>
           ))}
         </select>

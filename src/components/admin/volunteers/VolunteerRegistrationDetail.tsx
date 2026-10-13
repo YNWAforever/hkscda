@@ -64,8 +64,11 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   const [refreshFailed, setRefreshFailed] = useState(false);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: volunteerQueryKeys.key("registration", registrationId),
-    queryFn: () =>
-      fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
+    queryFn: ({ signal }) =>
+      fetchAdminJson<RegistrationResponse>(
+        `/api/admin/volunteers/registrations/${registrationId}`,
+        { signal },
+      ),
   });
   useBreadcrumbRecordName(data?.registration?.contactName);
   // A registration belongs to the activities page; that is the heading until it loads.

@@ -1,3 +1,5 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { VolunteerLink } from "./VolunteerLink";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
@@ -9,10 +11,11 @@ import { useAdminCopy } from "../i18n/copy";
 import { useAdminLanguage } from "../adminI18n";
 import { policySourcesCopy } from "./policySourcesCopy";
 import { LoadFailure } from "../LoadFailure";
-const api = <T,>(body: unknown) =>
+const api = <T,>(body: unknown, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/sources/", {
     method: "POST",
     body: JSON.stringify(body),
+    signal,
   });
 const input = "min-h-11 min-w-0 w-full rounded border px-3 py-2";
 type Preview = {
@@ -28,7 +31,7 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
   const qc = useQueryClient();
   const q = useQuery({
     queryKey: volunteerQueryKeys.key("policySources"),
-    queryFn: () => api<SourceListing>({ action: "list" }),
+    queryFn: ({ signal }) => api<SourceListing>({ action: "list" }, signal),
   });
   const [kind, setKind] = useState<"shelter" | "credential">(initial?.kind ?? "shelter"),
     [key, setKey] = useState(""),
@@ -89,8 +92,8 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
     },
   });
   return (
-    <section className="space-y-6 p-4 md:p-6">
-      <h1 className="text-2xl font-bold">{copy.title}</h1>
+    <section className="space-y-6">
+      <VolunteerPageHeading pageId="sources" title={copy.title} />
       <WorkflowSections
         sections={[
           { id: "source-registry", label: copy.sections.registry },
@@ -98,9 +101,9 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
         ]}
       />
       <p>{copy.intro}</p>
-      <a className="underline" href="/admin/volunteers/settings">
+      <VolunteerLink className="underline" href="/admin/volunteers/settings">
         {copy.back}
-      </a>
+      </VolunteerLink>
       <section className="space-y-3 rounded border p-4">
         <h2 id="source-registry" className="text-lg font-bold">
           {copy.registry.title}

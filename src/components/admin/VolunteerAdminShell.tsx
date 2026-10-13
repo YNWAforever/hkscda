@@ -1,13 +1,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, HeartHandshake } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "../../lib/supabase";
 import {
   clearVolunteerIdentityQueries,
   clearVolunteerSessionSearch,
 } from "../../lib/volunteers/queryKeys";
-import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
+import {
+  adminIdentityQueryOptions,
+  firstAllowedAdminRouteForIdentity,
+} from "../../lib/admin/pageAccess";
+import { ADMIN_IDENTITY_QUERY_KEY } from "../../lib/admin/identity";
 import { AdminLayout } from "./AdminLayout";
 import { useAdminCopy } from "./i18n/copy";
 import {
@@ -46,13 +50,16 @@ export function VolunteerWorkspaceFrame({
   const copy = useAdminCopy(volunteerWorkspaceCopy);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { data: identity } = useQuery(adminIdentityQueryOptions());
+  const identityRef = useRef(identity);
+  identityRef.current = identity;
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [identityChanging, setIdentityChanging] = useState(false);
   const [identityGeneration, setIdentityGeneration] = useState(0);
   useEffect(() => {
     let active = true;
     let generation = 0;
-    let previous = identity?.admin.authUserId ?? null;
+    let previous = identityRef.current?.admin.authUserId ?? null;
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -61,14 +68,33 @@ export function VolunteerWorkspaceFrame({
       previous = next;
       const current = ++generation;
       setIdentityChanging(true);
-      clearVolunteerSessionSearch(window.sessionStorage);
+      try {
+        clearVolunteerSessionSearch(window.sessionStorage);
+      } catch {
+        /* Storage is optional. */
+      }
       window.dispatchEvent(new Event("hkscda-admin-identity-cleared"));
       void clearVolunteerIdentityQueries(queryClient)
         .then(async () => {
           if (!active || current !== generation) return;
-          await queryClient.cancelQueries({ queryKey: ["admin-me"] });
-          queryClient.removeQueries({ queryKey: ["admin-me"] });
-          if (next) await queryClient.fetchQuery(adminIdentityQueryOptions());
+          await queryClient.cancelQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
+          queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
+          if (!next) {
+            await router.navigate({ to: "/admin/login" });
+            return;
+          }
+          const refreshed = await queryClient.fetchQuery(adminIdentityQueryOptions());
+          if (!active || current !== generation) return;
+          const currentPage = getVolunteerWorkspacePage(router.state.location.pathname);
+          if (currentPage && !currentPage.roles.includes(refreshed.admin.role)) {
+            await router.navigate({
+              to: getVolunteerNavigation(refreshed.admin.role).length
+                ? "/admin/volunteers"
+                : firstAllowedAdminRouteForIdentity(refreshed.admin),
+            });
+          } else {
+            await router.invalidate();
+          }
           if (active && current === generation) {
             setIdentityGeneration((value) => value + 1);
             setIdentityChanging(false);
@@ -82,7 +108,7 @@ export function VolunteerWorkspaceFrame({
       active = false;
       subscription.unsubscribe();
     };
-  }, [queryClient, identity?.admin.authUserId]);
+  }, [queryClient, router]);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const page = getVolunteerWorkspacePage(pathname);
   const items = getVolunteerNavigation(identity?.admin.role ?? null);

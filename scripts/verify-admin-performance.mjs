@@ -3,8 +3,48 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { gzipSync } from "node:zlib";
 import { execFileSync } from "node:child_process";
+import { volunteerReadSchemas } from "./volunteer-performance-read-schemas.mjs";
 
 const WARM_COUNT = 30;
+
+export function classifyScenario({ path, method = "GET", operationType, requestBody }) {
+  if (operationType !== undefined && !["read", "mutation"].includes(operationType))
+    throw new Error("Invalid operationType");
+  if (method === "GET") {
+    if (operationType === "mutation") throw new Error("GET cannot be a mutation scenario");
+    return "read";
+  }
+  if (operationType !== "read") return "mutation";
+  const endpoint = new URL(path, "http://fixture.invalid");
+  const normalized = endpoint.pathname.replace(/\/$/, "");
+  const schema =
+    method === "POST" && !endpoint.search ? volunteerReadSchemas.get(normalized) : undefined;
+  if (!schema?.safeParse(requestBody).success)
+    throw new Error("Read requires an allowlisted endpoint and valid command schema");
+  return "read";
+}
+
+export function readPerformanceDataset(manifest) {
+  const dataset = manifest.dataset ?? {
+    domain: "supporters",
+    counts: { supporters: manifest.supporterCount },
+  };
+  if (
+    !["supporters", "volunteers"].includes(dataset.domain) ||
+    !dataset.counts ||
+    typeof dataset.counts !== "object" ||
+    Array.isArray(dataset.counts) ||
+    !Object.keys(dataset.counts).length ||
+    Object.entries(dataset.counts).some(
+      ([key, value]) =>
+        !/^[a-zA-Z][a-zA-Z0-9_]{0,39}$/.test(key) || !Number.isSafeInteger(value) || value < 0,
+    )
+  )
+    throw new Error("Manifest requires truthful nonnegative dataset counts");
+  if (!manifest.dataset && ![1000, 10000, 50000].includes(manifest.supporterCount))
+    throw new Error("Legacy supporterCount must be 1000/10000/50000");
+  return dataset;
+}
 
 function requireTarget(baseURL, allowedOrigin) {
   const target = new URL(baseURL);
@@ -13,7 +53,11 @@ function requireTarget(baseURL, allowedOrigin) {
   }
   const local = ["127.0.0.1", "localhost", "[::1]"].includes(target.hostname);
   if (
-    target.hostname === "hkscda.vercel.app" ||
+    [
+      "hkscda.vercel.app",
+      "hkscda-ynwaforevers-projects.vercel.app",
+      "hkscda-git-main-ynwaforevers-projects.vercel.app",
+    ].includes(target.hostname) ||
     (!local && (target.protocol !== "https:" || target.origin !== allowedOrigin))
   ) {
     throw new Error("Use a disposable local target or an explicitly allowed staging origin");
@@ -38,7 +82,8 @@ export async function benchmarkScenario({
     throw new Error("Only same-origin admin API scenarios are supported");
   }
   const method = scenario.method ?? "GET";
-  const mutation = method !== "GET";
+  const operationType = classifyScenario({ ...scenario, path: endpoint.href, method });
+  const mutation = operationType === "mutation";
   if (!["GET", "POST", "PATCH", "PUT", "DELETE"].includes(method))
     throw new Error("Invalid method");
   if (mutation && !allowMutations) throw new Error("Mutation scenarios require allowMutations");
@@ -57,8 +102,12 @@ export async function benchmarkScenario({
     const started = performance.now();
     const response = await fetch(endpoint, {
       method,
-      headers: { ...headers, ...(mutation ? { "content-type": "application/json" } : {}) },
-      body: mutation ? JSON.stringify(scenario.requestBodies[index]) : undefined,
+      headers: { ...headers, ...(method !== "GET" ? { "content-type": "application/json" } : {}) },
+      body: mutation
+        ? JSON.stringify(scenario.requestBodies[index])
+        : method === "POST"
+          ? JSON.stringify(scenario.requestBody)
+          : undefined,
       redirect: "manual",
       signal: AbortSignal.timeout(30000),
     });
@@ -73,6 +122,15 @@ export async function benchmarkScenario({
       status: response.status,
       decodedBytes: bytes.length,
       gzipBytes: gzipSync(bytes).length,
+      serverTiming: Object.fromEntries(
+        [
+          ...(response.headers
+            .get("server-timing")
+            ?.matchAll(/\b(auth|role|rpc|serialize|volunteer);dur=([0-9.]+)/g) ?? []),
+        ]
+          .map((match) => [match[1], Number(match[2])])
+          .filter(([, duration]) => Number.isFinite(duration)),
+      ),
     });
   }
   const warmSamples = samples.slice(1);
@@ -85,6 +143,7 @@ export async function benchmarkScenario({
     kind: scenario.kind,
     routeTemplate: scenario.routeTemplate ?? endpoint.pathname,
     method,
+    operationType,
     cold: samples[0],
     coldDefinition: "First observed request; does not assert cleared server or database caches",
     warmSamples,
@@ -106,16 +165,10 @@ async function main() {
       "Usage: node scripts/verify-admin-performance.mjs <synthetic-staging-manifest.json>",
     );
   const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
-  if (
-    !manifest.fixtureId ||
-    ![1000, 10000, 50000].includes(manifest.supporterCount) ||
-    !Array.isArray(manifest.scenarios) ||
-    !manifest.scenarios.length
-  ) {
-    throw new Error(
-      "Manifest requires fixtureId, supporterCount (1000/10000/50000), and scenarios",
-    );
+  if (!manifest.fixtureId || !Array.isArray(manifest.scenarios) || !manifest.scenarios.length) {
+    throw new Error("Manifest requires fixtureId, dataset counts, and scenarios");
   }
+  const dataset = readPerformanceDataset(manifest);
   const token = process.env.ADMIN_PERF_TOKEN;
   if (!token)
     throw new Error(
@@ -123,10 +176,13 @@ async function main() {
     );
   requireTarget(manifest.baseURL, process.env.ADMIN_PERF_ALLOWED_ORIGIN);
   const report = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
     fixtureId: manifest.fixtureId,
     supporterCount: manifest.supporterCount,
+    dataset,
+    sourceLocation: manifest.sourceLocation ?? null,
+    actualFunctionRegion: manifest.actualFunctionRegion ?? null,
     origin: new URL(manifest.baseURL).origin,
     measuredAt: new Date().toISOString(),
     runtime: process.version,

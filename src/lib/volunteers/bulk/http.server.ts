@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { measureRequestStage } from "../../operations/requestTiming.server";
 import { readAdminJson } from "../../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { normalizeVolunteerResult } from "../apiResult";
@@ -9,7 +10,9 @@ export function createBulkHandlers(deps: {
 }) {
   const service = createBulkService(deps.execute);
   const response = (body: unknown, status = 200) =>
-    Response.json(body, { status, headers: { "cache-control": "no-store" } });
+    measureRequestStage("serialize", async () =>
+      Response.json(body, { status, headers: { "cache-control": "no-store" } }),
+    );
   return {
     async POST(request: Request) {
       try {
@@ -25,7 +28,15 @@ export function createBulkHandlers(deps: {
         const result = normalizeVolunteerResult(await service.command(actor.authUserId, body));
         return response(result.body, result.status);
       } catch (error) {
-        if (error instanceof Response) return error;
+        if (error instanceof Response) {
+          const headers = new Headers(error.headers);
+          headers.set("cache-control", "no-store");
+          return new Response(error.body, {
+            status: error.status,
+            statusText: error.statusText,
+            headers,
+          });
+        }
         if (error instanceof z.ZodError)
           return response(
             {

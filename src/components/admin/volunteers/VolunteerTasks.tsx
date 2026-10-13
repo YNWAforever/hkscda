@@ -1,3 +1,5 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { VolunteerLink } from "./VolunteerLink";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
@@ -56,10 +58,11 @@ type Data = {
   page?: number;
   pageSize?: number;
 };
-const post = <T,>(command: object) =>
+const post = <T,>(command: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/tasks", {
     method: "POST",
     body: JSON.stringify(command),
+    signal,
   });
 export function VolunteerTasks() {
   const { language } = useAdminLanguage();
@@ -76,8 +79,8 @@ export function VolunteerTasks() {
   const query = useQuery({
     queryKey: volunteerQueryKeys.key("tasks", listState.filters.scope, listState.page),
     enabled: listState.hydrated,
-    queryFn: () =>
-      post<Data>({ action: "list", scope: listState.filters.scope, page: listState.page }),
+    queryFn: ({ signal }) =>
+      post<Data>({ action: "list", scope: listState.filters.scope, page: listState.page }, signal),
     refetchInterval: 30000,
   });
   const mutation = useMutation({
@@ -89,7 +92,7 @@ export function VolunteerTasks() {
     },
   });
   const target = (row: Row) => (
-    <a
+    <VolunteerLink
       className="underline"
       href={
         row.registration_id || !row.kind
@@ -98,17 +101,17 @@ export function VolunteerTasks() {
       }
     >
       {copy.open(row.title)}
-    </a>
+    </VolunteerLink>
   );
   return (
     <section className="space-y-6">
-      <header>
+      <VolunteerPageHeading pageId="tasks">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p>{copy.intro}</p>
-        <a href="/admin/volunteers/calendar" className="underline">
+        <VolunteerLink href="/admin/volunteers/calendar" className="underline">
           {copy.calendarLink}
-        </a>
-      </header>
+        </VolunteerLink>
+      </VolunteerPageHeading>
       <WorkflowSections
         sections={[
           { id: "tasks-pending", label: copy.steps.pending },

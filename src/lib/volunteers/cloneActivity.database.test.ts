@@ -24,6 +24,7 @@ test.skipIf(!enabled)("clone preserves dates and rolls back when audit insert fa
   let rolledBack = false;
   try {
     await db.begin(async (tx) => {
+      await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now())`;
       await tx`insert into public.admin_user(auth_user_id,email,role,status)
         values(${actor}::uuid,${actor + "@example.invalid"},'admin','active')`;
       await tx`insert into public.volunteer_activity

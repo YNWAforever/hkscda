@@ -12,13 +12,23 @@ export function withVolunteerTiming(
 ): (request: Request) => Promise<Response> {
   if (!/^[a-z_]{1,60}$/.test(action)) throw new Error("Invalid telemetry action");
   return async (request) => {
+    const timing = createVolunteerTiming();
     const started = performance.now();
     let status = 500;
     try {
-      const response = await handler(request);
+      const response = await requestTimingContext.run(timing, () => handler(request));
       status = response.status;
       const headers = new Headers(response.headers);
-      headers.set("server-timing", `volunteer;dur=${(performance.now() - started).toFixed(1)}`);
+      const fields = [
+        `volunteer;dur=${(performance.now() - started).toFixed(1)}`,
+        ...Object.entries(timing.snapshot()).map(
+          ([stage, duration]) => `${stage};dur=${duration.toFixed(1)}`,
+        ),
+      ];
+      headers.set(
+        "server-timing",
+        [headers.get("server-timing"), ...fields].filter(Boolean).join(", "),
+      );
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
@@ -28,11 +38,36 @@ export function withVolunteerTiming(
       console.info(
         JSON.stringify({
           event: "volunteer_request",
-          action,
+          action: timing.action ?? action,
           status,
           duration_ms: Math.round((performance.now() - started) * 10) / 10,
+          stages: timing.snapshot(),
         }),
       );
     }
+  };
+}
+import {
+  requestTimingContext,
+  type RequestTiming,
+  type RequestTimingStage,
+} from "../operations/requestTiming.server";
+export type VolunteerTimingStage = RequestTimingStage;
+export function createVolunteerTiming(now = () => performance.now()): RequestTiming {
+  const stages: Partial<Record<RequestTimingStage, number>> = {};
+  const observe = (stage: RequestTimingStage, durationMs: number) => {
+    if (Number.isFinite(durationMs)) stages[stage] = (stages[stage] ?? 0) + Math.max(0, durationMs);
+  };
+  return {
+    observe,
+    snapshot: () => ({ ...stages }),
+    measure: async <T>(stage: RequestTimingStage, operation: () => Promise<T>) => {
+      const start = now();
+      try {
+        return await operation();
+      } finally {
+        observe(stage, now() - start);
+      }
+    },
   };
 }

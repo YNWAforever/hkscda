@@ -20,6 +20,11 @@ function englishScopeName(scope: string): string {
 /** Copy for the monthly tier assessment page (`VolunteerAssessments`). */
 export const assessmentsCopy = defineAdminCopy({
   zh: {
+    loading: "載入中…",
+    newRevision: "已有新版本，未儲存輸入已保留。",
+    reloadDraft: "捨棄輸入並載入新版本",
+    notificationsLimit: "顯示最近最多100筆通知工作。",
+    noNotifications: "目前沒有通知工作。",
     title: "每月義工級別評核",
     sections: {
       settings: "評核設定",
@@ -109,6 +114,11 @@ export const assessmentsCopy = defineAdminCopy({
     unreadable: "",
   },
   en: {
+    loading: "Loading…",
+    newRevision: "A newer revision is available. Your unsaved inputs are preserved.",
+    reloadDraft: "Discard inputs and load the new revision",
+    notificationsLimit: "Showing up to 100 recent notification jobs.",
+    noNotifications: "No notification jobs.",
     title: volunteerWorkspaceCopy.en.pages.assessments.label,
     sections: {
       settings: "Assessment settings",

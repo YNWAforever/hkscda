@@ -1,3 +1,4 @@
+import { VolunteerLink } from "./VolunteerLink";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
@@ -86,15 +87,18 @@ export function PersonRecords({
   return (
     <div className="min-w-0 space-y-6">
       <div className="flex flex-wrap gap-3">
-        <a className={action} href={`/admin/volunteers/people?${directoryQuery(search)}`}>
+        <VolunteerLink
+          className={action}
+          href={`/admin/volunteers/people?${directoryQuery(search)}`}
+        >
           {copy.back}
-        </a>
-        <a
+        </VolunteerLink>
+        <VolunteerLink
           className={`${action} bg-[var(--color-primary)] text-[var(--color-primary-foreground)]`}
           href={`/admin/volunteers/qualifications?profile_id=${encodeURIComponent(profile.id)}`}
         >
           {copy.verifyLink}
-        </a>
+        </VolunteerLink>
       </div>
       <header className={card}>
         <div className="flex flex-wrap items-center gap-3">
@@ -206,12 +210,12 @@ export function PersonRecords({
                     item.volunteer_hours,
                   )}
                 </p>
-                <a
+                <VolunteerLink
                   className={action}
                   href={`/admin/volunteers/registrations/${encodeURIComponent(item.id)}`}
                 >
                   {copy.registrations.view}
-                </a>
+                </VolunteerLink>
               </article>
             ))
           )}
@@ -243,12 +247,12 @@ export function PersonRecords({
                 <p className="whitespace-pre-wrap break-words">
                   {copy.attendance.reason(item.reason)}
                 </p>
-                <a
+                <VolunteerLink
                   className={action}
                   href={`/admin/volunteers/registrations/${encodeURIComponent(item.registration_id)}`}
                 >
                   {copy.attendance.related}
-                </a>
+                </VolunteerLink>
               </article>
             ))
           )}
@@ -289,9 +293,10 @@ export function VolunteerPersonDetail({
   const { copy } = usePersonText();
   const query = useQuery({
     queryKey: volunteerQueryKeys.key("directory", "person", profileId),
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       fetchAdminJson<DirectoryDetail>(
         `/api/admin/volunteers/people?profile_id=${encodeURIComponent(profileId)}`,
+        { signal },
       ),
   });
   // The shell's `h1` ("Volunteer details") stands in every state; the breadcrumb names the person.
@@ -307,9 +312,12 @@ export function VolunteerPersonDetail({
           retryLabel={copy.reload}
           className="border-0"
         />
-        <a className={action} href={`/admin/volunteers/people?${directoryQuery(search)}`}>
+        <VolunteerLink
+          className={action}
+          href={`/admin/volunteers/people?${directoryQuery(search)}`}
+        >
           {copy.back}
-        </a>
+        </VolunteerLink>
       </div>
     );
   return <PersonRecords data={query.data} search={search} />;

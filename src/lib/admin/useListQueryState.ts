@@ -140,6 +140,29 @@ export function useListQueryState<Filters extends object>({
     setDraftQuery(event.currentTarget.value);
     setComposing(false);
   }
+  function submitQuery() {
+    if (composing) return;
+    const next = draftQuery.trim();
+    try {
+      window.sessionStorage.setItem(storageKey, next);
+    } catch {
+      /* Optional persistence. */
+    }
+    setQuery(next);
+    setPage(1);
+    scopeChange.current?.();
+  }
+  function clearQuery() {
+    try {
+      window.sessionStorage.removeItem(storageKey);
+    } catch {
+      /* Optional persistence. */
+    }
+    setDraftQuery("");
+    setQuery("");
+    setPage(1);
+    scopeChange.current?.();
+  }
 
   return {
     filters,
@@ -150,6 +173,8 @@ export function useListQueryState<Filters extends object>({
     isDebouncing: composing || draftQuery.trim() !== query,
     setPage: changePage,
     changeFilter,
+    submitQuery,
+    clearQuery,
     queryInput: {
       value: draftQuery,
       onChange: changeQuery,

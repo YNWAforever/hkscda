@@ -130,3 +130,26 @@ test("monthly assessment reconciles after its due time and respects short months
     dueAssessmentPeriod(new Date("2026-02-28T04:00:00Z"), { ...policy, assessment_day: 31 }),
   ).toBe("2026-01-01");
 });
+
+test("finish failure never replaces the first domain error or stores private messages", async () => {
+  const error = { code: "22P02", message: "private@example.invalid" };
+  const results: unknown[] = [];
+  const repo = {
+    claim: async () => true,
+    preflight: async () => {},
+    generate: async () => {
+      throw error;
+    },
+    persistReleases: async () => 0,
+    promote: async () => 0,
+    assess: async () => false,
+    deferNotifications: async () => 0,
+    finish: async (_b: string, _o: string, _s: string, result: unknown) => {
+      results.push(result);
+      throw new Error("cleanup private");
+    },
+  };
+  await expect(createVolunteerRuntimeJobs(repo).run()).rejects.toBe(error);
+  expect(results[0]).toMatchObject({ error: "22P02", stage: "generate" });
+  expect(JSON.stringify(results)).not.toContain("private");
+});

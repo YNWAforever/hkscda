@@ -14,7 +14,9 @@ test.skipIf(!allowed)(
     try {
       await db.begin(async (tx) => {
         const actor = randomUUID();
-        const asOf = "2026-10-13T00:00:00Z";
+        // Historical rows obey the live policy trigger without inventing an approved future policy.
+        // The snapshot clock is independently fixed, so before/equal/after still exercise the contract.
+        const asOf = "2000-01-02T00:00:00Z";
         await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now())`;
         await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'staff','active')`;
         const read = async (scope: string, pageSize = 100) =>
@@ -24,10 +26,10 @@ test.skipIf(!allowed)(
         const before = await read("all", 0);
         const registrations: string[] = [];
         for (const [starts, status] of [
-          ["2026-10-12T00:00:00Z", "pending"],
+          ["2000-01-01T00:00:00Z", "pending"],
           [asOf, "pending"],
-          ["2026-10-14T00:00:00Z", "pending"],
-          ["2026-10-14T00:00:00Z", "approved"],
+          ["2000-01-03T00:00:00Z", "pending"],
+          ["2000-01-03T00:00:00Z", "approved"],
         ]) {
           const activity = randomUUID(),
             id = randomUUID();
@@ -36,6 +38,10 @@ test.skipIf(!allowed)(
           await tx`insert into public.volunteer_registration(id,activity_id,registration_type,status,participant_count,contact_name,contact_email,contact_phone,status_token_hash,status_token_expires_at) values(${id}::uuid,${activity}::uuid,'individual',${status},1,'AUDIT','audit@example.invalid','00000000',${randomUUID()},now()+interval '1 day')`;
         }
         const after = await read("all", 0);
+        const legacy = (
+          await tx`select public.volunteer_task_command(${actor}::uuid,'{"action":"list"}'::jsonb) snapshot`
+        )[0].snapshot;
+        expect(legacy.pending.map((r: { id: string }) => r.id)).not.toContain(registrations[0]);
         expect(after.counts.upcoming - before.counts.upcoming).toBe(1);
         expect(after.counts.overdue - before.counts.overdue).toBe(2);
         expect(after.counts.total - before.counts.total).toBe(3);

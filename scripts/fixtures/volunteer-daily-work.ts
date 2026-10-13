@@ -1,6 +1,8 @@
 import { randomUUID, randomBytes } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { SQL } from "bun";
+const fixtureDatabaseUrl = "postgresql://postgres:postgres@127.0.0.1:56322/postgres";
 
 const prefixSchema = z.string().regex(/^AUDIT-[A-Za-z0-9-]{8,64}$/);
 const ids = z.array(z.string().uuid()).max(2000);
@@ -9,6 +11,7 @@ const manifestSchema = z
     prefix: prefixSchema,
     fixtureId: z.string().uuid(),
     actorIds: ids,
+    adminRowIds: ids.default([]),
     profileIds: ids,
     activityIds: ids,
     registrationIds: ids,
@@ -50,6 +53,7 @@ export async function createVolunteerDailyWorkFixture(
     prefix,
     fixtureId: randomUUID(),
     actorIds: [],
+    adminRowIds: [],
     profileIds: [],
     activityIds: [],
     registrationIds: [],
@@ -57,19 +61,50 @@ export async function createVolunteerDailyWorkFixture(
     outboxIds: [],
   };
   const tag = `${prefix}-${manifest.fixtureId}`;
+  const privateActors: Array<{
+    authUserId: string;
+    email: string;
+    password: string;
+    role: string;
+  }> = [];
+  const db = new SQL(fixtureDatabaseUrl, { max: 1 });
   async function insert(table: string, row: Record<string, unknown>, list: string[]) {
     const id = randomUUID();
     // Save the identity before dispatch: an unknown POST outcome is never retried.
     list.push(id);
-    const { error } = await client.from(table).insert({ ...row, id });
-    if (error) throw new Error("Fixture insert failed", { cause: error });
+    if (
+      ![
+        "admin_user",
+        "volunteer_profile",
+        "volunteer_activity",
+        "volunteer_registration",
+        "volunteer_operation_outbox",
+      ].includes(table)
+    )
+      throw new Error("Fixture table refused");
+    const values = { ...row, id };
+    const columns = Object.keys(values);
+    if (columns.some((column) => !/^[a-z_]+$/.test(column)))
+      throw new Error("Fixture columns refused");
+    try {
+      await db.unsafe(
+        `insert into public.${table} (${columns.join(",")}) values (${columns.map((_, index) => "$" + (index + 1)).join(",")})`,
+        Object.values(values).map((value) =>
+          value && typeof value === "object" ? JSON.stringify(value) : value,
+        ),
+      );
+    } catch (error) {
+      throw new Error("Fixture insert failed", { cause: error });
+    }
     return id;
   }
   try {
     for (let index = 0; index < 31; index++) {
+      const password = randomBytes(32).toString("hex");
+      const email = `${tag}-${index}@example.invalid`;
       const { data, error } = await client.auth.admin.createUser({
         email: `${tag}-${index}@example.invalid`,
-        password: randomBytes(32).toString("hex"),
+        password,
         email_confirm: true,
         app_metadata: {
           volunteer_fixture_id: manifest.fixtureId,
@@ -92,8 +127,15 @@ export async function createVolunteerDailyWorkFixture(
             role,
             status: index === 4 ? "disabled" : "active",
           },
-          manifest.actorIds,
+          manifest.adminRowIds,
         );
+        manifest.actorIds.push(id);
+        privateActors.push({
+          authUserId: id,
+          email,
+          password,
+          role: index === 4 ? "disabled" : role,
+        });
       } else {
         await insert(
           "volunteer_profile",
@@ -158,11 +200,15 @@ export async function createVolunteerDailyWorkFixture(
       activityIds: manifest.activityIds,
       registrationIds: manifest.registrationIds,
       cleanupManifest: manifest,
+      // Keep these only in ignored local fixture storage; never in a report or PR.
+      privateActors,
     };
   } catch (error) {
     throw new Error("Fixture incomplete; retain cleanupManifest and reconcile before retry", {
       cause: { error, cleanupManifest: manifest },
     });
+  } finally {
+    await db.close();
   }
 }
 
@@ -173,27 +219,34 @@ export async function cleanupVolunteerDailyWorkFixture(
   const m = validateCleanupManifest(raw);
   verifyClient(client, m.prefix);
   const tag = `${m.prefix}-${m.fixtureId}`;
-  // Fixed tables, exact IDs and independent row ownership checks. Immutable audit facts are retained.
-  for (const [table, ownedIds, column] of [
-    ["volunteer_operation_outbox", m.outboxIds, "dedup_key"],
-    ["volunteer_registration", m.registrationIds, "contact_name"],
-    ["volunteer_activity", m.activityIds, "title"],
-    ["volunteer_profile", m.profileIds, "display_name"],
-    ["admin_user", m.actorIds, "email"],
-  ] as const) {
-    if (!ownedIds.length) continue;
-    const { error } = await client.from(table).delete().in("id", ownedIds).like(column, `${tag}%`);
-    if (error) throw new Error("Fixture cleanup blocked; retain manifest", { cause: error });
-  }
-  for (const id of m.userIds) {
-    const { data, error } = await client.auth.admin.getUserById(id);
-    if (error) throw new Error("Cannot verify fixture auth ownership", { cause: error });
-    if (
-      data.user?.app_metadata.volunteer_fixture_id !== m.fixtureId ||
-      data.user?.app_metadata.volunteer_fixture_prefix !== m.prefix
-    )
-      throw new Error("Fixture auth ownership mismatch");
-    const removed = await client.auth.admin.deleteUser(id);
-    if (removed.error) throw new Error("Fixture auth cleanup blocked", { cause: removed.error });
+  const db = new SQL(fixtureDatabaseUrl, { max: 1 });
+  try {
+    // Fixed tables, exact IDs and independent row ownership checks. Immutable audit facts are retained.
+    for (const [table, ownedIds, column] of [
+      ["volunteer_operation_outbox", m.outboxIds, "dedup_key"],
+      ["volunteer_registration", m.registrationIds, "contact_name"],
+      ["volunteer_activity", m.activityIds, "title"],
+      ["volunteer_profile", m.profileIds, "display_name"],
+      ["admin_user", m.adminRowIds, "email"],
+    ] as const) {
+      if (!ownedIds.length) continue;
+      await db.unsafe(
+        `delete from public.${table} where id = any($1::uuid[]) and ${column} like $2`,
+        ["{" + ownedIds.join(",") + "}", `${tag}%`],
+      );
+    }
+    for (const id of m.userIds) {
+      const { data, error } = await client.auth.admin.getUserById(id);
+      if (error) throw new Error("Cannot verify fixture auth ownership", { cause: error });
+      if (
+        data.user?.app_metadata.volunteer_fixture_id !== m.fixtureId ||
+        data.user?.app_metadata.volunteer_fixture_prefix !== m.prefix
+      )
+        throw new Error("Fixture auth ownership mismatch");
+      const removed = await client.auth.admin.deleteUser(id);
+      if (removed.error) throw new Error("Fixture auth cleanup blocked", { cause: removed.error });
+    }
+  } finally {
+    await db.close();
   }
 }

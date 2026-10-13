@@ -1,3 +1,4 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
@@ -157,23 +158,27 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   });
   const templates = useQuery({
     queryKey: volunteerQueryKeys.key("workspaceTemplates"),
-    queryFn: () => call<{ templates: Template[] }>({ action: "templates" }),
+    queryFn: ({ signal }) => call<{ templates: Template[] }>({ action: "templates" }, signal),
   });
   const detail = useQuery({
     queryKey: volunteerQueryKeys.key("workspaceDetail", selected, detailPage, historyPage),
     enabled: Boolean(selected),
-    queryFn: () =>
-      call<ActivityDetail>({
-        action: "detail",
-        activity_id: selected,
-        page: detailPage,
-        history_page: historyPage,
-      }),
+    queryFn: ({ signal }) =>
+      call<ActivityDetail>(
+        {
+          action: "detail",
+          activity_id: selected,
+          page: detailPage,
+          history_page: historyPage,
+        },
+        signal,
+      ),
   });
   const restored = useQuery({
     queryKey: volunteerQueryKeys.key("operationRestore", state.operation),
     enabled: Boolean(state.operation),
-    queryFn: () => call<Reply>({ action: "status", operation_id: state.operation }),
+    queryFn: ({ signal }) =>
+      call<Reply>({ action: "status", operation_id: state.operation }, signal),
   });
   useEffect(() => {
     if (restored.data) {
@@ -332,16 +337,17 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     (draft.mode !== "generate" && draft.mode !== "copy" && !selection) ||
     (draft.mode === "copy" && !selection);
   function shift(days: number) {
-    if (listState.filters.date_scope === "custom") return;
+    if (listState.filters.date_scope !== "future") return;
     const start = filter.from ?? hkDate();
     updateFilter({
+      date_scope: "future",
       from: addHkDays(start, days),
       until: addHkDays(filter.until ?? addHkDays(start, 30), days),
     });
   }
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
+      <VolunteerPageHeading pageId={initialView === "calendar" ? "calendar" : "activities"}>
         <div>
           <h1 className="text-2xl font-bold">
             {initialView === "calendar" ? copy.calendarTitle : copy.title}
@@ -351,7 +357,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <a className={button} href="/admin/volunteers/settings">
           {copy.policyLink}
         </a>
-      </header>
+      </VolunteerPageHeading>
       <VolunteerDraftForm />
       <section aria-label={copy.filters.label} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <label className="col-span-2 sm:col-span-1">
@@ -477,10 +483,18 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         >
           {copy.filters.next30}
         </button>
-        <button className={button} onClick={() => shift(-30)}>
+        <button
+          className={button}
+          disabled={listState.filters.date_scope !== "future"}
+          onClick={() => shift(-30)}
+        >
           {copy.filters.previous}
         </button>
-        <button className={button} onClick={() => shift(30)}>
+        <button
+          className={button}
+          disabled={listState.filters.date_scope !== "future"}
+          onClick={() => shift(30)}
+        >
           {copy.filters.next}
         </button>
         <button

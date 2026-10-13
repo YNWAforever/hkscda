@@ -1,9 +1,10 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
 import { PolicyChangeSummary } from "./PolicyChangeSummary";
 import { WorkflowSections } from "./WorkflowSections";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
@@ -46,10 +47,11 @@ export type DailySettingsInitial = {
   preview?: DailyPreview;
   notice?: DailyNotice;
 };
-const api = <T,>(body: object) =>
+const api = <T,>(body: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/daily-settings", {
     method: "POST",
     body: JSON.stringify(body),
+    signal,
   });
 const input =
   "min-h-11 w-full rounded-md border border-[var(--color-border)] bg-white px-3 py-2 text-sm";
@@ -73,7 +75,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
   const qc = useQueryClient();
   const listing = useQuery({
     queryKey: volunteerQueryKeys.key("dailySettings"),
-    queryFn: () => api<Listing>({ action: "list" }),
+    queryFn: ({ signal }) => api<Listing>({ action: "list" }, signal),
   });
   const [selection, setSelection] = useState(initial?.selection ?? "");
   const [draft, setDraft] = useState<PolicyDraft | undefined>(initial?.draft);
@@ -85,14 +87,28 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
   const binding = listing.data?.bindings.find(
     (b) => `${b.scope_key}|${b.service_date}` === selection,
   );
+  const loaded = useRef({ identity: initial?.selection ?? "", revision: -1 });
+  const newerDraft =
+    dirty && binding && binding.revision > loaded.current.revision && loaded.current.revision >= 0;
   useEffect(() => {
-    if (binding) {
+    if (binding && loaded.current.revision < 0 && initial?.draft)
+      loaded.current = { identity: selection, revision: binding.revision };
+    if (
+      binding &&
+      canHydrateVolunteerDraft({
+        dirty,
+        identityChanged: loaded.current.identity !== selection,
+        loadedRevision: loaded.current.revision,
+        incomingRevision: binding.revision,
+      })
+    ) {
+      loaded.current = { identity: selection, revision: binding.revision };
       setDraft(structuredClone(binding.policy_body));
       setDirty(false);
       setPreview(undefined);
       setReason("");
     }
-  }, [binding]);
+  }, [binding, dirty, selection, initial?.draft]);
   const leaveDialog = useUnsavedVolunteerDraft(dirty);
   const quota = draft?.daily_limits.find((q) => q.key === binding?.body.key);
   const edit = (change: (p: PolicyDraft) => void) => {
@@ -116,7 +132,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
         action: "preview",
         scope_key: binding!.scope_key,
         service_date: binding!.service_date,
-        expected_revision: binding!.revision,
+        expected_revision: loaded.current.revision,
         body: draft,
       }),
     onSuccess: (p) => {
@@ -160,15 +176,23 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
       total: unnamedVenues.length,
     });
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-6">
       {leaveDialog}
-      <header className="space-y-2">
+      <VolunteerPageHeading pageId="daily-settings">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         <a className="underline" href="/admin/volunteers/settings">
           {copy.back}
         </a>
-      </header>
+      </VolunteerPageHeading>
+      {newerDraft && (
+        <p role="alert">
+          {copy.newerDraft}
+          <button className={input} onClick={() => setDirty(false)}>
+            {copy.reloadDraft}
+          </button>
+        </p>
+      )}
       <WorkflowSections
         sections={[
           { id: "daily-quota", label: copy.sections.quota },
@@ -682,3 +706,4 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
 function valueOf(limit: Daily["maximum"]): number | undefined {
   return limit.state === "value" ? limit.value : undefined;
 }
+import { canHydrateVolunteerDraft } from "./draftHydration";

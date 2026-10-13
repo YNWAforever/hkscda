@@ -2,6 +2,7 @@ import { createSupabaseServiceClient, requireAdmin } from "../donations/supabase
 import { createOverviewHandler } from "./overview";
 import { readVolunteerCoverage } from "./sessionCoverage.server";
 import { readPendingSnapshot } from "./pending";
+import { readVolunteerJobHealth } from "./jobs/health.server";
 export async function handleVolunteerOverview(request: Request) {
   const client = createSupabaseServiceClient();
   let actorId = "";
@@ -11,6 +12,7 @@ export async function handleVolunteerOverview(request: Request) {
       actorId = actor.authUserId;
     },
     readCoverage: (query) => readVolunteerCoverage(client, query),
+    readHealth: () => readVolunteerJobHealth(client),
     read: async (range, snapshot) => {
       const results = await Promise.allSettled([
         client

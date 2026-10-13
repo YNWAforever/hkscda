@@ -49,3 +49,14 @@ test("invalid dates, inverted ranges, scopes and pagination recover safely", () 
   for (const page of ["0", "-1", "100001", "NaN"])
     expect(readActivityRouteState(new URLSearchParams(`page=${page}`), today).page).toBe(1);
 });
+
+test("a temporarily inverted UI range reaches server validation without crashing render", () => {
+  const ui = {
+    date_scope: "custom" as const,
+    from: "2026-10-14",
+    until: "2026-10-13",
+    sort: "asc" as const,
+  };
+  expect(() => toActivityApiFilter(ui)).not.toThrow();
+  expect(activityFilterSchema.safeParse(toActivityApiFilter(ui)).success).toBe(false);
+});

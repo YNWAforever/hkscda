@@ -305,7 +305,7 @@ export async function loadDestinations() {
       </VolunteerWorkspaceFrame>
     ),
     people: () => (
-      <VolunteerWorkspaceFrame intro="people">
+      <VolunteerWorkspaceFrame>
         <VolunteerDirectory search={{ page: 1 }} />
       </VolunteerWorkspaceFrame>
     ),

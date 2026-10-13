@@ -8,10 +8,12 @@ export function createDirectoryRepository(client: SupabaseClient) {
     actor: string,
     input: DirectoryQuery,
   ): Promise<DirectoryList | DirectoryDetail | null> => {
-    const { data, error } = await client.rpc("volunteer_admin_directory_read", {
-      p_actor: actor,
-      p_query: input,
-    });
+    const { data, error } = await measureRequestStage("rpc", async () =>
+      client.rpc("volunteer_admin_directory_read", {
+        p_actor: actor,
+        p_query: input,
+      }),
+    );
     if (error) throw error;
     return data as DirectoryList | DirectoryDetail | null;
   };
@@ -23,3 +25,4 @@ export async function handleDirectoryRequest(request: Request) {
     read: createDirectoryRepository(client),
   })(request);
 }
+import { measureRequestStage } from "../../operations/requestTiming.server";

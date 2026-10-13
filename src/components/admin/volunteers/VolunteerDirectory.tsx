@@ -1,7 +1,15 @@
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import {
+  parseListPage,
+  useListQueryState,
+  type ListRouteState,
+} from "../../../lib/admin/useListQueryState";
+import { VolunteerLink } from "./VolunteerLink";
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import {
   addVolunteerSelection,
@@ -16,6 +24,7 @@ import { selectionProblemMessage, type SelectionProblem } from "./directoryProbl
 
 import {
   directoryQuery,
+  parseDirectorySearch,
   directoryStatusValues,
   directoryTierValues,
   type DirectorySearch,
@@ -97,33 +106,58 @@ export function DirectoryResults({
               <p className="mt-1 break-all text-xs text-[var(--color-muted-foreground)]">
                 {text.profileId(profile.id)}
               </p>
-              <a
+              <VolunteerLink
                 className={`${link} mt-4`}
                 href={`/admin/volunteers/people/${encodeURIComponent(profile.id)}?${directoryQuery(search)}`}
                 aria-label={text.viewDetailsFor(profile.display_name || text.unnamed)}
               >
                 {text.viewDetails}
-              </a>
+              </VolunteerLink>
             </li>
           ))}
         </ul>
       )}
       <nav aria-label={text.pagesLabel} className="flex flex-wrap items-center gap-3">
         {data.page > 1 && (
-          <a className={link} href={`?${directoryQuery({ ...search, page: data.page - 1 })}`}>
+          <VolunteerLink
+            className={link}
+            href={`?${directoryQuery({ ...search, page: data.page - 1 })}`}
+          >
             {text.previous}
-          </a>
+          </VolunteerLink>
         )}
         {data.page < pages && (
-          <a className={link} href={`?${directoryQuery({ ...search, page: data.page + 1 })}`}>
+          <VolunteerLink
+            className={link}
+            href={`?${directoryQuery({ ...search, page: data.page + 1 })}`}
+          >
             {text.next}
-          </a>
+          </VolunteerLink>
         )}
       </nav>
     </div>
   );
 }
-export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
+const directoryRoute: ListRouteState<DirectorySearch> = {
+  key: "volunteer-directory",
+  read: (params) => ({
+    filters: { ...parseDirectorySearch(Object.fromEntries(params)), q: undefined },
+    page: parseListPage(params.get("page")),
+  }),
+  write: (params, filters, page) => {
+    for (const key of ["q", "status", "tier", "page"]) params.delete(key);
+    for (const [key, value] of new URLSearchParams(directoryQuery({ ...filters, page })))
+      params.set(key, value);
+  },
+};
+export function VolunteerDirectory({ search: initialSearch }: { search: DirectorySearch }) {
+  const listState = useListQueryState({
+    key: "volunteer-directory",
+    initialFilters: { ...initialSearch, q: undefined },
+    initialPage: initialSearch.page,
+    routeState: directoryRoute,
+  });
+  const search = { ...listState.filters, q: listState.query || undefined, page: listState.page };
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerDirectoryCopy, language);
   const identity = useQuery(adminIdentityQueryOptions());
@@ -143,10 +177,17 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
   }, [filterKey]);
   const query = useQuery({
     queryKey: volunteerQueryKeys.key("directory", search),
-    queryFn: () =>
-      fetchAdminJson<ListData>(`/api/admin/volunteers/people?${directoryQuery(search)}`),
+    enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
+    queryFn: ({ signal }) =>
+      fetchAdminJson<ListData>("/api/admin/volunteers/people", {
+        method: "POST",
+        body: JSON.stringify(search),
+        signal,
+      }),
   });
-  const selectionDisabled = selectionBusy || query.isFetching || !query.data;
+  const selectionDisabled =
+    selectionBusy || query.isFetching || listState.isDebouncing || !query.data;
   const selectionMessage = selectionProblemMessage(selectionProblem, language);
   function toggleSelected(id: string) {
     setSelectedScope(filterKey);
@@ -183,9 +224,10 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
     setSelectionProblem(null);
     try {
       const ids = await collectMatchingVolunteerIds(query.data.total, async (page, limit) =>
-        fetchAdminJson<DirectoryList>(
-          `/api/admin/volunteers/people?${directoryQuery({ ...search, page })}&limit=${limit}`,
-        ),
+        fetchAdminJson<DirectoryList>("/api/admin/volunteers/people", {
+          method: "POST",
+          body: JSON.stringify({ ...search, page, limit }),
+        }),
       );
       if (filterKeyRef.current !== scope) throw new VolunteerSelectionError("filter_changed");
       setSelectedScope(scope);
@@ -198,19 +240,24 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
   }
   return (
     <section className="min-w-0 space-y-6">
+      <VolunteerPageHeading
+        pageId="people"
+        description={pickAdminCopy(volunteerWorkspaceCopy, language).intros.people.description}
+      />
       <form
-        action="/admin/volunteers/people"
-        method="get"
+        onSubmit={(event) => {
+          event.preventDefault();
+          listState.submitQuery();
+        }}
         className="grid items-end gap-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_auto]"
       >
         <label className="space-y-2">
           <span className="block text-sm font-medium">{copy.form.nameOrEmail}</span>
           <input
-            key={search.q}
             name="q"
             type="search"
             maxLength={100}
-            defaultValue={search.q}
+            {...listState.queryInput}
             placeholder={copy.form.nameOrEmailPlaceholder}
             className={control}
           />
@@ -220,7 +267,14 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
           <select
             key={search.status}
             name="status"
-            defaultValue={search.status || ""}
+            value={search.status || ""}
+            onChange={(event) =>
+              listState.changeFilter({
+                status: event.target.value
+                  ? (event.target.value as DirectorySearch["status"])
+                  : undefined,
+              })
+            }
             className={control}
           >
             <option value="">{copy.form.allStatuses}</option>
@@ -236,7 +290,14 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
           <select
             key={search.tier}
             name="tier"
-            defaultValue={search.tier || ""}
+            value={search.tier || ""}
+            onChange={(event) =>
+              listState.changeFilter({
+                tier: event.target.value
+                  ? (event.target.value as DirectorySearch["tier"])
+                  : undefined,
+              })
+            }
             className={control}
           >
             <option value="">{copy.form.allTiers}</option>
@@ -250,12 +311,16 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
         <button className="min-h-11 rounded-lg bg-[var(--color-primary)] px-5 py-2 font-medium text-[var(--color-primary-foreground)]">
           {copy.form.search}
         </button>
-        <a
-          href="/admin/volunteers/people"
+        <button
+          type="button"
+          onClick={() => {
+            listState.clearQuery();
+            listState.changeFilter({ status: undefined, tier: undefined });
+          }}
           className="inline-flex min-h-11 items-center text-sm underline"
         >
           {copy.form.clear}
-        </a>
+        </button>
       </form>
       <p className="text-sm text-[var(--color-muted-foreground)]">{copy.note}</p>
       {query.isPending && <p role="status">{copy.loading}</p>}

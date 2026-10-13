@@ -1,3 +1,5 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { VolunteerLink } from "./VolunteerLink";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -37,8 +39,8 @@ export type PolicySimulationInitial = {
   time?: string;
 };
 const endpoint = "/api/admin/volunteers/simulation/";
-const send = <T,>(body: unknown) =>
-  fetchAdminJson<T>(endpoint, { method: "POST", body: JSON.stringify(body) });
+const send = <T,>(body: unknown, signal?: AbortSignal) =>
+  fetchAdminJson<T>(endpoint, { method: "POST", body: JSON.stringify(body), signal });
 const input = "min-h-11 min-w-0 w-full rounded border px-3 py-2";
 export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulationInitial } = {}) {
   const { language } = useAdminLanguage();
@@ -46,7 +48,7 @@ export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulat
   const format = pickAdminCopy(policyFormatCopy, language);
   const listing = useQuery({
     queryKey: volunteerQueryKeys.key("simulation"),
-    queryFn: () => send<Listing>({ action: "list" }),
+    queryFn: ({ signal }) => send<Listing>({ action: "list" }, signal),
   });
   const [template, setTemplate] = useState(initial?.template ?? "");
   const [activity, setActivity] = useState(initial?.activity ?? "");
@@ -71,12 +73,12 @@ export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulat
     simulate.reset();
   };
   return (
-    <section className="space-y-5 p-4 md:p-6">
-      <h1 className="text-2xl font-bold">{copy.title}</h1>
+    <section className="space-y-5">
+      <VolunteerPageHeading pageId="simulation" title={copy.title} />
       <p>{copy.intro}</p>
-      <a className="underline" href="/admin/volunteers/settings">
+      <VolunteerLink className="underline" href="/admin/volunteers/settings">
         {copy.back}
-      </a>
+      </VolunteerLink>
       {listing.error && (
         <LoadFailure
           error={listing.error}

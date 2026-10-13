@@ -11,6 +11,16 @@ import {
 import { notifyGroupEnquiryAdmins } from "../../../../lib/groupEnquiries/notifications.server";
 import { createSupabaseGroupEnquiryRepository } from "../../../../lib/groupEnquiries/repository.server";
 import { createGroupEnquiryService } from "../../../../lib/groupEnquiries/service";
+import { groupEnquirySearchSchema } from "../../../../lib/groupEnquiries/schemas";
+export const groupEnquiryBodySearchSchema = z
+  .object({
+    action: z.literal("search"),
+    query: groupEnquirySearchSchema
+      .pick({ q: true, status: true, page: true })
+      .extend({ q: z.string().trim().max(200).optional() })
+      .strict(),
+  })
+  .strict();
 
 type HandlerContext = { request: Request };
 type AdminGroupEnquiryService = ReturnType<typeof createGroupEnquiryService>;
@@ -71,6 +81,13 @@ export function createAdminGroupEnquiryHandlers({
   service,
 }: CreateAdminGroupEnquiryHandlersArgs) {
   return {
+    search({ request }: HandlerContext) {
+      return withAdminGroupEnquiryErrors(async () => {
+        await requireVolunteerAdmin(request);
+        const command = groupEnquiryBodySearchSchema.parse(await jsonBody(request));
+        return jsonNoStore(await service.listGroupEnquiries(command.query));
+      });
+    },
     listOrGet({ request }: HandlerContext) {
       return withAdminGroupEnquiryErrors(async () => {
         await requireVolunteerAdmin(request);
@@ -126,6 +143,7 @@ export const Route = createFileRoute("/api/admin/volunteers/group-enquiries")({
   server: {
     handlers: {
       GET: async (context) => createHandlers().listOrGet(context),
+      POST: async (context) => createHandlers().search(context),
       PATCH: async (context) => createHandlers().update(context),
     },
   },

@@ -71,5 +71,5 @@ export function writeActivityRouteState(
 }
 export function toActivityApiFilter(ui: ActivityUiFilters): ActivityFilter {
   const { date_scope: _scope, ...filter } = ui;
-  return activityFilterSchema.parse(filter);
+  return filter;
 }
