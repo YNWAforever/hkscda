@@ -99,7 +99,7 @@ export function VolunteerAssessments({
   const jobs = notifications.data?.jobs ?? initial?.jobs ?? [];
   const loadError = listing.error ? { cause: listing.error } : undefined;
   const incomingDraft = listing.data?.draft;
-  const newRevision = dirty && incomingDraft && incomingDraft.revision !== rev;
+  const newRevision = dirty && incomingDraft && incomingDraft.revision > rev;
   const fail = (cause: unknown) => setMessage({ code: "error", cause });
   const load = () => listing.refetch();
   useEffect(() => {

@@ -3,6 +3,21 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "./identity";
 import { postSignInDestination } from "./loginRedirect";
 import type { AdminMeResponse } from "./session";
+import { clearVolunteerSessionSearch } from "../volunteers/queryKeys";
+
+function clearPrivateSessionSearch() {
+  if (typeof window === "undefined") return;
+  try {
+    clearVolunteerSessionSearch(window.sessionStorage);
+  } catch {
+    /* Optional storage. */
+  }
+  try {
+    window.dispatchEvent(new Event("hkscda-admin-identity-cleared"));
+  } catch {
+    /* Auth must remain usable. */
+  }
+}
 
 /**
  * Finishes a sign-in: reads the new account's identity (never the previous account's cached
@@ -21,10 +36,11 @@ export async function completeSignIn({
     queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId;
   queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
   const result = await queryClient.fetchQuery(adminIdentityQueryOptions()).catch(() => null);
-  if (previousId && (!result || previousId !== result.admin.authUserId)) {
+  if (!result || previousId !== result.admin.authUserId) {
     // Another person signed in on this tab, or we cannot tell who: nothing the last one saw
     // may stay cached.
     queryClient.clear();
+    clearPrivateSessionSearch();
     if (result) queryClient.setQueryData(ADMIN_IDENTITY_QUERY_KEY, result);
   }
   push(postSignInDestination(redirectParam, result?.admin ?? null));
@@ -51,6 +67,7 @@ export async function signOutAndLeave({
   } finally {
     // Otherwise the next admin to sign in on this tab reads the previous one's cached identity.
     queryClient.clear();
+    clearPrivateSessionSearch();
     push();
   }
 }

@@ -1,5 +1,5 @@
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import {
@@ -50,16 +50,31 @@ export function DirectoryResults({
   data,
   search,
   selection,
+  onPageChange,
 }: {
   data: ListData;
   search: DirectorySearch;
   selection?: { ids: string[]; disabled: boolean; toggle: (id: string) => void };
+  onPageChange?: (page: number) => void;
 }) {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerDirectoryCopy, language);
   const text = copy.results;
   const pages = Math.max(1, Math.ceil(data.total / data.limit));
   const filtered = Boolean(search.q || search.status || search.tier);
+  const changePage = (event: MouseEvent<HTMLAnchorElement>, page: number) => {
+    if (
+      !onPageChange ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey ||
+      event.shiftKey
+    )
+      return;
+    event.preventDefault();
+    onPageChange(page);
+  };
   return (
     <div className="space-y-4">
       <p role="status" className="text-sm text-[var(--color-muted-foreground)]">
@@ -122,6 +137,7 @@ export function DirectoryResults({
           <VolunteerLink
             className={link}
             href={`?${directoryQuery({ ...search, page: data.page - 1 })}`}
+            onClick={(event) => changePage(event, data.page - 1)}
           >
             {text.previous}
           </VolunteerLink>
@@ -130,6 +146,7 @@ export function DirectoryResults({
           <VolunteerLink
             className={link}
             href={`?${directoryQuery({ ...search, page: data.page + 1 })}`}
+            onClick={(event) => changePage(event, data.page + 1)}
           >
             {text.next}
           </VolunteerLink>
@@ -377,6 +394,7 @@ export function VolunteerDirectory({ search: initialSearch }: { search: Director
         <DirectoryResults
           data={query.data}
           search={search}
+          onPageChange={listState.setPage}
           selection={
             isAdmin
               ? { ids: effectiveSelectedIds, disabled: selectionDisabled, toggle: toggleSelected }

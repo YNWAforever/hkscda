@@ -80,6 +80,36 @@ describe("completeSignIn", () => {
 });
 
 describe("signOutAndLeave", () => {
+  test("logout outside volunteer routes clears private session searches and bulk state", async () => {
+    const values = new Map([
+      ["hkscda.admin.list.query.volunteer-directory", "A-private"],
+      ["volunteer-review-bulk-operation", "A-operation"],
+      ["hkscda-admin-language", "en"],
+    ]);
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "window");
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        sessionStorage: {
+          get length() {
+            return values.size;
+          },
+          key: (i: number) => [...values.keys()][i] ?? null,
+          removeItem: (key: string) => values.delete(key),
+        },
+        dispatchEvent: () => true,
+      },
+    });
+    try {
+      await signOutAndLeave(logoutSetup(async () => {}));
+      expect(values.has("hkscda.admin.list.query.volunteer-directory")).toBe(false);
+      expect(values.has("volunteer-review-bulk-operation")).toBe(false);
+      expect(values.get("hkscda-admin-language")).toBe("en");
+    } finally {
+      if (descriptor) Object.defineProperty(globalThis, "window", descriptor);
+      else Reflect.deleteProperty(globalThis, "window");
+    }
+  });
   function logoutSetup(signOut: () => Promise<unknown>) {
     const queryClient = new QueryClient();
     queryClient.setQueryData(["animals"], ["old"]);
