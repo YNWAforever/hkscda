@@ -1,3 +1,5 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
 import { WorkflowSections } from "./WorkflowSections";
 import { PolicyChangeSummary } from "./PolicyChangeSummary";
@@ -91,7 +93,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
   const format = pickAdminCopy(policyFormatCopy, language);
   const change = pickAdminCopy(policyChangeCopy, language);
   const registry = useQuery({
-    queryKey: ["volunteer-policy-sources"],
+    queryKey: volunteerQueryKeys.key("policySources"),
     queryFn: () =>
       fetchAdminJson<SourceListing>("/api/admin/volunteers/sources/", {
         method: "POST",
@@ -100,7 +102,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
   });
   const qc = useQueryClient(),
     q = useQuery({
-      queryKey: ["volunteer-policy-settings"],
+      queryKey: volunteerQueryKeys.key("policySettings"),
       queryFn: () => api<L>({ action: "list" }),
     });
   const [key, setKey] = useState(
@@ -158,7 +160,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         setDraft(r.draft.body);
         setDirty(false);
         setNotice({ code: "draft_saved" });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "policy", language);
       },
     }),
     pre = useMutation({
@@ -188,17 +190,20 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
       onSuccess: (x) => {
         setPreview(undefined);
         setNotice({ code: "published", count: x.activity_ids.length });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "policy", language);
       },
     }),
     gen = useMutation({
       mutationFn: () =>
         api({ action: "generate", template_key: key, date, idempotency_key: crypto.randomUUID() }),
-      onSuccess: () => setNotice({ code: "generated" }),
+      onSuccess: () => {
+        setNotice({ code: "generated" });
+        void refreshVolunteerQueries(qc, "activity", language);
+      },
     }),
     cp = useMutation({
       mutationFn: (id: string) => api({ action: "copy", version_id: id, expected_revision: rev }),
-      onSuccess: () => void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] }),
+      onSuccess: () => void refreshVolunteerQueries(qc, "policy", language),
     });
   if (q.isError)
     return (

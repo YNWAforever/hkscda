@@ -1,3 +1,5 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -39,7 +41,7 @@ export function VolunteerDraftForm() {
       setKey(crypto.randomUUID());
       setOpen(false);
       setTitle("");
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
+      void refreshVolunteerQueries(cache, "activity", language);
     },
   });
   return (

@@ -1,3 +1,5 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
 import { ActivityOperationPanel } from "./ActivityOperationPanel";
@@ -29,6 +31,7 @@ import type {
 } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import { readActivityReturnState } from "./activityReturnState";
 import {
   readActivityRouteState,
   writeActivityRouteState,
@@ -146,18 +149,18 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const patchDraft = (patch: Partial<OperationDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
   const list = useQuery({
-    queryKey: ["volunteer-workspace", filter, page],
+    queryKey: volunteerQueryKeys.key("workspace", filter, page),
     enabled: listState.hydrated,
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       call<{ activities: Row[]; total: number }>({ action: "list", filter, page }, signal),
   });
   const templates = useQuery({
-    queryKey: ["volunteer-workspace-templates"],
+    queryKey: volunteerQueryKeys.key("workspaceTemplates"),
     queryFn: () => call<{ templates: Template[] }>({ action: "templates" }),
   });
   const detail = useQuery({
-    queryKey: ["volunteer-workspace-detail", selected, detailPage, historyPage],
+    queryKey: volunteerQueryKeys.key("workspaceDetail", selected, detailPage, historyPage),
     enabled: Boolean(selected),
     queryFn: () =>
       call<ActivityDetail>({
@@ -168,7 +171,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       }),
   });
   const restored = useQuery({
-    queryKey: ["volunteer-operation-restore", state.operation],
+    queryKey: volunteerQueryKeys.key("operationRestore", state.operation),
     enabled: Boolean(state.operation),
     queryFn: () => call<Reply>({ action: "status", operation_id: state.operation }),
   });
@@ -283,8 +286,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     onSuccess: (data) => {
       setOperation(data.operation);
       setReviewAll(false);
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
+      void refreshVolunteerQueries(cache, "activity", language);
     },
   });
   const sequence = useMutation({
@@ -300,8 +302,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setOperation(latest);
       setReviewAll(false);
       setNotice({ code: halted ? "sequenceHalted" : "sequenceDone" });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
+      void refreshVolunteerQueries(cache, "activity", language);
     },
   });
   const refresh = useMutation({
@@ -670,6 +671,16 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         />
       )}
       <ActivityDetailSheet
+        returnState={readActivityReturnState(
+          new URLSearchParams(
+            typeof window === "undefined"
+              ? ""
+              : window.location.search +
+                  (window.location.search ? "&" : "?") +
+                  "return_from=" +
+                  (initialView === "calendar" ? "calendar" : "activities"),
+          ),
+        )}
         open={Boolean(selected)}
         onClose={() => {
           setSelected(null);

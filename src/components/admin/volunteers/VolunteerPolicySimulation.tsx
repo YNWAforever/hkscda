@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -44,7 +45,7 @@ export function VolunteerPolicySimulation({ initial }: { initial?: PolicySimulat
   const copy = pickAdminCopy(policySimulationCopy, language);
   const format = pickAdminCopy(policyFormatCopy, language);
   const listing = useQuery({
-    queryKey: ["volunteer-policy-simulation"],
+    queryKey: volunteerQueryKeys.key("simulation"),
     queryFn: () => send<Listing>({ action: "list" }),
   });
   const [template, setTemplate] = useState(initial?.template ?? "");

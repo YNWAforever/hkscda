@@ -1,3 +1,5 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { VolunteerLegacyReconciliation } from "./VolunteerLegacyReconciliation";
 import { useEffect, useState } from "react";
 import { QualificationProfileSearch } from "./QualificationProfileSearch";
@@ -53,7 +55,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const queryClient = useQueryClient();
   const [legacyOpened, setLegacyOpened] = useState(false);
   const query = useQuery({
-    queryKey: ["volunteer-qualifications"],
+    queryKey: volunteerQueryKeys.key("qualifications"),
     queryFn: () => post<Data>({ action: "list" }),
   });
   const [selected, setSelected] = useState(() => {
@@ -74,12 +76,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const mutation = useMutation({
     mutationFn: (command: object) => post(command),
     onSuccess: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["volunteer-qualifications"] }),
-        queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] }),
-        queryClient.invalidateQueries({ queryKey: ["volunteer-person"] }),
-        queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] }),
-      ]);
+      await refreshVolunteerQueries(queryClient, "qualification", language);
     },
   });
   const profileTier = profile?.tier;

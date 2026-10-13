@@ -24,6 +24,7 @@ type PageText = { label: string; description: string };
  */
 export const volunteerWorkspaceCopy = defineAdminCopy({
   zh: {
+    identityChanging: "登入身份已變更，正在重新核對權限…",
     brand: "義工營運中心",
     skipLink: "跳至頁面內容",
     roleAdmin: "管理員工作區",
@@ -88,6 +89,7 @@ export const volunteerWorkspaceCopy = defineAdminCopy({
     } satisfies Record<VolunteerWorkspacePageId, PageText>,
   },
   en: {
+    identityChanging: "Your account changed. Checking access again…",
     brand: "Volunteer operations",
     skipLink: "Skip to page content",
     roleAdmin: "Administrator workspace",

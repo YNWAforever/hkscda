@@ -1,3 +1,5 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
 import { PolicyChangeSummary } from "./PolicyChangeSummary";
 import { WorkflowSections } from "./WorkflowSections";
@@ -70,7 +72,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
   const format = pickAdminCopy(policyFormatCopy, language);
   const qc = useQueryClient();
   const listing = useQuery({
-    queryKey: ["volunteer-daily-settings"],
+    queryKey: volunteerQueryKeys.key("dailySettings"),
     queryFn: () => api<Listing>({ action: "list" }),
   });
   const [selection, setSelection] = useState(initial?.selection ?? "");
@@ -135,9 +137,7 @@ export function VolunteerDailySettings({ initial }: { initial?: DailySettingsIni
       setDirty(false);
       setPreview(undefined);
       setNotice("published");
-      void qc.invalidateQueries({ queryKey: ["volunteer-daily-settings"] });
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
-      void qc.invalidateQueries({ queryKey: ["volunteer-calendar"] });
+      void refreshVolunteerQueries(qc, "dailyQuota", language);
     },
     onError: () => setPreview(undefined),
   });

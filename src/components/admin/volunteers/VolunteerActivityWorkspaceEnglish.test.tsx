@@ -26,6 +26,16 @@ const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.activity, FIXTURE.location, FIXTURE.role, FIXTURE.template];
 const noop = () => {};
 
+test("Chinese activity statuses use shared labels, including a visible unknown fallback (UC08)", () => {
+  expect(activityOperationCopy.zh.detail.registrationStatus("approved")).toBe("已批准");
+  expect(activityOperationCopy.zh.detail.registrationStatus("waitlisted")).toBe("候補中");
+  expect(activityOperationCopy.zh.detail.attendanceStatus("not_marked")).not.toBe("not_marked");
+  expect(activityOperationCopy.zh.detail.registrationStatus("unrecognised")).toBeTruthy();
+  expect(activityOperationCopy.zh.detail.registrationStatus("unrecognised")).not.toBe(
+    "unrecognised",
+  );
+});
+
 // A test that fixes the clock puts it back, so no other test in the run sees the fixed time.
 afterEach(() => setSystemTime());
 
@@ -722,8 +732,8 @@ describe("the activity panel in English", () => {
     for (const text of [
       "編輯此活動",
       "報名及出席（30）",
-      FIXTURE.volunteer + " · approved · completed",
-      FIXTURE.volunteer + " · mystery · mystery",
+      FIXTURE.volunteer + " · 已批准 · 已完成",
+      FIXTURE.volunteer + " · 待核實 · 待核實",
       "上一頁報名",
       "操作紀錄（40）",
       " · volunteer_activity.create",

@@ -27,6 +27,8 @@ import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
 import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
+import { buildActivityReturnHref, readActivityReturnState } from "./activityReturnState";
+import { invalidateVolunteerQueries, volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 
 type RegistrationResponse = {
   registration: VolunteerRegistrationDetailType;
@@ -59,8 +61,9 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
   const [rejectStatus, setRejectStatus] = useState<VolunteerRegistrationStatus | null>(null);
+  const [refreshFailed, setRefreshFailed] = useState(false);
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["volunteer-registration", registrationId],
+    queryKey: volunteerQueryKeys.key("registration", registrationId),
     queryFn: () =>
       fetchAdminJson<RegistrationResponse>(`/api/admin/volunteers/registrations/${registrationId}`),
   });
@@ -83,11 +86,13 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         { status, expectedUpdatedAt: data?.registration.updatedAt, reason },
         language,
       ),
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] });
+    onSettled: async (_data, error) => {
+      try {
+        await invalidateVolunteerQueries(queryClient, "registration");
+        setRefreshFailed(false);
+      } catch {
+        if (!error) setRefreshFailed(true);
+      }
     },
   });
 
@@ -102,11 +107,13 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
           reason: correctionEnabled ? correctionReason : undefined,
         }),
       }),
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-registration"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-directory"] });
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-overview"] });
+    onSettled: async (_data, error) => {
+      try {
+        await invalidateVolunteerQueries(queryClient, "attendance");
+        setRefreshFailed(false);
+      } catch {
+        if (!error) setRefreshFailed(true);
+      }
     },
   });
 
@@ -165,6 +172,7 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
 
   return (
     <div className="space-y-5 p-6">
+      {refreshFailed && <p role="alert">{common.savedRefreshFailed}</p>}
       {/* required-reason: volunteer_registration.reject */}
       <ConfirmActionDialog
         open={rejectStatus !== null}
@@ -182,7 +190,11 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         }}
       />
       <Link
-        to="/admin/volunteers/activities"
+        to={buildActivityReturnHref(
+          readActivityReturnState(
+            new URLSearchParams(typeof window === "undefined" ? "" : window.location.search),
+          ),
+        )}
         className="text-sm font-semibold text-[var(--color-primary)]"
       >
         {text.back}

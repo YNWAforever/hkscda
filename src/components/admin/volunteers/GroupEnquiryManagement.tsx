@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Send } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -58,12 +59,12 @@ export function GroupEnquiryManagement() {
   );
 
   const enquiriesQuery = useQuery({
-    queryKey: ["group-enquiries", search],
+    queryKey: volunteerQueryKeys.key("groupEnquiries", search),
     queryFn: () =>
       fetchAdminJson<GroupEnquiryListResponse>(`/api/admin/volunteers/group-enquiries?${search}`),
   });
   const detailQuery = useQuery({
-    queryKey: ["group-enquiry", selectedId],
+    queryKey: volunteerQueryKeys.key("groupEnquiry", selectedId),
     queryFn: () =>
       fetchAdminJson<{ enquiry: GroupEnquiry }>(
         `/api/admin/volunteers/group-enquiries?id=${selectedId}`,
@@ -80,8 +81,10 @@ export function GroupEnquiryManagement() {
         body: JSON.stringify(body),
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["group-enquiries"] });
-      void queryClient.invalidateQueries({ queryKey: ["group-enquiry", selectedId] });
+      void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("groupEnquiries") });
+      void queryClient.invalidateQueries({
+        queryKey: volunteerQueryKeys.key("groupEnquiry", selectedId),
+      });
     },
   });
 
@@ -163,7 +166,11 @@ export function GroupEnquiryManagement() {
         </div>
         <button
           type="button"
-          onClick={() => void queryClient.invalidateQueries({ queryKey: ["group-enquiries"] })}
+          onClick={() =>
+            void queryClient.invalidateQueries({
+              queryKey: volunteerQueryKeys.key("groupEnquiries"),
+            })
+          }
           className={`${buttonBase} min-h-11 border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-surface-offset)]`}
         >
           <RefreshCw className="h-4 w-4" />

@@ -6,6 +6,8 @@ import { activityOperationCopy } from "./activityOperationCopy";
 import type { ActivityDetail } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import { Link } from "@tanstack/react-router";
+import { readActivityReturnState, type ActivityReturnState } from "./activityReturnState";
 
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm " +
@@ -28,6 +30,7 @@ export function ActivityDetailBody({
   onDetailPage,
   onHistoryPage,
   onEdit,
+  returnState,
 }: {
   detail: ActivityDetailQuery;
   detailPage: number;
@@ -35,6 +38,7 @@ export function ActivityDetailBody({
   onDetailPage: (page: number) => void;
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
+  returnState?: ActivityReturnState;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;
@@ -63,11 +67,25 @@ export function ActivityDetailBody({
       <h3 className="font-bold">{text.registrations(total)}</h3>
       {registrations.map((r) => (
         <p key={r.id}>
-          {text.registrationLine(
-            r.contact_name,
-            text.registrationStatus(r.status),
-            text.attendanceStatus(r.attendance_status),
-          )}
+          <Link
+            to="/admin/volunteers/registrations/$id"
+            params={{ id: r.id }}
+            search={
+              {
+                ...(returnState ?? readActivityReturnState(new URLSearchParams())).safeSearch,
+                return_from: returnState?.from ?? "activities",
+              } as never
+            }
+            className="inline-flex min-h-11 items-center underline"
+          >
+            {text.registrationLine(
+              r.contact_name,
+              text.registrationStatus(r.status),
+              text.attendanceStatus(r.attendance_status),
+            )}
+            {" · "}
+            {text.openRegistration}
+          </Link>
         </p>
       ))}
       <button
@@ -126,6 +144,7 @@ export function ActivityDetailSheet({
   onDetailPage: (page: number) => void;
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
+  returnState?: ActivityReturnState;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;

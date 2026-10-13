@@ -86,6 +86,10 @@ test("status callback sends reviewed version and refreshes capacity after a reje
   mutations[0].onSettled();
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-registration"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-activities"] });
+  expect(invalidated).toContainEqual({ queryKey: ["volunteer-workspace"] });
+  expect(invalidated).toContainEqual({ queryKey: ["volunteer-workspace-detail"] });
+  expect(invalidated).toContainEqual({ queryKey: ["volunteer-calendar"] });
+  expect(invalidated).toContainEqual({ queryKey: ["volunteer-tasks"] });
 });
 
 test("shows a retry control instead of reporting a load failure as a deleted registration", () => {

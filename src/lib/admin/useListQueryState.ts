@@ -72,7 +72,18 @@ export function useListQueryState<Filters extends object>({
       scopeChange.current?.();
     };
     window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    const onIdentityCleared = () => {
+      setDraftQuery("");
+      setQuery("");
+      setPage(1);
+      setFilters(defaults.current);
+      scopeChange.current?.();
+    };
+    window.addEventListener("hkscda-admin-identity-cleared", onIdentityCleared);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("hkscda-admin-identity-cleared", onIdentityCleared);
+    };
     // Route identity and defaults belong to this mounted list.
   }, [storageKey]);
 

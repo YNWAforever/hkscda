@@ -1,9 +1,12 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
 import { useAdminCopy } from "../i18n/copy";
+import { useAdminLanguage } from "../adminI18n";
 import { policySourcesCopy } from "./policySourcesCopy";
 import { LoadFailure } from "../LoadFailure";
 const api = <T,>(body: unknown) =>
@@ -21,9 +24,10 @@ type Preview = {
 export type PolicySourcesInitial = { kind?: "shelter" | "credential" };
 export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesInitial } = {}) {
   const copy = useAdminCopy(policySourcesCopy);
+  const { language } = useAdminLanguage();
   const qc = useQueryClient();
   const q = useQuery({
-    queryKey: ["volunteer-policy-sources"],
+    queryKey: volunteerQueryKeys.key("policySources"),
     queryFn: () => api<SourceListing>({ action: "list" }),
   });
   const [kind, setKind] = useState<"shelter" | "credential">(initial?.kind ?? "shelter"),
@@ -52,7 +56,7 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
         reason,
       }),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-sources"] });
+      void refreshVolunteerQueries(qc, "source", language);
       setKey("");
       setNewRegistryKey(crypto.randomUUID());
       setLabel("");
@@ -81,8 +85,7 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
       preview.reset();
       setPublicationReason("");
       setPublicationKey(crypto.randomUUID());
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-sources"] });
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+      void refreshVolunteerQueries(qc, "source", language);
     },
   });
   return (

@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -141,7 +142,7 @@ export function VolunteerDirectory({ search }: { search: DirectorySearch }) {
     setSelectionProblem(null);
   }, [filterKey]);
   const query = useQuery({
-    queryKey: ["volunteer-directory", search],
+    queryKey: volunteerQueryKeys.key("directory", search),
     queryFn: () =>
       fetchAdminJson<ListData>(`/api/admin/volunteers/people?${directoryQuery(search)}`),
   });

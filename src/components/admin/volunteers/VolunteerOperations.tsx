@@ -1,3 +1,5 @@
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { useEffect, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -160,7 +162,7 @@ export function OperationsWorkspace({
       ),
     });
   const listing = useQuery({
-    queryKey: ["volunteer-operations", publicMode, userId],
+    queryKey: volunteerQueryKeys.key("operations", publicMode, userId),
     queryFn: () => api<OperationListing>({ action: "list" }),
   });
   const data = listing.data;
@@ -195,9 +197,7 @@ export function OperationsWorkspace({
       } else {
         setPreview(undefined);
         setNotice(result.kind === "requested" ? "requested" : "applied");
-        void qc.invalidateQueries({ queryKey: ["volunteer-operations"] });
-        void qc.invalidateQueries({ queryKey: ["volunteer-calendar"] });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "operation", language);
       }
     },
     onError: () => setPreview(undefined),

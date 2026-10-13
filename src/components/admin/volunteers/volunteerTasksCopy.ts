@@ -15,6 +15,13 @@ export const volunteerTasksCopy = defineAdminCopy({
     pending: {
       title: "待審批",
       none: "目前沒有待審批報名。",
+      scope: "待審批範圍",
+      scopes: { all: "全部未處理", upcoming: "即將開始", overdue: "逾期未處理" },
+      counts: (upcoming: number, overdue: number, total: number) =>
+        `即將開始 ${upcoming} · 逾期 ${overdue} · 全部 ${total}`,
+      asOf: (time: string) => `資料截至 ${time}`,
+      previous: "上一頁",
+      next: "下一頁",
     },
     open: (title: string | undefined) => `開啟${title || "相關工作"}`,
     contact: {
@@ -69,6 +76,13 @@ export const volunteerTasksCopy = defineAdminCopy({
     pending: {
       title: "Awaiting approval",
       none: "No registrations are awaiting approval.",
+      scope: "Pending scope",
+      scopes: { all: "All unresolved", upcoming: "Upcoming", overdue: "Overdue" },
+      counts: (upcoming: number, overdue: number, total: number) =>
+        `Upcoming ${upcoming} · Overdue ${overdue} · Total ${total}`,
+      asOf: (time: string) => `Snapshot at ${time}`,
+      previous: "Previous page",
+      next: "Next page",
     },
     open: (title: string | undefined) => `Open ${title || "related task"}`,
     contact: {

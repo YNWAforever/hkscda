@@ -33,6 +33,7 @@ function englishShelterName(key: string, unnamed?: UnnamedVenue) {
  */
 export const volunteerCommonCopy = defineAdminCopy({
   zh: {
+    savedRefreshFailed: "已儲存，重新載入失敗。請重新載入資料，毋須重送操作。",
     /** Asked before leaving a page whose policy draft has unsaved changes. */
     leaveDraftPrompt: "目前有未儲存修改，確定捨棄並離開？",
     /** Names the numbered links to the sections of a page. */
@@ -73,6 +74,8 @@ export const volunteerCommonCopy = defineAdminCopy({
     unknown: (stored: string) => stored,
   },
   en: {
+    savedRefreshFailed:
+      "Saved, but refreshing failed. Reload the data without resubmitting the action.",
     leaveDraftPrompt: "You have unsaved changes. Discard them and leave?",
     stepsLabel: "Steps on this page",
     registrationType: {

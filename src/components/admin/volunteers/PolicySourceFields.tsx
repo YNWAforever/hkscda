@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useDebouncedValue } from "../../../lib/useDebouncedValue";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -31,7 +32,7 @@ export function PolicySourceFields({
   const copy = useAdminCopy(policySourceFieldsCopy);
   const queryPolicy = useDebouncedValue(policy, 300);
   const result = useQuery({
-    queryKey: ["volunteer-policy-effective", queryPolicy],
+    queryKey: volunteerQueryKeys.key("effectivePolicy", queryPolicy),
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       fetchAdminJson<{ body: PolicyDraft; provenance: Record<string, string> }>(

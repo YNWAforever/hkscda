@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
@@ -100,7 +101,7 @@ export function VolunteerOverview() {
   const [centre, setCentre] = useState("all");
   const range = hongKongDayRange(new Date());
   const stats = useQuery({
-    queryKey: ["volunteer-overview", range.date, centre],
+    queryKey: volunteerQueryKeys.key("overview", range.date, centre),
     queryFn: () =>
       fetchAdminJson<OverviewData>(
         "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
@@ -108,7 +109,7 @@ export function VolunteerOverview() {
     refetchInterval: 30000,
   });
   const calendar = useQuery({
-    queryKey: ["volunteer-calendar", range.from, range.until],
+    queryKey: volunteerQueryKeys.key("calendarSummary", range.from, range.until),
     queryFn: () =>
       fetchAdminJson<{ activities: TodayActivity[]; truncated?: boolean }>(
         "/api/admin/volunteers/calendar?" +
@@ -124,7 +125,7 @@ export function VolunteerOverview() {
     },
     {
       key: "pendingRegistrations" as const,
-      href: "/admin/volunteers/activities?registration_status=pending",
+      href: "/admin/volunteers/tasks?pending_scope=all",
       icon: ClipboardCheck,
     },
     {

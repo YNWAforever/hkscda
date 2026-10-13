@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -52,7 +53,7 @@ export function VolunteerLegacyReconciliation({
       setRegistrationId("");
       await Promise.all([
         cache.invalidateQueries({ queryKey: ["volunteer-legacy-identities"] }),
-        cache.invalidateQueries({ queryKey: ["volunteer-qualifications"] }),
+        cache.invalidateQueries({ queryKey: volunteerQueryKeys.key("qualifications") }),
       ]);
     },
   });

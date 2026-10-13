@@ -2,8 +2,9 @@ import { z } from "zod";
 import { readAdminJson } from "../../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
+import { pendingQuerySchema, readPendingSnapshot } from "../pending";
 export const volunteerTaskSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("list") }).strict(),
+  z.object({ action: z.literal("list"), ...pendingQuerySchema.shape }).strict(),
   z.object({ action: z.literal("retry"), id: z.string().uuid() }).strict(),
   z
     .object({
@@ -24,6 +25,27 @@ export async function handleVolunteerTask(request: Request) {
       p_command: command,
     });
     if (error) throw error;
+    if (command.action === "list") {
+      const pending = await readPendingSnapshot(
+        async (args) => {
+          const result = await client.rpc("volunteer_pending_snapshot", args);
+          if (result.error) throw result.error;
+          return result.data;
+        },
+        actor.authUserId,
+        { scope: command.scope, page: command.page, pageSize: command.pageSize },
+      );
+      return Response.json(
+        {
+          ...data,
+          pending: pending.registrations,
+          pendingCounts: pending.counts,
+          page: pending.page,
+          pageSize: pending.pageSize,
+        },
+        { headers },
+      );
+    }
     return Response.json(data, {
       headers,
       status: data.kind === "conflict" ? 409 : data.kind === "not_found" ? 404 : 200,

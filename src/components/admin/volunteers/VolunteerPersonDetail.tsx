@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -287,7 +288,7 @@ export function VolunteerPersonDetail({
 }) {
   const { copy } = usePersonText();
   const query = useQuery({
-    queryKey: ["volunteer-directory", "person", profileId],
+    queryKey: volunteerQueryKeys.key("directory", "person", profileId),
     queryFn: () =>
       fetchAdminJson<DirectoryDetail>(
         `/api/admin/volunteers/people?profile_id=${encodeURIComponent(profileId)}`,

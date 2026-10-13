@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -16,7 +17,7 @@ export function QualificationProfileSearch({
   const [text, setText] = useState("");
   const [search, setSearch] = useState("");
   const query = useQuery({
-    queryKey: ["volunteer-directory", "qualification-picker", search],
+    queryKey: volunteerQueryKeys.key("directory", "qualification-picker", search),
     queryFn: () =>
       fetchAdminJson<DirectoryList>(
         "/api/admin/volunteers/people?" + new URLSearchParams({ q: search, limit: "10" }),

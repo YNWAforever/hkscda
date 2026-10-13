@@ -145,8 +145,12 @@ export const activityOperationCopy = defineAdminCopy({
       registrationLine: (name: string, status: string, attendance: string) =>
         `${name} · ${status} · ${attendance}`,
       /** A registration status as the panel has always shown it: the stored value. */
-      registrationStatus: (stored: string) => stored,
-      attendanceStatus: (stored: string) => stored,
+      registrationStatus: (stored: string) =>
+        volunteerRegistrationStatusLabelsFor("zh")[stored as VolunteerRegistrationStatus] ??
+        "待核實",
+      attendanceStatus: (stored: string) =>
+        (volunteerCommonCopy.zh.attendance as Record<string, string>)[stored] ?? "待核實",
+      openRegistration: "查看及處理報名",
       previousRegistrations: "上一頁報名",
       nextRegistrations: "下一頁報名",
       history: (total: number) => `操作紀錄（${total}）`,
@@ -286,6 +290,7 @@ export const activityOperationCopy = defineAdminCopy({
       attendanceStatus: (stored: string) =>
         (volunteerCommonCopy.en.attendance as Record<string, string>)[stored] ?? "Unknown",
       previousRegistrations: "Previous registrations",
+      openRegistration: "View and review registration",
       nextRegistrations: "Next registrations",
       history: (total: number) => `Operation history (${formatAdminNumber(total, "en")})`,
       historyAction: (stored: string) => ENGLISH_HISTORY_ACTIONS[stored] ?? "Other action",
