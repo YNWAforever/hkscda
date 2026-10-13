@@ -70,3 +70,29 @@ export function buildActivityReturnHref(state: ActivityReturnState): string {
   const search = new URLSearchParams(safe.safeSearch).toString();
   return `/admin/volunteers/${safe.from}${search ? "?" + search : ""}`;
 }
+
+// Activity pagination belongs to the return journey, never the task list itself.
+const pendingReturnPrefix = "activity_return_";
+export function buildLegacyPendingHref(params: URLSearchParams): string {
+  const state = readActivityReturnState(params);
+  const search = new URLSearchParams({ pending_scope: "all" });
+  search.set(pendingReturnPrefix + "return_from", state.from);
+  for (const [key, value] of Object.entries(state.safeSearch))
+    search.set(pendingReturnPrefix + key, value);
+  return "/admin/volunteers/tasks?" + search;
+}
+export function readPendingActivityReturnState(params: URLSearchParams): ActivityReturnState {
+  const candidate = new URLSearchParams();
+  for (const key of [...safeKeys, "return_from"]) {
+    const value = params.get(pendingReturnPrefix + key);
+    if (value !== null) candidate.set(key, value);
+  }
+  return readActivityReturnState(candidate);
+}
+export function buildPendingRegistrationHref(id: string, state?: ActivityReturnState): string {
+  const safe = readActivityReturnState(
+    new URLSearchParams({ ...state?.safeSearch, return_from: state?.from ?? "activities" }),
+  );
+  const search = new URLSearchParams({ ...safe.safeSearch, return_from: safe.from });
+  return `/admin/volunteers/registrations/${encodeURIComponent(id)}?${search}`;
+}

@@ -18,6 +18,7 @@ import {
 } from "../../../lib/admin/useListQueryState";
 import type { PendingCounts, PendingScope } from "../../../lib/volunteers/pending";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { buildPendingRegistrationHref, type ActivityReturnState } from "./activityReturnState";
 const taskRoute: ListRouteState<{ scope: PendingScope }> = {
   key: "volunteer-tasks",
   read: (params) => ({
@@ -64,7 +65,7 @@ const post = <T,>(command: object, signal?: AbortSignal) =>
     body: JSON.stringify(command),
     signal,
   });
-export function VolunteerTasks() {
+export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnState } = {}) {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerTasksCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
@@ -96,7 +97,7 @@ export function VolunteerTasks() {
       className="underline"
       href={
         row.registration_id || !row.kind
-          ? `/admin/volunteers/registrations/${encodeURIComponent(row.registration_id || row.id)}`
+          ? buildPendingRegistrationHref(row.registration_id || row.id, returnState)
           : "/admin/volunteers/operations"
       }
     >
