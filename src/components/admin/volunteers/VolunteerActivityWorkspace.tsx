@@ -6,14 +6,9 @@ import { VolunteerDraftForm } from "./VolunteerDraftForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import {
-  parseListPage,
-  useListQueryState,
-  type ListRouteState,
-} from "../../../lib/admin/useListQueryState";
+import { useListQueryState, type ListRouteState } from "../../../lib/admin/useListQueryState";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import {
-  activityFilterSchema,
   addHkDays,
   generationDates,
   hkDate,
@@ -34,6 +29,12 @@ import type {
 } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import {
+  readActivityRouteState,
+  writeActivityRouteState,
+  toActivityApiFilter,
+  type ActivityUiFilters,
+} from "./activityRouteState";
 
 const call = <T,>(body: unknown, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/bulk", {
@@ -65,68 +66,19 @@ const EXCLUDED_DATE_SEPARATOR = /[\s,，]+/; // admin-copy-exempt: parsing patte
 
 function initial() {
   const p = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
-  const parsed = activityFilterSchema.safeParse({
-    from: p.get("from") ?? hkDate(),
-    until: p.get("until") ?? addHkDays(hkDate(), 30),
-    q: "",
-    shelter: p.get("shelter") ?? "",
-    template: p.get("template") ?? "",
-    status: p.get("status") ?? "",
-    scenario: p.get("scenario") ?? "",
-    readiness: p.get("readiness") ?? "",
-    shortage: p.get("shortage") === "true",
-    sort: p.get("sort") ?? "asc",
-  });
+  const parsed = readActivityRouteState(p, hkDate());
   return {
-    filter: parsed.success
-      ? parsed.data
-      : { from: hkDate(), until: addHkDays(hkDate(), 30), sort: "asc" as const },
-    page: parseListPage(p.get("page")),
+    filter: parsed.filters,
+    page: parsed.page,
     view: p.get("view") === "calendar" ? "calendar" : "table",
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
   };
 }
-const ACTIVITY_FILTER_KEYS = [
-  "from",
-  "until",
-  "shelter",
-  "template",
-  "status",
-  "scenario",
-  "readiness",
-  "shortage",
-  "sort",
-] as const;
-const ACTIVITY_ROUTE: ListRouteState<ActivityFilter> = {
+const ACTIVITY_ROUTE: ListRouteState<ActivityUiFilters> = {
   key: "volunteer-workspace",
-  read: (params, defaults) => {
-    const parsed = activityFilterSchema.safeParse({
-      ...defaults,
-      from: params.get("from") ?? defaults.from,
-      until: params.get("until") ?? defaults.until,
-      q: "",
-      shelter: params.get("shelter") ?? "",
-      template: params.get("template") ?? "",
-      status: params.get("status") ?? "",
-      scenario: params.get("scenario") ?? "",
-      readiness: params.get("readiness") ?? "",
-      shortage: params.get("shortage") === "true",
-      sort: params.get("sort") ?? defaults.sort,
-    });
-    return {
-      filters: parsed.success ? parsed.data : defaults,
-      page: parseListPage(params.get("page")),
-    };
-  },
-  write: (params, filters, page) => {
-    for (const key of ACTIVITY_FILTER_KEYS) params.delete(key);
-    for (const key of ACTIVITY_FILTER_KEYS) {
-      const value = filters[key];
-      if (value !== undefined && value !== "" && value !== false) params.set(key, String(value));
-    }
-    params.set("page", String(page));
-  },
+  read: (params) => readActivityRouteState(params, hkDate()),
+  write: (params, filters, page) => writeActivityRouteState(params, { filters, page }),
 };
 
 function initialOperationDraft(): OperationDraft {
@@ -151,7 +103,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const copy = pickAdminCopy(activityWorkspaceCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const [state] = useState(initial);
-  const listState = useListQueryState<ActivityFilter>({
+  const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
     initialFilters: { ...state.filter, q: "" },
     initialPage: state.page,
@@ -163,7 +115,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     },
   });
   const filter = useMemo(
-    () => ({ ...listState.filters, q: listState.query }),
+    () => toActivityApiFilter({ ...listState.filters, q: listState.query }),
     [listState.filters, listState.query],
   );
   const page = listState.page;
@@ -251,8 +203,13 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
-  function updateFilter(next: Partial<ActivityFilter>) {
-    listState.changeFilter(next);
+  function updateFilter(next: Partial<ActivityUiFilters>) {
+    listState.changeFilter({
+      ...next,
+      ...(("from" in next || "until" in next) && !next.date_scope
+        ? { date_scope: "custom" as const }
+        : {}),
+    });
   }
   const choose = useMutation({
     mutationFn: (all: boolean) =>
@@ -374,6 +331,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     (draft.mode !== "generate" && draft.mode !== "copy" && !selection) ||
     (draft.mode === "copy" && !selection);
   function shift(days: number) {
+    if (listState.filters.date_scope === "custom") return;
     const start = filter.from ?? hkDate();
     updateFilter({
       from: addHkDays(start, days),
@@ -512,7 +470,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <div className="flex flex-wrap gap-2">
         <button
           className={button}
-          onClick={() => updateFilter({ from: hkDate(), until: addHkDays(hkDate(), 30) })}
+          onClick={() =>
+            updateFilter({ date_scope: "future", from: hkDate(), until: addHkDays(hkDate(), 30) })
+          }
         >
           {copy.filters.next30}
         </button>
@@ -525,14 +485,19 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <button
           className={button}
           onClick={() =>
-            updateFilter({ from: undefined, until: addHkDays(hkDate(), -1), sort: "desc" })
+            updateFilter({
+              date_scope: "history",
+              from: undefined,
+              until: addHkDays(hkDate(), -1),
+              sort: "desc",
+            })
           }
         >
           {copy.filters.past}
         </button>
         <button
           className={button}
-          onClick={() => updateFilter({ from: undefined, until: undefined })}
+          onClick={() => updateFilter({ date_scope: "all", from: undefined, until: undefined })}
         >
           {copy.filters.allDates}
         </button>
