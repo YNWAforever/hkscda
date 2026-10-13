@@ -8,6 +8,7 @@ export type RuntimeSummary = {
   deferred: number;
 };
 export interface VolunteerJobRepository {
+  preflight(): Promise<void>;
   claim(bucket: string, owner: string, lease: string): Promise<boolean>;
   finish(
     bucket: string,
@@ -76,6 +77,7 @@ export function createVolunteerRuntimeJobs(repo: VolunteerJobRepository, clock =
       if (!(await repo.claim(bucket, owner, new Date(now.getTime() + 10 * 60000).toISOString())))
         return empty;
       try {
+        await repo.preflight();
         const generated = await repo.generate(now),
           released = await repo.persistReleases(),
           promoted = await repo.promote(now),
