@@ -161,6 +161,7 @@ try {
   await context.close();
   const staff = await browser.newContext({ storageState: sessions[1].path });
   const staffPage = await staff.newPage();
+  activePage = staffPage;
   for (const leaf of [
     "",
     "tasks",
@@ -181,13 +182,13 @@ try {
   }
   for (const leaf of ["settings", "daily-settings", "assessments", "sources", "simulation"]) {
     await staffPage.goto(origin + "/admin/volunteers/" + leaf);
-    await staffPage.waitForTimeout(600);
+    await staffPage.waitForURL((url) => url.pathname !== "/admin/volunteers/" + leaf);
     assert.notEqual(new URL(staffPage.url()).pathname, "/admin/volunteers/" + leaf);
     results.push({ check: "staff-policy-route-denied", page: leaf });
   }
   await staff.close();
 } catch (error) {
-  if (activePage) {
+  if (activePage && !activePage.isClosed()) {
     await activePage.screenshot({
       path: ".superpowers/sdd/volunteer-admin-20261013/browser-failure.png",
       fullPage: true,
