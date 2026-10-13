@@ -7,7 +7,11 @@ import type { ActivityDetail } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
 import { Link } from "@tanstack/react-router";
-import { readActivityReturnState, type ActivityReturnState } from "./activityReturnState";
+import {
+  activityRouterSearch,
+  readActivityReturnState,
+  type ActivityReturnState,
+} from "./activityReturnState";
 
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm " +
@@ -72,7 +76,9 @@ export function ActivityDetailBody({
             params={{ id: r.id }}
             search={
               {
-                ...(returnState ?? readActivityReturnState(new URLSearchParams())).safeSearch,
+                ...activityRouterSearch(
+                  returnState ?? readActivityReturnState(new URLSearchParams()),
+                ),
                 return_from: returnState?.from ?? "activities",
               } as never
             }

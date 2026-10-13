@@ -1,5 +1,19 @@
 import { expect, test } from "bun:test";
-import { buildActivityReturnHref, readActivityReturnState } from "./activityReturnState";
+import {
+  activityRouterSearch,
+  buildActivityReturnHref,
+  readActivityReturnState,
+} from "./activityReturnState";
+
+test("Router search keeps numeric pages and boolean filters instead of JSON-quoted strings", () => {
+  const search = activityRouterSearch(
+    readActivityReturnState(new URLSearchParams("date_scope=all&page=2&shortage=true&q=private")),
+  );
+  expect(search.page).toBe(2);
+  expect(search.shortage).toBe(true);
+  expect(search.q).toBeUndefined();
+  expect(search.date_scope).toBe("all");
+});
 test("return state retains dates/page/selection and rejects external destinations and q", () => {
   const state = readActivityReturnState(
     new URLSearchParams(

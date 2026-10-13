@@ -27,7 +27,11 @@ import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
 import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
-import { buildActivityReturnHref, readActivityReturnState } from "./activityReturnState";
+import {
+  activityRouterSearch,
+  readActivityReturnState,
+  type ActivityReturnState,
+} from "./activityReturnState";
 import { invalidateVolunteerQueries, volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 
 type RegistrationResponse = {
@@ -51,13 +55,24 @@ export function RegistrationProfileLink({ profileId }: { profileId?: string | nu
   );
 }
 
-export function VolunteerRegistrationDetail({ registrationId }: { registrationId: string }) {
+export function VolunteerRegistrationDetail({
+  registrationId,
+  returnState,
+}: {
+  registrationId: string;
+  returnState?: ActivityReturnState;
+}) {
   const { copy: shared, language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerRegistrationCopy, language);
   const text = copy.detail;
   const common = pickAdminCopy(volunteerCommonCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const queryClient = useQueryClient();
+  const safeReturn =
+    returnState ??
+    readActivityReturnState(
+      new URLSearchParams(typeof window === "undefined" ? "" : window.location.search),
+    );
   const [correctionReason, setCorrectionReason] = useState("");
   const [isCorrection, setIsCorrection] = useState(false);
   const [rejectStatus, setRejectStatus] = useState<VolunteerRegistrationStatus | null>(null);
@@ -193,11 +208,8 @@ export function VolunteerRegistrationDetail({ registrationId }: { registrationId
         }}
       />
       <Link
-        to={buildActivityReturnHref(
-          readActivityReturnState(
-            new URLSearchParams(typeof window === "undefined" ? "" : window.location.search),
-          ),
-        )}
+        to={`/admin/volunteers/${safeReturn.from}`}
+        search={activityRouterSearch(safeReturn) as never}
         className="text-sm font-semibold text-[var(--color-primary)]"
       >
         {text.back}

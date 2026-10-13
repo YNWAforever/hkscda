@@ -4,6 +4,19 @@ export type ActivityReturnState = {
   from: "activities" | "calendar";
   safeSearch: Record<string, string>;
 };
+export function activityRouterSearch(
+  state: ActivityReturnState,
+): Record<string, string | number | boolean> {
+  const safe = readActivityReturnState(
+    new URLSearchParams({ ...state.safeSearch, return_from: state.from }),
+  );
+  return Object.fromEntries(
+    Object.entries(safe.safeSearch).map(([key, value]) => [
+      key,
+      key === "page" ? Number(value) : key === "shortage" ? value === "true" : value,
+    ]),
+  );
+}
 const safeKeys = [
   "date_scope",
   "from",
