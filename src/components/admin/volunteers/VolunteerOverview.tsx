@@ -109,6 +109,7 @@ export function VolunteerOverview() {
         "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
         { signal },
       ),
+    staleTime: 30_000,
     refetchInterval: 30000,
   });
   const calendar = useQuery({
@@ -119,6 +120,7 @@ export function VolunteerOverview() {
           new URLSearchParams({ from: range.from, until: range.until }),
         { signal },
       ),
+    staleTime: 30_000,
     refetchInterval: 30000,
   });
   const cards = [
