@@ -9,20 +9,15 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
-import { Header } from "../components/site/Header";
-import { Footer } from "../components/site/Footer";
-import { HelpWidget } from "../components/site/help/HelpWidget";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { RouteError } from "../components/site/RouteError";
-import { ShortlistProvider } from "../components/site/ShortlistProvider";
-import { ShortlistTray } from "../components/site/ShortlistTray";
-import { PublicFixedActionsProvider } from "../components/site/fixedActions/PublicFixedActions";
-import { ContextualDonationPrompt } from "../components/site/donations/ContextualDonationPrompt";
 
 import appCss from "../styles.css?url";
 import { organizationSchema, websiteSchema } from "../lib/schema";
 import { brand } from "../lib/brand/brand";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
+
+const PublicSiteShell = lazy(() => import("../components/site/PublicSiteShell"));
 
 function NotFoundComponent() {
   return (
@@ -139,16 +134,6 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");
-  const isAdoptionWizard = /^\/adoption\/apply\/?$/.test(location.pathname);
-  // The pledge form lists the selection itself; the tray's 開始助養 would only
-  // repeat it and cover the form's own submit button on a phone.
-  const isSponsorPledge = /^\/sponsors\/pledge\/?$/.test(location.pathname);
-  // Task pages (an application, a pledge, a donation, a status lookup) keep the
-  // footer links but drop its closing statement and calls to action, which
-  // would only pull someone away from a form they are part-way through.
-  const isFocusedFlow =
-    /^\/(adoption\/apply|sponsors\/pledge|donate)\/?$/.test(location.pathname) ||
-    location.pathname.includes("/status/");
   const analyticsPagePath = redactSensitivePagePath(location.pathname);
 
   useEffect(() => {
@@ -160,19 +145,6 @@ function RootComponent() {
     });
   }, [analyticsPagePath]);
 
-  const publicContent = (
-    <div className="site-shell min-h-dvh" data-focused-flow={isFocusedFlow || undefined}>
-      <Header />
-      <div id="main-content" tabIndex={-1} data-site-content>
-        <Outlet />
-      </div>
-      <Footer />
-      {isAdoptionWizard || isSponsorPledge ? null : <ShortlistTray />}
-      <ContextualDonationPrompt pathname={location.pathname} />
-      <HelpWidget />
-    </div>
-  );
-
   return (
     <QueryClientProvider client={queryClient}>
       {isAdmin ? (
@@ -180,9 +152,11 @@ function RootComponent() {
           <Outlet />
         </div>
       ) : (
-        <ShortlistProvider>
-          <PublicFixedActionsProvider>{publicContent}</PublicFixedActionsProvider>
-        </ShortlistProvider>
+        <Suspense fallback={null}>
+          <PublicSiteShell pathname={location.pathname}>
+            <Outlet />
+          </PublicSiteShell>
+        </Suspense>
       )}
     </QueryClientProvider>
   );
