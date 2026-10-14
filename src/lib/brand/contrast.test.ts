@@ -34,8 +34,9 @@ describe("public brand tokens", () => {
     expect(css).not.toContain("Baloo 2");
 
     const root = await Bun.file("src/routes/__root.tsx").text();
+    const publicShell = await Bun.file("src/components/site/PublicSiteShell.tsx").text();
     expect(root).toContain('className="admin-shell min-h-dvh"');
-    expect(root).toContain("<PublicFixedActionsProvider>");
+    expect(publicShell).toContain("<PublicFixedActionsProvider>");
     // The typeface is self-hosted now, so it is declared in fonts.css rather than
     // requested from Google by __root. The identity assertion moves with it.
     expect(root).not.toContain("fonts.googleapis.com");
