@@ -1,3 +1,5 @@
+import "../../styles/fonts.css";
+import "../../styles/public.css";
 import type { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";

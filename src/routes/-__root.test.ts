@@ -31,4 +31,17 @@ describe("the root route's public shell bundle boundary", () => {
     expect(eagerPublicShellImports).toEqual([]);
     expect(source).toContain('import("../components/site/PublicSiteShell")');
   });
+
+  test("loads the public stylesheet and font subsets only with the lazy public shell", () => {
+    const globalStyles = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+    const publicShell = readFileSync(
+      new URL("../components/site/PublicSiteShell.tsx", import.meta.url),
+      "utf8",
+    );
+
+    expect(globalStyles).not.toContain('@import "./styles/fonts.css"');
+    expect(globalStyles).not.toContain('@import "./styles/public.css"');
+    expect(publicShell).toContain('import "../../styles/fonts.css"');
+    expect(publicShell).toContain('import "../../styles/public.css"');
+  });
 });
