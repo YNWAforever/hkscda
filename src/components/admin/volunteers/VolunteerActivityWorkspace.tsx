@@ -1,6 +1,7 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
+import { workspaceTemplatesQueryOptions } from "./workspaceQueries";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
 import { ActivityOperationPanel } from "./ActivityOperationPanel";
@@ -28,7 +29,6 @@ import type {
   Operation,
   Reply,
   Row,
-  Template,
 } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
@@ -156,10 +156,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     queryFn: ({ signal }) =>
       call<{ activities: Row[]; total: number }>({ action: "list", filter, page }, signal),
   });
-  const templates = useQuery({
-    queryKey: volunteerQueryKeys.key("workspaceTemplates"),
-    queryFn: ({ signal }) => call<{ templates: Template[] }>({ action: "templates" }, signal),
-  });
+  const templates = useQuery(workspaceTemplatesQueryOptions());
   const detail = useQuery({
     queryKey: volunteerQueryKeys.key("workspaceDetail", selected, detailPage, historyPage),
     enabled: Boolean(selected),
