@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
-    "preview": "nitro preview",
+    "preview": "node ./scripts/nitro-preview-fast.mjs",
     "test": "bun test --isolate",
     "test:acceptance:db": "bun scripts/test-isolated-acceptance.ts",
     "test:acceptance:all": "bun scripts/test-isolated-acceptance.ts --all",
