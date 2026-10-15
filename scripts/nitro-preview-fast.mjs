@@ -3,6 +3,7 @@ import { createServer, request as proxyRequest } from "node:http";
 import { createConnection } from "node:net";
 import { promisify } from "node:util";
 import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { createReadStream } from "node:fs";
 import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, join, relative, resolve, sep } from "node:path";
@@ -223,10 +224,10 @@ async function startPreview() {
 
   const sidecars = await precompressAssets(staticRoot, cacheRoot);
   if (previewRuntime === "bun") await patchLocalVercelBunRequest(root);
-  const nitroCli = resolve(root, "node_modules/nitro/dist/cli/index.mjs");
+  const launcher = fileURLToPath(new URL("./nitro-preview-server.mjs", import.meta.url));
   const runtime =
     previewRuntime === "bun" ? (process.env.BUN_EXECUTABLE ?? "bun") : process.execPath;
-  const child = spawn(runtime, [nitroCli, "preview"], {
+  const child = spawn(runtime, [launcher], {
     cwd: root,
     env: {
       ...process.env,
@@ -236,6 +237,7 @@ async function startPreview() {
       PORT: String(upstreamPort),
     },
     stdio: "inherit",
+    windowsHide: true,
   });
 
   let server;
