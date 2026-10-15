@@ -111,12 +111,19 @@ export function ActivitySchedule({
         </table>
       </div>
     );
-  const first = from ?? (rows[0] ? hkDate(new Date(rows[0].starts_at)) : hkDate());
+  const rowsByDay = new Map<string, Row[]>();
+  for (const row of rows) {
+    const day = hkDate(new Date(row.starts_at));
+    const group = rowsByDay.get(day);
+    if (group) group.push(row);
+    else rowsByDay.set(day, [row]);
+  }
+  const first = from ?? rowsByDay.keys().next().value ?? hkDate();
   const last = until ?? addHkDays(first, 30);
   const contiguous = Date.parse(last) - Date.parse(first) <= 92 * 86400000;
   const days = contiguous
     ? generationDates(first, last, [0, 1, 2, 3, 4, 5, 6], [])
-    : Array.from(new Set(rows.map((r) => hkDate(new Date(r.starts_at))))).sort();
+    : Array.from(rowsByDay.keys()).sort();
   const padding = contiguous ? new Date(first + "T12:00:00+08:00").getUTCDay() : 0;
   return (
     <section aria-label={copy.calendarLabel}>
@@ -132,19 +139,19 @@ export function ActivitySchedule({
         {Array.from({ length: padding }, (_, n) => (
           <div key={"pad" + n} className="hidden sm:block" />
         ))}
-        {days.map((day) => (
-          <section
-            key={day}
-            aria-label={day}
-            className={
-              "min-h-24 rounded border border-[var(--color-border)] p-2" +
-              (rows.some((r) => hkDate(new Date(r.starts_at)) === day) ? "" : " hidden sm:block")
-            }
-          >
-            <h3 className="text-sm font-bold">{day.slice(5)}</h3>
-            {rows
-              .filter((r) => hkDate(new Date(r.starts_at)) === day)
-              .map((r) => (
+        {days.map((day) => {
+          const dayRows = rowsByDay.get(day) ?? [];
+          return (
+            <section
+              key={day}
+              aria-label={day}
+              className={
+                "min-h-24 rounded border border-[var(--color-border)] p-2" +
+                (dayRows.length ? "" : " hidden sm:block")
+              }
+            >
+              <h3 className="text-sm font-bold">{day.slice(5)}</h3>
+              {dayRows.map((r) => (
                 <article
                   key={r.id}
                   className="my-2 rounded bg-[var(--color-surface-offset)] p-2 text-xs"
@@ -166,8 +173,9 @@ export function ActivitySchedule({
                   </p>
                 </article>
               ))}
-          </section>
-        ))}
+            </section>
+          );
+        })}
       </div>
     </section>
   );

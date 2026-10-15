@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
+import { afterEach, describe, expect, setSystemTime, spyOn, test } from "bun:test";
 
 import { AdminApiError } from "../../../lib/admin/session";
 import { BulkInputError } from "../../../lib/volunteers/bulk/service";
@@ -25,6 +25,73 @@ const { volunteerCommonCopy } = await import("./volunteerCommonCopy");
 const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.activity, FIXTURE.location, FIXTURE.role, FIXTURE.template];
 const noop = () => {};
+
+test("a month calendar does date work per activity and day instead of their product", () => {
+  const rows = Array.from({ length: 25 }, (_, index) => ({
+    ...kit.workspaceRows[index % kit.workspaceRows.length],
+    id: `calendar-fixture-${index}`,
+    starts_at: "2026-10-10T01:00:00Z",
+  }));
+  const DateTimeFormat = Intl.DateTimeFormat;
+  let hongKongDayConversions = 0;
+  const formatter = spyOn(Intl, "DateTimeFormat").mockImplementation(function (
+    locales?: Intl.LocalesArgument,
+    options?: Intl.DateTimeFormatOptions,
+  ) {
+    if (locales === "en-CA" && options?.timeZone === "Asia/Hong_Kong") hongKongDayConversions++;
+    return new DateTimeFormat(locales, options);
+  } as typeof Intl.DateTimeFormat);
+  try {
+    const markup = renderAdminInEnglish(
+      <ActivitySchedule
+        rows={rows}
+        view="calendar"
+        from="2026-10-09"
+        until="2026-11-08"
+        ids={[]}
+        onToggle={noop}
+        onOpen={noop}
+      />,
+    );
+    expect(markup.match(/<article\b/g)?.length).toBe(25);
+    // 25 activity dates plus the 31 advances in this inclusive month.
+    expect(hongKongDayConversions).toBeLessThanOrEqual(56);
+  } finally {
+    formatter.mockRestore();
+  }
+});
+
+test("calendar grouping keeps Hong Kong midnight on leap day and the following day", () => {
+  const markup = renderAdminInEnglish(
+    <ActivitySchedule
+      rows={[
+        {
+          ...kit.workspaceRows[0],
+          id: "leap",
+          title: "Leap fixture",
+          starts_at: "2028-02-28T16:00:00Z",
+        },
+        {
+          ...kit.workspaceRows[0],
+          id: "march",
+          title: "March fixture",
+          starts_at: "2028-02-29T16:00:00Z",
+        },
+      ]}
+      view="calendar"
+      from="2028-02-29"
+      until="2028-03-01"
+      ids={[]}
+      onToggle={noop}
+      onOpen={noop}
+    />,
+  );
+  const march = markup.indexOf('aria-label="2028-03-01"');
+  expect(markup.slice(markup.indexOf('aria-label="2028-02-29"'), march)).toContain("Leap fixture");
+  expect(markup.slice(0, march)).not.toContain("March fixture");
+  expect(markup.slice(march)).toContain("March fixture");
+  expect(markup.slice(march)).not.toContain("Leap fixture");
+});
 
 test("Chinese activity statuses use shared labels, including a visible unknown fallback (UC08)", () => {
   expect(activityOperationCopy.zh.detail.registrationStatus("approved")).toBe("已批准");
