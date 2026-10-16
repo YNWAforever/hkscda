@@ -139,6 +139,8 @@ export const rosterAttendanceOperationSchema = z
     rows: z.array(previewRowSchema).min(1).max(25),
     results: z.array(itemResultSchema).max(25).nullable(),
     notifications: z.array(z.never()).max(0),
+    groups: z.array(z.never()).max(0).optional(),
+    selection: z.array(z.never()).max(0).optional(),
   })
   .strict()
   .superRefine((op, ctx) => {

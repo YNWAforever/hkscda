@@ -1,4 +1,5 @@
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import type { ReactNode } from "react";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../../ui/sheet";
@@ -36,6 +37,7 @@ export function ActivityDetailBody({
   onEdit,
   returnState,
   onRegistrationOpen,
+  attendance,
 }: {
   detail: ActivityDetailQuery;
   detailPage: number;
@@ -45,6 +47,7 @@ export function ActivityDetailBody({
   onEdit: (activity: ActivityDetail["activity"]) => void;
   returnState?: ActivityReturnState;
   onRegistrationOpen?: (id: string) => void;
+  attendance?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;
@@ -61,6 +64,11 @@ export function ActivityDetailBody({
     );
   if (!detail.data) return null;
   const { activity, registrations, total, history, history_total } = detail.data;
+  const inline = Boolean(
+    attendance &&
+    detail.data.attendance_contract === 1 &&
+    registrations.every((row) => row.updated_at && row.participant_count && row.attendance_actions),
+  );
   return (
     <div className="space-y-4">
       <p>
@@ -73,32 +81,34 @@ export function ActivityDetailBody({
       <h3 id="activity-roster-heading" tabIndex={-1} className="font-bold">
         {text.registrations(total)}
       </h3>
-      {registrations.map((r) => (
-        <p id={`registration-${r.id}`} tabIndex={-1} key={r.id}>
-          <Link
-            to="/admin/volunteers/registrations/$id"
-            params={{ id: r.id }}
-            onClick={() => onRegistrationOpen?.(r.id)}
-            search={
-              {
-                ...activityRouterSearch(
-                  returnState ?? readActivityReturnState(new URLSearchParams()),
-                ),
-                return_from: returnState?.from ?? "activities",
-              } as never
-            }
-            className="inline-flex min-h-11 items-center underline"
-          >
-            {text.registrationLine(
-              r.contact_name,
-              text.registrationStatus(r.status),
-              text.attendanceStatus(r.attendance_status),
-            )}
-            {" · "}
-            {text.openRegistration}
-          </Link>
-        </p>
-      ))}
+      {attendance}
+      {!inline &&
+        registrations.map((r) => (
+          <p id={`registration-${r.id}`} tabIndex={-1} key={r.id}>
+            <Link
+              to="/admin/volunteers/registrations/$id"
+              params={{ id: r.id }}
+              onClick={() => onRegistrationOpen?.(r.id)}
+              search={
+                {
+                  ...activityRouterSearch(
+                    returnState ?? readActivityReturnState(new URLSearchParams()),
+                  ),
+                  return_from: returnState?.from ?? "activities",
+                } as never
+              }
+              className="inline-flex min-h-11 items-center underline"
+            >
+              {text.registrationLine(
+                r.contact_name,
+                text.registrationStatus(r.status),
+                text.attendanceStatus(r.attendance_status),
+              )}
+              {" · "}
+              {text.openRegistration}
+            </Link>
+          </p>
+        ))}
       <button
         className={button}
         disabled={detailPage === 1}
@@ -157,6 +167,7 @@ export function ActivityDetailSheet({
   onEdit: (activity: ActivityDetail["activity"]) => void;
   returnState?: ActivityReturnState;
   onRegistrationOpen?: (id: string) => void;
+  attendance?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;

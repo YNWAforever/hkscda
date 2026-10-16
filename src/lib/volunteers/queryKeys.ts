@@ -73,7 +73,7 @@ const policy: Family[] = [
 ];
 const changes: Record<VolunteerChange, Family[]> = {
   registration,
-  attendance: registration,
+  attendance: [...registration, "operationRestore"],
   qualification: ["qualifications", "directory", "person", "overview", "simulation"],
   reviewerAssignment: ["directory", "person", "tasks"],
   activity: [...policy, "legacyActivities", "tasks"],

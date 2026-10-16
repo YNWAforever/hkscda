@@ -1,6 +1,19 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
-import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
+import { volunteerQueryKeys, invalidateVolunteerQueries } from "../../../lib/volunteers/queryKeys";
+import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import {
+  createAttendanceController,
+  initialAttendanceRecoveryState,
+  attendancePointerKey,
+  readAttendanceOperationPointer,
+} from "../../../lib/volunteers/bulk/attendanceRecovery";
+import {
+  parseRosterAttendanceReply,
+  type RosterAttendanceOperation,
+} from "../../../lib/volunteers/bulk/attendance";
+import { ActivityAttendancePanel } from "./ActivityAttendancePanel";
+import { activityAttendanceCopy } from "./activityAttendanceCopy";
 import { workspaceTemplatesQueryOptions } from "./workspaceQueries";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
@@ -42,12 +55,16 @@ import {
   type ActivityUiFilters,
 } from "./activityRouteState";
 
-const call = <T,>(body: unknown, signal?: AbortSignal) =>
-  fetchAdminJson<T>("/api/admin/volunteers/bulk", {
-    method: "POST",
-    body: JSON.stringify(body),
-    signal,
-  });
+const call = <T,>(body: unknown, signal?: AbortSignal, expectedActorUserId?: string) =>
+  fetchAdminJson<T>(
+    "/api/admin/volunteers/bulk",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      signal,
+    },
+    expectedActorUserId,
+  );
 const control =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm";
 const button =
@@ -80,6 +97,7 @@ function initial() {
     view: p.get("view") === "calendar" ? "calendar" : "table",
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
+    attendanceIntent: p.get("attendance_intent") === "apply",
   };
 }
 const ACTIVITY_ROUTE: ListRouteState<ActivityUiFilters> = {
@@ -109,12 +127,140 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(activityWorkspaceCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
+  const attendanceCopy = pickAdminCopy(activityAttendanceCopy, language);
+  const cache = useQueryClient();
+  const identity = useQuery(adminIdentityQueryOptions());
+  const actorUserId = identity.data?.admin.authUserId ?? "";
   const [state] = useState(initial);
   const [view, setView] = useState(initialView ?? state.view);
   const [selected, setSelected] = useState<string | null>(state.selected);
   const [detailPage, setDetailPage] = useState(state.detailPage);
   const [operation, setOperation] = useState<Operation | null>(null);
-  const operationId = operation?.id;
+  const [operationId, setOperationId] = useState<string | null>(state.operation);
+  const [attendanceIntent, setAttendanceIntent] = useState(state.attendanceIntent);
+  const [attendanceState, setAttendanceState] = useState(() =>
+    initialAttendanceRecoveryState(actorUserId),
+  );
+  const live = useRef({ cache, actorUserId, mounted: true });
+  live.current = { cache, actorUserId, mounted: live.current.mounted };
+  const [attendanceController] = useState(() =>
+    createAttendanceController({
+      send: (command, actor) => {
+        if (!live.current.mounted) throw new Error("Workspace is no longer mounted");
+        if (command.action === "status" || command.action === "attendance_lookup") {
+          const key =
+            command.action === "status"
+              ? volunteerQueryKeys.key("operationRestore", command.operation_id, actor)
+              : volunteerQueryKeys.key(
+                  "operationRestore",
+                  "attendance-lookup",
+                  command.idempotency_key,
+                  actor,
+                );
+          return live.current.cache.fetchQuery({
+            queryKey: key,
+            queryFn: ({ signal }) => call(command, signal, actor),
+            staleTime: 0,
+            retry: false,
+          });
+        }
+        return call(command, undefined, actor);
+      },
+      async savePointer(pointer) {
+        if (!live.current.mounted || live.current.actorUserId !== pointer.actorUserId)
+          throw new Error("Identity changed");
+        try {
+          const key = attendancePointerKey(pointer.actorUserId),
+            value = JSON.stringify(pointer);
+          window.sessionStorage.setItem(key, value);
+          if (window.sessionStorage.getItem(key) !== value)
+            throw new Error("Pointer readback differs");
+          return "session";
+        } catch {
+          if (!pointer.operationId) return "memory";
+          await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+          const search = new URLSearchParams(window.location.search);
+          return live.current.actorUserId === pointer.actorUserId &&
+            search.get("operation") === pointer.operationId &&
+            (pointer.phase !== "applying" || search.get("attendance_intent") === "apply")
+            ? "url"
+            : "memory";
+        }
+      },
+      readPointer(actor) {
+        try {
+          return readAttendanceOperationPointer(window.sessionStorage, actor);
+        } catch {
+          return null;
+        }
+      },
+      invalidate: () => invalidateVolunteerQueries(live.current.cache, "attendance"),
+      onState(next) {
+        if (!live.current.mounted) return;
+        if (next.actorUserId && next.actorUserId !== live.current.actorUserId) return;
+        setAttendanceState(next);
+        if (next.phase === "previewing") {
+          setOperation(null);
+          setOperationId(null);
+          setAttendanceIntent(false);
+        }
+        if (next.operationId) setOperationId(next.operationId);
+        if (next.applyIntent) setAttendanceIntent(true);
+        if (next.problem === "pointer_unavailable") setAttendanceIntent(false);
+      },
+    }),
+  );
+  function clearAttendanceOperation() {
+    if (
+      attendanceController.getState().phase !== "draft" ||
+      attendanceController.getState().actorUserId !== actorUserId
+    )
+      return;
+    try {
+      window.sessionStorage.removeItem(attendancePointerKey(actorUserId));
+    } catch {
+      /* Optional storage. */
+    }
+    setOperationId(null);
+    setAttendanceIntent(false);
+  }
+  function openOriginalAttendance() {
+    if (live.current.actorUserId !== actorUserId) return;
+    const original = attendanceController.getState().operation;
+    if (original) {
+      setSelected(original.activity_id);
+      setDetailPage(original.scope.page);
+    }
+  }
+  function invalidateUnsubmittedAttendance(
+    nextActivityId: string | null,
+    nextPage: number,
+    nextOperationId?: string | null,
+  ): string | null | undefined {
+    const current = attendanceController.getState();
+    if (!current.operationId && !current.previewKey) return undefined;
+    const terminal =
+      current.operation?.state === "completed" || current.operation?.state === "expired";
+    if (current.applyIntent && !terminal) return undefined;
+    const activity = current.operation?.activity_id ?? current.previewCommand?.activity_id;
+    const page = current.operation?.scope.page ?? current.previewCommand?.page;
+    const changedScope = Boolean(
+      nextActivityId && activity && (nextActivityId !== activity || nextPage !== page),
+    );
+    const changedOperation =
+      nextOperationId !== undefined && nextOperationId !== current.operationId;
+    if (terminal && !changedOperation) return undefined;
+    if (!changedScope && !changedOperation) return undefined;
+    const id = current.operationId;
+    attendanceController.cancelPreview(actorUserId);
+    if (attendanceController.getState().phase !== "draft") return undefined;
+    clearAttendanceOperation();
+    return id;
+  }
+  function changeDetailPage(next: number) {
+    if (next !== detailPage) invalidateUnsubmittedAttendance(selected, next);
+    setDetailPage(next);
+  }
   const routeState = useMemo<ListRouteState<ActivityUiFilters>>(
     () => ({
       ...ACTIVITY_ROUTE,
@@ -125,11 +271,13 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         else params.delete("selected");
         if (operationId) params.set("operation", operationId);
         else params.delete("operation");
+        if (operationId && attendanceIntent) params.set("attendance_intent", "apply");
+        else params.delete("attendance_intent");
         if (selected && detailPage > 1) params.set("detail_page", String(detailPage));
         else params.delete("detail_page");
       },
     }),
-    [operationId, selected, view, detailPage],
+    [operationId, selected, view, detailPage, attendanceIntent],
   );
   const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
@@ -165,7 +313,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const [reviewed, setReviewed] = useState<number[]>([]);
   const [reviewAll, setReviewAll] = useState(false);
   const [showOperation, setShowOperation] = useState(false);
-  const cache = useQueryClient();
   const tableHeading = useRef<HTMLHeadingElement>(null);
   const patchDraft = (patch: Partial<OperationDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
@@ -192,29 +339,113 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       ),
   });
   const restored = useQuery({
-    queryKey: volunteerQueryKeys.key("operationRestore", state.operation),
-    enabled: Boolean(state.operation),
-    queryFn: ({ signal }) =>
-      call<Reply>({ action: "status", operation_id: state.operation }, signal),
+    queryKey: volunteerQueryKeys.key("operationRestore", operationId, actorUserId),
+    enabled: Boolean(
+      operationId &&
+      actorUserId &&
+      operation?.id !== operationId &&
+      attendanceState.operationId !== operationId,
+    ),
+    queryFn: async ({ signal }) => {
+      const result = await call<Reply | { kind: string; operation: RosterAttendanceOperation }>(
+        { action: "status", operation_id: operationId },
+        signal,
+        actorUserId,
+      );
+      if (!result?.operation) throw new Error("Invalid operation response");
+      if (result.operation.action === "roster_attendance") parseRosterAttendanceReply(result);
+      return result;
+    },
   });
   useEffect(() => {
-    if (restored.data) {
-      setOperation(restored.data.operation);
+    if (
+      restored.data &&
+      !restored.isFetching &&
+      actorUserId &&
+      restored.data.operation.id === operationId
+    ) {
+      if (restored.data.operation.action === "roster_attendance") {
+        if (attendanceController.getState().operationId === operationId) return;
+        const original = parseRosterAttendanceReply(restored.data);
+        attendanceController.hydrate(original, actorUserId, attendanceIntent);
+        if (!selected) {
+          setSelected(original.activity_id);
+          setDetailPage(original.scope.page);
+        }
+        return;
+      }
+      setOperation((restored.data as Reply).operation);
       setReviewed([]);
       setReviewAll(false);
       setShowOperation(true);
     }
-  }, [restored.data]);
+  }, [
+    restored.data,
+    restored.isFetching,
+    actorUserId,
+    operationId,
+    attendanceController,
+    attendanceIntent,
+    selected,
+  ]);
+  useEffect(() => {
+    if (live.current.actorUserId !== actorUserId) return;
+    if (!actorUserId) return;
+    if (attendanceController.getState().actorUserId !== actorUserId)
+      attendanceController.clearIdentity(actorUserId);
+    if (!operationId) void attendanceController.restore(actorUserId);
+  }, [actorUserId, operationId, attendanceController]);
+  useEffect(() => {
+    live.current.mounted = true;
+    const clear = () => {
+      live.current = { ...live.current, actorUserId: "" };
+      attendanceController.clearIdentity();
+      setOperation(null);
+      setSelection(null);
+      setIds([]);
+      setSelected(null);
+      setDraft(initialOperationDraft());
+      setReviewed([]);
+      setReviewAll(false);
+      setShowOperation(false);
+    };
+    window.addEventListener("hkscda-admin-identity-cleared", clear);
+    return () => {
+      live.current.mounted = false;
+      window.removeEventListener("hkscda-admin-identity-cleared", clear);
+    };
+  }, [attendanceController]);
   useEffect(() => {
     const onPopState = () => {
       const restored = initial();
+      const prior = attendanceController.getState();
+      const invalidated = invalidateUnsubmittedAttendance(
+        restored.selected,
+        restored.detailPage,
+        restored.operation,
+      );
       setView(restored.view);
       setSelected(restored.selected);
       setDetailPage(restored.detailPage);
+      if (
+        !prior.applyIntent ||
+        prior.operation?.state === "completed" ||
+        prior.operation?.state === "expired"
+      ) {
+        const restoreId =
+          invalidated !== undefined && restored.operation === invalidated
+            ? null
+            : restored.operation;
+        setOperationId(restoreId);
+        setAttendanceIntent(Boolean(restoreId && restored.attendanceIntent));
+        setOperation(null);
+      }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, []);
+    // Read the current controller and scope when Back/Forward fires.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attendanceController, actorUserId]);
   function updateFilter(next: Partial<ActivityUiFilters>) {
     listState.changeFilter({
       ...next,
@@ -278,7 +509,10 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       });
     },
     onSuccess: (data) => {
+      invalidateUnsubmittedAttendance(null, detailPage, data.operation.id);
       setOperation(data.operation);
+      setOperationId(data.operation.id);
+      setAttendanceIntent(false);
       setReviewed([]);
       setReviewAll(false);
       setShowOperation(true);
@@ -338,6 +572,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const previewDisabled =
     preview.isPending ||
     sequence.isPending ||
+    ["applying", "outcome_unknown"].includes(attendanceState.phase) ||
     (draft.mode !== "generate" && draft.mode !== "copy" && !selection) ||
     (draft.mode === "copy" && !selection);
   const returnParams = new URLSearchParams(
@@ -555,7 +790,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           onRetry={() => {
             void list.refetch();
             void templates.refetch();
-            void restored.refetch();
+            if (operationId && actorUserId) void restored.refetch();
           }}
           title={volunteerAdminErrorMessage(loadError, language) ?? undefined}
           retryLabel={copy.reload}
@@ -577,6 +812,63 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         </div>
       )}
       <p role="status">{noticeText(notice, copy)}</p>
+      {(attendanceState.operationId || attendanceState.previewKey) &&
+        (!selected ||
+          detail.isError ||
+          attendanceState.operation?.activity_id !== selected ||
+          attendanceState.operation?.scope.page !== detailPage) && (
+          <section
+            className="space-y-2 rounded border border-[var(--color-border)] p-3"
+            aria-label={attendanceCopy.title}
+          >
+            <p role="status">
+              {attendanceState.phase === "saved_refresh_failed"
+                ? attendanceState.operation?.results?.some((row) => row.kind === "applied")
+                  ? attendanceCopy.refreshFailed
+                  : attendanceCopy.resultRefreshFailed
+                : attendanceState.operation?.state === "completed"
+                  ? attendanceCopy.resultsTitle
+                  : attendanceState.phase === "previewed" && !attendanceState.applyIntent
+                    ? attendanceCopy.previewTitle
+                    : attendanceState.applyIntent
+                      ? attendanceCopy.unknown
+                      : attendanceCopy.previewUnknown}
+            </p>
+            <button
+              type="button"
+              className={button}
+              onClick={() => void attendanceController.recover(actorUserId)}
+            >
+              {attendanceCopy.recover}
+            </button>
+            {attendanceState.operation && (
+              <button type="button" className={button} onClick={openOriginalAttendance}>
+                {attendanceCopy.openOriginal}
+              </button>
+            )}
+            {attendanceState.phase === "outcome_unknown" && !attendanceState.applyIntent && (
+              <button
+                type="button"
+                className={button}
+                onClick={() => {
+                  attendanceController.cancelPreview(actorUserId);
+                  clearAttendanceOperation();
+                }}
+              >
+                {attendanceCopy.cancel}
+              </button>
+            )}
+            {attendanceState.phase === "saved_refresh_failed" && (
+              <button
+                type="button"
+                className={button}
+                onClick={() => void attendanceController.retryRefresh()}
+              >
+                {attendanceCopy.retryRefresh}
+              </button>
+            )}
+          </section>
+        )}
       <section aria-label={copy.list.label}>
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
           {copy.list.heading(list.isError ? null : total)}
@@ -648,6 +940,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               setSelection(null);
             }}
             onOpen={(id) => {
+              invalidateUnsubmittedAttendance(id, 1);
               setSelected(id);
               setDetailPage(1);
               setHistoryPage(1);
@@ -702,6 +995,27 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <ActivityDetailSheet
         returnState={readActivityReturnState(returnParams)}
         onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
+        attendance={
+          detail.data && (
+            <ActivityAttendancePanel
+              detail={detail.data}
+              page={detailPage}
+              actorUserId={actorUserId}
+              state={attendanceState}
+              controller={attendanceController}
+              refreshing={detail.isFetching}
+              onReload={async () => {
+                const result = await detail.refetch();
+                if (result.error) throw result.error;
+                return result.data;
+              }}
+              onClearOperation={clearAttendanceOperation}
+              onOpenOriginal={openOriginalAttendance}
+              returnState={readActivityReturnState(returnParams)}
+              onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
+            />
+          )
+        }
         open={Boolean(selected)}
         onClose={() => {
           setSelected(null);
@@ -710,7 +1024,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         detail={detail}
         detailPage={detailPage}
         historyPage={historyPage}
-        onDetailPage={setDetailPage}
+        onDetailPage={changeDetailPage}
         onHistoryPage={setHistoryPage}
         onEdit={(activity) => {
           setIds([activity.id]);

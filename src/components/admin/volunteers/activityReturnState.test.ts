@@ -7,6 +7,20 @@ import {
   readPendingActivityReturnState,
   buildPendingRegistrationHref,
 } from "./activityReturnState";
+test("a recoverable operation and apply intent survive detail navigation without accepting arbitrary intent", () => {
+  const operation = "90000000-0000-4000-8000-000000000001";
+  const safe = readActivityReturnState(
+    new URLSearchParams(`date_scope=all&operation=${operation}&attendance_intent=apply`),
+  );
+  const href = buildActivityReturnHref(safe);
+  expect(new URL(href, "http://return.invalid").searchParams.get("operation")).toBe(operation);
+  expect(new URL(href, "http://return.invalid").searchParams.get("attendance_intent")).toBe(
+    "apply",
+  );
+  const bad = readActivityReturnState(new URLSearchParams("operation=bad&attendance_intent=all"));
+  expect(bad.safeSearch.operation).toBeUndefined();
+  expect(bad.safeSearch.attendance_intent).toBeUndefined();
+});
 
 test("activity return carries the roster page without replacing its list page", () => {
   const state = readActivityReturnState(new URLSearchParams("date_scope=all&page=4&detail_page=2"));

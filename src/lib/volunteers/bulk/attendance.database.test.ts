@@ -2,6 +2,7 @@ import { SQL } from "bun";
 import { expect, test } from "bun:test";
 import { attendanceActionCapabilities } from "../actionEligibility";
 import { parseRosterAttendanceReply } from "./attendance";
+import { reviewBulkOperation, type ReviewOperation } from "./review";
 const connection = process.env.VOLUNTEER_TEST_DATABASE_URL;
 const enabled = process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES === "1" && Boolean(connection);
 if (connection) {
@@ -9,6 +10,28 @@ if (connection) {
   if (target.hostname !== "127.0.0.1" || target.port !== "56322")
     throw new Error("Dedicated owned attendance DB required");
 }
+
+test.skipIf(!enabled)(
+  "a scoped status retains a read-only legacy envelope for safe UI rollback",
+  async () => {
+    const manifest = await Bun.file(
+      ".local-policy-test/volunteer-daily-work-20261016/manifest.json",
+    ).json();
+    const db = new SQL(connection!, { max: 1, prepare: false });
+    try {
+      const result = (
+        await db`select public.volunteer_bulk_command(${String(manifest.actorIds[0])}::uuid,${JSON.stringify({ action: "status", operation_id: manifest.operationIds[0] })}::jsonb) result`
+      )[0].result;
+      expect(result.operation.action).toBe("roster_attendance");
+      const legacy = reviewBulkOperation(result.operation as ReviewOperation);
+      expect(legacy.canRunSequentially).toBe(false);
+      expect(result.operation.groups).toEqual([]);
+      expect(result.operation.selection).toEqual([]);
+    } finally {
+      await db.close();
+    }
+  },
+);
 
 test.skipIf(!enabled)(
   "roster server capability marker and actions agree with the authoritative RPC",

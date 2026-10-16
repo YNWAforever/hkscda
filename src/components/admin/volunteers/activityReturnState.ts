@@ -36,6 +36,8 @@ const safeKeys = [
   "detail_page",
   "view",
   "selected",
+  "operation",
+  "attendance_intent",
 ];
 export function readActivityReturnState(params: URLSearchParams): ActivityReturnState {
   const safeSearch: Record<string, string> = {};
@@ -59,12 +61,15 @@ export function readActivityReturnState(params: URLSearchParams): ActivityReturn
     }
     if (["table", "calendar"].includes(candidate.get("view") ?? ""))
       safeSearch.view = candidate.get("view")!;
-    if (
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        candidate.get("selected") ?? "",
+    for (const key of ["selected", "operation"])
+      if (
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          candidate.get(key) ?? "",
+        )
       )
-    )
-      safeSearch.selected = candidate.get("selected")!;
+        safeSearch[key] = candidate.get(key)!;
+    if (safeSearch.operation && candidate.get("attendance_intent") === "apply")
+      safeSearch.attendance_intent = "apply";
   }
   return { from: params.get("return_from") === "calendar" ? "calendar" : "activities", safeSearch };
 }

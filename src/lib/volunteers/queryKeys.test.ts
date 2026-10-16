@@ -5,6 +5,13 @@ import {
   volunteerQueryKeys,
   clearVolunteerIdentityQueries,
 } from "./queryKeys";
+test("attendance invalidates an already-restored operation receipt", async () => {
+  const client = new QueryClient(),
+    key = volunteerQueryKeys.key("operationRestore", "original", "actor");
+  client.setQueryData(key, { operation: { state: "previewed" } });
+  await invalidateVolunteerQueries(client, "attendance");
+  expect(client.getQueryState(key)?.isInvalidated).toBe(true);
+});
 test("registration success invalidates actual workspace/detail/calendar keys and independent pages", async () => {
   const client = new QueryClient();
   const keys = [
