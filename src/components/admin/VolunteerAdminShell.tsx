@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, HeartHandshake } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { supabase } from "../../lib/supabase";
+import { subscribeToAdminAuth } from "../../lib/admin/supabaseAuthEvents";
 import {
   clearVolunteerIdentityQueries,
   clearVolunteerSessionSearch,
@@ -60,9 +60,7 @@ export function VolunteerWorkspaceFrame({
     let active = true;
     let generation = 0;
     let previous = identityRef.current?.admin.authUserId ?? null;
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const stopAuth = subscribeToAdminAuth((_event, session) => {
       const next = session?.user.id ?? null;
       if (next === previous) return;
       previous = next;
@@ -106,7 +104,7 @@ export function VolunteerWorkspaceFrame({
     });
     return () => {
       active = false;
-      subscription.unsubscribe();
+      stopAuth();
     };
   }, [queryClient, router]);
   const [navigationOpen, setNavigationOpen] = useState(false);
