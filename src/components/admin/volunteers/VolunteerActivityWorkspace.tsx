@@ -33,6 +33,8 @@ import type {
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
 import { readActivityReturnState } from "./activityReturnState";
+import { useVolunteerReturnPosition } from "./useVolunteerReturnPosition";
+import type { AdminMeResponse } from "../../../lib/admin/session";
 import {
   readActivityRouteState,
   writeActivityRouteState,
@@ -74,6 +76,7 @@ function initial() {
   return {
     filter: parsed.filters,
     page: parsed.page,
+    detailPage: parsed.detailPage,
     view: p.get("view") === "calendar" ? "calendar" : "table",
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
@@ -109,6 +112,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const [state] = useState(initial);
   const [view, setView] = useState(initialView ?? state.view);
   const [selected, setSelected] = useState<string | null>(state.selected);
+  const [detailPage, setDetailPage] = useState(state.detailPage);
   const [operation, setOperation] = useState<Operation | null>(null);
   const operationId = operation?.id;
   const routeState = useMemo<ListRouteState<ActivityUiFilters>>(
@@ -121,9 +125,11 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         else params.delete("selected");
         if (operationId) params.set("operation", operationId);
         else params.delete("operation");
+        if (selected && detailPage > 1) params.set("detail_page", String(detailPage));
+        else params.delete("detail_page");
       },
     }),
-    [operationId, selected, view],
+    [operationId, selected, view, detailPage],
   );
   const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
@@ -151,7 +157,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     filter.readiness,
     filter.shortage,
   ].filter(Boolean).length;
-  const [detailPage, setDetailPage] = useState(1);
   const [historyPage, setHistoryPage] = useState(1);
   const [ids, setIds] = useState<string[]>([]);
   const [selection, setSelection] = useState<Operation | null>(null);
@@ -205,6 +210,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       const restored = initial();
       setView(restored.view);
       setSelected(restored.selected);
+      setDetailPage(restored.detailPage);
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -334,6 +340,17 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     sequence.isPending ||
     (draft.mode !== "generate" && draft.mode !== "copy" && !selection) ||
     (draft.mode === "copy" && !selection);
+  const returnParams = new URLSearchParams(
+    typeof window === "undefined" ? "" : window.location.search,
+  );
+  routeState.write(returnParams, listState.filters, page);
+  returnParams.set("return_from", initialView === "calendar" ? "calendar" : "activities");
+  const returnPosition = useVolunteerReturnPosition({
+    listKey: "volunteer-workspace",
+    actorUserId: cache.getQueryData?.<AdminMeResponse>(["admin-me"])?.admin.authUserId ?? "",
+    scopeKey: JSON.stringify([filter, page, selected, detailPage]),
+    ready: Boolean(selected && detail.data) && !detail.isFetching && !detail.isError,
+  });
   function shift(days: number) {
     if (listState.filters.date_scope !== "future") return;
     const start = filter.from ?? hkDate();
@@ -683,16 +700,8 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         />
       )}
       <ActivityDetailSheet
-        returnState={readActivityReturnState(
-          new URLSearchParams(
-            typeof window === "undefined"
-              ? ""
-              : window.location.search +
-                  (window.location.search ? "&" : "?") +
-                  "return_from=" +
-                  (initialView === "calendar" ? "calendar" : "activities"),
-          ),
-        )}
+        returnState={readActivityReturnState(returnParams)}
+        onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
         open={Boolean(selected)}
         onClose={() => {
           setSelected(null);

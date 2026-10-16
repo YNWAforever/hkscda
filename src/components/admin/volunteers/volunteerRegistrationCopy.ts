@@ -33,6 +33,7 @@ export const volunteerRegistrationCopy = defineAdminCopy({
       profileNotLinked: "身份未連結：前往舊報名身份核對",
       notFound: "找不到義工報名。",
       back: "返回義工管理",
+      backTasks: "返回待審清單",
       attendance: (label: string) => `出席：${label}`,
       activity: "活動",
       date: "日期",
@@ -161,6 +162,7 @@ export const volunteerRegistrationCopy = defineAdminCopy({
       notFound:
         "Volunteer registration not found. Go back to volunteer management and choose another.",
       back: "Back to volunteer management",
+      backTasks: "Back to pending applications",
       attendance: (label: string) => `Attendance: ${label}`,
       activity: "Activity",
       date: "Date",

@@ -35,6 +35,7 @@ export function ActivityDetailBody({
   onHistoryPage,
   onEdit,
   returnState,
+  onRegistrationOpen,
 }: {
   detail: ActivityDetailQuery;
   detailPage: number;
@@ -43,6 +44,7 @@ export function ActivityDetailBody({
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
   returnState?: ActivityReturnState;
+  onRegistrationOpen?: (id: string) => void;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;
@@ -68,12 +70,15 @@ export function ActivityDetailBody({
       <button className={button} onClick={() => onEdit(activity)}>
         {text.edit}
       </button>
-      <h3 className="font-bold">{text.registrations(total)}</h3>
+      <h3 id="activity-roster-heading" tabIndex={-1} className="font-bold">
+        {text.registrations(total)}
+      </h3>
       {registrations.map((r) => (
-        <p key={r.id}>
+        <p id={`registration-${r.id}`} tabIndex={-1} key={r.id}>
           <Link
             to="/admin/volunteers/registrations/$id"
             params={{ id: r.id }}
+            onClick={() => onRegistrationOpen?.(r.id)}
             search={
               {
                 ...activityRouterSearch(
@@ -151,6 +156,7 @@ export function ActivityDetailSheet({
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
   returnState?: ActivityReturnState;
+  onRegistrationOpen?: (id: string) => void;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;

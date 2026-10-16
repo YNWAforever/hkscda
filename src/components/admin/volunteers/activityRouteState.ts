@@ -21,7 +21,7 @@ const keys = [
 export function readActivityRouteState(
   params: URLSearchParams,
   today: string,
-): { filters: ActivityUiFilters; page: number } {
+): { filters: ActivityUiFilters; page: number; detailPage: number } {
   const raw = params.get("date_scope");
   const scope = raw ?? (params.has("from") || params.has("until") ? "custom" : "future");
   const defaults: ActivityUiFilters = {
@@ -31,7 +31,11 @@ export function readActivityRouteState(
     sort: "asc",
   };
   if (!["future", "history", "all", "custom"].includes(scope))
-    return { filters: defaults, page: parseListPage(params.get("page")) };
+    return {
+      filters: defaults,
+      page: parseListPage(params.get("page")),
+      detailPage: parseListPage(params.get("detail_page")),
+    };
   const parsed = activityFilterSchema.safeParse({
     from:
       scope === "all" || scope === "history"
@@ -54,11 +58,12 @@ export function readActivityRouteState(
   return {
     filters: parsed.success ? { ...parsed.data, date_scope: scope as ActivityDateScope } : defaults,
     page: parseListPage(params.get("page")),
+    detailPage: parseListPage(params.get("detail_page")),
   };
 }
 export function writeActivityRouteState(
   params: URLSearchParams,
-  state: { filters: ActivityUiFilters; page: number },
+  state: { filters: ActivityUiFilters; page: number; detailPage?: number },
 ): void {
   params.delete("q");
   for (const key of keys) {
@@ -68,6 +73,9 @@ export function writeActivityRouteState(
   }
   params.set("date_scope", state.filters.date_scope);
   params.set("page", String(state.page));
+  params.delete("detail_page");
+  if (state.detailPage && state.detailPage > 1 && state.detailPage <= 100000)
+    params.set("detail_page", String(state.detailPage));
 }
 export function toActivityApiFilter(ui: ActivityUiFilters): ActivityFilter {
   const { date_scope: _scope, ...filter } = ui;

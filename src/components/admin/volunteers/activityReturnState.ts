@@ -13,7 +13,11 @@ export function activityRouterSearch(
   return Object.fromEntries(
     Object.entries(safe.safeSearch).map(([key, value]) => [
       key,
-      key === "page" ? Number(value) : key === "shortage" ? value === "true" : value,
+      key === "page" || key === "detail_page"
+        ? Number(value)
+        : key === "shortage"
+          ? value === "true"
+          : value,
     ]),
   );
 }
@@ -29,6 +33,7 @@ const safeKeys = [
   "shortage",
   "sort",
   "page",
+  "detail_page",
   "view",
   "selected",
 ];

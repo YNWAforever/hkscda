@@ -8,6 +8,13 @@ import {
   buildPendingRegistrationHref,
 } from "./activityReturnState";
 
+test("activity return carries the roster page without replacing its list page", () => {
+  const state = readActivityReturnState(new URLSearchParams("date_scope=all&page=4&detail_page=2"));
+  expect(state.safeSearch.page).toBe("4");
+  expect(state.safeSearch.detail_page).toBe("2");
+  expect(activityRouterSearch(state).detail_page).toBe(2);
+});
+
 test("Router search keeps numeric pages and boolean filters instead of JSON-quoted strings", () => {
   const search = activityRouterSearch(
     readActivityReturnState(new URLSearchParams("date_scope=all&page=2&shortage=true&q=private")),

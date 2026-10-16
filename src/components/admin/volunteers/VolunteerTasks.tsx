@@ -19,7 +19,14 @@ import {
 } from "../../../lib/admin/useListQueryState";
 import type { PendingCounts, PendingScope } from "../../../lib/volunteers/pending";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
-import { buildPendingRegistrationHref, type ActivityReturnState } from "./activityReturnState";
+import {
+  buildLegacyPendingHref,
+  buildPendingRegistrationHref,
+  type ActivityReturnState,
+} from "./activityReturnState";
+import { buildTaskRegistrationHref, readRegistrationReturnState } from "./registrationReturnState";
+import { useVolunteerReturnPosition } from "./useVolunteerReturnPosition";
+import type { AdminMeResponse } from "../../../lib/admin/session";
 const taskRoute: ListRouteState<{ scope: PendingScope }> = {
   key: "volunteer-tasks",
   read: (params) => ({
@@ -113,6 +120,29 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
     (listState.filters.scope === "all"
       ? query.data?.pendingCounts?.total
       : query.data?.pendingCounts?.[listState.filters.scope]);
+  const returnParams = new URLSearchParams(
+    typeof window === "undefined" ? "" : window.location.search,
+  );
+  if (returnState && !returnParams.has("activity_return_return_from")) {
+    const legacy = new URL(
+      buildLegacyPendingHref(
+        new URLSearchParams({ ...returnState.safeSearch, return_from: returnState.from }),
+      ),
+      "http://return.invalid",
+    );
+    for (const [key, value] of legacy.searchParams)
+      if (key.startsWith("activity_return_")) returnParams.set(key, value);
+  }
+  returnParams.set("return_from", "tasks");
+  returnParams.set("pending_scope", listState.filters.scope);
+  returnParams.set("page", String(listState.page));
+  const taskReturn = readRegistrationReturnState(returnParams);
+  const position = useVolunteerReturnPosition({
+    listKey: "volunteer-tasks",
+    actorUserId: cache.getQueryData?.<AdminMeResponse>(["admin-me"])?.admin.authUserId ?? "",
+    scopeKey: JSON.stringify([listState.filters.scope, listState.page, listState.query]),
+    ready: Boolean(query.data) && !refreshing && !query.isError,
+  });
   const mutation = useMutation({
     mutationFn: (command: object) => post(command),
     onSuccess: async () => {
@@ -160,7 +190,7 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
       )}
       {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
       <section className="space-y-3">
-        <h2 id="tasks-pending" className="text-xl font-semibold">
+        <h2 id="tasks-pending" tabIndex={-1} className="text-xl font-semibold">
           {copy.pending.title}
         </h2>
         <label>
@@ -229,6 +259,7 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
             : short;
           return (
             <article
+              tabIndex={-1}
               id={`pending-${id}`}
               key={row.id}
               className="min-w-0 space-y-2 rounded border p-3"
@@ -269,7 +300,8 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
                 ) : (
                   <VolunteerLink
                     className="inline-flex min-h-11 items-center font-semibold underline"
-                    href={buildPendingRegistrationHref(id, returnState)}
+                    href={buildTaskRegistrationHref(id, taskReturn)}
+                    onClick={() => position.remember(`pending-${id}`)}
                   >
                     {copy.pending.process}
                   </VolunteerLink>

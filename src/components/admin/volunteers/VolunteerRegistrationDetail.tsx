@@ -28,10 +28,10 @@ import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
 import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 import {
-  activityRouterSearch,
-  readActivityReturnState,
-  type ActivityReturnState,
-} from "./activityReturnState";
+  registrationRouterSearch,
+  readRegistrationReturnState,
+  type RegistrationReturnState,
+} from "./registrationReturnState";
 import { invalidateVolunteerQueries, volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 
 type RegistrationResponse = {
@@ -60,7 +60,7 @@ export function VolunteerRegistrationDetail({
   returnState,
 }: {
   registrationId: string;
-  returnState?: ActivityReturnState;
+  returnState?: RegistrationReturnState;
 }) {
   const { copy: shared, language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerRegistrationCopy, language);
@@ -70,7 +70,7 @@ export function VolunteerRegistrationDetail({
   const queryClient = useQueryClient();
   const safeReturn =
     returnState ??
-    readActivityReturnState(
+    readRegistrationReturnState(
       new URLSearchParams(typeof window === "undefined" ? "" : window.location.search),
     );
   const [correctionReason, setCorrectionReason] = useState("");
@@ -209,10 +209,10 @@ export function VolunteerRegistrationDetail({
       />
       <Link
         to={`/admin/volunteers/${safeReturn.from}`}
-        search={activityRouterSearch(safeReturn) as never}
+        search={registrationRouterSearch(safeReturn) as never}
         className="text-sm font-semibold text-[var(--color-primary)]"
       >
-        {text.back}
+        {safeReturn.from === "tasks" ? text.backTasks : text.back}
       </Link>
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
