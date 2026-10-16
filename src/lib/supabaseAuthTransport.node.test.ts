@@ -82,6 +82,87 @@ test("a fresh disabled role cannot reuse the preceding active role result", asyn
   ]);
   expect(result.connections).toBe(1);
 });
+test("bounded read RPCs share the fresh Auth/role connection and never cache actors or results", async () => {
+  const result = await runFixture("rpc-fresh");
+  const a = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    b = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  expect(result.authorizations).toEqual(["Bearer actor-a", "Bearer actor-b", "Bearer actor-a"]);
+  const reads = result.rpcReads as { body: string; fallback: boolean; authorization: string }[];
+  expect(reads.map((row) => JSON.parse(row.body).p_actor)).toEqual([a, b, a]);
+  expect(
+    reads.every((row) => !row.fallback && row.authorization === "Bearer synthetic-service-role"),
+  ).toBe(true);
+  expect(result.values).toEqual([{ ordinal: 1 }, { ordinal: 2 }, { ordinal: 3 }]);
+  expect(result.connections).toBe(1);
+});
+test("a freshly disabled actor cannot execute a bounded read RPC using the previous successful role", async () => {
+  const result = await runFixture("rpc-disabled");
+  expect(result.authorizations).toEqual(["Bearer actor-a", "Bearer actor-a", "Bearer actor-b"]);
+  const reads = result.rpcReads as { body: string }[];
+  expect(reads.map((row) => JSON.parse(row.body).p_actor)).toEqual([
+    "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  ]);
+  expect(result.values).toEqual([{ ordinal: 1 }, null, { ordinal: 2 }]);
+  expect((result.roleReads as { status: string }[]).map((row) => row.status)).toEqual([
+    "active",
+    "disabled",
+    "active",
+  ]);
+});
+test("the three bounded POST read schemas retain exact UTF-8 body and framing", async () => {
+  const result = await runFixture("rpc-bounded");
+  const reads = result.rpcReads as {
+    path: string;
+    body: string;
+    fallback: boolean;
+    bytes: number;
+    contentLength: string;
+  }[];
+  const bodies = result.bodies as [string, string][];
+  expect(reads.map((row) => row.body)).toEqual(bodies.map(([, body]) => body));
+  expect(
+    reads.every(
+      (row) =>
+        !row.fallback &&
+        Number(row.contentLength) === Buffer.byteLength(row.body) &&
+        row.bytes === Buffer.byteLength(row.body),
+    ),
+  ).toBe(true);
+  expect(result.connections).toBe(1);
+});
+for (const encoding of ["gzip", "deflate", "br"])
+  test(`bounded RPC ${encoding} decodes once without another upstream request or disabling negotiation`, async () => {
+    const result = await runFixture("rpc-" + encoding);
+    expect(result.value).toEqual({ value: "義工🌏", ordinal: 1 });
+    expect(result.encoding).toBe(encoding);
+    const reads = result.rpcReads as { fallback: boolean; acceptEncoding: string }[];
+    expect(reads).toHaveLength(1);
+    expect(reads[0].fallback).toBe(false);
+    expect(reads[0].acceptEncoding.split(",").map((value) => value.trim())).toContain(encoding);
+  });
+test("write RPCs, caller read assertions, unbounded/extended bodies and nonstandard requests retain original fetch", async () => {
+  const result = await runFixture("rpc-fallback");
+  expect(result.requests).toBe(0);
+  const rows = result.observed as { fallback: boolean; method: string; body: string }[];
+  expect(rows).toHaveLength(29);
+  expect(rows.every((row) => row.fallback)).toBe(true);
+  expect(rows[0].body).toContain("attendance_apply");
+  expect(rows[1].body).toContain('"operationType":"read"');
+});
+test("a configured proxy retains the original POST read RPC transport", async () => {
+  const result = await runFixture("rpc-proxy");
+  const rows = result.rpcReads as { fallback: boolean }[];
+  expect(rows).toHaveLength(1);
+  expect(rows[0].fallback).toBe(true);
+});
+test("aborting a bounded RPC body closes its actual upstream response", async () => {
+  expect(await runFixture("rpc-abort-body")).toEqual({
+    errorName: "AbortError",
+    requests: 1,
+    upstreamClosed: true,
+  });
+});
 
 test("unbounded, extended, duplicate and invalid role filters and all writes keep their original fetch", async () => {
   const result = await runFixture("role-fallback");

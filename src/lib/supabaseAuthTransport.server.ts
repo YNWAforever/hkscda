@@ -1,5 +1,6 @@
 import type { Agent as HttpAgent } from "node:http";
 import type { Agent as HttpsAgent } from "node:https";
+import { boundedSupabaseReadRpcBody } from "./boundedSupabaseReadRpc.server";
 
 type ServerFetch = (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 type ScheduleTimeout = (callback: () => void, milliseconds: number) => () => void;
@@ -12,7 +13,9 @@ const scheduleAuthTimeout: ScheduleTimeout = (callback, milliseconds) => {
 // Reuse connections, never user/session/role results. Every read reaches upstream.
 let httpAgent: HttpAgent | undefined;
 let httpsAgent: HttpsAgent | undefined;
-let nodeTransports: Promise<[typeof import("node:http"), typeof import("node:https")]> | undefined;
+let nodeTransports:
+  | Promise<[typeof import("node:http"), typeof import("node:https"), typeof import("node:zlib")]>
+  | undefined;
 
 export function createSupabaseAuthFetch(
   baseUrl: string,
@@ -29,9 +32,11 @@ export function createSupabaseAuthFetch(
     return fallback;
   const endpoint = new URL(`${baseUrl.replace(/\/+$/, "")}/auth/v1/user`);
   const roleEndpoint = new URL(`${baseUrl.replace(/\/+$/, "")}/rest/v1/admin_user`);
+  const rpcBase = new URL(`${baseUrl.replace(/\/+$/, "")}/rest/v1/rpc/`);
   return (input, init = {}) => {
     if (typeof input !== "string" && !(input instanceof URL)) return fallback(input, init);
     const target = new URL(input);
+    const rpcBody = boundedSupabaseReadRpcBody(rpcBase, target, init);
     // Match only the bounded role lookup made after a fresh Auth check.
     // Unknown query shapes retain their caller's transport and semantics.
     const roleLookup =
@@ -46,10 +51,9 @@ export function createSupabaseAuthFetch(
         target.searchParams.get("auth_user_id") ?? "",
       );
     if (
-      (!roleLookup && target.href !== endpoint.href) ||
+      (rpcBody === null && !roleLookup && target.href !== endpoint.href) ||
       !["http:", "https:"].includes(target.protocol) ||
-      (init.method ?? "GET").toUpperCase() !== "GET" ||
-      init.body != null ||
+      (rpcBody === null && ((init.method ?? "GET").toUpperCase() !== "GET" || init.body != null)) ||
       init.redirect ||
       init.integrity
     )
@@ -61,9 +65,16 @@ export function createSupabaseAuthFetch(
         : new DOMException("The operation was aborted", "AbortError");
     if (signal?.aborted) return Promise.reject(abortReason());
     const headers = new Headers(init.headers);
-    headers.set("accept-encoding", "identity");
-    nodeTransports ??= Promise.all([import("node:http"), import("node:https")]);
-    return nodeTransports.then(([http, https]) => {
+    if (rpcBody !== null) {
+      if (!headers.has("accept-encoding")) headers.set("accept-encoding", "gzip, deflate, br");
+      headers.set("content-length", String(Buffer.byteLength(rpcBody)));
+    } else headers.set("accept-encoding", "identity");
+    nodeTransports ??= Promise.all([
+      import("node:http"),
+      import("node:https"),
+      import("node:zlib"),
+    ]);
+    return nodeTransports.then(([http, https, zlib]) => {
       if (signal?.aborted) return Promise.reject(abortReason());
       return new Promise<Response>((resolve, reject) => {
         const send = target.protocol === "https:" ? https.request : http.request;
@@ -85,7 +96,7 @@ export function createSupabaseAuthFetch(
         const request = send(
           target,
           {
-            method: "GET",
+            method: rpcBody === null ? "GET" : "POST",
             headers: Object.fromEntries(headers),
             agent:
               target.protocol === "https:"
@@ -95,12 +106,14 @@ export function createSupabaseAuthFetch(
           (incoming) => {
             setDeadline(300_000);
             // Preserve native fetch redirect/encoding behavior for unexpected servers.
+            const encoding = incoming.headers["content-encoding"];
+            const compressedRpc =
+              rpcBody !== null && ["gzip", "deflate", "br"].includes(encoding ?? "");
             if (
               (incoming.statusCode !== undefined &&
                 incoming.statusCode >= 300 &&
                 incoming.statusCode < 400) ||
-              (incoming.headers["content-encoding"] &&
-                incoming.headers["content-encoding"] !== "identity")
+              (encoding && encoding !== "identity" && !compressedRpc)
             ) {
               incoming.resume();
               incoming.once("end", cleanup);
@@ -124,27 +137,39 @@ export function createSupabaseAuthFetch(
               );
               return;
             }
+            const payload = compressedRpc
+              ? incoming.pipe(
+                  encoding === "gzip"
+                    ? zlib.createGunzip()
+                    : encoding === "deflate"
+                      ? zlib.createInflate()
+                      : zlib.createBrotliDecompress(),
+                )
+              : incoming;
+            if (payload !== incoming) incoming.once("error", (error) => payload.destroy(error));
             const body = new ReadableStream<Uint8Array>({
               start(controller) {
-                incoming.on("data", (chunk: Buffer) => {
+                payload.on("data", (chunk: Buffer) => {
                   setDeadline(300_000);
                   controller.enqueue(chunk);
-                  if ((controller.desiredSize ?? 0) <= 0) incoming.pause();
+                  if ((controller.desiredSize ?? 0) <= 0) payload.pause();
                 });
-                incoming.once("end", () => {
+                payload.once("end", () => {
                   cleanup();
                   controller.close();
                 });
-                incoming.once("error", (error) => {
+                payload.once("error", (error) => {
                   cleanup();
+                  incoming.destroy();
                   controller.error(aborted ?? error);
                 });
               },
               pull() {
-                incoming.resume();
+                payload.resume();
               },
               cancel() {
                 cleanup();
+                payload.destroy();
                 incoming.destroy();
               },
             });
@@ -175,7 +200,7 @@ export function createSupabaseAuthFetch(
           } else connected();
         });
         setDeadline(10_000);
-        request.end();
+        request.end(rpcBody ?? undefined);
       });
     });
   };
