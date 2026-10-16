@@ -1,6 +1,30 @@
 import { createServer } from "node:http";
 import { test, expect } from "bun:test";
-import { benchmarkScenario, readPerformanceDataset } from "./verify-admin-performance.mjs";
+import {
+  benchmarkScenario,
+  readPerformanceDataset,
+  classifyScenario,
+} from "./verify-admin-performance.mjs";
+
+test("pending body search remains a strict allowlisted read while attendance commands cannot claim read", () => {
+  expect(
+    classifyScenario({
+      path: "/api/admin/volunteers/tasks",
+      method: "POST",
+      operationType: "read",
+      requestBody: { action: "list", scope: "upcoming", page: 2, q: "50%_" },
+    }),
+  ).toBe("read");
+  for (const action of ["attendance_preview", "attendance_apply"])
+    expect(() =>
+      classifyScenario({
+        path: "/api/admin/volunteers/bulk",
+        method: "POST",
+        operationType: "read",
+        requestBody: { action, operation_id: crypto.randomUUID() },
+      }),
+    ).toThrow();
+});
 
 test("volunteer counts accept real small fixtures and reject fabricated numeric metadata", () => {
   expect(

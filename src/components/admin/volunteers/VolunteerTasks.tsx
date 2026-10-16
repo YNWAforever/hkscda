@@ -4,7 +4,8 @@ import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { StatusPill } from "../StatusBadge";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { useAdminLanguage } from "../adminI18n";
@@ -50,6 +51,12 @@ type Row = {
   delivery_state?: string | null;
   last_error?: string;
   attempts?: number;
+  ends_at?: string | null;
+  location?: string;
+  participant_count?: number;
+  capacity?: number;
+  approved_participants?: number;
+  remaining_capacity?: number;
 };
 type Data = {
   tasks: Row[];
@@ -58,6 +65,7 @@ type Data = {
   pendingCounts?: PendingCounts;
   page?: number;
   pageSize?: number;
+  filteredTotal?: number;
 };
 const post = <T,>(command: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/tasks", {
@@ -78,12 +86,33 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
   const query = useQuery({
-    queryKey: volunteerQueryKeys.key("tasks", listState.filters.scope, listState.page),
+    queryKey: volunteerQueryKeys.key(
+      "tasks",
+      listState.filters.scope,
+      listState.query,
+      listState.page,
+    ),
     enabled: listState.hydrated,
+    placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
-      post<Data>({ action: "list", scope: listState.filters.scope, page: listState.page }, signal),
+      post<Data>(
+        {
+          action: "list",
+          scope: listState.filters.scope,
+          page: listState.page,
+          q: listState.query,
+        },
+        signal,
+      ),
     refetchInterval: 30000,
   });
+  const rows = query.isError ? [] : (query.data?.pending ?? []);
+  const refreshing = query.isFetching || query.isPlaceholderData || listState.isDebouncing;
+  const filteredTotal =
+    query.data?.filteredTotal ??
+    (listState.filters.scope === "all"
+      ? query.data?.pendingCounts?.total
+      : query.data?.pendingCounts?.[listState.filters.scope]);
   const mutation = useMutation({
     mutationFn: (command: object) => post(command),
     onSuccess: async () => {
@@ -150,6 +179,31 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
             ))}
           </select>
         </label>
+        <form
+          className="flex flex-wrap items-end gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            listState.submitQuery();
+          }}
+        >
+          <label className="min-w-0 flex-1">
+            <span className="block">{copy.pending.search}</span>
+            <input
+              type="search"
+              maxLength={100}
+              placeholder={copy.pending.searchHint}
+              className="min-h-11 w-full rounded border px-3"
+              {...listState.queryInput}
+            />
+          </label>
+          <button
+            type="button"
+            className="min-h-11 rounded border px-3"
+            onClick={listState.clearQuery}
+          >
+            {copy.pending.clear}
+          </button>
+        </form>
         {query.data?.pendingCounts && (
           <p role="status">
             {copy.pending.counts(
@@ -160,16 +214,82 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
             · {copy.pending.asOf(format.sessionTime(query.data.pendingCounts.asOf))}
           </p>
         )}
-        {query.data?.pending.length === 0 && <p>{copy.pending.none}</p>}
-        {query.data?.pending.map((row) => (
-          <article key={row.id} className="rounded border p-3">
-            {row.contact_name} · {target(row)}
-          </article>
-        ))}
+        {filteredTotal !== undefined && <p role="status">{copy.pending.matched(filteredTotal)}</p>}
+        {refreshing && query.data && <p role="status">{copy.pending.updating}</p>}
+        {!query.isError && query.data?.pending.length === 0 && <p>{copy.pending.none}</p>}
+        {rows.map((row) => {
+          const id = row.registration_id ?? row.id;
+          const short = id.slice(0, 8);
+          const reference = rows.some(
+            (other) =>
+              (other.registration_id ?? other.id) !== id &&
+              (other.registration_id ?? other.id).slice(0, 8) === short,
+          )
+            ? id
+            : short;
+          return (
+            <article
+              id={`pending-${id}`}
+              key={row.id}
+              className="min-w-0 space-y-2 rounded border p-3"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <h3 className="font-semibold break-words">{row.contact_name}</h3>
+                <StatusPill tone="warning">{copy.pending.status}</StatusPill>
+              </div>
+              <p className="text-sm break-all" title={id}>
+                {copy.pending.reference(reference)}
+              </p>
+              <p className="font-medium break-words">{row.title ?? copy.pending.unavailable}</p>
+              <p>
+                {row.starts_at ? format.sessionTime(row.starts_at) : copy.pending.unavailable}
+                {row.ends_at ? ` – ${format.sessionTime(row.ends_at)}` : ""}
+              </p>
+              <p className="break-words">{row.location ?? copy.pending.unavailable}</p>
+              <p>
+                {row.participant_count === undefined
+                  ? copy.pending.unavailable
+                  : copy.pending.participants(row.participant_count)}
+              </p>
+              <p>
+                {row.capacity === undefined ||
+                row.approved_participants === undefined ||
+                row.remaining_capacity === undefined
+                  ? copy.pending.unavailable
+                  : copy.pending.capacity(
+                      row.capacity,
+                      row.approved_participants,
+                      row.remaining_capacity,
+                    )}
+              </p>
+              <p className="text-sm">{copy.pending.notReserved}</p>
+              <div className="flex flex-wrap gap-3">
+                {refreshing ? (
+                  <span aria-disabled="true">{copy.pending.process}</span>
+                ) : (
+                  <VolunteerLink
+                    className="inline-flex min-h-11 items-center font-semibold underline"
+                    href={buildPendingRegistrationHref(id, returnState)}
+                  >
+                    {copy.pending.process}
+                  </VolunteerLink>
+                )}
+                {row.activity_id && !refreshing && (
+                  <VolunteerLink
+                    className="inline-flex min-h-11 items-center underline"
+                    href={`/admin/volunteers/activities?date_scope=all&selected=${encodeURIComponent(row.activity_id)}`}
+                  >
+                    {copy.pending.openSession}
+                  </VolunteerLink>
+                )}
+              </div>
+            </article>
+          );
+        })}
         <div className="flex gap-3">
           <button
             className="min-h-11 underline"
-            disabled={listState.page === 1 || query.isFetching}
+            disabled={listState.page === 1 || refreshing}
             onClick={() => listState.setPage(listState.page - 1)}
           >
             {copy.pending.previous}
@@ -177,12 +297,9 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
           <button
             className="min-h-11 underline"
             disabled={
-              !query.data?.pendingCounts ||
-              query.isFetching ||
-              listState.page * 25 >=
-                (listState.filters.scope === "all"
-                  ? query.data.pendingCounts.total
-                  : query.data.pendingCounts[listState.filters.scope])
+              filteredTotal === undefined ||
+              refreshing ||
+              listState.page * 25 >= (filteredTotal ?? 0)
             }
             onClick={() => listState.setPage(listState.page + 1)}
           >

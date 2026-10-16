@@ -46,6 +46,7 @@ export const volunteerReadSchemas = new Map([
       .object({
         action: z.literal("list"),
         scope: z.enum(["upcoming", "overdue", "all"]).optional(),
+        q: z.string().trim().max(100).optional(),
         page: page.optional(),
         pageSize: z.number().int().min(0).max(100).optional(),
       })
