@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CompositionEvent,
+} from "react";
 
 export type ListRouteState<Filters> = {
   key: string;
@@ -43,7 +50,10 @@ export function useListQueryState<Filters extends object>({
   const historyMode = useRef<"push" | "replace">("replace");
   const storageKey = "hkscda.admin.list.query." + key;
 
-  useEffect(() => {
+  // Restore the mounted list before paint, so its enabled query can subscribe
+  // without waiting for a second render frame. Keep it disabled until the saved
+  // search and route filters are restored together.
+  useLayoutEffect(() => {
     const current = route.current;
     if (current) {
       const restored = current.read(new URLSearchParams(window.location.search), defaults.current);
