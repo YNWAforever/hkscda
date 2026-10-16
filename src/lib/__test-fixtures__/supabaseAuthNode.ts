@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { createSupabaseServiceClient } from "../supabase.server";
 import { createSupabaseAuthFetch } from "../supabaseAuthTransport.server";
+import { getAdminUserFromRequest } from "../admin/session.server";
 
 for (const name of [
   "HTTP_PROXY",
@@ -14,6 +15,11 @@ for (const name of [
   delete process.env[name];
 
 const authorizations: string[] = [];
+const actorIds = {
+  "actor-a": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "actor-b": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+};
+const roleReads: { actor: string; status: string; authorization: string }[] = [];
 let connections = 0;
 const scenario = process.argv[2] ?? "fresh";
 const observed: { method: string; path: string; body: string; fallback: boolean }[] = [];
@@ -27,7 +33,7 @@ const bodyClosedPromise = new Promise<void>((resolve) => {
   bodyClosed = resolve;
 });
 const server = createServer(async (request, response) => {
-  if (scenario === "fallback" || scenario === "proxy") {
+  if (scenario === "fallback" || scenario === "proxy" || scenario === "role-fallback") {
     const chunks: Uint8Array[] = [];
     for await (const chunk of request) chunks.push(chunk as Uint8Array);
     observed.push({
@@ -38,6 +44,35 @@ const server = createServer(async (request, response) => {
     });
     response.writeHead(200, { "content-type": "application/json" });
     response.end(JSON.stringify({ received: observed.at(-1) }));
+    return;
+  }
+  const url = new URL(request.url ?? "/", "http://fixture.invalid");
+  if (scenario.startsWith("role-") && url.pathname === "/rest/v1/admin_user") {
+    const actor = url.searchParams.get("auth_user_id")?.replace(/^eq\./, "") ?? "";
+    const status = scenario === "role-disabled" && roleReads.length === 1 ? "disabled" : "active";
+    roleReads.push({ actor, status, authorization: request.headers.authorization ?? "" });
+    requestSeen?.();
+    if (scenario === "role-abort-body") {
+      response.on("close", () => {
+        upstreamClosed = true;
+        bodyClosed?.();
+      });
+      response.writeHead(200, { "content-type": "application/json" });
+      response.write("[");
+      return;
+    }
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(
+      JSON.stringify([
+        {
+          id: actor,
+          auth_user_id: actor,
+          email: actor + "@example.invalid",
+          role: "admin",
+          status,
+        },
+      ]),
+    );
     return;
   }
   if (request.url !== "/auth/v1/user" || request.method !== "GET") {
@@ -72,7 +107,8 @@ const server = createServer(async (request, response) => {
     response.end(JSON.stringify({ msg: "Invalid token" }));
     return;
   }
-  const id = authorization === "Bearer actor-b" ? "actor-b" : "actor-a";
+  const actor = authorization === "Bearer actor-b" ? "actor-b" : "actor-a";
+  const id = scenario.startsWith("role-") ? actorIds[actor] : actor;
   response.writeHead(200, {
     "content-type": "application/json",
     connection: "keep-alive",
@@ -99,7 +135,64 @@ process.env.SUPABASE_URL = `http://127.0.0.1:${address.port}`;
 process.env.SUPABASE_SERVICE_ROLE_KEY = "synthetic-service-role";
 const users: (string | null)[] = [];
 try {
-  if (scenario === "fallback" || scenario === "proxy") {
+  if (scenario === "role-fresh" || scenario === "role-disabled") {
+    for (const token of scenario === "role-disabled"
+      ? ["actor-a", "actor-a", "actor-b"]
+      : ["actor-a", "actor-b", "actor-a"]) {
+      try {
+        const admin = await getAdminUserFromRequest(
+          new Request("http://fixture.invalid/admin", {
+            headers: { authorization: "Bearer " + token },
+          }),
+        );
+        users.push(admin.authUserId);
+      } catch (error) {
+        if (scenario !== "role-disabled" || !(error instanceof Response) || error.status !== 403)
+          throw error;
+        users.push(null);
+      }
+    }
+    console.log(JSON.stringify({ authorizations, roleReads, users, connections }));
+  } else if (scenario === "role-fallback") {
+    const nativeFetch = globalThis.fetch;
+    const transport = createSupabaseAuthFetch(process.env.SUPABASE_URL, (input, init) => {
+      const headers = new Headers(init?.headers);
+      headers.set("x-fixture-fallback", "1");
+      return nativeFetch(input, { ...init, headers });
+    });
+    const endpoint = process.env.SUPABASE_URL + "/rest/v1/admin_user";
+    const query =
+      "?select=id,auth_user_id,email,role,status&auth_user_id=eq." + actorIds["actor-a"];
+    for (const path of [
+      "?select=*",
+      query + "&status=eq.active",
+      query + "&auth_user_id=eq." + actorIds["actor-b"],
+      "?select=id,auth_user_id,email,role,status&auth_user_id=eq.actor-a",
+    ])
+      await (await transport(endpoint + path)).text();
+    await (
+      await transport(endpoint + query, { method: "POST", body: '{"status":"disabled"}' })
+    ).text();
+    console.log(JSON.stringify({ observed }));
+  } else if (scenario === "role-abort-body") {
+    const transport = createSupabaseAuthFetch(process.env.SUPABASE_URL);
+    const controller = new AbortController();
+    const url =
+      process.env.SUPABASE_URL +
+      "/rest/v1/admin_user?select=id,auth_user_id,email,role,status&auth_user_id=eq." +
+      actorIds["actor-a"];
+    const response = await transport(url, { signal: controller.signal });
+    const body = response.text();
+    controller.abort();
+    let errorName = "";
+    try {
+      await body;
+    } catch (error) {
+      errorName = error instanceof Error ? error.name : "unknown";
+    }
+    await bodyClosedPromise;
+    console.log(JSON.stringify({ errorName, requests: roleReads.length, upstreamClosed }));
+  } else if (scenario === "fallback" || scenario === "proxy") {
     if (scenario === "proxy") process.env.HTTPS_PROXY = "http://127.0.0.1:9";
     const nativeFetch = globalThis.fetch;
     const transport = createSupabaseAuthFetch(process.env.SUPABASE_URL, (input, init) => {

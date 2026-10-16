@@ -54,6 +54,48 @@ test("a fresh Auth denial cannot reuse the preceding successful actor", async ()
   expect(result.connections).toBe(1);
 });
 
+test("fresh Auth and the exact admin role lookup share one connection across changing actors", async () => {
+  const result = await runFixture("role-fresh");
+  const a = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const b = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  expect(result.users).toEqual([a, b, a]);
+  expect(result.authorizations).toEqual(["Bearer actor-a", "Bearer actor-b", "Bearer actor-a"]);
+  expect(result.roleReads).toEqual(
+    [a, b, a].map((actor) => ({
+      actor,
+      status: "active",
+      authorization: "Bearer synthetic-service-role",
+    })),
+  );
+  expect(result.connections).toBe(1);
+});
+
+test("a fresh disabled role cannot reuse the preceding active role result", async () => {
+  const result = await runFixture("role-disabled");
+  const a = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const b = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+  expect(result.users).toEqual([a, null, b]);
+  expect(result.roleReads).toEqual([
+    { actor: a, status: "active", authorization: "Bearer synthetic-service-role" },
+    { actor: a, status: "disabled", authorization: "Bearer synthetic-service-role" },
+    { actor: b, status: "active", authorization: "Bearer synthetic-service-role" },
+  ]);
+  expect(result.connections).toBe(1);
+});
+
+test("unbounded, extended, duplicate and invalid role filters and all writes keep their original fetch", async () => {
+  const result = await runFixture("role-fallback");
+  const rows = result.observed as { fallback: boolean; method: string; body: string }[];
+  expect(rows).toHaveLength(5);
+  expect(rows.every((row) => row.fallback)).toBe(true);
+  expect(rows.at(-1)).toMatchObject({ method: "POST", body: '{"status":"disabled"}' });
+});
+
+test("aborting an exact role read closes its actual upstream response", async () => {
+  const result = await runFixture("role-abort-body");
+  expect(result).toEqual({ errorName: "AbortError", requests: 1, upstreamClosed: true });
+});
+
 test("non-GET, RPC and query-bearing requests retain the original fetch path and payload", async () => {
   const result = await runFixture("fallback");
   expect(result.observed).toEqual([
