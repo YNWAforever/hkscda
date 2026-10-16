@@ -1,11 +1,4 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type CompositionEvent,
-} from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type CompositionEvent } from "react";
 
 export type ListRouteState<Filters> = {
   key: string;
@@ -27,7 +20,6 @@ export function useListQueryState<Filters extends object>({
   initialFilters,
   initialPage = 1,
   routeState,
-  clientOnly = false,
   debounceMs = 300,
   onScopeChange,
 }: {
@@ -35,49 +27,24 @@ export function useListQueryState<Filters extends object>({
   initialFilters: Filters;
   initialPage?: number;
   routeState?: ListRouteState<Filters>;
-  /** Only routes that disable SSR may restore browser state during their initial render. */
-  clientOnly?: boolean;
   debounceMs?: number;
   onScopeChange?: () => void;
 }) {
-  const storageKey = "hkscda.admin.list.query." + key;
-  const [initial] = useState(() => {
-    const ready = clientOnly && typeof window !== "undefined";
-    const restored =
-      ready && routeState
-        ? routeState.read(new URLSearchParams(window.location.search), initialFilters)
-        : { filters: initialFilters, page: initialPage };
-    let stored = "";
-    if (ready) {
-      try {
-        stored = window.sessionStorage.getItem(storageKey) ?? "";
-      } catch {
-        /* Session persistence is optional. */
-      }
-    }
-    return {
-      ...restored,
-      draftQuery: stored,
-      query: stored.trim(),
-      hydrated: ready || typeof window === "undefined",
-    };
-  });
-  const [filters, setFilters] = useState<Filters>(initial.filters);
-  const [page, setPage] = useState(initial.page);
-  const [draftQuery, setDraftQuery] = useState(initial.draftQuery);
-  const [query, setQuery] = useState(initial.query);
+  const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [page, setPage] = useState(initialPage);
+  const [draftQuery, setDraftQuery] = useState("");
+  const [query, setQuery] = useState("");
   const [composing, setComposing] = useState(false);
-  const [hydrated, setHydrated] = useState(initial.hydrated);
+  const [hydrated, setHydrated] = useState(typeof window === "undefined");
   const scopeChange = useRef(onScopeChange);
   scopeChange.current = onScopeChange;
   const route = useRef(routeState);
+  route.current = routeState;
   const defaults = useRef(initialFilters);
   const historyMode = useRef<"push" | "replace">("replace");
+  const storageKey = "hkscda.admin.list.query." + key;
 
-  // Restore the mounted list before paint, so its enabled query can subscribe
-  // without waiting for a second render frame. Keep it disabled until the saved
-  // search and route filters are restored together.
-  useLayoutEffect(() => {
+  useEffect(() => {
     const current = route.current;
     if (current) {
       const restored = current.read(new URLSearchParams(window.location.search), defaults.current);
@@ -135,7 +102,7 @@ export function useListQueryState<Filters extends object>({
         window.location.pathname + (next ? "?" + next : "") + window.location.hash,
       );
     historyMode.current = "replace";
-  }, [filters, hydrated, page]);
+  }, [filters, hydrated, page, routeState]);
 
   useEffect(() => {
     if (!hydrated || composing || draftQuery.trim() === query) return;

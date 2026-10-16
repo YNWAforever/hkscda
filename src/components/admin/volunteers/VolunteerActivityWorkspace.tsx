@@ -107,14 +107,29 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const copy = pickAdminCopy(activityWorkspaceCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const [state] = useState(initial);
+  const [view, setView] = useState(initialView ?? state.view);
+  const [selected, setSelected] = useState<string | null>(state.selected);
+  const [operation, setOperation] = useState<Operation | null>(null);
+  const operationId = operation?.id;
+  const routeState = useMemo<ListRouteState<ActivityUiFilters>>(
+    () => ({
+      ...ACTIVITY_ROUTE,
+      write(params, filters, page) {
+        ACTIVITY_ROUTE.write(params, filters, page);
+        params.set("view", view);
+        if (selected) params.set("selected", selected);
+        else params.delete("selected");
+        if (operationId) params.set("operation", operationId);
+        else params.delete("operation");
+      },
+    }),
+    [operationId, selected, view],
+  );
   const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
-    // Both workspace routes disable SSR. Enable the restored query when its
-    // observer first subscribes, including when switching to the same cache key.
-    clientOnly: true,
     initialFilters: { ...state.filter, q: "" },
     initialPage: state.page,
-    routeState: ACTIVITY_ROUTE,
+    routeState,
     onScopeChange: () => {
       setIds([]);
       setSelection(null);
@@ -136,13 +151,10 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     filter.readiness,
     filter.shortage,
   ].filter(Boolean).length;
-  const [view, setView] = useState(initialView ?? state.view);
-  const [selected, setSelected] = useState<string | null>(state.selected);
   const [detailPage, setDetailPage] = useState(1);
   const [historyPage, setHistoryPage] = useState(1);
   const [ids, setIds] = useState<string[]>([]);
   const [selection, setSelection] = useState<Operation | null>(null);
-  const [operation, setOperation] = useState<Operation | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [draft, setDraft] = useState<OperationDraft>(initialOperationDraft);
   const [reviewed, setReviewed] = useState<number[]>([]);
@@ -188,20 +200,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setShowOperation(true);
     }
   }, [restored.data]);
-  useEffect(() => {
-    if (!listState.hydrated) return;
-    const params = new URLSearchParams(window.location.search);
-    params.set("view", view);
-    if (selected) params.set("selected", selected);
-    else params.delete("selected");
-    if (operation) params.set("operation", operation.id);
-    else params.delete("operation");
-    window.history.replaceState(
-      window.history.state,
-      "",
-      window.location.pathname + "?" + params.toString() + window.location.hash,
-    );
-  }, [listState.hydrated, view, selected, operation]);
   useEffect(() => {
     const onPopState = () => {
       const restored = initial();
