@@ -242,6 +242,22 @@ export async function verifyDailyWorkBrowser({
           if (caseId === "DW-A") {
             await page.goto(origin + "/admin/volunteers/tasks?pending_scope=upcoming&page=2");
             const pending = page.locator("#tasks-pending").locator("..");
+            const q = pending.getByRole("searchbox", { name: "搜尋待審申請", exact: true });
+            const searched = page.waitForResponse(
+              (r) => r.url().endsWith("/tasks") && r.request().postDataJSON()?.q === fixture.prefix,
+            );
+            await q.fill(fixture.prefix);
+            await searched;
+            await pending.getByRole("article").nth(24).waitFor();
+            await pending
+              .getByRole("link", { name: "查看／處理申請", exact: true })
+              .first()
+              .waitFor();
+            await pending.getByRole("button", { name: "下一頁", exact: true }).click();
+            await page.waitForFunction(
+              () => new URLSearchParams(location.search).get("page") === "2",
+            );
+            await pending.getByRole("article").nth(1).waitFor({ state: "hidden" });
             await pending.getByRole("article").first().waitFor();
             const target = pending.getByRole("article").first(),
               id = await target.getAttribute("id");
@@ -268,14 +284,12 @@ export async function verifyDailyWorkBrowser({
             await page.getByRole("link", { name: "返回待審清單", exact: true }).waitFor();
             await page.goBack();
             await pending.locator("#" + id).waitFor();
-            const q = pending.getByRole("searchbox", { name: "搜尋待審申請", exact: true });
-            await q.fill(fixture.prefix);
-            await page.waitForResponse(
-              (r) => r.url().endsWith("/tasks") && r.request().postDataJSON()?.q === fixture.prefix,
+            assert.equal(
+              await q.inputValue(),
+              fixture.prefix,
+              "search survives view/return and browser Back",
             );
-            await pending
-              .getByRole("button", { name: "下一頁", exact: true })
-              .waitFor({ state: "visible" });
+            await pending.getByRole("button", { name: "上一頁", exact: true }).click();
             await page.waitForFunction(
               () => new URLSearchParams(location.search).get("page") !== "2",
             );
