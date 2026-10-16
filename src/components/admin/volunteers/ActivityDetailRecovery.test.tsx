@@ -38,7 +38,7 @@ test("read-only recovery shows the original per-person receipt and hides it from
   const actor = "90000000-0000-4000-8000-000000000001";
   const registration = "90000000-0000-4000-8000-000000000002";
   const stamp = "2026-10-16T00:00:00.123456Z";
-  const before = {
+  const before: RosterAttendanceOperation["rows"][number]["before"] = {
     registration_status: "approved",
     attendance_status: "not_marked",
     updated_at: stamp,
