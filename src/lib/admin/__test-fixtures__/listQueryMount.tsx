@@ -8,7 +8,7 @@ const reads: Read[] = [];
 const frames: { reads: Read[] }[] = [];
 const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
-function List() {
+export function List() {
   const state = useListQueryState({
     key: "mount-fixture",
     initialFilters: { status: "default" },
