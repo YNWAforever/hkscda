@@ -134,6 +134,7 @@ export type VolunteerAttendanceFixtureManifest = {
   termsAcceptanceIds?: string[];
   cases: {
     rosterActivityId: string;
+    pendingRosterRegistrationId?: string;
     futureActivityId: string;
     overdueActivityId: string;
     registrations: Array<{ id: string; activityId: string; status: string; attendance: string }>;
@@ -342,7 +343,7 @@ export async function createVolunteerAttendanceWorkFixture(
                 ? "waitlisted"
                 : person === 3
                   ? "cancelled"
-                  : "approved"
+                  : person===4?"pending":"approved"
               : "pending";
           const attendance = index === 0 && person === 1 ? "attended" : "not_marked";
           await tx`insert into public.volunteer_registration(id,activity_id,profile_id,registration_type,status,participant_count,contact_name,contact_email,contact_phone,status_token_hash,status_token_expires_at,booking_policy_version_id,terms_acceptance_id,duty_role)
@@ -363,6 +364,7 @@ export async function createVolunteerAttendanceWorkFixture(
             status,
             attendance,
           });
+          if(index===0&&person===4)manifest.cases.pendingRosterRegistrationId=registration;
         }
       }
       [

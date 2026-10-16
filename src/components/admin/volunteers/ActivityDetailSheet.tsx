@@ -38,6 +38,7 @@ export function ActivityDetailBody({
   returnState,
   onRegistrationOpen,
   attendance,
+  attendanceRecovery,
 }: {
   detail: ActivityDetailQuery;
   detailPage: number;
@@ -48,21 +49,31 @@ export function ActivityDetailBody({
   returnState?: ActivityReturnState;
   onRegistrationOpen?: (id: string) => void;
   attendance?: ReactNode;
+  attendanceRecovery?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;
   const format = pickAdminCopy(volunteerFormatCopy, language);
-  if (detail.isPending) return <p role="status">{text.loading}</p>;
+  if (detail.isPending)
+    return (
+      <>
+        {attendanceRecovery}
+        <p role="status">{text.loading}</p>
+      </>
+    );
   if (detail.isError)
     return (
-      <LoadFailure
-        error={detail.error}
-        onRetry={() => void detail.refetch()}
-        title={volunteerAdminErrorMessage(detail.error, language) ?? undefined}
-        retryLabel={text.retry}
-      />
+      <div className="space-y-4">
+        {attendanceRecovery}
+        <LoadFailure
+          error={detail.error}
+          onRetry={() => void detail.refetch()}
+          title={volunteerAdminErrorMessage(detail.error, language) ?? undefined}
+          retryLabel={text.retry}
+        />
+      </div>
     );
-  if (!detail.data) return null;
+  if (!detail.data) return attendanceRecovery ?? null;
   const { activity, registrations, total, history, history_total } = detail.data;
   const inline = Boolean(
     attendance &&
@@ -168,6 +179,7 @@ export function ActivityDetailSheet({
   returnState?: ActivityReturnState;
   onRegistrationOpen?: (id: string) => void;
   attendance?: ReactNode;
+  attendanceRecovery?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;

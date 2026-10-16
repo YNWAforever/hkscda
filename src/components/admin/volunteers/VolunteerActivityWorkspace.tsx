@@ -13,7 +13,7 @@ import {
   type RosterAttendanceOperation,
 } from "../../../lib/volunteers/bulk/attendance";
 import { ActivityAttendancePanel } from "./ActivityAttendancePanel";
-import { activityAttendanceCopy } from "./activityAttendanceCopy";
+import { ActivityAttendanceRecovery } from "./ActivityAttendanceRecovery";
 import { workspaceTemplatesQueryOptions } from "./workspaceQueries";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
@@ -127,7 +127,6 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(activityWorkspaceCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
-  const attendanceCopy = pickAdminCopy(activityAttendanceCopy, language);
   const cache = useQueryClient();
   const identity = useQuery(adminIdentityQueryOptions());
   const actorUserId = identity.data?.admin.authUserId ?? "";
@@ -814,60 +813,15 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <p role="status">{noticeText(notice, copy)}</p>
       {(attendanceState.operationId || attendanceState.previewKey) &&
         (!selected ||
-          detail.isError ||
           attendanceState.operation?.activity_id !== selected ||
           attendanceState.operation?.scope.page !== detailPage) && (
-          <section
-            className="space-y-2 rounded border border-[var(--color-border)] p-3"
-            aria-label={attendanceCopy.title}
-          >
-            <p role="status">
-              {attendanceState.phase === "saved_refresh_failed"
-                ? attendanceState.operation?.results?.some((row) => row.kind === "applied")
-                  ? attendanceCopy.refreshFailed
-                  : attendanceCopy.resultRefreshFailed
-                : attendanceState.operation?.state === "completed"
-                  ? attendanceCopy.resultsTitle
-                  : attendanceState.phase === "previewed" && !attendanceState.applyIntent
-                    ? attendanceCopy.previewTitle
-                    : attendanceState.applyIntent
-                      ? attendanceCopy.unknown
-                      : attendanceCopy.previewUnknown}
-            </p>
-            <button
-              type="button"
-              className={button}
-              onClick={() => void attendanceController.recover(actorUserId)}
-            >
-              {attendanceCopy.recover}
-            </button>
-            {attendanceState.operation && (
-              <button type="button" className={button} onClick={openOriginalAttendance}>
-                {attendanceCopy.openOriginal}
-              </button>
-            )}
-            {attendanceState.phase === "outcome_unknown" && !attendanceState.applyIntent && (
-              <button
-                type="button"
-                className={button}
-                onClick={() => {
-                  attendanceController.cancelPreview(actorUserId);
-                  clearAttendanceOperation();
-                }}
-              >
-                {attendanceCopy.cancel}
-              </button>
-            )}
-            {attendanceState.phase === "saved_refresh_failed" && (
-              <button
-                type="button"
-                className={button}
-                onClick={() => void attendanceController.retryRefresh()}
-              >
-                {attendanceCopy.retryRefresh}
-              </button>
-            )}
-          </section>
+          <ActivityAttendanceRecovery
+            state={attendanceState}
+            controller={attendanceController}
+            actorUserId={actorUserId}
+            onClearOperation={clearAttendanceOperation}
+            onOpenOriginal={openOriginalAttendance}
+          />
         )}
       <section aria-label={copy.list.label}>
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
@@ -995,6 +949,14 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <ActivityDetailSheet
         returnState={readActivityReturnState(returnParams)}
         onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
+        attendanceRecovery={
+          <ActivityAttendanceRecovery
+            state={attendanceState}
+            controller={attendanceController}
+            actorUserId={actorUserId}
+            onClearOperation={clearAttendanceOperation}
+          />
+        }
         attendance={
           detail.data && (
             <ActivityAttendancePanel

@@ -4,6 +4,27 @@ import {
   type VolunteerAttendanceTargetEvidence,
 } from "./volunteer-attendance-work";
 
+test.skipIf(process.env.VOLUNTEER_DW_FIXTURE_ACCEPTANCE!=="1")(
+ "the owned daily-work session has pending, approved, waitlisted, cancelled and existing attendance cases",
+ async()=>{
+  const target=verifyVolunteerAttendanceTarget(await Bun.file(".local-policy-test/volunteer-daily-work-20261016/target-proof.json").json());
+  const c=await Bun.file(".local-policy-test/volunteer-performance-20261015-credentials.json").json();
+  const m=await Bun.file(target.manifestPath).json(),connection=new URL(c.DB_URL);
+  expect(c.API_URL).toBe(target.apiOrigin);expect(m.fixtureId).toBe(target.runId);
+  expect(connection.hostname).toBe(target.database.host);expect(Number(connection.port)).toBe(target.database.port);
+  expect(connection.pathname.slice(1)).toBe(target.database.name);
+  const {SQL}=await import("bun");const db=new SQL(c.DB_URL,{max:1,prepare:false});
+  try{
+   const row=(await db`select count(*) filter(where status='pending')::int pending,
+    count(*) filter(where status='approved')::int approved,count(*) filter(where status='waitlisted')::int waitlisted,
+    count(*) filter(where status='cancelled')::int cancelled,count(*) filter(where attendance_status<>'not_marked')::int recorded
+    from public.volunteer_registration where activity_id=${m.cases.rosterActivityId}::uuid`)[0];
+   expect(row.pending).toBeGreaterThanOrEqual(1);
+   expect(row.approved).toBeGreaterThanOrEqual(1);expect(row.waitlisted).toBe(1);
+   expect(row.cancelled).toBe(1);expect(row.recorded).toBeGreaterThanOrEqual(1);
+  }finally{await db.close();}
+ });
+
 const worktree =
   "C:\\Users\\laich\\Documents\\HKCSDA\\HKCSDA\\hkscda\\.worktrees\\volunteer-admin-20261013";
 const project = "hkscda-volunteer-perf-20261015";

@@ -7,13 +7,22 @@ export function VolunteerLink({
 }: AnchorHTMLAttributes<HTMLAnchorElement>) {
   const router = useRouter({ warn: false });
   const target = href.startsWith("?") && router ? router.state.location.pathname + href : href;
-  return router &&
+  if (
+    router &&
     (target === "/admin/volunteers" ||
       target.startsWith("/admin/volunteers/") ||
       target.startsWith("/admin/volunteers?")) &&
-    !props.download ? (
-    <Link to={target} {...props} />
-  ) : (
-    <a href={href} {...props} />
-  );
+    !props.download
+  ) {
+    const destination = new URL(target, "http://volunteer.invalid");
+    return (
+      <Link
+        to={destination.pathname}
+        search={router.options.parseSearch(destination.search) as never}
+        hash={destination.hash.slice(1)}
+        {...props}
+      />
+    );
+  }
+  return <a href={href} {...props} />;
 }
