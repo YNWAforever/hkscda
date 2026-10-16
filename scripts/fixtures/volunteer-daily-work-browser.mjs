@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import AxeBuilder from "@axe-core/playwright";
 
 // Real local Auth/HTTP/DB acceptance. The caller proves the target before constructing clients.
@@ -21,6 +22,7 @@ export async function verifyDailyWorkBrowser({
 }) {
   const results = [],
     receipts = [];
+  let stopTarget;
   const save = () =>
     writeFile(
       join(out, "tasks.json"),
@@ -71,6 +73,19 @@ export async function verifyDailyWorkBrowser({
   }
   const bulk = (token, body, expected) =>
     api(token, "/api/admin/volunteers/bulk", body, "POST", expected);
+  function fault(action, kind, token, actor, object) {
+    try {
+      const output = execFileSync(
+        "bun",
+        ["scripts/fixtures/volunteer-daily-work-fault.ts", action, kind, token, actor, object],
+        { encoding: "utf8", windowsHide: true },
+      );
+      receipts.push({ fault: JSON.parse(output.trim()) });
+    } catch (error) {
+      if (action === "remove") stopTarget = "Exact fault cleanup failed";
+      throw error;
+    }
+  }
   async function detail(token, page = 1) {
     return bulk(token, {
       action: "detail",
@@ -198,7 +213,7 @@ export async function verifyDailyWorkBrowser({
             .getByRole("heading", { name: /逐人變更預覽|逐人操作結果/ })
             .locator("..");
         const saveShot = (name) =>
-          page.screenshot({ path: join(artifacts, name + ".png"), fullPage: true });
+          page.screenshot({ path: join(artifacts, name + ".png"), fullPage: false });
         async function roster(pageNumber = 1) {
           await page.goto(
             origin +
@@ -245,7 +260,7 @@ export async function verifyDailyWorkBrowser({
             await pending.locator("#" + id).waitFor();
             assert.equal(new URL(page.url()).searchParams.get("pending_scope"), "upcoming");
             assert.equal(new URL(page.url()).searchParams.get("page"), "2");
-            assert.equal(await page.evaluate(() => document.activeElement?.id), id);
+            await page.waitForFunction((recordId) => document.activeElement?.id === recordId, id);
             await pending
               .locator("#" + id)
               .getByRole("link", { name: "查看／處理申請", exact: true })
@@ -264,6 +279,11 @@ export async function verifyDailyWorkBrowser({
             await page.waitForFunction(
               () => new URLSearchParams(location.search).get("page") !== "2",
             );
+            await pending.getByRole("article").nth(24).waitFor();
+            await pending
+              .getByRole("link", { name: "查看／處理申請", exact: true })
+              .first()
+              .waitFor();
             const allNames = new Set(
               await pending
                 .getByRole("article")
@@ -273,6 +293,7 @@ export async function verifyDailyWorkBrowser({
             await page.waitForFunction(
               () => new URLSearchParams(location.search).get("page") === "2",
             );
+            await pending.getByRole("article").nth(1).waitFor({ state: "hidden" });
             await pending.getByRole("article").first().waitFor();
             for (const name of await pending
               .getByRole("article")
@@ -318,6 +339,10 @@ export async function verifyDailyWorkBrowser({
             assert.ok(op.operation.rows.some((r) => r.reason === "registration_not_approved"));
             assert.ok(op.operation.rows.some((r) => r.before.attendance_status !== "not_marked"));
             assert.ok(
+              op.operation.rows.some((r) => r.participant_count === 2),
+              "group registration remains one row with participant count",
+            );
+            assert.ok(
               await panel()
                 .getByRole("checkbox", { name: "更正已有出席紀錄", exact: true })
                 .count(),
@@ -338,6 +363,11 @@ export async function verifyDailyWorkBrowser({
               cancelDomainWrites: 0,
               page2Selected: 0,
             };
+            assert.equal(
+              requests.filter((r) => r.path.includes("/registrations/")).length,
+              0,
+              "no per-row detail requests for 25-row roster",
+            );
           }
           if (caseId === "DW-C") {
             await roster();
@@ -435,6 +465,7 @@ export async function verifyDailyWorkBrowser({
             );
             const secondBefore = await facts([next.id]);
             before.rows.push(...secondBefore.rows);
+            before.events.push(...secondBefore.events);
             // Browser storage is unavailable, so the original UUID/apply intent must survive in the URL.
             const noSessionStorage = () =>
               Object.defineProperty(window, "sessionStorage", {
@@ -445,10 +476,12 @@ export async function verifyDailyWorkBrowser({
               });
             await context.addInitScript(noSessionStorage);
             await page.evaluate(noSessionStorage);
-            let refreshBlock = false;
+            let refreshBlock = false,
+              refreshFaultOnce = true;
             await context.route("**/api/admin/volunteers/bulk", async (route) => {
               const body = route.request().postDataJSON();
-              if (body.action === "attendance_apply") {
+              if (body.action === "attendance_apply" && refreshFaultOnce) {
+                refreshFaultOnce = false;
                 const response = await route.fetch();
                 assert.equal(response.status(), 200);
                 refreshBlock = true;
@@ -496,16 +529,107 @@ export async function verifyDailyWorkBrowser({
             assert.equal(requests.filter((r) => r.body?.action === "attendance_apply").length, 2);
             assert.deepEqual(await facts([next.id]), secondAfter);
             await saveShot("url-recovery-without-storage");
+            await panel().getByRole("button", { name: "清除本頁選取", exact: true }).click();
+            const partialIds = (await detail(login.token)).registrations
+              .filter((r) => r.status === "approved" && r.attendance_status === "not_marked")
+              .slice(0, 2)
+              .map((r) => r.id);
+            assert.equal(partialIds.length, 2);
+            const partialBefore = await facts(partialIds);
+            before.rows.push(...partialBefore.rows);
+            before.events.push(...partialBefore.events);
+            const partialOp = await preview(partialIds);
+            const auditFault = randomUUID();
+            fault("install", "audit", auditFault, actor.id, partialIds[1]);
+            try {
+              await confirm();
+              await outcomes();
+            } finally {
+              fault("remove", "audit", auditFault, actor.id, partialIds[1]);
+            }
+            const partialReceipt = (
+              await bulk(login.token, { action: "status", operation_id: partialOp })
+            ).operation;
+            assert.equal(partialReceipt.results.filter((r) => r.kind === "applied").length, 1);
+            assert.equal(partialReceipt.results.filter((r) => r.kind === "failed").length, 1);
+            const failed = partialReceipt.results.find((r) => r.kind === "failed");
+            assert.equal(failed.event_id, null);
+            assert.ok(failed.audit_id);
+            assert.match(await opSection().innerText(), /未能儲存/);
+            const partialAfter = await facts(partialIds);
+            assert.equal(partialAfter.events.length, partialBefore.events.length + 1);
+            const failedAudit = partialAfter.audit.find((a) => a.id === failed.audit_id);
+            assert.equal(failedAudit.actor_user_id, actor.id);
+            assert.equal(failedAudit.detail.operationId, partialOp);
+            assert.equal(failedAudit.detail.result.kind, "failed");
+            assert.deepEqual(
+              (await bulk(login.token, { action: "attendance_apply", operation_id: partialOp }))
+                .operation,
+              partialReceipt,
+            );
+            assert.deepEqual(await facts(partialIds), partialAfter);
+            await saveShot("partial-single-failure");
+            await panel().getByRole("button", { name: "重新核對未完成項目", exact: true }).click();
+            assert.equal(await panel().locator("article input[type=checkbox]:checked").count(), 1);
+            await panel().getByRole("button", { name: "預覽所選點名", exact: true }).click();
+            await panel().getByRole("heading", { name: "逐人變更預覽", exact: true }).waitFor();
+            const retryOp = new URL(page.url()).searchParams.get("operation");
+            const receiptFault = randomUUID();
+            fault("install", "receipt", receiptFault, actor.id, retryOp);
+            try {
+              const originalStatus = page.waitForResponse(
+                (r) =>
+                  r.url().endsWith("/bulk") &&
+                  r.request().postDataJSON()?.action === "status" &&
+                  r.request().postDataJSON()?.operation_id === retryOp,
+              );
+              await confirm();
+              await originalStatus;
+              await panel().getByRole("button", { name: "確認所選點名", exact: true }).waitFor();
+              assert.deepEqual(
+                await facts(partialIds),
+                partialAfter,
+                "receipt failure rolls back all domain facts and audit",
+              );
+              assert.equal(
+                (await bulk(login.token, { action: "status", operation_id: retryOp })).operation
+                  .state,
+                "previewed",
+              );
+              await saveShot("receipt-failure-original-status");
+            } finally {
+              fault("remove", "receipt", receiptFault, actor.id, retryOp);
+            }
+            await confirm();
+            await outcomes();
+            assert.equal(new URL(page.url()).searchParams.get("operation"), retryOp);
+            const retried = (await bulk(login.token, { action: "status", operation_id: retryOp }))
+              .operation;
+            assert.equal(retried.results[0].kind, "applied");
+            assert.equal((await facts(partialIds)).events.length, partialBefore.events.length + 2);
+            receipts.push({
+              caseId,
+              role: actor.role,
+              width,
+              partialReceipt,
+              retried,
+              partialAfter,
+            });
+            await saveShot("original-id-manual-retry");
             record.actual = {
               lostResponse: true,
               statusOutage: true,
               originalOperation: opId,
-              applyRequests: 2,
-              eventDelta: 2,
+              applyRequests: requests.filter((r) => r.body?.action === "attendance_apply").length,
+              eventDelta:
+                (await facts(before.rows.map((r) => r.id))).events.length - before.events.length,
               reloadResends: 0,
               savedRefreshFailure: true,
               doubleClickExtraWrites: 0,
               urlRecoveryWithoutStorage: true,
+              partialFailure: { applied: 1, failed: 1, failedAttemptAudit: true },
+              receiptFailureRollback: true,
+              explicitRetrySameOperation: true,
             };
           }
           if (caseId === "DW-E") {
@@ -562,11 +686,56 @@ export async function verifyDailyWorkBrowser({
           if (caseId === "DW-F") {
             const id = fixture.cases.pendingRosterRegistrationId;
             assert.ok(id);
+            let releaseInitial,
+              holdInitial = true;
+            await context.route("**/api/admin/volunteers/tasks", async (route) => {
+              if (holdInitial && route.request().postDataJSON()?.action === "list") {
+                holdInitial = false;
+                await new Promise((done) => (releaseInitial = done));
+              }
+              await route.continue();
+            });
             await page.goto(origin + "/admin/volunteers/tasks?pending_scope=overdue&page=1");
             const search = page.getByRole("searchbox", { name: "搜尋待審申請", exact: true });
+            await search.waitFor();
+            await page.getByText("載入中…", { exact: true }).first().waitFor();
+            assert.equal(typeof releaseInitial, "function");
+            await saveShot("loading");
+            releaseInitial();
+            await page
+              .locator("#tasks-pending")
+              .locator("..")
+              .getByRole("article")
+              .first()
+              .waitFor();
+            const countBeforeComposition = requests.filter(
+              (r) => r.body?.action === "list" && r.path.endsWith("/tasks"),
+            ).length;
+            await search.dispatchEvent("compositionstart");
+            await search.fill("測試組字");
+            // Exercise the real debounce boundary while IME is still composing.
+            await page.waitForTimeout(380);
+            assert.equal(
+              requests.filter((r) => r.body?.action === "list" && r.path.endsWith("/tasks")).length,
+              countBeforeComposition,
+            );
+            const emptyResponse = page.waitForResponse(
+              (r) => r.url().endsWith("/tasks") && r.request().postDataJSON()?.q === "測試組字",
+            );
+            await search.dispatchEvent("compositionend", { data: "測試組字" });
+            await emptyResponse;
+            await page.getByText("目前沒有待審批報名。", { exact: true }).waitFor();
+            await saveShot("empty");
+            await search.fill("intermediate-a");
+            await search.fill("intermediate-ab");
             await search.fill(id);
             const target = page.locator("#pending-" + id);
             await target.waitFor();
+            assert.equal(
+              requests.filter((r) => r.body?.q?.startsWith("intermediate-")).length,
+              0,
+              "debounce coalesces intermediate input",
+            );
             const link = target.getByRole("link", { name: "查看／處理申請", exact: true });
             await link.focus();
             await page.keyboard.press("Enter");
@@ -626,6 +795,25 @@ export async function verifyDailyWorkBrowser({
             }
             await page.keyboard.press("Escape");
             await page.getByRole("dialog").waitFor({ state: "hidden" });
+            const journey = {
+              clicks: await page.evaluate(() => window.__dwClicks),
+              routeTransitions,
+              documentNavigations: documents,
+              elapsedMs: performance.now() - started,
+            };
+            assert.equal(documents, 1, "complete journey uses SPA navigation");
+            let forbidden = true;
+            await context.route("**/api/admin/volunteers/tasks", async (route) => {
+              if (forbidden) await route.fulfill({ status: 403, json: { error: "forbidden" } });
+              else await route.fallback();
+            });
+            await page.goto(origin + "/admin/volunteers/tasks?pending_scope=overdue&page=1");
+            await page.getByText("未能載入待辦。", { exact: true }).waitFor();
+            await saveShot("forbidden-read");
+            forbidden = false;
+            await page.getByRole("button", { name: "重新載入", exact: true }).click();
+            await page.locator("#pending-" + id).waitFor();
+            await saveShot("read-error-recovered");
             record.actual = {
               completeSameSession: true,
               keyboard: true,
@@ -635,6 +823,13 @@ export async function verifyDailyWorkBrowser({
               cssZoom: width === 1440 ? 3 : null,
               nativeBrowserZoom: "not-tested",
               spaDocuments: documents,
+              journey,
+              loading: true,
+              empty: true,
+              imeNoEarlyRequest: true,
+              debounceCoalesced: true,
+              forbiddenRead: true,
+              readRetryRecovered: true,
             };
           }
           assert.deepEqual(errors, [], "browser runtime errors");
@@ -672,6 +867,23 @@ export async function verifyDailyWorkBrowser({
           await writeFile(join(artifacts, "requests.json"), JSON.stringify(requests, null, 2));
           if (before) {
             try {
+              // Never "restore" while an original business write still has an uncertain outcome.
+              for (const operationId of new Set(
+                requests
+                  .filter((r) => r.body?.action === "attendance_apply")
+                  .map((r) => r.body.operation_id),
+              )) {
+                const original = await bulk(login.token, {
+                  action: "status",
+                  operation_id: operationId,
+                });
+                if (original.operation.state !== "completed") {
+                  stopTarget =
+                    "Original write outcome unresolved; retain fixture and reconcile read-only";
+                  throw new Error(stopTarget);
+                }
+              }
+              if (stopTarget) throw new Error(stopTarget);
               await restore(login.token, before);
               record.fixtureRestoration = "reasoned corrections; immutable history retained";
             } catch (error) {
@@ -693,6 +905,7 @@ export async function verifyDailyWorkBrowser({
               error: record.error?.slice(0, 350),
             }),
           );
+          if (stopTarget) throw new Error(stopTarget);
         }
       }
     }
