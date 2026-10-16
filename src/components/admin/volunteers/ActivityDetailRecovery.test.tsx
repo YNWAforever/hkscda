@@ -103,6 +103,8 @@ test("read-only recovery shows the original per-person receipt and hides it from
   const html = renderAdminInEnglish(<ActivityAttendanceRecovery {...props} />);
   expect(html).toContain("Saved, but reloading failed.");
   expect(html).toContain("Synthetic person");
+  expect(html).toContain("Synthetic session");
+  expect(html).toContain("Original roster page 1");
   expect(html).toContain(registration);
   expect(html).toContain("2 participants");
   expect(html).toContain("Original attendance");

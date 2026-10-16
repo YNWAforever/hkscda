@@ -10,13 +10,14 @@ export type AttendanceOperationPointer = {
   actorUserId: string;
   previewKey: string | null;
   operationId: string | null;
-  phase: "previewing" | "applying" | "outcome_unknown";
+  phase: "previewing" | "applying" | "outcome_unknown" | "completed";
 };
 export type AttendanceRecoveryProblem =
   | "invalid_input"
   | "transport"
   | "status_unavailable"
   | "pointer_unavailable"
+  | "pointer_unavailable_retry"
   | "idempotency_mismatch"
   | "refresh_failed"
   | null;
@@ -59,6 +60,7 @@ export type AttendanceRecoveryEvent = {
   command?: AttendancePreviewCommand;
   operation?: RosterAttendanceOperation;
   problem?: AttendanceRecoveryProblem;
+  priorApplyIntent?: boolean;
 };
 export function initialAttendanceRecoveryState(actorUserId = ""): AttendanceRecoveryState {
   return {
@@ -127,8 +129,15 @@ export function reduceAttendanceRecovery(
   if (event.type === "APPLY_CONFIRMED")
     return { ...state, phase: "applying", applyIntent: true, problem: null };
   if (event.type === "PREVIEW_LOST" || event.type === "APPLY_LOST") {
-    if (event.problem === "pointer_unavailable")
-      return { ...state, phase: "previewed", applyIntent: false, problem: event.problem };
+    if (event.problem === "pointer_unavailable") {
+      const uncertain = event.priorApplyIntent ?? state.applyIntent;
+      return {
+        ...state,
+        phase: uncertain ? "outcome_unknown" : "previewed",
+        applyIntent: uncertain,
+        problem: uncertain ? "pointer_unavailable_retry" : event.problem,
+      };
+    }
     return { ...state, phase: "outcome_unknown", problem: event.problem ?? "transport" };
   }
   if (event.type === "STATUS_FAILED")
@@ -171,7 +180,7 @@ export function readAttendanceOperationPointer(
         actorUserId: z.string().uuid(),
         previewKey: z.string().uuid().nullable(),
         operationId: z.string().uuid().nullable(),
-        phase: z.enum(["previewing", "applying", "outcome_unknown"]),
+        phase: z.enum(["previewing", "applying", "outcome_unknown", "completed"]),
       })
       .strict()
       .safeParse(JSON.parse(storage.getItem(attendancePointerKey(actorUserId)) ?? "null"));
@@ -195,6 +204,19 @@ export function createAttendanceController(deps: Dependencies) {
   const current = (ticket: number, actor: string) =>
     ticket === generation && state.actorUserId === actor;
   const refresh = async (ticket: number, actor: string) => {
+    if (current(ticket, actor) && state.operation?.state === "completed") {
+      try {
+        await deps.savePointer({
+          actorUserId: actor,
+          previewKey: state.previewKey,
+          operationId: state.operation.id,
+          phase: "completed",
+        });
+      } catch {
+        /* A known receipt remains readable when optional storage fails. */
+      }
+      if (!current(ticket, actor)) return;
+    }
     try {
       await deps.invalidate();
       if (current(ticket, actor))
@@ -330,6 +352,7 @@ export function createAttendanceController(deps: Dependencies) {
         state.problem === "idempotency_mismatch"
       )
         return;
+      const priorApplyIntent = state.applyIntent;
       const actor = state.actorUserId,
         ticket = generation,
         id = operation.id;
@@ -349,6 +372,7 @@ export function createAttendanceController(deps: Dependencies) {
             actorUserId: actor,
             operationId: id,
             problem: "pointer_unavailable",
+            priorApplyIntent,
           });
         return;
       }
@@ -386,6 +410,42 @@ export function createAttendanceController(deps: Dependencies) {
       reading = false;
       emit({ type: "IDENTITY_CLEARED", actorUserId });
     },
+    beginRestore(actorUserId: string, operationId: string, applyIntent = false) {
+      if (!z.string().uuid().safeParse(operationId).success) return;
+      if (state.actorUserId && state.actorUserId !== actorUserId) return;
+      if (state.operationId === operationId) return;
+      if (
+        state.applyIntent &&
+        state.operation?.state !== "completed" &&
+        state.operation?.state !== "expired"
+      )
+        return;
+      let pointer: AttendanceOperationPointer | null = null;
+      try {
+        pointer = deps.readPointer(actorUserId);
+      } catch {
+        /* Optional storage. */
+      }
+      const pending =
+        pointer?.actorUserId === actorUserId &&
+        (pointer.phase === "applying" || pointer.phase === "outcome_unknown") &&
+        pointer.operationId
+          ? pointer
+          : null;
+      const originalId = pending?.operationId ?? operationId;
+      const matching =
+        pointer?.actorUserId === actorUserId && pointer.operationId === originalId ? pointer : null;
+      generation++;
+      reading = false;
+      state = {
+        ...initialAttendanceRecoveryState(actorUserId),
+        phase: "outcome_unknown",
+        operationId: originalId,
+        previewKey: matching?.previewKey ?? null,
+        applyIntent: Boolean(pending || applyIntent || matching?.phase === "completed"),
+      };
+      deps.onState(state);
+    },
     async hydrate(operation: RosterAttendanceOperation, actorUserId: string, applyIntent = false) {
       if (
         (state.actorUserId && state.actorUserId !== actorUserId) ||
@@ -396,6 +456,7 @@ export function createAttendanceController(deps: Dependencies) {
       if (
         state.applyIntent &&
         ["applying", "outcome_unknown"].includes(state.phase) &&
+        state.operation !== null &&
         operation.state !== "completed"
       )
         return;

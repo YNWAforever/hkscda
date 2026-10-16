@@ -16,6 +16,10 @@ export const activityAttendanceCopy = defineAdminCopy({
     target: "目標出席",
     original: "原出席",
     correct: "更正已有出席紀錄",
+    correctUnmarked: "以更正方式記錄出席（須填理由）",
+    originalSession: (title: string) => `原操作場次：${title}`,
+    originalPage: (page: number) => `原名單第 ${page} 頁`,
+    differentScope: "這是另一個場次或頁碼的原收據；請返回原場次核對。",
     savedAttendance: "本操作儲存的出席",
     observedAttendance: "提交時核對的出席",
     reason: "更正原因（必填）",
@@ -47,6 +51,8 @@ export const activityAttendanceCopy = defineAdminCopy({
       transport: "未取得完整回應；正在核對原操作。",
       status_unavailable: "未能讀取原操作結果；請確認登入及連線，再查詢原操作。",
       pointer_unavailable: "未能保存操作恢復位置，尚未提交。請恢復瀏覽器儲存或重新載入再核對。",
+      pointer_unavailable_retry:
+        "未能保存這次重試的位置；原操作結果仍待核對。尚未重送，請查詢原操作。",
       idempotency_mismatch: "內容與原操作不同。已保留原操作，請取消未提交預覽並重新核對。",
       refresh_failed: "已保留原收據；重新載入不會再次點名。",
     },
@@ -84,6 +90,11 @@ export const activityAttendanceCopy = defineAdminCopy({
     target: "Target attendance",
     original: "Original attendance",
     correct: "Correct an existing attendance record",
+    correctUnmarked: "Record attendance as a correction (reason required)",
+    originalSession: (title: string) => `Original session: ${title}`,
+    originalPage: (page: number) => `Original roster page ${page}`,
+    differentScope:
+      "This receipt belongs to another session or roster page. Return to its original session to review it.",
     savedAttendance: "Attendance saved by this operation",
     observedAttendance: "Attendance observed at submission",
     reason: "Correction reason (required)",
@@ -119,6 +130,8 @@ export const activityAttendanceCopy = defineAdminCopy({
         "The original outcome could not be read. Check your sign-in and connection, then check the operation again.",
       pointer_unavailable:
         "The recovery reference could not be saved. Nothing was submitted. Restore browser storage or reload and review.",
+      pointer_unavailable_retry:
+        "The retry reference could not be saved. The original outcome remains uncertain; this retry was not sent. Check the original operation.",
       idempotency_mismatch:
         "This differs from the original operation. Cancel the unsubmitted preview and review again.",
       refresh_failed: "The original receipt is kept. Reloading will not record attendance again.",

@@ -15,12 +15,16 @@ export function ActivityAttendanceRecovery({
   actorUserId,
   onClearOperation,
   onOpenOriginal,
+  selectedActivityId,
+  selectedPage,
 }: {
   state: AttendanceRecoveryState;
   controller: AttendanceController;
   actorUserId: string;
   onClearOperation: () => void;
   onOpenOriginal?: () => void;
+  selectedActivityId?: string;
+  selectedPage?: number;
 }) {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(activityAttendanceCopy, language);
@@ -43,6 +47,17 @@ export function ActivityAttendanceRecovery({
       className="min-w-0 space-y-3 rounded border border-[var(--color-border)] p-3"
       aria-label={copy.title}
     >
+      {operation && (
+        <div className="min-w-0 space-y-1">
+          <p className="font-semibold break-words">
+            {copy.originalSession(operation.activity_title)}
+          </p>
+          <p>{copy.originalPage(operation.scope.page)}</p>
+          {selectedActivityId &&
+            (selectedActivityId !== operation.activity_id ||
+              selectedPage !== operation.scope.page) && <p role="status">{copy.differentScope}</p>}
+        </div>
+      )}
       {state.phase === "saved_refresh_failed" ? (
         <p role="alert">{saved ? copy.refreshFailed : copy.resultRefreshFailed}</p>
       ) : (

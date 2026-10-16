@@ -369,7 +369,10 @@ export function ActivityAttendancePanel({
                 ))}
               </select>
             </label>
-            {row.attendance_status !== "not_marked" && (
+            {(row.attendance_status !== "not_marked" ||
+              row.attendance_actions?.some(
+                (action) => action.command === "correct" && action.allowed,
+              )) && (
               <label className="flex min-h-11 items-center gap-2">
                 <input
                   type="checkbox"
@@ -379,7 +382,7 @@ export function ActivityAttendancePanel({
                     patch(row, { command: event.target.checked ? "correct" : "record" })
                   }
                 />
-                {copy.correct}
+                {row.attendance_status === "not_marked" ? copy.correctUnmarked : copy.correct}
               </label>
             )}
             {draft.command === "correct" && (

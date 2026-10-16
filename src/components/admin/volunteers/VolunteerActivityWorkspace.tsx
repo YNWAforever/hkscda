@@ -343,7 +343,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       operationId &&
       actorUserId &&
       operation?.id !== operationId &&
-      attendanceState.operationId !== operationId,
+      attendanceState.operation?.id !== operationId,
     ),
     queryFn: async ({ signal }) => {
       const result = await call<Reply | { kind: string; operation: RosterAttendanceOperation }>(
@@ -355,6 +355,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       if (result.operation.action === "roster_attendance") parseRosterAttendanceReply(result);
       return result;
     },
+    retry: false,
   });
   useEffect(() => {
     if (
@@ -364,7 +365,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       restored.data.operation.id === operationId
     ) {
       if (restored.data.operation.action === "roster_attendance") {
-        if (attendanceController.getState().operationId === operationId) return;
+        if (attendanceController.getState().operation?.id === operationId) return;
         const original = parseRosterAttendanceReply(restored.data);
         attendanceController.hydrate(original, actorUserId, attendanceIntent);
         if (!selected) {
@@ -373,6 +374,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         }
         return;
       }
+      const original = attendanceController.getState();
+      if (original.operationId && original.operationId !== restored.data.operation.id) return;
+      attendanceController.clearIdentity(actorUserId);
       setOperation((restored.data as Reply).operation);
       setReviewed([]);
       setReviewAll(false);
@@ -393,7 +397,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     if (attendanceController.getState().actorUserId !== actorUserId)
       attendanceController.clearIdentity(actorUserId);
     if (!operationId) void attendanceController.restore(actorUserId);
-  }, [actorUserId, operationId, attendanceController]);
+    else if (operation?.id !== operationId)
+      attendanceController.beginRestore(actorUserId, operationId, attendanceIntent);
+  }, [actorUserId, operationId, attendanceIntent, operation?.id, attendanceController]);
   useEffect(() => {
     live.current.mounted = true;
     const clear = () => {
@@ -822,6 +828,8 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             actorUserId={actorUserId}
             onClearOperation={clearAttendanceOperation}
             onOpenOriginal={openOriginalAttendance}
+            selectedActivityId={selected ?? undefined}
+            selectedPage={detailPage}
           />
         )}
       <section aria-label={copy.list.label}>
@@ -956,6 +964,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
             controller={attendanceController}
             actorUserId={actorUserId}
             onClearOperation={clearAttendanceOperation}
+            onOpenOriginal={openOriginalAttendance}
+            selectedActivityId={selected ?? undefined}
+            selectedPage={detailPage}
           />
         }
         attendance={
@@ -966,7 +977,14 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               actorUserId={actorUserId}
               state={attendanceState}
               controller={attendanceController}
-              refreshing={detail.isFetching}
+              refreshing={
+                detail.isFetching ||
+                Boolean(
+                  operationId &&
+                  operation?.id !== operationId &&
+                  attendanceState.operationId !== operationId,
+                )
+              }
               onReload={async () => {
                 const result = await detail.refetch();
                 if (result.error) throw result.error;

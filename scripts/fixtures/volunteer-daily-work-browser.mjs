@@ -462,6 +462,18 @@ export async function verifyDailyWorkBrowser({
               true,
             );
             await saveShot("outcome-unknown");
+            await page.reload();
+            await panel().waitFor();
+            await panel()
+              .getByText("原操作結果尚未確認；先查詢原結果，請勿建立替代點名。", { exact: true })
+              .waitFor();
+            assert.equal(
+              await panel().getByRole("button", { name: "預覽所選點名", exact: true }).isDisabled(),
+              true,
+            );
+            assert.equal(new URL(page.url()).searchParams.get("operation"), opId);
+            assert.equal(requests.filter((r) => r.body?.action === "attendance_preview").length, 1);
+            await saveShot("unknown-original-after-reload");
             blockStatus = false;
             await panel().getByRole("button", { name: "查詢原操作結果", exact: true }).click();
             await outcomes();
@@ -630,6 +642,32 @@ export async function verifyDailyWorkBrowser({
               partialAfter,
             });
             await saveShot("original-id-manual-retry");
+            await context.route("**/api/admin/volunteers/bulk", async (route) => {
+              const body = route.request().postDataJSON();
+              if (body.action === "detail" && body.activity_id === fixture.cases.futureActivityId)
+                await route.fulfill({
+                  status: 503,
+                  json: { error: "Synthetic other-session detail failure" },
+                });
+              else await route.fallback();
+            });
+            await page.goto(
+              origin +
+                `/admin/volunteers/activities?date_scope=all&selected=${fixture.cases.futureActivityId}&operation=${retryOp}&attendance_intent=apply`,
+            );
+            const fallback = page.getByRole("dialog");
+            await fallback
+              .getByText("這是另一個場次或頁碼的原收據；請返回原場次核對。", { exact: true })
+              .waitFor();
+            await fallback.getByText("原名單第 1 頁", { exact: true }).waitFor();
+            await saveShot("cross-session-receipt-context");
+            await fallback.getByRole("button", { name: "回到原場次核對", exact: true }).click();
+            await outcomes();
+            assert.equal(
+              new URL(page.url()).searchParams.get("selected"),
+              fixture.cases.rosterActivityId,
+            );
+            assert.equal(new URL(page.url()).searchParams.get("operation"), retryOp);
             record.actual = {
               lostResponse: true,
               statusOutage: true,
@@ -644,6 +682,8 @@ export async function verifyDailyWorkBrowser({
               partialFailure: { applied: 1, failed: 1, failedAttemptAudit: true },
               receiptFailureRollback: true,
               explicitRetrySameOperation: true,
+              unresolvedReloadFrozen: true,
+              originalSessionActionInsideSheet: true,
             };
           }
           if (caseId === "DW-E") {
@@ -689,12 +729,57 @@ export async function verifyDailyWorkBrowser({
             assert.ok(JSON.stringify(audit).includes(reason));
             await saveShot("correction-result");
             receipts.push({ caseId, role: actor.role, width, operation: receipt, db: saved });
+            await panel().getByRole("button", { name: "清除本頁選取", exact: true }).click();
+            const unmarked = (await detail(login.token)).registrations.find(
+              (r) => r.status === "cancelled" && r.attendance_status === "not_marked",
+            );
+            assert.ok(unmarked);
+            const unmarkedBefore = await facts([unmarked.id]);
+            before.rows.push(...unmarkedBefore.rows);
+            await card(unmarked.id)
+              .getByRole("checkbox", { name: "以更正方式記錄出席（須填理由）", exact: true })
+              .check();
+            await card(unmarked.id).getByRole("combobox").selectOption("no_show");
+            assert.equal(
+              await panel().getByRole("button", { name: "預覽所選點名", exact: true }).isDisabled(),
+              true,
+            );
+            await card(unmarked.id)
+              .getByRole("textbox", { name: "更正原因（必填）", exact: true })
+              .fill("Synthetic authorized correction on an unmarked cancelled registration");
+            await panel().getByRole("button", { name: "預覽所選點名", exact: true }).click();
+            await panel().getByRole("heading", { name: "逐人變更預覽", exact: true }).waitFor();
+            await confirm();
+            await outcomes();
+            const corrected = (
+              await bulk(login.token, {
+                action: "status",
+                operation_id: new URL(page.url()).searchParams.get("operation"),
+              })
+            ).operation;
+            assert.equal(corrected.results[0].kind, "applied");
+            assert.equal(corrected.results[0].after.registration_status, "cancelled");
+            assert.equal(corrected.results[0].after.attendance_status, "no_show");
+            const unmarkedAfter = await facts([unmarked.id]);
+            assert.equal(unmarkedAfter.events.length, unmarkedBefore.events.length + 1);
+            await saveShot("unmarked-cancelled-correction");
+            receipts.push({
+              caseId,
+              role: actor.role,
+              width,
+              operation: corrected,
+              db: unmarkedAfter,
+            });
             record.actual = {
               blankReasonBlocked: true,
               cancelDomainWrites: 0,
-              correctionEventDelta: 1,
+              correctionEventDelta: 2,
+              existingCorrectionEventDelta: 1,
+              unmarkedCorrectionEventDelta: 1,
               auditActor: true,
               auditReason: true,
+              unmarkedCancelledCorrection: true,
+              registrationStillCancelled: true,
             };
           }
           if (caseId === "DW-F") {

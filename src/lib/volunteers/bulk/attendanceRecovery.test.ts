@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import { createAttendanceController } from "./attendanceRecovery";
+import type { AttendanceOperationPointer } from "./attendanceRecovery";
 import type {
   AttendanceCommand,
   AttendancePreviewCommand,
@@ -130,6 +131,85 @@ test("lost apply response reconciles the original ID without a blind resend", as
   expect(calls[2]).toEqual({ action: "status", operation_id: opId });
   expect(controller.getState().phase).toBe("results");
   expect(controller.getState().operation?.results?.[0].kind).toBe("applied");
+});
+test("failed pointer persistence on an explicit retry preserves the earlier uncertain write", async () => {
+  const calls: AttendanceCommand[] = [];
+  let pointerAvailable = true;
+  const controller = createAttendanceController({
+    send: async (input) => {
+      calls.push(input);
+      if (input.action === "attendance_apply") throw new Error("original response lost");
+      return reply();
+    },
+    savePointer: async () => (pointerAvailable ? "session" : "memory"),
+    readPointer: () => null,
+    invalidate: async () => {},
+    onState: () => {},
+  });
+  await controller.preview(command(), actor);
+  await controller.apply(actor, opId);
+  expect(controller.getState()).toMatchObject({
+    phase: "previewed",
+    applyIntent: true,
+    operationId: opId,
+  });
+  pointerAvailable = false;
+  await controller.apply(actor, opId);
+  expect(controller.getState().applyIntent).toBe(true);
+  expect(controller.getState().phase).toBe("outcome_unknown");
+  controller.cancelPreview(actor);
+  await controller.preview({ ...command(), idempotency_key: id }, actor);
+  expect(controller.getState().operationId).toBe(opId);
+  expect(calls.filter((c) => c.action === "attendance_apply")).toHaveLength(1);
+  expect(calls.filter((c) => c.action === "attendance_preview")).toHaveLength(1);
+});
+test("a different URL cannot replace the actor's unresolved persisted operation", async () => {
+  const calls: AttendanceCommand[] = [];
+  const controller = createAttendanceController({
+    send: async (input) => {
+      calls.push(input);
+      return reply();
+    },
+    savePointer: async () => "session",
+    readPointer: () => ({
+      actorUserId: actor,
+      previewKey: actor,
+      operationId: opId,
+      phase: "applying",
+    }),
+    invalidate: async () => {},
+    onState: () => {},
+  });
+  controller.beginRestore(actor, id, false);
+  expect(controller.getState()).toMatchObject({
+    operationId: opId,
+    applyIntent: true,
+    phase: "outcome_unknown",
+  });
+  controller.cancelPreview(actor);
+  await controller.preview(command(), actor);
+  expect(calls).toHaveLength(0);
+  expect(controller.getState().operationId).toBe(opId);
+});
+test("a persisted terminal receipt does not redirect another URL to a previously completed operation", async () => {
+  let pointer: AttendanceOperationPointer | null = null;
+  const deps = {
+    send: async (input: AttendanceCommand) => reply(input.action === "attendance_apply"),
+    savePointer: async (value: AttendanceOperationPointer) => {
+      pointer = value;
+      return "session" as const;
+    },
+    readPointer: () => pointer,
+    invalidate: async () => {},
+    onState: () => {},
+  };
+  const first = createAttendanceController(deps);
+  await first.preview(command(), actor);
+  await first.apply(actor, opId);
+  const next = createAttendanceController(deps);
+  next.beginRestore(actor, id, false);
+  expect(next.getState().operationId).toBe(id);
+  expect(next.getState().phase).toBe("outcome_unknown");
 });
 test("unknown status blocks new preview, cancel and apply until the original status is known", async () => {
   const calls: AttendanceCommand[] = [];

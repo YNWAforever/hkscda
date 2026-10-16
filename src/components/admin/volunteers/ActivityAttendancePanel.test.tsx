@@ -142,6 +142,48 @@ test("an unknown registration status stays visible instead of becoming a blank o
   );
   expect(markup).toContain("future_state");
 });
+test("an unmarked cancelled registration exposes a server-authorized reasoned correction", () => {
+  const control = controller();
+  const cancelled: ActivityDetail = {
+    ...detail,
+    registrations: [
+      {
+        ...detail.registrations[0],
+        status: "cancelled",
+        attendance_status: "not_marked",
+        attendance_actions: [
+          {
+            command: "record",
+            attendance_status: "no_show",
+            allowed: false,
+            reason: "registration_not_approved",
+            requires_reason: false,
+          },
+          {
+            command: "correct",
+            attendance_status: "no_show",
+            allowed: true,
+            reason: null,
+            requires_reason: true,
+          },
+        ],
+      },
+    ],
+  };
+  const markup = renderAdminInEnglish(
+    <ActivityAttendancePanel
+      detail={cancelled}
+      page={1}
+      actorUserId={actor}
+      state={control.getState()}
+      controller={control}
+      refreshing={false}
+      onReload={async () => {}}
+      onClearOperation={() => {}}
+    />,
+  );
+  expect(markup).toContain("Record attendance as a correction");
+});
 test("a lost unsubmitted preview can be explicitly cancelled without offering a write retry", async () => {
   const control = createAttendanceController({
     send: async () => {
