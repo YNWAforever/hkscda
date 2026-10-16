@@ -11,6 +11,7 @@ import {
   unlink,
   rm,
   realpath,
+  copyFile,
 } from "node:fs/promises";
 import { request as httpRequest, type ClientRequest } from "node:http";
 import { tmpdir } from "node:os";
@@ -44,8 +45,12 @@ async function freePort() {
   return address.port;
 }
 
-for (const runtime of ["bun", "node"])
-  test(`${runtime} preview does not listen until the handler has initialized, without an HTTP prewarm`, async () => {
+for (const [runtime, explicitNode] of [
+  ["bun", false],
+  ["node", false],
+  ["node", true],
+] as const)
+  test(`${runtime}${explicitNode ? " explicit executable" : ""} preview does not listen until the handler has initialized, without an HTTP prewarm`, async () => {
     const tempRoot = await realpath(tmpdir());
     const directory = await mkdtemp(join(tempRoot, "hkscda-preview-startup-"));
     const publicPort = await freePort();
@@ -55,6 +60,14 @@ for (const runtime of ["bun", "node"])
     const marker = join(directory, "entry-loading");
     const release = join(directory, "release-entry");
     const pendingMarker = join(directory, "request-pending");
+    const nodeExecutable = explicitNode
+      ? join(directory, process.platform === "win32" ? "pinned-node.exe" : "pinned-node")
+      : undefined;
+    if (nodeExecutable)
+      await copyFile(
+        execFileSync("node", ["-p", "process.execPath"], { encoding: "utf8" }).trim(),
+        nodeExecutable,
+      );
     await mkdir(entryDir, { recursive: true });
     await mkdir(join(directory, ".vercel/output/static"), { recursive: true });
     await writeFile(
@@ -70,7 +83,7 @@ for (const runtime of ["bun", "node"])
     await writeFile(
       join(entryDir, "index.mjs"),
       `import {access,writeFile} from "node:fs/promises";
-await writeFile(${JSON.stringify(marker)},JSON.stringify({pid:process.pid}));
+await writeFile(${JSON.stringify(marker)},JSON.stringify({pid:process.pid,execPath:process.execPath}));
 while(!await access(${JSON.stringify(release)}).then(()=>true,()=>false))
  await new Promise(done=>setTimeout(done,10));
 let requests=0;
@@ -92,6 +105,7 @@ export default {async fetch(request){
         NITRO_PREVIEW_HOST: "127.0.0.1",
         NITRO_PREVIEW_STATIC_DIR: join(directory, ".vercel/output/static"),
         NITRO_PREVIEW_SHUTDOWN_TIMEOUT_MS: "100",
+        ...(nodeExecutable ? { NITRO_PREVIEW_NODE_EXECUTABLE: nodeExecutable } : {}),
       },
       stdio: "ignore",
       windowsHide: true,
@@ -115,6 +129,10 @@ export default {async fetch(request){
           () => false,
         ),
       ).toBe(true);
+      if (nodeExecutable)
+        expect((JSON.parse(await readFile(marker, "utf8")) as { execPath: string }).execPath).toBe(
+          nodeExecutable,
+        );
       // The blocked loader is deterministic: a listening socket at this point
       // advertises readiness while the CLI's preview.fetch is still unassigned.
       expect(await portOpen(upstreamPort)).toBe(false);

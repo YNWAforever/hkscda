@@ -226,7 +226,9 @@ async function startPreview() {
   if (previewRuntime === "bun") await patchLocalVercelBunRequest(root);
   const launcher = fileURLToPath(new URL("./nitro-preview-server.mjs", import.meta.url));
   const runtime =
-    previewRuntime === "bun" ? (process.env.BUN_EXECUTABLE ?? "bun") : process.execPath;
+    previewRuntime === "bun"
+      ? (process.env.BUN_EXECUTABLE ?? "bun")
+      : (process.env.NITRO_PREVIEW_NODE_EXECUTABLE ?? process.execPath);
   const child = spawn(runtime, [launcher], {
     cwd: root,
     env: {
