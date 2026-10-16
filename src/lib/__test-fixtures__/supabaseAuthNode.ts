@@ -131,6 +131,19 @@ const server = createServer(async (request, response) => {
       acceptEncoding: request.headers["accept-encoding"] ?? "",
     });
     requestSeen?.();
+    if (scenario === "rpc-support-fetch") {
+      response.writeHead(200, { "content-type": "application/json" }).end(
+        JSON.stringify({
+          tasks: Array.from({ length: 500 }, (_, index) => ({
+            id: "task-" + index,
+            payload: { message: "義工🌏".repeat(50) },
+          })),
+          notifications: [],
+          pending: [],
+        }),
+      );
+      return;
+    }
     if (compressedFailure && rpcReads.length === 1) {
       response
         .writeHead(200, { "content-type": "application/json", "content-encoding": "gzip" })
@@ -233,6 +246,7 @@ try {
     scenario === "rpc-fallback" ||
     scenario === "rpc-proxy" ||
     scenario === "rpc-options" ||
+    scenario === "rpc-support-fetch" ||
     compressedFailure ||
     ["rpc-gzip", "rpc-deflate", "rpc-br", "rpc-GZip", "rpc-BR"].includes(scenario)
   ) {
@@ -297,6 +311,33 @@ try {
         }
       }
       console.log(JSON.stringify({ authorizations, roleReads, rpcReads, values, connections }));
+    } else if (scenario === "rpc-support-fetch") {
+      globalThis.fetch = fallback as typeof fetch;
+      const client = createSupabaseServiceClient();
+      const admin = await getAdminUserFromRequest(
+        new Request("http://fixture.invalid/admin", {
+          headers: { authorization: "Bearer actor-a" },
+        }),
+        client,
+      );
+      const result = await client.rpc("volunteer_task_command", {
+        p_actor: admin.authUserId,
+        p_command: { action: "list", page: 1, pageSize: 0, q: "義工🌏", include_pending: false },
+      });
+      if (result.error) throw new Error(result.error.message);
+      const value = result.data as { tasks: { id: string; payload: { message: string } }[] };
+      console.log(
+        JSON.stringify({
+          authorizations,
+          roleReads,
+          rpcReads,
+          taskCount: value.tasks.length,
+          allRowsIntact: value.tasks.every(
+            (row, index) =>
+              row.id === "task-" + index && row.payload.message === "義工🌏".repeat(50),
+          ),
+        }),
+      );
     } else if (scenario === "rpc-options") {
       const dispatcher = {
         dispatch() {
@@ -410,20 +451,6 @@ try {
             p_page_size: 25,
             p_as_of: "2026-10-16T00:00:00.123456Z",
             p_query: "義工🌏",
-          }),
-        ],
-        [
-          "volunteer_task_command",
-          JSON.stringify({
-            p_actor: actor,
-            p_command: {
-              action: "list",
-              scope: "upcoming",
-              page: 1,
-              pageSize: 25,
-              q: "義工🌏",
-              include_pending: false,
-            },
           }),
         ],
       ];

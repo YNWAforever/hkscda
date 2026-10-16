@@ -110,7 +110,7 @@ test("a freshly disabled actor cannot execute a bounded read RPC using the previ
     "active",
   ]);
 });
-test("the three bounded POST read schemas retain exact UTF-8 body and framing", async () => {
+test("the paginated POST read schemas retain exact UTF-8 body and framing", async () => {
   const result = await runFixture("rpc-bounded");
   const reads = result.rpcReads as {
     path: string;
@@ -130,6 +130,37 @@ test("the three bounded POST read schemas retain exact UTF-8 body and framing", 
     ),
   ).toBe(true);
   expect(result.connections).toBe(1);
+});
+test("unpaginated support keeps native fetch and every large UTF-8 row after fresh Auth and role checks", async () => {
+  const result = await runFixture("rpc-support-fetch");
+  expect(result.authorizations).toEqual(["Bearer actor-a"]);
+  expect(result.roleReads).toEqual([
+    {
+      actor: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      status: "active",
+      authorization: "Bearer synthetic-service-role",
+    },
+  ]);
+  expect(result.allRowsIntact).toBe(true);
+  expect(result.taskCount).toBe(500);
+  const reads = result.rpcReads as {
+    fallback: boolean;
+    body: string;
+    bytes: number;
+    contentLength: string;
+    authorization: string;
+  }[];
+  expect(reads).toHaveLength(1);
+  expect(reads[0].fallback).toBe(true);
+  expect(reads[0].authorization).toBe("Bearer synthetic-service-role");
+  expect(reads[0].body).toBe(
+    JSON.stringify({
+      p_actor: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      p_command: { action: "list", page: 1, pageSize: 0, q: "義工🌏", include_pending: false },
+    }),
+  );
+  expect(reads[0].bytes).toBe(Buffer.byteLength(reads[0].body));
+  expect(Number(reads[0].contentLength)).toBe(reads[0].bytes);
 });
 for (const encoding of ["gzip", "deflate", "br", "GZip", "BR"])
   test(`bounded RPC ${encoding} decodes once without another upstream request or disabling negotiation`, async () => {
