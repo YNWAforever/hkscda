@@ -1,7 +1,7 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { volunteerQueryKeys, invalidateVolunteerQueries } from "../../../lib/volunteers/queryKeys";
-import { adminIdentityQueryOptions } from "../../../lib/admin/identity";
+import { adminIdentityQueryOptions, ADMIN_IDENTITY_QUERY_KEY } from "../../../lib/admin/identity";
 import {
   createAttendanceController,
   initialAttendanceRecoveryState,
@@ -581,7 +581,8 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   returnParams.set("return_from", initialView === "calendar" ? "calendar" : "activities");
   const returnPosition = useVolunteerReturnPosition({
     listKey: "volunteer-workspace",
-    actorUserId: cache.getQueryData?.<AdminMeResponse>(["admin-me"])?.admin.authUserId ?? "",
+    actorUserId:
+      cache.getQueryData?.<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId ?? "",
     scopeKey: JSON.stringify([filter, page, selected, detailPage]),
     ready: Boolean(selected && detail.data) && !detail.isFetching && !detail.isError,
   });

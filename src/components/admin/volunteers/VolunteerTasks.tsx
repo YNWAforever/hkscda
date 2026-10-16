@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { StatusPill } from "../StatusBadge";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { ADMIN_IDENTITY_QUERY_KEY } from "../../../lib/admin/identity";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
@@ -139,7 +140,8 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
   const taskReturn = readRegistrationReturnState(returnParams);
   const position = useVolunteerReturnPosition({
     listKey: "volunteer-tasks",
-    actorUserId: cache.getQueryData?.<AdminMeResponse>(["admin-me"])?.admin.authUserId ?? "",
+    actorUserId:
+      cache.getQueryData?.<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId ?? "",
     scopeKey: JSON.stringify([listState.filters.scope, listState.page, listState.query]),
     ready: Boolean(query.data) && !refreshing && !query.isError,
   });
