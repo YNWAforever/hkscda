@@ -77,9 +77,7 @@ test.skipIf(!allowed)(
         const hydration = nodes(root).filter(
           (node) =>
             node["Join Type"] !== undefined &&
-            node.Output?.some(
-              (column) => column === "a.title" || column === "r.contact_name",
-            ),
+            node.Output?.some((column) => column === "a.title" || column === "r.contact_name"),
         );
         expect(hydration.length).toBeGreaterThanOrEqual(2);
         for (const join of hydration)
