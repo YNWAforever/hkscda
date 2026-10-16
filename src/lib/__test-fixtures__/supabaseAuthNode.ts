@@ -1,4 +1,5 @@
-import { createServer } from "node:http";
+import http, { createServer } from "node:http";
+import { syncBuiltinESMExports } from "node:module";
 import { createSupabaseServiceClient } from "../supabase.server";
 import { createSupabaseAuthFetch } from "../supabaseAuthTransport.server";
 import { getAdminUserFromRequest } from "../admin/session.server";
@@ -32,6 +33,31 @@ const rpcReads: {
 }[] = [];
 let connections = 0;
 const scenario = process.argv[2] ?? "fresh";
+const compressedFailure = scenario.startsWith("rpc-compressed-");
+let httpComplete = false;
+let httpCompleted: (() => void) | undefined;
+const httpCompletedPromise = new Promise<void>((resolve) => {
+  httpCompleted = resolve;
+});
+if (compressedFailure) {
+  // Observe actual client HTTP completion, independent of server write completion.
+  const original = http.request;
+  http.request = ((
+    url: string | URL,
+    options: http.RequestOptions,
+    callback?: (message: http.IncomingMessage) => void,
+  ) => {
+    const request = original(url, options, callback);
+    request.once("response", (message) =>
+      message.once("end", () => {
+        httpComplete = true;
+        httpCompleted?.();
+      }),
+    );
+    return request;
+  }) as typeof http.request;
+  syncBuiltinESMExports();
+}
 const observed: { method: string; path: string; body: string; fallback: boolean }[] = [];
 let bodyClosed: (() => void) | undefined;
 let requestSeen: (() => void) | undefined;
@@ -105,15 +131,21 @@ const server = createServer(async (request, response) => {
       acceptEncoding: request.headers["accept-encoding"] ?? "",
     });
     requestSeen?.();
-    if (["rpc-gzip", "rpc-deflate", "rpc-br"].includes(scenario)) {
+    if (compressedFailure && rpcReads.length === 1) {
+      response
+        .writeHead(200, { "content-type": "application/json", "content-encoding": "gzip" })
+        .end(gzipSync(JSON.stringify({ value: "x".repeat(4 * 1024 * 1024) })));
+      return;
+    }
+    if (["rpc-gzip", "rpc-deflate", "rpc-br", "rpc-GZip", "rpc-BR"].includes(scenario)) {
       const encoding = scenario.slice(4),
         value = Buffer.from(JSON.stringify({ value: "義工🌏", ordinal: rpcReads.length }));
       response
         .writeHead(200, { "content-type": "application/json", "content-encoding": encoding })
         .end(
-          encoding === "gzip"
+          encoding.toLowerCase() === "gzip"
             ? gzipSync(value)
-            : encoding === "deflate"
+            : encoding.toLowerCase() === "deflate"
               ? deflateSync(value)
               : brotliCompressSync(value),
         );
@@ -200,8 +232,11 @@ try {
     scenario === "rpc-abort-body" ||
     scenario === "rpc-fallback" ||
     scenario === "rpc-proxy" ||
-    ["rpc-gzip", "rpc-deflate", "rpc-br"].includes(scenario)
+    scenario === "rpc-options" ||
+    compressedFailure ||
+    ["rpc-gzip", "rpc-deflate", "rpc-br", "rpc-GZip", "rpc-BR"].includes(scenario)
   ) {
+    const nativeFetch = globalThis.fetch;
     const fallback = async (input: string | URL | Request, init?: RequestInit) => {
       const headers = new Headers(init?.headers);
       headers.set("x-fixture-fallback", "1");
@@ -214,7 +249,7 @@ try {
         });
         return Response.json({});
       }
-      return fetch(input, { ...init, headers });
+      return nativeFetch(input, { ...init, headers });
     };
     const actor = actorIds["actor-a"],
       activity = actorIds["actor-b"];
@@ -236,6 +271,7 @@ try {
         ...extra,
       });
     if (scenario === "rpc-fresh" || scenario === "rpc-disabled") {
+      globalThis.fetch = fallback as typeof fetch;
       const values = [];
       for (const token of scenario === "rpc-disabled"
         ? ["actor-a", "actor-a", "actor-b"]
@@ -248,17 +284,12 @@ try {
             }),
             client,
           );
-          values.push(
-            await (
-              await post(
-                "volunteer_bulk_command",
-                JSON.stringify({
-                  p_actor: admin.authUserId,
-                  p_command: { action: "detail", activity_id: activity, page: 2, history_page: 1 },
-                }),
-              )
-            ).json(),
-          );
+          const result = await client.rpc("volunteer_bulk_command", {
+            p_actor: admin.authUserId,
+            p_command: { action: "detail", activity_id: activity, page: 2, history_page: 1 },
+          });
+          if (result.error) throw new Error(result.error.message);
+          values.push(result.data);
         } catch (error) {
           if (scenario !== "rpc-disabled" || !(error instanceof Response) || error.status !== 403)
             throw error;
@@ -266,7 +297,99 @@ try {
         }
       }
       console.log(JSON.stringify({ authorizations, roleReads, rpcReads, values, connections }));
-    } else if (["rpc-gzip", "rpc-deflate", "rpc-br"].includes(scenario)) {
+    } else if (scenario === "rpc-options") {
+      const dispatcher = {
+        dispatch() {
+          throw new Error("Unexpected dispatch");
+        },
+      };
+      const extras: Array<
+        RequestInit & {
+          dispatcher?: typeof dispatcher;
+          priority?: "high";
+          duplex?: "half";
+        }
+      > = [
+        { dispatcher },
+        { cache: "only-if-cached" },
+        { mode: "no-cors" },
+        { credentials: "include" },
+        { referrer: "https://fixture.invalid/" },
+        { referrerPolicy: "origin" },
+        { keepalive: true },
+        { priority: "high" },
+        { duplex: "half" },
+        { redirect: "follow" },
+        { integrity: "" },
+        { cache: undefined },
+        { [Symbol("transport")]: dispatcher },
+      ];
+      const preserved: boolean[] = [];
+      let originalOptions: RequestInit;
+      const optionsTransport = createSupabaseAuthFetch(
+        process.env.SUPABASE_URL,
+        async (_input, init) => {
+          preserved.push(init === originalOptions);
+          return Response.json({});
+        },
+      );
+      for (const extra of extras) {
+        originalOptions = {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          ...extra,
+        };
+        await (await optionsTransport(endpoint + "volunteer_bulk_command", originalOptions)).text();
+      }
+      originalOptions = Object.assign(Object.create({ dispatcher }) as RequestInit, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+      });
+      await (await optionsTransport(endpoint + "volunteer_bulk_command", originalOptions)).text();
+      console.log(JSON.stringify({ preserved, requests: rpcReads.length }));
+    } else if (compressedFailure) {
+      const controller = new AbortController();
+      const timers = new Set<() => void>();
+      const bounded = createSupabaseAuthFetch(process.env.SUPABASE_URL, fallback, (callback) => {
+        timers.add(callback);
+        return () => {
+          timers.delete(callback);
+        };
+      });
+      const options = {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+        signal: controller.signal,
+      };
+      const response = await bounded(endpoint + "volunteer_bulk_command", options);
+      await httpCompletedPromise;
+      // The second response still owns the reused socket when the first decode fails.
+      const following = await post("volunteer_bulk_command", body);
+      if (scenario.endsWith("abort")) controller.abort();
+      else {
+        const deadline = [...timers][0];
+        if (!deadline) throw new Error("Expected the active body deadline");
+        deadline();
+      }
+      let errorName = "";
+      try {
+        await response.text();
+      } catch (error) {
+        errorName = error instanceof Error ? error.name : "unknown";
+      }
+      console.log(
+        JSON.stringify({
+          httpComplete,
+          errorName,
+          followingValue: await following.json(),
+          connections,
+          requests: rpcReads.length,
+        }),
+      );
+    } else if (["rpc-gzip", "rpc-deflate", "rpc-br", "rpc-GZip", "rpc-BR"].includes(scenario)) {
       const response = await post("volunteer_bulk_command", body);
       console.log(
         JSON.stringify({

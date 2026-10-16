@@ -54,6 +54,10 @@ export function boundedSupabaseReadRpcBody(
   init: RequestInit,
 ): string | null {
   if (
+    (Object.getPrototypeOf(init) !== Object.prototype && Object.getPrototypeOf(init) !== null) ||
+    Reflect.ownKeys(init).some(
+      (key) => typeof key !== "string" || !["method", "headers", "body", "signal"].includes(key),
+    ) ||
     target.origin !== base.origin ||
     target.username !== base.username ||
     target.password !== base.password ||

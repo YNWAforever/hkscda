@@ -79,6 +79,7 @@ export function createSupabaseAuthFetch(
       return new Promise<Response>((resolve, reject) => {
         const send = target.protocol === "https:" ? https.request : http.request;
         let aborted: Error | undefined;
+        let failBody: ((error: Error) => void) | undefined;
         let stopDeadline = () => {};
         let stopConnectListener = () => {};
         const cleanup = () => {
@@ -90,7 +91,8 @@ export function createSupabaseAuthFetch(
           stopDeadline();
           stopDeadline = scheduleTimeout(() => {
             aborted = new DOMException("Auth request timed out", "TimeoutError");
-            request.destroy(aborted);
+            if (failBody) failBody(aborted);
+            else request.destroy(aborted);
           }, milliseconds);
         };
         const request = send(
@@ -106,7 +108,7 @@ export function createSupabaseAuthFetch(
           (incoming) => {
             setDeadline(300_000);
             // Preserve native fetch redirect/encoding behavior for unexpected servers.
-            const encoding = incoming.headers["content-encoding"];
+            const encoding = incoming.headers["content-encoding"]?.toLowerCase();
             const compressedRpc =
               rpcBody !== null && ["gzip", "deflate", "br"].includes(encoding ?? "");
             if (
@@ -147,30 +149,42 @@ export function createSupabaseAuthFetch(
                 )
               : incoming;
             if (payload !== incoming) incoming.once("error", (error) => payload.destroy(error));
+            let bodyFinished = false;
             const body = new ReadableStream<Uint8Array>({
               start(controller) {
+                failBody = (error) => {
+                  if (bodyFinished) return;
+                  bodyFinished = true;
+                  cleanup();
+                  controller.error(error);
+                  payload.destroy();
+                  // A completed response's socket may already serve another request.
+                  if (!incoming.complete) incoming.destroy();
+                };
                 payload.on("data", (chunk: Buffer) => {
+                  if (bodyFinished) return;
                   setDeadline(300_000);
                   controller.enqueue(chunk);
                   if ((controller.desiredSize ?? 0) <= 0) payload.pause();
                 });
                 payload.once("end", () => {
+                  if (bodyFinished) return;
+                  bodyFinished = true;
                   cleanup();
                   controller.close();
                 });
                 payload.once("error", (error) => {
-                  cleanup();
-                  incoming.destroy();
-                  controller.error(aborted ?? error);
+                  failBody?.(aborted ?? error);
                 });
               },
               pull() {
                 payload.resume();
               },
               cancel() {
+                bodyFinished = true;
                 cleanup();
                 payload.destroy();
-                incoming.destroy();
+                if (!incoming.complete) incoming.destroy();
               },
             });
             resolve(
@@ -184,7 +198,8 @@ export function createSupabaseAuthFetch(
         );
         const abort = () => {
           aborted = abortReason();
-          request.destroy(aborted);
+          if (failBody) failBody(aborted);
+          else request.destroy(aborted);
         };
         request.once("error", (error) => {
           cleanup();

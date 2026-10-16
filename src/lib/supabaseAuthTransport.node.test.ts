@@ -131,7 +131,7 @@ test("the three bounded POST read schemas retain exact UTF-8 body and framing", 
   ).toBe(true);
   expect(result.connections).toBe(1);
 });
-for (const encoding of ["gzip", "deflate", "br"])
+for (const encoding of ["gzip", "deflate", "br", "GZip", "BR"])
   test(`bounded RPC ${encoding} decodes once without another upstream request or disabling negotiation`, async () => {
     const result = await runFixture("rpc-" + encoding);
     expect(result.value).toEqual({ value: "義工🌏", ordinal: 1 });
@@ -139,7 +139,25 @@ for (const encoding of ["gzip", "deflate", "br"])
     const reads = result.rpcReads as { fallback: boolean; acceptEncoding: string }[];
     expect(reads).toHaveLength(1);
     expect(reads[0].fallback).toBe(false);
-    expect(reads[0].acceptEncoding.split(",").map((value) => value.trim())).toContain(encoding);
+    expect(reads[0].acceptEncoding.split(",").map((value) => value.trim())).toContain(
+      encoding.toLowerCase(),
+    );
+  });
+test("unsupported RPC fetch options preserve the original options and never send directly", async () => {
+  const result = await runFixture("rpc-options");
+  expect(result.requests).toBe(0);
+  expect(result.preserved).toEqual(Array(14).fill(true));
+});
+for (const failure of ["abort", "timeout"])
+  test(`a compressed RPC ${failure} after HTTP completion errors unread decoded output without closing a reused socket`, async () => {
+    const result = await runFixture("rpc-compressed-" + failure);
+    expect(result).toEqual({
+      httpComplete: true,
+      errorName: failure === "abort" ? "AbortError" : "TimeoutError",
+      followingValue: { ordinal: 2 },
+      connections: 1,
+      requests: 2,
+    });
   });
 test("write RPCs, caller read assertions, unbounded/extended bodies and nonstandard requests retain original fetch", async () => {
   const result = await runFixture("rpc-fallback");
