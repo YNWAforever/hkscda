@@ -110,7 +110,7 @@ test("a freshly disabled actor cannot execute a bounded read RPC using the previ
     "active",
   ]);
 });
-test("the paginated POST read schemas retain exact UTF-8 body and framing", async () => {
+test("the allowlisted POST read schemas retain exact UTF-8 body and framing", async () => {
   const result = await runFixture("rpc-bounded");
   const reads = result.rpcReads as {
     path: string;
@@ -131,8 +131,43 @@ test("the paginated POST read schemas retain exact UTF-8 body and framing", asyn
   ).toBe(true);
   expect(result.connections).toBe(1);
 });
-test("unpaginated support keeps native fetch and every large UTF-8 row after fresh Auth and role checks", async () => {
-  const result = await runFixture("rpc-support-fetch");
+test("a declared RPC body within the prefetch budget does not pause its first small chunk before consumption", async () => {
+  const result = await runFixture("rpc-prefetch-budget");
+  expect(result.valueIntact).toBe(true);
+  expect(result.requests).toBe(1);
+  expect(result.httpComplete).toBe(true);
+  expect(result.firstRpcChunkBytes).toBeGreaterThan(0);
+  expect(Number(result.firstRpcChunkBytes)).toBeLessThanOrEqual(8192);
+  expect(result.pausedBeforeRead).toBe(false);
+});
+for (const boundary of ["large", "unknown"])
+  test(`a ${boundary} RPC body retains backpressure and all UTF-8 bytes`, async () => {
+    const result = await runFixture("rpc-prefetch-" + boundary);
+    expect(result.valueIntact).toBe(true);
+    expect(result.pausedBeforeRead).toBe(true);
+    expect(result.requests).toBe(1);
+  });
+for (const failure of ["abort", "timeout"])
+  test(`an unread prefetched RPC body still honors ${failure} after HTTP completion without closing the reused socket`, async () => {
+    const result = await runFixture("rpc-prefetch-" + failure);
+    expect(result.httpComplete).toBe(true);
+    expect(result.errorName).toBe(failure === "abort" ? "AbortError" : "TimeoutError");
+    expect(result.followingValue).toEqual({ ordinal: 2 });
+    expect(result.connections).toBe(1);
+    expect(result.requests).toBe(2);
+    if (failure === "timeout") expect(result.deadlineActive).toBe(true);
+  });
+test("cancelling an unread prefetched body releases its deadline and preserves the reused connection", async () => {
+  expect(await runFixture("rpc-prefetch-cancel")).toEqual({
+    httpComplete: true,
+    activeDeadlines: 0,
+    followingValue: { ordinal: 2 },
+    connections: 1,
+    requests: 2,
+  });
+});
+test("allowlisted support reuses transport while preserving every large UTF-8 row after fresh Auth and role checks", async () => {
+  const result = await runFixture("rpc-support-read");
   expect(result.authorizations).toEqual(["Bearer actor-a"]);
   expect(result.roleReads).toEqual([
     {
@@ -143,6 +178,7 @@ test("unpaginated support keeps native fetch and every large UTF-8 row after fre
   ]);
   expect(result.allRowsIntact).toBe(true);
   expect(result.taskCount).toBe(500);
+  expect(result.connections).toBe(1);
   const reads = result.rpcReads as {
     fallback: boolean;
     body: string;
@@ -151,7 +187,7 @@ test("unpaginated support keeps native fetch and every large UTF-8 row after fre
     authorization: string;
   }[];
   expect(reads).toHaveLength(1);
-  expect(reads[0].fallback).toBe(true);
+  expect(reads[0].fallback).toBe(false);
   expect(reads[0].authorization).toBe("Bearer synthetic-service-role");
   expect(reads[0].body).toBe(
     JSON.stringify({
@@ -194,7 +230,7 @@ test("write RPCs, caller read assertions, unbounded/extended bodies and nonstand
   const result = await runFixture("rpc-fallback");
   expect(result.requests).toBe(0);
   const rows = result.observed as { fallback: boolean; method: string; body: string }[];
-  expect(rows).toHaveLength(29);
+  expect(rows).toHaveLength(30);
   expect(rows.every((row) => row.fallback)).toBe(true);
   expect(rows[0].body).toContain("attendance_apply");
   expect(rows[1].body).toContain('"operationType":"read"');

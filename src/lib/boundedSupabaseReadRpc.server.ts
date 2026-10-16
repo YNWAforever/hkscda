@@ -16,6 +16,21 @@ const detail = z
       .strict(),
   })
   .strict();
+const support = z
+  .object({
+    p_actor: uuid,
+    p_command: z
+      .object({
+        action: z.literal("list"),
+        scope: scope.optional(),
+        page: page.optional(),
+        pageSize: z.number().int().min(0).max(100).optional(),
+        q: z.string().max(100).optional(),
+        include_pending: z.literal(false),
+      })
+      .strict(),
+  })
+  .strict();
 const pending = z
   .object({
     p_actor: uuid,
@@ -28,13 +43,14 @@ const pending = z
   .strict();
 const reads = new Map<string, z.ZodType<unknown>>([
   ["volunteer_bulk_command", detail],
+  ["volunteer_task_command", support],
   ["volunteer_pending_work_snapshot", pending],
 ]);
 
 /**
- * Paginated reads only; never an authorization or response cache.
- * Task support still returns up to 500 rows regardless of page/pageSize. Its
- * large body retains native fetch instead of this adapter's IncomingMessage bridge.
+ * Strict read-command eligibility, never authorization or a response cache.
+ * Support page arguments do not bound its response. The transport separately
+ * chooses bounded byte prefetch from the actual response headers.
  */
 export function boundedSupabaseReadRpcBody(
   base: URL,

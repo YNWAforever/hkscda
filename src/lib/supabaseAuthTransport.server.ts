@@ -149,44 +149,75 @@ export function createSupabaseAuthFetch(
                 )
               : incoming;
             if (payload !== incoming) incoming.once("error", (error) => payload.destroy(error));
+            const lengthHeader = incoming.headers["content-length"];
+            const declaredBytes =
+              typeof lengthHeader === "string" && /^(0|[1-9][0-9]*)$/.test(lengthHeader)
+                ? Number(lengthHeader)
+                : Number.NaN;
+            // JSON RPC callers consume the complete body. Avoid first-chunk
+            // backpressure only when identity bytes have a known, bounded size.
+            const prefetchBytes =
+              rpcBody !== null &&
+              !compressedRpc &&
+              Number.isSafeInteger(declaredBytes) &&
+              declaredBytes <= 512 * 1024
+                ? declaredBytes
+                : null;
             let bodyFinished = false;
-            const body = new ReadableStream<Uint8Array>({
-              start(controller) {
-                failBody = (error) => {
-                  if (bodyFinished) return;
+            let upstreamEnded = false;
+            const closeIfDrained = (controller: ReadableStreamDefaultController<Uint8Array>) => {
+              if (bodyFinished || !upstreamEnded) return;
+              // HTTP EOF can precede consumption of the prefetched queue. Keep
+              // abort/deadline ownership until the caller drains or cancels it.
+              if (prefetchBytes !== null && controller.desiredSize !== prefetchBytes + 1) return;
+              bodyFinished = true;
+              cleanup();
+              controller.close();
+            };
+            const body = new ReadableStream<Uint8Array>(
+              {
+                start(controller) {
+                  failBody = (error) => {
+                    if (bodyFinished) return;
+                    bodyFinished = true;
+                    cleanup();
+                    controller.error(error);
+                    payload.destroy();
+                    // A completed response's socket may already serve another request.
+                    if (!incoming.complete) incoming.destroy();
+                  };
+                  payload.on("data", (chunk: Buffer) => {
+                    if (bodyFinished) return;
+                    setDeadline(300_000);
+                    controller.enqueue(chunk);
+                    if ((controller.desiredSize ?? 0) <= 0) payload.pause();
+                  });
+                  payload.once("end", () => {
+                    upstreamEnded = true;
+                    closeIfDrained(controller);
+                  });
+                  payload.once("error", (error) => {
+                    failBody?.(aborted ?? error);
+                  });
+                },
+                pull(controller) {
+                  if (upstreamEnded) closeIfDrained(controller);
+                  else payload.resume();
+                },
+                cancel() {
                   bodyFinished = true;
                   cleanup();
-                  controller.error(error);
                   payload.destroy();
-                  // A completed response's socket may already serve another request.
                   if (!incoming.complete) incoming.destroy();
-                };
-                payload.on("data", (chunk: Buffer) => {
-                  if (bodyFinished) return;
-                  setDeadline(300_000);
-                  controller.enqueue(chunk);
-                  if ((controller.desiredSize ?? 0) <= 0) payload.pause();
-                });
-                payload.once("end", () => {
-                  if (bodyFinished) return;
-                  bodyFinished = true;
-                  cleanup();
-                  controller.close();
-                });
-                payload.once("error", (error) => {
-                  failBody?.(aborted ?? error);
-                });
+                },
               },
-              pull() {
-                payload.resume();
-              },
-              cancel() {
-                bodyFinished = true;
-                cleanup();
-                payload.destroy();
-                if (!incoming.complete) incoming.destroy();
-              },
-            });
+              prefetchBytes === null
+                ? undefined
+                : {
+                    highWaterMark: prefetchBytes + 1,
+                    size: (chunk) => chunk?.byteLength ?? 0,
+                  },
+            );
             resolve(
               new Response(body, {
                 status: incoming.statusCode,

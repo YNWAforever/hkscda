@@ -34,12 +34,21 @@ const rpcReads: {
 let connections = 0;
 const scenario = process.argv[2] ?? "fresh";
 const compressedFailure = scenario.startsWith("rpc-compressed-");
+const prefetchScenario = scenario.startsWith("rpc-prefetch-");
+const prefetchTerminal = ["abort", "timeout", "cancel"].some((mode) => scenario.endsWith(mode));
+let observedRpcIncoming: http.IncomingMessage | undefined;
+let firstRpcChunkBytes = 0;
+let firstRpcChunk: (() => void) | undefined;
+const firstRpcChunkPromise = new Promise<void>((resolve) => {
+  firstRpcChunk = resolve;
+});
+let releaseRpcBody = () => {};
 let httpComplete = false;
 let httpCompleted: (() => void) | undefined;
 const httpCompletedPromise = new Promise<void>((resolve) => {
   httpCompleted = resolve;
 });
-if (compressedFailure) {
+if (compressedFailure || prefetchScenario) {
   // Observe actual client HTTP completion, independent of server write completion.
   const original = http.request;
   http.request = ((
@@ -48,12 +57,24 @@ if (compressedFailure) {
     callback?: (message: http.IncomingMessage) => void,
   ) => {
     const request = original(url, options, callback);
-    request.once("response", (message) =>
+    request.once("response", (message) => {
+      if (prefetchScenario) {
+        observedRpcIncoming = message;
+        const emit = message.emit;
+        message.emit = function (event, ...values: unknown[]) {
+          const result = emit.call(this, event, ...values);
+          if (event === "data" && !firstRpcChunkBytes && Buffer.isBuffer(values[0])) {
+            firstRpcChunkBytes = values[0].length;
+            firstRpcChunk?.();
+          }
+          return result;
+        };
+      }
       message.once("end", () => {
         httpComplete = true;
         httpCompleted?.();
-      }),
-    );
+      });
+    });
     return request;
   }) as typeof http.request;
   syncBuiltinESMExports();
@@ -131,17 +152,39 @@ const server = createServer(async (request, response) => {
       acceptEncoding: request.headers["accept-encoding"] ?? "",
     });
     requestSeen?.();
-    if (scenario === "rpc-support-fetch") {
-      response.writeHead(200, { "content-type": "application/json" }).end(
-        JSON.stringify({
-          tasks: Array.from({ length: 500 }, (_, index) => ({
-            id: "task-" + index,
-            payload: { message: "義工🌏".repeat(50) },
-          })),
-          notifications: [],
-          pending: [],
-        }),
+    if (prefetchScenario) {
+      const bytes = Buffer.from(
+        prefetchTerminal && rpcReads.length > 1
+          ? JSON.stringify({ ordinal: rpcReads.length })
+          : JSON.stringify({ value: "義工🌏".repeat(scenario.endsWith("large") ? 60000 : 12000) }),
       );
+      response.writeHead(200, {
+        "content-type": "application/json",
+        ...(scenario.endsWith("unknown") ? {} : { "content-length": bytes.length }),
+      });
+      if (prefetchTerminal) {
+        response.end(bytes);
+        return;
+      }
+      releaseRpcBody = () => response.end(bytes.subarray(8192));
+      response.write(bytes.subarray(0, 8192));
+      return;
+    }
+    if (scenario === "rpc-support-read") {
+      const value = JSON.stringify({
+        tasks: Array.from({ length: 500 }, (_, index) => ({
+          id: "task-" + index,
+          payload: { message: "義工🌏".repeat(50) },
+        })),
+        notifications: [],
+        pending: [],
+      });
+      response
+        .writeHead(200, {
+          "content-type": "application/json",
+          "content-length": Buffer.byteLength(value),
+        })
+        .end(value);
       return;
     }
     if (compressedFailure && rpcReads.length === 1) {
@@ -246,7 +289,8 @@ try {
     scenario === "rpc-fallback" ||
     scenario === "rpc-proxy" ||
     scenario === "rpc-options" ||
-    scenario === "rpc-support-fetch" ||
+    scenario === "rpc-support-read" ||
+    prefetchScenario ||
     compressedFailure ||
     ["rpc-gzip", "rpc-deflate", "rpc-br", "rpc-GZip", "rpc-BR"].includes(scenario)
   ) {
@@ -311,7 +355,76 @@ try {
         }
       }
       console.log(JSON.stringify({ authorizations, roleReads, rpcReads, values, connections }));
-    } else if (scenario === "rpc-support-fetch") {
+    } else if (prefetchScenario) {
+      if (prefetchTerminal) {
+        const controller = new AbortController(),
+          timers = new Set<() => void>();
+        const bounded = createSupabaseAuthFetch(process.env.SUPABASE_URL, fallback, (callback) => {
+          timers.add(callback);
+          return () => {
+            timers.delete(callback);
+          };
+        });
+        const response = await bounded(endpoint + "volunteer_bulk_command", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          signal: controller.signal,
+        });
+        await httpCompletedPromise;
+        if (scenario.endsWith("cancel")) {
+          await response.body?.cancel();
+          const following = await post("volunteer_bulk_command", body);
+          controller.abort();
+          console.log(
+            JSON.stringify({
+              httpComplete,
+              activeDeadlines: timers.size,
+              followingValue: await following.json(),
+              connections,
+              requests: rpcReads.length,
+            }),
+          );
+        } else {
+          const following = await post("volunteer_bulk_command", body);
+          const deadline = [...timers][0];
+          if (scenario.endsWith("abort")) controller.abort();
+          else deadline?.();
+          let errorName = "";
+          try {
+            await response.text();
+          } catch (error) {
+            errorName = error instanceof Error ? error.name : "unknown";
+          }
+          console.log(
+            JSON.stringify({
+              httpComplete,
+              errorName,
+              deadlineActive: Boolean(deadline),
+              followingValue: await following.json(),
+              connections,
+              requests: rpcReads.length,
+            }),
+          );
+        }
+      } else {
+        const response = await post("volunteer_bulk_command", body);
+        await firstRpcChunkPromise;
+        const pausedBeforeRead = observedRpcIncoming?.isPaused();
+        releaseRpcBody();
+        const value = (await response.json()) as { value: string };
+        console.log(
+          JSON.stringify({
+            pausedBeforeRead,
+            firstRpcChunkBytes,
+            httpComplete,
+            valueIntact:
+              value.value === "義工🌏".repeat(scenario.endsWith("large") ? 60000 : 12000),
+            requests: rpcReads.length,
+          }),
+        );
+      }
+    } else if (scenario === "rpc-support-read") {
       globalThis.fetch = fallback as typeof fetch;
       const client = createSupabaseServiceClient();
       const admin = await getAdminUserFromRequest(
@@ -332,6 +445,7 @@ try {
           roleReads,
           rpcReads,
           taskCount: value.tasks.length,
+          connections,
           allRowsIntact: value.tasks.every(
             (row, index) =>
               row.id === "task-" + index && row.payload.message === "義工🌏".repeat(50),
@@ -451,6 +565,20 @@ try {
             p_page_size: 25,
             p_as_of: "2026-10-16T00:00:00.123456Z",
             p_query: "義工🌏",
+          }),
+        ],
+        [
+          "volunteer_task_command",
+          JSON.stringify({
+            p_actor: actor,
+            p_command: {
+              action: "list",
+              scope: "upcoming",
+              page: 1,
+              pageSize: 25,
+              q: "義工🌏",
+              include_pending: false,
+            },
           }),
         ],
       ];
@@ -607,6 +735,13 @@ try {
               p_actor: actor,
               p_command: { action: "list", include_pending: true },
             }),
+          },
+        ],
+        [
+          endpoint + "volunteer_task_command",
+          {
+            method: "POST",
+            body: JSON.stringify({ p_actor: actor, p_command: { action: "list" } }),
           },
         ],
         [
