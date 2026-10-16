@@ -109,6 +109,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const [state] = useState(initial);
   const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
+    // Both workspace routes disable SSR. Enable the restored query when its
+    // observer first subscribes, including when switching to the same cache key.
+    clientOnly: true,
     initialFilters: { ...state.filter, q: "" },
     initialPage: state.page,
     routeState: ACTIVITY_ROUTE,

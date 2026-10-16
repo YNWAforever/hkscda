@@ -27,6 +27,7 @@ export function useListQueryState<Filters extends object>({
   initialFilters,
   initialPage = 1,
   routeState,
+  clientOnly = false,
   debounceMs = 300,
   onScopeChange,
 }: {
@@ -34,21 +35,44 @@ export function useListQueryState<Filters extends object>({
   initialFilters: Filters;
   initialPage?: number;
   routeState?: ListRouteState<Filters>;
+  /** Only routes that disable SSR may restore browser state during their initial render. */
+  clientOnly?: boolean;
   debounceMs?: number;
   onScopeChange?: () => void;
 }) {
-  const [filters, setFilters] = useState<Filters>(initialFilters);
-  const [page, setPage] = useState(initialPage);
-  const [draftQuery, setDraftQuery] = useState("");
-  const [query, setQuery] = useState("");
+  const storageKey = "hkscda.admin.list.query." + key;
+  const [initial] = useState(() => {
+    const ready = clientOnly && typeof window !== "undefined";
+    const restored =
+      ready && routeState
+        ? routeState.read(new URLSearchParams(window.location.search), initialFilters)
+        : { filters: initialFilters, page: initialPage };
+    let stored = "";
+    if (ready) {
+      try {
+        stored = window.sessionStorage.getItem(storageKey) ?? "";
+      } catch {
+        /* Session persistence is optional. */
+      }
+    }
+    return {
+      ...restored,
+      draftQuery: stored,
+      query: stored.trim(),
+      hydrated: ready || typeof window === "undefined",
+    };
+  });
+  const [filters, setFilters] = useState<Filters>(initial.filters);
+  const [page, setPage] = useState(initial.page);
+  const [draftQuery, setDraftQuery] = useState(initial.draftQuery);
+  const [query, setQuery] = useState(initial.query);
   const [composing, setComposing] = useState(false);
-  const [hydrated, setHydrated] = useState(typeof window === "undefined");
+  const [hydrated, setHydrated] = useState(initial.hydrated);
   const scopeChange = useRef(onScopeChange);
   scopeChange.current = onScopeChange;
   const route = useRef(routeState);
   const defaults = useRef(initialFilters);
   const historyMode = useRef<"push" | "replace">("replace");
-  const storageKey = "hkscda.admin.list.query." + key;
 
   // Restore the mounted list before paint, so its enabled query can subscribe
   // without waiting for a second render frame. Keep it disabled until the saved
