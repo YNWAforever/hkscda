@@ -69,6 +69,7 @@ export function GroupEnquiryManagement() {
   const enquiriesQuery = useQuery({
     queryKey: volunteerQueryKeys.key("groupEnquiries", search),
     enabled: listState.hydrated,
+    staleTime: 30_000,
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       fetchAdminJson<GroupEnquiryListResponse>("/api/admin/volunteers/group-enquiries", {
