@@ -95,6 +95,7 @@ export default {async fetch(request){
 }};`,
     );
     await symlink(resolve("node_modules"), join(directory, "node_modules"), "junction");
+    let stderr = "";
     const child = spawn("node", [resolve("scripts/nitro-preview-fast.mjs")], {
       cwd: directory,
       env: {
@@ -107,9 +108,14 @@ export default {async fetch(request){
         NITRO_PREVIEW_SHUTDOWN_TIMEOUT_MS: "100",
         ...(nodeExecutable ? { NITRO_PREVIEW_NODE_EXECUTABLE: nodeExecutable } : {}),
       },
-      stdio: "ignore",
+      stdio: ["ignore", "ignore", "pipe"],
       windowsHide: true,
     });
+    child.stderr.on("data", (chunk) => {
+      stderr += String(chunk);
+    });
+    const running = () =>
+      expect(child.exitCode, `Preview child exited:\n${stderr.slice(-4000)}`).toBeNull();
     let stalled: ClientRequest | undefined;
     try {
       const deadline = Date.now() + 10_000;
@@ -120,7 +126,7 @@ export default {async fetch(request){
         )) &&
         Date.now() < deadline
       ) {
-        expect(child.exitCode).toBeNull();
+        running();
         await delay(10);
       }
       expect(
@@ -139,7 +145,7 @@ export default {async fetch(request){
       expect(await portOpen(publicPort)).toBe(false);
       await writeFile(release, "continue");
       while (!(await portOpen(publicPort)) && Date.now() < deadline) {
-        expect(child.exitCode).toBeNull();
+        running();
         await delay(10);
       }
       expect(await portOpen(publicPort)).toBe(true);
@@ -170,7 +176,7 @@ export default {async fetch(request){
       // Emit the same runtime signal event on Windows and POSIX. Windows'
       // external SIGTERM otherwise bypasses JS and hides an unbounded handler.
       await (await fetch(`http://127.0.0.1:${upstreamPort}/__fixture_signal`)).json();
-      const running = () => {
+      const processRunning = () => {
         try {
           process.kill(upstreamPid, 0);
           return true;
@@ -181,8 +187,8 @@ export default {async fetch(request){
         }
       };
       const stopDeadline = Date.now() + 1000;
-      while (running() && Date.now() < stopDeadline) await delay(10);
-      expect(running()).toBe(false);
+      while (processRunning() && Date.now() < stopDeadline) await delay(10);
+      expect(processRunning()).toBe(false);
     } finally {
       stalled?.destroy();
       await writeFile(release, "continue");
@@ -197,6 +203,7 @@ export default {async fetch(request){
       }
       const target = await realpath(directory);
       if (dirname(target) !== tempRoot || !basename(target).startsWith("hkscda-preview-startup-"))
+        // eslint-disable-next-line no-unsafe-finally -- Refuse cleanup before deleting an unowned path.
         throw new Error("Refuse cleanup outside the owned preview fixture");
       await unlink(join(target, "node_modules"));
       await rm(target, { recursive: true, force: true });
