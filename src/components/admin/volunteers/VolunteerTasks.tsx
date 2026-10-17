@@ -20,6 +20,7 @@ import {
 } from "../../../lib/admin/useListQueryState";
 import type { PendingCounts, PendingScope } from "../../../lib/volunteers/pending";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { paginateSupport } from "./supportPagination";
 import {
   buildLegacyPendingHref,
   buildPendingRegistrationHref,
@@ -93,6 +94,8 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
   const cache = useQueryClient();
   const [selected, setSelected] = useState("");
   const [reason, setReason] = useState("");
+  const [contactPageRequest, setContactPageRequest] = useState(1);
+  const [notificationPageRequest, setNotificationPageRequest] = useState(1);
   const query = useQuery({
     queryKey: volunteerQueryKeys.key(
       "tasks",
@@ -115,6 +118,11 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
     refetchInterval: 30000,
   });
   const rows = query.isError ? [] : (query.data?.pending ?? []);
+  const contactPage = paginateSupport(query.data?.tasks ?? [], contactPageRequest);
+  const notificationPage = paginateSupport(
+    query.data?.notifications ?? [],
+    notificationPageRequest,
+  );
   const refreshing = query.isFetching || query.isPlaceholderData || listState.isDebouncing;
   const filteredTotal =
     query.data?.filteredTotal ??
@@ -165,6 +173,11 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
       {copy.open(row.title)}
     </VolunteerLink>
   );
+  const changeContactPage = (page: number) => {
+    setSelected("");
+    setReason("");
+    setContactPageRequest(page);
+  };
   return (
     <section className="space-y-6">
       <VolunteerPageHeading pageId="tasks">
@@ -346,7 +359,7 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
           {copy.contact.title}
         </h2>
         {query.data?.tasks.length === 0 && <p>{copy.contact.none}</p>}
-        {query.data?.tasks.map((row) => (
+        {contactPage.items.map((row) => (
           <article key={row.id} className="space-y-2 rounded border p-3">
             <p>
               {copy.kinds[row.kind] ?? copy.otherFollowUp} · {row.contact_name} · {target(row)}
@@ -383,13 +396,38 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
             )}
           </article>
         ))}
+        {contactPage.total > 0 && (
+          <div className="space-y-2 pt-2">
+            <p role="status">
+              {copy.pager.followUps(contactPage.total, contactPage.page, contactPage.pageCount)}
+            </p>
+            <nav aria-label={copy.pager.contactLabel} className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="min-h-11 underline"
+                disabled={contactPage.page === 1}
+                onClick={() => changeContactPage(contactPage.page - 1)}
+              >
+                {copy.pager.previous}
+              </button>
+              <button
+                type="button"
+                className="min-h-11 underline"
+                disabled={contactPage.page === contactPage.pageCount}
+                onClick={() => changeContactPage(contactPage.page + 1)}
+              >
+                {copy.pager.next}
+              </button>
+            </nav>
+          </div>
+        )}
       </section>
       <section className="space-y-3">
         <h2 id="tasks-notifications" className="text-xl font-semibold">
           {copy.notifications.title}
         </h2>
         {query.data?.notifications.length === 0 && <p>{copy.notifications.none}</p>}
-        {query.data?.notifications.map((row) => (
+        {notificationPage.items.map((row) => (
           <article key={row.id} className="rounded border p-3">
             <p>
               {copy.notifications.line(
@@ -413,6 +451,35 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
             )}
           </article>
         ))}
+        {notificationPage.total > 0 && (
+          <div className="space-y-2 pt-2">
+            <p role="status">
+              {copy.pager.notifications(
+                notificationPage.total,
+                notificationPage.page,
+                notificationPage.pageCount,
+              )}
+            </p>
+            <nav aria-label={copy.pager.notificationsLabel} className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="min-h-11 underline"
+                disabled={notificationPage.page === 1}
+                onClick={() => setNotificationPageRequest(notificationPage.page - 1)}
+              >
+                {copy.pager.previous}
+              </button>
+              <button
+                type="button"
+                className="min-h-11 underline"
+                disabled={notificationPage.page === notificationPage.pageCount}
+                onClick={() => setNotificationPageRequest(notificationPage.page + 1)}
+              >
+                {copy.pager.next}
+              </button>
+            </nav>
+          </div>
+        )}
       </section>
     </section>
   );

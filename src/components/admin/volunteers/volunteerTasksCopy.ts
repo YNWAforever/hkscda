@@ -12,6 +12,16 @@ export const volunteerTasksCopy = defineAdminCopy({
     loading: "載入中…",
     loadFailed: "未能載入待辦。",
     reload: "重新載入",
+    pager: {
+      contactLabel: "聯絡跟進分頁",
+      notificationsLabel: "通知狀態分頁",
+      followUps: (total: number, page: number, pages: number) =>
+        `${total} 項聯絡跟進 · 第 ${page} 頁，共 ${pages} 頁`,
+      notifications: (total: number, page: number, pages: number) =>
+        `${total} 項通知工作 · 第 ${page} 頁，共 ${pages} 頁`,
+      previous: "上一頁",
+      next: "下一頁",
+    },
     pending: {
       title: "待審批",
       none: "目前沒有待審批報名。",
@@ -87,6 +97,16 @@ export const volunteerTasksCopy = defineAdminCopy({
     loading: "Loading…",
     loadFailed: "Could not load the tasks. ",
     reload: "Reload",
+    pager: {
+      contactLabel: "Contact follow-up pages",
+      notificationsLabel: "Notification status pages",
+      followUps: (total: number, page: number, pages: number) =>
+        `${pluralCount(total, "follow-up")} · Page ${page} of ${pages}`,
+      notifications: (total: number, page: number, pages: number) =>
+        `${pluralCount(total, "notification job")} · Page ${page} of ${pages}`,
+      previous: "Previous",
+      next: "Next",
+    },
     pending: {
       title: "Awaiting approval",
       none: "No registrations are awaiting approval.",

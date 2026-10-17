@@ -366,6 +366,27 @@ const tasksData = {
 };
 
 describe("today's volunteer tasks in English", () => {
+  test("bounds the follow-up and notification DOM while keeping every record reachable", () => {
+    const data = {
+      ...tasksData,
+      tasks: Array.from({ length: 500 }, (_, index) =>
+        task({ id: `follow-up-${index}`, contact_name: `Follow-up ${index}` }),
+      ),
+      notifications: Array.from({ length: 30 }, (_, index) =>
+        notification({ id: `notification-${index}` }),
+      ),
+    };
+    kit.withQueries({ "volunteer-tasks": kit.ok(data) }, () => {
+      const markup = renderAdminInEnglish(<VolunteerTasks />);
+      expect(markup).toContain("Follow-up 24");
+      expect(markup).not.toContain("Follow-up 25");
+      expect(markup).toContain("500 follow-ups · Page 1 of 20");
+      expect(markup).toContain('aria-label="Contact follow-up pages"');
+      expect(markup).toContain("30 notification jobs · Page 1 of 2");
+      expect(markup).toContain('aria-label="Notification status pages"');
+    });
+  });
+
   test("pending cards expose session decision data and an explicitly unreserved capacity", () => {
     const data = {
       ...tasksData,
