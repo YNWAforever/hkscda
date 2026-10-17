@@ -28,6 +28,8 @@
    重複 IDs、頁長／總數不一致或查詢期間資料移動，標示需重新載入，不宣稱完整。
 4. 月曆使用累積資料；批次「本頁」仍只選目前 API 資料頁，顯示該頁號及數量，
    不暗中全選累積頁。既有 lock-all 是原本明確操作，權限與 server 驗證不改。
+   單日使用工作區完整寬度與響應式場次卡；多日仍沿用原有週欄，不另建日曆。
+   活動名義剩餘名額與 evaluator 有效容量明確標示，兩者均不是預留名額。
 5. 審核詳情新增唯讀 server assessment：沿用 `volunteer_policy_evaluate`，傳目前
    activity/profile/duty role／受信任 clock／排除本 registration。回傳安全 DTO，
    缺少資料或失敗不捏造 allowed。原批准及點名 API 的鎖後驗證保持。
