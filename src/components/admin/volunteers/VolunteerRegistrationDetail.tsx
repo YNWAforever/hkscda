@@ -89,6 +89,10 @@ export function VolunteerRegistrationDetail({
       ),
   });
   useBreadcrumbRecordName(data?.registration?.contactName);
+  async function reloadRegistration() {
+    const result = await refetch();
+    if (!result.error) setRefreshFailed(false);
+  }
   // A registration belongs to the activities page; that is the heading until it loads.
   const destination = (
     <DestinationHeading
@@ -149,7 +153,8 @@ export function VolunteerRegistrationDetail({
     return (
       <div className="space-y-3 p-6">
         {destination}
-        <LoadFailure error={error} onRetry={() => void refetch()} />
+        {refreshFailed && <p role="alert">{common.savedRefreshFailed}</p>}
+        <LoadFailure error={error} onRetry={() => void reloadRegistration()} />
       </div>
     );
   }
@@ -272,7 +277,7 @@ export function VolunteerRegistrationDetail({
         <button
           className="mt-3 min-h-11 rounded-md border border-[var(--color-border)] px-3 text-sm"
           disabled={updateStatus.isPending || updateAttendance.isPending}
-          onClick={() => void refetch()}
+          onClick={() => void reloadRegistration()}
         >
           {reviewCopy.reload}
         </button>
