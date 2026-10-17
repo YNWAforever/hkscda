@@ -110,6 +110,8 @@ export type VolunteerRegistrationSummary = {
 
 export type VolunteerRegistrationDetail = VolunteerRegistrationSummary & {
   activity: VolunteerActivityDetail;
+  /** Admin detail read only; public and mutation responses need not include an assessment. */
+  review?: import("./registrationReview").RegistrationReview;
 };
 
 export type VolunteerRegistrationCreateResult = {

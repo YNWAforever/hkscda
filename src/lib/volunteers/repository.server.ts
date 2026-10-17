@@ -14,6 +14,7 @@ import type {
   VolunteerUnderagePolicy,
 } from "./types";
 import type { VolunteerRepository } from "./service";
+import { registrationReview } from "./registrationReview";
 
 type ActivityRow = {
   id: string;
@@ -36,6 +37,7 @@ type ActivityRow = {
 
 type RegistrationRow = {
   profile_id?: string | null;
+  duty_role?: string | null;
   id: string;
   activity_id: string;
   supporter_id: string | null;
@@ -262,7 +264,10 @@ function requireUpdated(result: { kind: string }) {
     { status, headers: { "cache-control": "no-store" } },
   );
 }
-export function createSupabaseVolunteerRepository(client: SupabaseClient): VolunteerRepository {
+export function createSupabaseVolunteerRepository(
+  client: SupabaseClient,
+  now = () => new Date(),
+): VolunteerRepository {
   const publicIdentity = createPublicIdentityRepository(client);
   return {
     async listPublishedActivities() {
@@ -441,7 +446,32 @@ export function createSupabaseVolunteerRepository(client: SupabaseClient): Volun
       if (error) throw error;
       if (!data) return null;
       const [registration] = await hydrateRegistrations(client, [data as RegistrationRow]);
-      return registration as VolunteerRegistrationDetail;
+      const asOf = now().toISOString();
+      let review = registrationReview(null, null, asOf);
+      try {
+        const evaluation = await client.rpc("volunteer_policy_evaluate", {
+          p_activity: data.activity_id,
+          p_profile: data.profile_id ?? null,
+          p_role: data.duty_role ?? null,
+          p_now: asOf,
+          p_exclude: data.id,
+        });
+        if (!evaluation.error) {
+          review = registrationReview(evaluation.data, null, asOf);
+          if (review.state === "evaluated" && review.policyVersionId) {
+            const policy = await client
+              .from("volunteer_policy_version")
+              .select("body")
+              .eq("id", review.policyVersionId)
+              .maybeSingle();
+            if (!policy.error)
+              review = registrationReview(evaluation.data, policy.data?.body, asOf);
+          }
+        }
+      } catch {
+        // An optional assessment read must not hide the registration or imply eligibility.
+      }
+      return { ...registration, review } as VolunteerRegistrationDetail;
     },
 
     async getRegistrationByStatusToken(tokenHash) {

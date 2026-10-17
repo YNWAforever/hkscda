@@ -9,7 +9,13 @@ export function FixtureWorkspace() {
   return (
     <QueryClientProvider client={client}>
       <AdminLanguageProvider initialLanguage="en">
-        <VolunteerActivityWorkspace />
+        <VolunteerActivityWorkspace
+          initialView={
+            new URLSearchParams(window.location.search).has("calendar_route")
+              ? "calendar"
+              : undefined
+          }
+        />
       </AdminLanguageProvider>
     </QueryClientProvider>
   );

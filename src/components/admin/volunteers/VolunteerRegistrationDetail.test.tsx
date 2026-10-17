@@ -2,6 +2,7 @@ import { expect, mock, test } from "bun:test";
 import { renderAdminInChinese } from "../i18n/testing";
 import type { ReactNode } from "react";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+import type { RegistrationReview } from "../../../lib/volunteers/registrationReview";
 
 // The Chinese buttons are labelled with a status, so the status labels name the buttons.
 const registrationStatusLabels = volunteerRegistrationCopy.zh.transitions;
@@ -15,6 +16,7 @@ const mutations: Array<{
 const requests: Array<{ url: string; body: unknown }> = [];
 const invalidated: unknown[] = [];
 const registration = {
+  review: undefined as RegistrationReview | undefined,
   id: "registration-1",
   updatedAt: "2026-09-05T00:00:00.123456+00:00",
   contactName: "Fixture",
@@ -66,6 +68,33 @@ mock.module("../../../lib/admin/http", () => ({
   },
 }));
 const { VolunteerRegistrationDetail } = await import("./VolunteerRegistrationDetail");
+test("review detail shows server qualification denial beside non-reserved capacity and current status", () => {
+  registration.review = {
+    state: "evaluated",
+    asOf: "2026-10-17T01:00:00.000Z",
+    allowed: false,
+    reason: "credentials_required",
+    requirements: {
+      minAge: 21,
+      allowedTiers: ["senior"],
+      credentials: { mode: "all", keys: ["handling"] },
+    },
+  };
+  const markup = renderAdminInChinese(
+    <VolunteerRegistrationDetail registrationId="registration-1" />,
+  );
+  expect(markup).toContain("缺少所需資格");
+  expect(markup).toContain("handling");
+  expect(markup).toContain("不預留名額");
+  expect(markup).toContain("21");
+  registration.review = { state: "unavailable", asOf: "2026-10-17T01:00:00.000Z" };
+  const unavailable = renderAdminInChinese(
+    <VolunteerRegistrationDetail registrationId="registration-1" />,
+  );
+  expect(unavailable).toContain("未能取得目前規則評估");
+  expect(unavailable).not.toContain("缺少所需資格");
+  registration.review = undefined;
+});
 test("status callback sends reviewed version and refreshes capacity after a rejected mutation", async () => {
   mutations.length = 0;
   requests.length = 0;

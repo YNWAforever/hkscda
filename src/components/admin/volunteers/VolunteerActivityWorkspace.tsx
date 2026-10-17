@@ -19,6 +19,12 @@ import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
 import { ActivityOperationPanel } from "./ActivityOperationPanel";
 import { ActivitySchedule } from "./ActivitySchedule";
+import {
+  calendarRangeProblem,
+  collectCalendarPage,
+  calendarCoverage,
+  type CalendarCollection,
+} from "./activityCalendar";
 import { VolunteerDraftForm } from "./VolunteerDraftForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -87,14 +93,18 @@ function noticeText(notice: Notice | null, copy: typeof activityWorkspaceCopy.zh
 /** Separates the excluded dates staff type: whitespace and commas, ASCII or full-width. */
 const EXCLUDED_DATE_SEPARATOR = /[\s,，]+/; // admin-copy-exempt: parsing pattern for the full-width comma
 
-function initial() {
+function initial(defaultView?: "calendar") {
   const p = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
   const parsed = readActivityRouteState(p, hkDate());
   return {
     filter: parsed.filters,
     page: parsed.page,
     detailPage: parsed.detailPage,
-    view: p.get("view") === "calendar" ? "calendar" : "table",
+    view: p.has("view")
+      ? p.get("view") === "calendar"
+        ? "calendar"
+        : "table"
+      : (defaultView ?? "table"),
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
     attendanceIntent: p.get("attendance_intent") === "apply",
@@ -130,8 +140,8 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const cache = useQueryClient();
   const identity = useQuery(adminIdentityQueryOptions());
   const actorUserId = identity.data?.admin.authUserId ?? "";
-  const [state] = useState(initial);
-  const [view, setView] = useState(initialView ?? state.view);
+  const [state] = useState(() => initial(initialView));
+  const [view, setView] = useState(state.view);
   const [selected, setSelected] = useState<string | null>(state.selected);
   const [detailPage, setDetailPage] = useState(state.detailPage);
   const [operation, setOperation] = useState<Operation | null>(null);
@@ -315,13 +325,32 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const tableHeading = useRef<HTMLHeadingElement>(null);
   const patchDraft = (patch: Partial<OperationDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
+  const rangeProblem = view === "calendar" ? calendarRangeProblem(filter) : null;
+  const calendarScope = JSON.stringify([actorUserId, filter]);
+  const [calendarPages, setCalendarPages] = useState<CalendarCollection<Row> | null>(null);
   const list = useQuery({
     queryKey: volunteerQueryKeys.key("workspace", filter, page),
-    enabled: listState.hydrated,
+    enabled: listState.hydrated && !rangeProblem,
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       call<{ activities: Row[]; total: number }>({ action: "list", filter, page }, signal),
   });
+  const currentCalendarPage =
+    view === "calendar" && !rangeProblem && list.isSuccess && !list.isPlaceholderData
+      ? list.data
+      : null;
+  const calendar = calendarCoverage(
+    currentCalendarPage
+      ? collectCalendarPage(calendarPages, calendarScope, page, currentCalendarPage)
+      : calendarPages,
+    calendarScope,
+  );
+  useEffect(() => {
+    if (currentCalendarPage)
+      setCalendarPages((previous) =>
+        collectCalendarPage(previous, calendarScope, page, currentCalendarPage),
+      );
+  }, [currentCalendarPage, calendarScope, page]);
   const templates = useQuery(workspaceTemplatesQueryOptions());
   const detail = useQuery({
     queryKey: volunteerQueryKeys.key("workspaceDetail", selected, detailPage, historyPage),
@@ -409,6 +438,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setSelection(null);
       setIds([]);
       setSelected(null);
+      setCalendarPages(null);
       setDraft(initialOperationDraft());
       setReviewed([]);
       setReviewAll(false);
@@ -422,7 +452,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   }, [attendanceController]);
   useEffect(() => {
     const onPopState = () => {
-      const restored = initial();
+      const restored = initial(initialView);
       const prior = attendanceController.getState();
       const invalidated = invalidateUnsubmittedAttendance(
         restored.selected,
@@ -566,8 +596,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     Boolean,
   );
   const error = failure ? (volunteerAdminErrorMessage(failure, language) ?? "") : "";
-  const rows = list.isError ? [] : (list.data?.activities ?? []);
-  const total = list.data?.total ?? 0;
+  const rows = list.isError || rangeProblem ? [] : (list.data?.activities ?? []);
+  const scheduleRows = view === "calendar" ? calendar.activities : rows;
+  const total = rangeProblem ? 0 : (list.data?.total ?? 0);
   const listRefreshing = list.isFetching || listState.isDebouncing || list.isPlaceholderData;
   const review = operation ? reviewBulkOperation(operation) : null;
   const templateList = templates.data?.templates ?? [];
@@ -733,6 +764,12 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <div className="flex flex-wrap gap-2">
         <button
           className={button}
+          onClick={() => updateFilter({ date_scope: "custom", from: hkDate(), until: hkDate() })}
+        >
+          {copy.filters.today}
+        </button>
+        <button
+          className={button}
           onClick={() =>
             updateFilter({ date_scope: "future", from: hkDate(), until: addHkDays(hkDate(), 30) })
           }
@@ -794,7 +831,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <LoadFailure
           error={loadError}
           onRetry={() => {
-            void list.refetch();
+            if (!rangeProblem) void list.refetch();
             void templates.refetch();
             if (operationId && actorUserId) void restored.refetch();
           }}
@@ -845,7 +882,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               setSelection(null);
             }}
           >
-            {copy.list.selectPage(rows.length)}
+            {view === "calendar"
+              ? copy.list.selectCalendarPage(page, rows.length)
+              : copy.list.selectPage(rows.length)}
           </button>
           <button
             className={button}
@@ -881,7 +920,59 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           )}
         </div>
         {listRefreshing && list.data ? <p role="status">{copy.list.updating}</p> : null}
-        {list.isPending ? (
+        {rangeProblem ? (
+          <p role="status">{copy.schedule.rangeProblems[rangeProblem]}</p>
+        ) : view === "calendar" ? (
+          <>
+            <p role="status" aria-live="polite">
+              {list.isFetching
+                ? copy.list.loading
+                : list.isError
+                  ? copy.schedule.partialFailure(calendar.loaded)
+                  : calendar.changed
+                    ? copy.schedule.changed
+                    : calendar.complete
+                      ? copy.schedule.complete(calendar.loaded)
+                      : copy.schedule.partial(calendar.loaded, calendar.total)}
+            </p>
+            {calendar.changed && (
+              <button
+                className={button}
+                onClick={() => {
+                  setCalendarPages(null);
+                  if (page !== 1) setPage(1);
+                  else void list.refetch();
+                }}
+              >
+                {copy.reload}
+              </button>
+            )}
+            {calendar.complete && calendar.total === 0 ? (
+              <p>{copy.list.noMatch}</p>
+            ) : (
+              <ActivitySchedule
+                rows={scheduleRows}
+                view={view}
+                from={filter.from}
+                until={filter.until}
+                complete={calendar.complete && !list.isError && !list.isFetching}
+                ids={ids}
+                templateNames={templateNames}
+                onToggle={(id, checked) => {
+                  if (listRefreshing || list.isError) return;
+                  setIds(checked ? [...ids, id] : ids.filter((value) => value !== id));
+                  setSelection(null);
+                }}
+                onOpen={(id) => {
+                  invalidateUnsubmittedAttendance(id, 1);
+                  setSelected(id);
+                  setDetailPage(1);
+                  setHistoryPage(1);
+                }}
+              />
+            )}
+          </>
+        ) : list.isPending ? (
           <p role="status">{copy.list.loading}</p>
         ) : list.isError ? ( // admin-load-failure-ok: the LoadFailure above names the failure; this line only stands in for the list
           <p>{copy.list.unavailable}</p>

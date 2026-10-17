@@ -20,6 +20,7 @@ export function ActivitySchedule({
   onToggle,
   onOpen,
   templateNames = {},
+  complete = false,
 }: {
   rows: Row[];
   view: string;
@@ -30,6 +31,7 @@ export function ActivitySchedule({
   onOpen: (id: string) => void;
   /** The name of each template by its key, so English can show a name rather than a key. */
   templateNames?: Record<string, string>;
+  complete?: boolean;
 }) {
   const { language } = useAdminLanguage();
   const workspace = pickAdminCopy(activityWorkspaceCopy, language);
@@ -151,6 +153,9 @@ export function ActivitySchedule({
               }
             >
               <h3 className="text-sm font-bold">{day.slice(5)}</h3>
+              {!dayRows.length && (
+                <p className="text-xs">{complete ? copy.emptyDay : copy.unloadedDay}</p>
+              )}
               {dayRows.map((r) => (
                 <article
                   key={r.id}

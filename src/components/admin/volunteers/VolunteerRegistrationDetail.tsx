@@ -26,6 +26,8 @@ import { sendRegistrationStatusChange } from "./registrationStatusChange";
 import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
+import { RegistrationReviewSummary } from "./RegistrationReviewSummary";
+import { registrationReviewCopy } from "./registrationReviewCopy";
 import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 import {
   registrationRouterSearch,
@@ -65,6 +67,7 @@ export function VolunteerRegistrationDetail({
   const { copy: shared, language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerRegistrationCopy, language);
   const text = copy.detail;
+  const reviewCopy = pickAdminCopy(registrationReviewCopy, language);
   const common = pickAdminCopy(volunteerCommonCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const queryClient = useQueryClient();
@@ -265,6 +268,14 @@ export function VolunteerRegistrationDetail({
           <DetailItem label={text.notes} value={registration.notes ?? text.none} />
         </div>
 
+        <RegistrationReviewSummary registration={registration} />
+        <button
+          className="mt-3 min-h-11 rounded-md border border-[var(--color-border)] px-3 text-sm"
+          disabled={updateStatus.isPending || updateAttendance.isPending}
+          onClick={() => void refetch()}
+        >
+          {reviewCopy.reload}
+        </button>
         {updateStatus.error && updateStatus.variables?.status !== "rejected" && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
             {volunteerAdminErrorMessage(updateStatus.error, language)}
