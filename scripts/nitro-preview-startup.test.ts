@@ -8,10 +8,10 @@ import {
   readFile,
   access,
   symlink,
-  unlink,
   rm,
   realpath,
   copyFile,
+  chmod,
 } from "node:fs/promises";
 import { request as httpRequest, type ClientRequest } from "node:http";
 import { tmpdir } from "node:os";
@@ -63,11 +63,13 @@ for (const [runtime, explicitNode] of [
     const nodeExecutable = explicitNode
       ? join(directory, process.platform === "win32" ? "pinned-node.exe" : "pinned-node")
       : undefined;
-    if (nodeExecutable)
+    if (nodeExecutable) {
       await copyFile(
         execFileSync("node", ["-p", "process.execPath"], { encoding: "utf8" }).trim(),
         nodeExecutable,
       );
+      if (process.platform !== "win32") await chmod(nodeExecutable, 0o755);
+    }
     await mkdir(entryDir, { recursive: true });
     await mkdir(join(directory, ".vercel/output/static"), { recursive: true });
     await writeFile(
@@ -94,7 +96,16 @@ export default {async fetch(request){
  return Response.json({ready:true,requests:++requests,runtime:process.versions.bun?"bun":"node"});
 }};`,
     );
-    await symlink(resolve("node_modules"), join(directory, "node_modules"), "junction");
+    const nodeModules = join(directory, "node_modules");
+    await mkdir(join(nodeModules, ".nitro"), { recursive: true });
+    await symlink(resolve("node_modules/nitro"), join(nodeModules, "nitro"), "junction");
+    // The fixture owns its build pointer. Inheriting the repository's
+    // node_modules/.nitro would pass locally when a previous build exists and
+    // fail in a clean CI checkout before this test's listener assertions run.
+    await writeFile(
+      join(nodeModules, ".nitro/last-build.json"),
+      JSON.stringify({ outputDir: "../../../.vercel/output" }),
+    );
     let stderr = "";
     const child = spawn("node", [resolve("scripts/nitro-preview-fast.mjs")], {
       cwd: directory,
@@ -205,7 +216,6 @@ export default {async fetch(request){
       if (dirname(target) !== tempRoot || !basename(target).startsWith("hkscda-preview-startup-"))
         // eslint-disable-next-line no-unsafe-finally -- Refuse cleanup before deleting an unowned path.
         throw new Error("Refuse cleanup outside the owned preview fixture");
-      await unlink(join(target, "node_modules"));
       await rm(target, { recursive: true, force: true });
     }
   }, 15_000);
