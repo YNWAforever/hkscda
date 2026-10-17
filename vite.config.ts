@@ -5,6 +5,25 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import type { NitroConfig } from "nitro/types";
+
+const nitroOptions = {
+  preset: "vercel",
+  handlers: [
+    {
+      route: "/api/admin/volunteers/tasks",
+      method: "POST",
+      handler: "./server/routes/api/admin/volunteers/tasks.post.ts",
+      lazy: true,
+    },
+    {
+      route: "/api/admin/volunteers/bulk",
+      method: "POST",
+      handler: "./server/routes/api/admin/volunteers/bulk.post.ts",
+      lazy: true,
+    },
+  ],
+} satisfies NitroConfig;
 
 export default defineConfig({
   tanstackStart: {
@@ -12,5 +31,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  nitro: { preset: "vercel" },
+  // The Lovable wrapper forwards Nitro options, but its public type only
+  // declares the deployment subset above.
+  nitro: nitroOptions as unknown as { preset: "vercel" },
 });

@@ -2,6 +2,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "server/**/*.ts",
     "vite.config.ts",
     "eslint.config.js",
     "supabase/rls-tests/**/*.ts"
