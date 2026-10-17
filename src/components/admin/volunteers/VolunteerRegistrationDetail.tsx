@@ -13,6 +13,7 @@ import type {
 import { useAdminLanguage } from "../adminI18n";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { DestinationHeading } from "../DestinationHeading";
+import { isLapsedSession } from "../failureClass";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
@@ -183,7 +184,15 @@ export function VolunteerRegistrationDetail({
       <div className="space-y-3 p-6">
         {destination}
         {refreshFailed && <p role="alert">{common.savedRefreshFailed}</p>}
-        <LoadFailure error={error} onRetry={() => void reloadRegistration()} />
+        <LoadFailure
+          error={error}
+          onRetry={() => void reloadRegistration()}
+          title={
+            isLapsedSession(error)
+              ? (volunteerAdminErrorMessage(error, language) ?? undefined)
+              : undefined
+          }
+        />
       </div>
     );
   }

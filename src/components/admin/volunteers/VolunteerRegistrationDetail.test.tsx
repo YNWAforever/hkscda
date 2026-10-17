@@ -184,6 +184,19 @@ test("shows a retry control instead of reporting a load failure as a deleted reg
   registrationError = null;
 });
 
+test("names a lapsed session instead of showing only a generic load failure", () => {
+  registrationError = Object.assign(new Error("未登入"), { status: 401 });
+  try {
+    const markup = renderAdminInChinese(
+      <VolunteerRegistrationDetail registrationId="registration-1" />,
+    );
+    expect(markup).toContain("未登入");
+    expect(markup).not.toContain("無法載入");
+  } finally {
+    registrationError = null;
+  }
+});
+
 test("attendance callback carries reviewed version and exposes factual correction controls", async () => {
   mutations.length = 0;
   requests.length = 0;
