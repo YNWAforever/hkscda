@@ -215,7 +215,7 @@ test("calendar date changes ignore old reads and retain URL selection through re
  await page.reload();
  await page.getByRole("button",{name:"2026-10-27 Calendar session 01",exact:true}).waitFor();
  await page.getByRole("button",{name:"Today's sessions",exact:true}).click();
- await page.getByRole("button",{name:/^2026-.* Calendar session 01/}).waitFor();
+ await page.getByRole("button",{name:"Calendar session 01",exact:true}).waitFor();
  await page.goBack();
  await page.getByRole("button",{name:"2026-10-27 Calendar session 01",exact:true}).waitFor();
  console.log(JSON.stringify({errors}));
