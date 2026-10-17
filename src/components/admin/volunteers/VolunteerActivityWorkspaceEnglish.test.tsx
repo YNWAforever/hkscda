@@ -182,19 +182,27 @@ describe("the activity workspace in English", () => {
     // The workspace starts its range at today and runs 30 days, and the fixture sessions are on fixed
     // dates (10 and 12 Oct 2026), so the clock is fixed to the day before them.
     setSystemTime(new Date("2026-10-09T04:00:00Z"));
-    kit.withQueries(workspaceQueries(), () => {
-      const markup = renderAdminInEnglish(<VolunteerActivityWorkspace initialView="calendar" />);
-      expectNoChineseText(markup, { allow: ALLOW });
-      expect(markup).toContain("List view");
-      expect(markup).toContain('aria-label="Hong Kong date calendar"');
-      for (const day of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
-        expect(markup, day).toContain(`>${day}</span>`);
-      }
-      expect(markup).toContain(
-        "The calendar shows up to 25 activities on this page. Use the page controls below for the rest.",
-      );
-      expect(markup).toContain("Confirmed 8 · Waitlisted 2");
-    });
+    const activities = Array.from({ length: 25 }, (_, index) => ({
+      ...kit.workspaceRows[index % kit.workspaceRows.length],
+      id: `english-calendar-${index}`,
+    }));
+    kit.withQueries(
+      workspaceQueries({
+        "volunteer-workspace": kit.ok({ activities, total: 60 }),
+      }),
+      () => {
+        const markup = renderAdminInEnglish(<VolunteerActivityWorkspace initialView="calendar" />);
+        expectNoChineseText(markup, { allow: ALLOW });
+        expect(markup).toContain("List view");
+        expect(markup).toContain('aria-label="Hong Kong date calendar"');
+        for (const day of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
+          expect(markup, day).toContain(`>${day}</span>`);
+        }
+        expect(markup).toContain("The calendar retains sessions loaded for this date range.");
+        expect(markup).toContain("Partial data: 25 / 60 sessions loaded.");
+        expect(markup).toContain("Confirmed 8 · Waitlisted 2");
+      },
+    );
   });
 
   test("tells the loading, the empty list and the failures in English with a next step", () => {
