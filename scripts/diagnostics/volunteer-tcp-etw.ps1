@@ -102,7 +102,7 @@ if (!$admin) { throw 'Capture requires an explicitly launched administrator coll
 if (Test-Path -LiteralPath (Join-Path $captureDir 'stop.json')) { throw 'Stop marker already exists; no capture' }
 $workloadProof = Get-Content -Raw -LiteralPath (Join-Path $captureDir 'ordinary-user-ready.json') | ConvertFrom-Json
 if ($workloadProof.admin -ne $false -or $workloadProof.cohort.admin -ne 408 -or
-    ([DateTime]::UtcNow - [DateTime]::Parse($workloadProof.at).ToUniversalTime()).TotalSeconds -gt 120) {
+    ![Hkscda.TcpPilot.Scope]::IsReadinessFresh($workloadProof.at, [DateTimeOffset]::UtcNow)) {
     throw 'Fresh ordinary-user workload and fixed cohort proof are required'
 }
 $prepared = Get-Content -Raw -LiteralPath (Join-Path $captureDir 'prepared.json') | ConvertFrom-Json

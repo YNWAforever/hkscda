@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Globalization;
 
 namespace Hkscda.TcpPilot
 {
@@ -29,6 +30,23 @@ namespace Hkscda.TcpPilot
 
     public static class Scope
     {
+        public static bool IsReadinessFresh(object timestamp, DateTimeOffset now)
+        {
+            DateTimeOffset parsed;
+            if (timestamp is DateTimeOffset)
+                parsed = (DateTimeOffset)timestamp;
+            else if (timestamp is DateTime)
+            {
+                var date = (DateTime)timestamp;
+                if (date.Kind == DateTimeKind.Unspecified) return false;
+                parsed = new DateTimeOffset(date);
+            }
+            else if (!(timestamp is string) || !DateTimeOffset.TryParse((string)timestamp,
+                CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out parsed))
+                return false;
+            double age = (now - parsed).TotalSeconds;
+            return age >= 0 && age <= 120;
+        }
         public static readonly Guid Provider = new Guid("2f07e2ee-15db-40f1-90ef-9d7ba282188a");
         public static readonly ushort[] EventIds = { 1033, 1073, 1074, 1156, 1157, 1158, 1171, 1175, 1178 };
         public const ulong Keywords = 0x700000000;

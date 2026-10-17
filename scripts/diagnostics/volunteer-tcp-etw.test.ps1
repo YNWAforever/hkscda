@@ -95,5 +95,19 @@ foreach ($lostField in @('EventsLost','LogBuffersLost','RealTimeBuffersLost')) {
         Assert-True (![Hkscda.TcpPilot.Scope]::CaptureComplete($true,$true,4000,65536,$stats)) 'Dropped metadata was counted as complete'
     }
 }
+Test-Case 'a JSON UTC DateTime stays fresh in a Hong Kong process without double conversion' {
+    $proof = '{"at":"2026-10-17T06:09:19.658Z"}' | ConvertFrom-Json
+    $now = [DateTimeOffset]::Parse('2026-10-17T06:10:05.516Z')
+    Assert-True ([Hkscda.TcpPilot.Scope]::IsReadinessFresh($proof.at,$now)) 'A 45.858 second UTC proof was treated as stale'
+}
+Test-Case 'an explicit offset is preserved and an expired proof is rejected' {
+    $now = [DateTimeOffset]::Parse('2026-10-17T06:10:05.516Z')
+    Assert-True ([Hkscda.TcpPilot.Scope]::IsReadinessFresh('2026-10-17T14:09:19.658+08:00',$now)) 'Explicit UTC offset was lost'
+    Assert-True (![Hkscda.TcpPilot.Scope]::IsReadinessFresh('2026-10-17T06:08:05.515Z',$now)) 'A proof older than 120 seconds was accepted'
+}
+Test-Case 'a future proof is rejected' {
+    $now = [DateTimeOffset]::Parse('2026-10-17T06:10:05.516Z')
+    Assert-True (![Hkscda.TcpPilot.Scope]::IsReadinessFresh('2026-10-17T06:10:06Z',$now)) 'A future proof was accepted'
+}
 if ($failures.Count) { throw "$($failures.Count) collector safety tests failed (no ETW session was started)" }
 Write-Output 'All collector safety tests passed; no ETW session was started.'
