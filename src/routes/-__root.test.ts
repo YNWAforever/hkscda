@@ -32,7 +32,8 @@ describe("the root route's public shell bundle boundary", () => {
     expect(source).toContain('import("../components/site/PublicSiteShell")');
   });
 
-  test("loads the public stylesheet and font subsets only with the lazy public shell", () => {
+  test("loads public CSS in the server head while keeping public shell code lazy", () => {
+    const root = readFileSync(new URL("./__root.tsx", import.meta.url), "utf8");
     const globalStyles = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
     const publicShell = readFileSync(
       new URL("../components/site/PublicSiteShell.tsx", import.meta.url),
@@ -41,7 +42,12 @@ describe("the root route's public shell bundle boundary", () => {
 
     expect(globalStyles).not.toContain('@import "./styles/fonts.css"');
     expect(globalStyles).not.toContain('@import "./styles/public.css"');
-    expect(publicShell).toContain('import "../../styles/fonts.css"');
-    expect(publicShell).toContain('import "../../styles/public.css"');
+    expect(root).toContain('import publicCss from "../styles/public.css?url"');
+    expect(root).toContain('import publicFontsCss from "../styles/fonts.css?url"');
+    expect(root).toContain(
+      "shouldIncludePublicStyles(resolveHeadPathname(matches, match.pathname))",
+    );
+    expect(publicShell).not.toContain('import "../../styles/fonts.css"');
+    expect(publicShell).not.toContain('import "../../styles/public.css"');
   });
 });

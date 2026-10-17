@@ -13,9 +13,12 @@ import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { RouteError } from "../components/site/RouteError";
 
 import appCss from "../styles.css?url";
+import publicCss from "../styles/public.css?url";
+import publicFontsCss from "../styles/fonts.css?url";
 import { organizationSchema, websiteSchema } from "../lib/schema";
 import { brand } from "../lib/brand/brand";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
+import { resolveHeadPathname, shouldIncludePublicStyles } from "../lib/publicHeadAssets";
 
 const PublicSiteShell = lazy(() => import("../components/site/PublicSiteShell"));
 
@@ -57,7 +60,7 @@ function NotFoundComponent() {
   );
 }
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  head: ({ match, matches }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -91,6 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      ...(shouldIncludePublicStyles(resolveHeadPathname(matches, match.pathname))
+        ? [
+            { rel: "stylesheet", href: publicFontsCss },
+            { rel: "stylesheet", href: publicCss },
+          ]
+        : []),
       // Icons use the 192px copy: browsers fetch them on every page, and the
       // 960px primary is ten times the bytes for a tab or home-screen mark.
       { rel: "icon", type: "image/jpeg", sizes: "192x192", href: brand.logo.smallSrc },
