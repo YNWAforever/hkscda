@@ -1,8 +1,11 @@
-# 義工後台 Windows TCP 邊界：最小 ETW 擷取方案（待審閱）
+# 義工後台 Windows TCP 邊界：最小 ETW 擷取方案（已批准；UAC 未完成）
 
-本方案對應 T08／F05／UC41，延續 `9e4f8752`。本輪只準備方案，
-**尚未獲准啟動管理員 ETW，沒有執行 StartTrace／EnableTraceEx2**。
-一般權限的 TCPIP ETW／PktMon 曾被 Windows 拒絕，不能把那次失敗寫成已擷取。
+本方案對應 T08／F05／UC41，延續 `9e4f8752`。使用者於 2026-10-17
+批准以下一次最小擷取。實際 UAC 啟動由 Windows 回報「操作被使用者取消」，
+**管理員 collector 沒有啟動，沒有執行 StartTrace／EnableTraceEx2，也沒有 ETL**。
+沒有重試或放寬 provider。一般權限的 TCPIP ETW／PktMon 亦曾被 Windows 拒絕；
+這些失敗均不算已擷取。詳見
+[本次執行紀錄](../../volunteer-etw-pilot-execution-2026-10-17.md)。
 
 ## 問題與成功條件
 
@@ -72,11 +75,17 @@ raw ETL 只存在本機 `.local-policy-test` 專用目錄，排除 Git／交付 
   保持未分配；是否加下一個 provider 必須另列最小方案審閱。
 - 此 pilot 只作診斷，不代替修復後 10 組配對、適用 gates、角色驗證或正式驗收。
 
-## 審閱所需決定
+## 授權及執行狀態
 
-只需決定是否批准上述**一次、最多 20 秒／32 MiB、九個 metadata event IDs**
-的管理員 collector。批准不包含修改系統、權限／防毒、production、通知、
-排程、push、PR、merge 或 deploy。
+上述**一次、最多 20 秒／32 MiB、九個 metadata event IDs** 已獲使用者批准。
+Windows UAC 啟動取消後沒有再嘗試。collector 已加入事件 inclusion filter、
+19 秒 watchdog、30 MiB sequential file cap（為最終 buffer 保留餘額）、
+one-shot marker、schema／source seal 及 own-handle cleanup；其安全單元測試
+不會呼叫實際 ETW API。原生 provider filter、lost-event statistics、實際
+時間及檔案上限仍待一次成功擷取驗證，不可以模擬測試代替。
+
+批准不包含修改系統、權限／防毒、production、通知、排程、push、PR、
+merge 或 deploy。不得在此失敗目錄刪除 stop marker 後重試。
 
 官方 API 參考：
 
