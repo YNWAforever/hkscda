@@ -41,6 +41,15 @@ export function RegistrationReviewSummary({
           <p>
             {copy.evaluation}: {copy.reason(review.reason)}
           </p>
+          {review.capacity && (
+            <p>
+              {copy.effectiveCapacity(
+                review.capacity.capacity,
+                review.capacity.confirmed,
+                review.capacity.remaining,
+              )}
+            </p>
+          )}
           {review.requirements ? (
             <ul className="list-inside list-disc">
               <li>{copy.age(review.requirements.minAge)}</li>
@@ -48,6 +57,29 @@ export function RegistrationReviewSummary({
                 {copy.tiers}:{" "}
                 {review.requirements.allowedTiers.map((tier) => copy.tier[tier]).join(" / ")}
               </li>
+              {review.requirements.roleKey && (
+                <li>
+                  {copy.role(review.requirements.roleKey)}
+                  {review.requirements.role ? (
+                    <>
+                      <p>
+                        {copy.roleTiers}:{" "}
+                        {review.requirements.role.allowedTiers
+                          .map((tier) => copy.tier[tier])
+                          .join(" / ")}
+                      </p>
+                      <p>
+                        {copy.roleCredentials(
+                          review.requirements.role.credentials.mode,
+                          review.requirements.role.credentials.keys,
+                        )}
+                      </p>
+                    </>
+                  ) : (
+                    <p>{copy.roleUnavailable}</p>
+                  )}
+                </li>
+              )}
               <li>
                 {copy.credentials(
                   review.requirements.credentials.mode,

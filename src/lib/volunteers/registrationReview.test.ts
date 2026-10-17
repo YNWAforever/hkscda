@@ -1,5 +1,86 @@
 import { expect, test } from "bun:test";
 import { createSupabaseVolunteerRepository } from "./repository.server";
+import { registrationReview } from "./registrationReview";
+
+test("role-specific qualifications and effective capacity remain distinct from general conditions", () => {
+  const review = registrationReview(
+    { allowed: false, reason: "credentials_required", capacity: 8, confirmed: 8, remaining: 0 },
+    {
+      eligibility: {
+        min_age: 21,
+        allowed_tiers: ["regular", "senior"],
+        credentials: { mode: "all", keys: [] },
+      },
+      roles: [
+        {
+          key: "leader",
+          allowed_tiers: ["senior"],
+          credentials: { mode: "all", keys: ["handling"] },
+        },
+      ],
+    },
+    "2026-10-17T01:00:00.000Z",
+    "leader",
+  );
+  expect(review).toMatchObject({
+    capacity: { capacity: 8, confirmed: 8, remaining: 0 },
+    requirements: {
+      credentials: { mode: "all", keys: [] },
+      roleKey: "leader",
+      role: {
+        key: "leader",
+        allowedTiers: ["senior"],
+        credentials: { mode: "all", keys: ["handling"] },
+      },
+    },
+  });
+});
+
+test("an unknown role remains unresolved and malformed capacity is never invented", () => {
+  const review = registrationReview(
+    { allowed: false, reason: "role_not_allowed", capacity: "8", confirmed: 7, remaining: 1 },
+    {
+      eligibility: {
+        min_age: 21,
+        allowed_tiers: ["regular"],
+        credentials: { mode: "all", keys: [] },
+      },
+      roles: [
+        {
+          key: "leader",
+          allowed_tiers: ["senior"],
+          credentials: { mode: "all", keys: ["handling"] },
+        },
+      ],
+    },
+    "2026-10-17T01:00:00.000Z",
+    "assistant",
+  );
+  expect(review).toMatchObject({ requirements: { roleKey: "assistant" } });
+  expect(review).not.toHaveProperty("capacity");
+  if (review.state === "evaluated") expect(review.requirements).not.toHaveProperty("role");
+});
+
+test("the server's generic volunteer role uses the published general conditions only when roles are empty", () => {
+  const review = registrationReview(
+    { allowed: true, reason: "available" },
+    {
+      eligibility: {
+        min_age: 18,
+        allowed_tiers: ["regular"],
+        credentials: { mode: "all", keys: [] },
+      },
+      roles: [],
+    },
+    "2026-10-17T01:00:00.000Z",
+    "volunteer",
+  );
+  expect(review).toMatchObject({
+    requirements: {
+      role: { key: "volunteer", allowedTiers: ["regular"], credentials: { mode: "all", keys: [] } },
+    },
+  });
+});
 
 function fixture(evaluation: unknown, rpcError: unknown = null) {
   const calls: Array<{ name: string; args: unknown }> = [];
@@ -67,10 +148,12 @@ test("registration detail includes current server assessment excluding the regis
     allowed: false,
     reason: "credentials_required",
     policyVersionId: "policy",
+    capacity: { capacity: 2, confirmed: 1, remaining: 1 },
     requirements: {
       minAge: 21,
       allowedTiers: ["senior"],
       credentials: { mode: "all", keys: ["handling"] },
+      roleKey: "leader",
     },
   });
   expect(calls.filter((c) => c.name === "volunteer_policy_evaluate")).toEqual([

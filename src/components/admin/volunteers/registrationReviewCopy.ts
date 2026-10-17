@@ -45,6 +45,8 @@ export const registrationReviewCopy = defineAdminCopy({
       `已批准 ${approved} / ${capacity} 人 · 候補 ${waiting} 人`,
     snapshot: "名額是讀取時參考，不預留名額；提交時伺服器會重新驗證規則、名額及資料版本。",
     evaluation: "目前報名規則評估",
+    effectiveCapacity: (capacity: number, confirmed: number, remaining: number) =>
+      `有效容量 ${capacity} · 此申請以外已確認 ${confirmed} · 評估剩餘 ${remaining}`,
     unavailable: "未能取得目前規則評估，請重新載入核對；不要將缺少評估當作可批准。",
     conditionsUnavailable: "資格條件未能完整讀取，請核對場次政策。",
     age: (age: number) => `政策最低年齡：${age}`,
@@ -52,8 +54,15 @@ export const registrationReviewCopy = defineAdminCopy({
     tier: { newcomer: "新手", regular: "恆常", senior: "資深" },
     credentials: (mode: "all" | "any", keys: string[]) =>
       keys.length
-        ? `資格（${mode === "all" ? "全部" : "任一"}）：${keys.join("、")}`
-        : "政策沒有額外資格證明要求。",
+        ? `共通資格（${mode === "all" ? "全部" : "任一"}）：${keys.join("、")}`
+        : "共通條件沒有額外資格證明要求；職務條件另列。",
+    role: (key: string) => `此申請職務：${key}`,
+    roleTiers: "此職務允許級別",
+    roleCredentials: (mode: "all" | "any", keys: string[]) =>
+      keys.length
+        ? `職務資格（${mode === "all" ? "全部" : "任一"}）：${keys.join("、")}`
+        : "此職務沒有額外資格證明要求。",
+    roleUnavailable: "未能取得此職務的資格條件，請核對場次政策。",
     asOf: (time: string) => `評估時間：${time}`,
     reason: (code: string) => reason(code, 0),
     reload: "重新載入申請及評估",
@@ -67,6 +76,8 @@ export const registrationReviewCopy = defineAdminCopy({
     snapshot:
       "Places are a read-time reference and are not reserved. On submission the server rechecks rules, capacity and the record version.",
     evaluation: "Current registration rule assessment",
+    effectiveCapacity: (capacity: number, confirmed: number, remaining: number) =>
+      `Effective capacity ${capacity} · Confirmed excluding this application ${confirmed} · Assessed remaining ${remaining}`,
     unavailable:
       "The current rule assessment is unavailable. Reload to check; a missing assessment does not mean approval is allowed.",
     conditionsUnavailable:
@@ -76,8 +87,16 @@ export const registrationReviewCopy = defineAdminCopy({
     tier: { newcomer: "Newcomer", regular: "Regular", senior: "Senior" },
     credentials: (mode: "all" | "any", keys: string[]) =>
       keys.length
-        ? `Qualifications (${mode === "all" ? "all" : "any"}): ${keys.join(", ")}`
-        : "The policy has no additional credential requirement.",
+        ? `General qualifications (${mode === "all" ? "all" : "any"}): ${keys.join(", ")}`
+        : "The general conditions have no additional credential requirement. Role conditions are listed separately.",
+    role: (key: string) => `Role on this application: ${key}`,
+    roleTiers: "Tiers allowed for this role",
+    roleCredentials: (mode: "all" | "any", keys: string[]) =>
+      keys.length
+        ? `Role qualifications (${mode === "all" ? "all" : "any"}): ${keys.join(", ")}`
+        : "This role has no additional credential requirement.",
+    roleUnavailable:
+      "The qualification conditions for this role are unavailable. Check the session policy.",
     asOf: (time: string) => `Assessed at: ${time}`,
     reason: (code: string) => reason(code, 1),
     reload: "Reload application and assessment",

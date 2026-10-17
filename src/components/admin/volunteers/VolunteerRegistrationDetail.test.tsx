@@ -78,6 +78,12 @@ test("review detail shows server qualification denial beside non-reserved capaci
       minAge: 21,
       allowedTiers: ["senior"],
       credentials: { mode: "all", keys: ["handling"] },
+      roleKey: "leader",
+      role: {
+        key: "leader",
+        allowedTiers: ["senior"],
+        credentials: { mode: "all", keys: ["leadership"] },
+      },
     },
   };
   const markup = renderAdminInChinese(
@@ -85,6 +91,7 @@ test("review detail shows server qualification denial beside non-reserved capaci
   );
   expect(markup).toContain("缺少所需資格");
   expect(markup).toContain("handling");
+  expect(markup).toContain("leadership");
   expect(markup).toContain("不預留名額");
   expect(markup).toContain("21");
   registration.review = { state: "unavailable", asOf: "2026-10-17T01:00:00.000Z" };

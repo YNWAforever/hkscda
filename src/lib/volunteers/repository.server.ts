@@ -465,7 +465,7 @@ export function createSupabaseVolunteerRepository(
               .eq("id", review.policyVersionId)
               .maybeSingle();
             if (!policy.error)
-              review = registrationReview(evaluation.data, policy.data?.body, asOf);
+              review = registrationReview(evaluation.data, policy.data?.body, asOf, data.duty_role);
           }
         }
       } catch {
