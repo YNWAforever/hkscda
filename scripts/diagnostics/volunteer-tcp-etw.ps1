@@ -39,6 +39,10 @@ if ($Mode -eq 'Decode') {
     # ETL remains local; decoding cannot expand the original capture.
     $etl = Join-Path $captureDir 'raw.etl'
     if ((Get-Item -LiteralPath $etl).Length -gt 32MB) { throw 'ETL exceeded approved cap; retain without exporting' }
+    $captureReceipt = Get-Content -Raw -LiteralPath (Join-Path $captureDir 'collector-receipt.json') | ConvertFrom-Json
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $etl).Hash.ToLowerInvariant() -cne $captureReceipt.etlSha256) {
+        throw 'Raw ETL differs from the owned collector receipt'
+    }
     $writer = [IO.StreamWriter]::new((Join-Path $captureDir 'metadata-private.jsonl'), $false, [Text.UTF8Encoding]::new($false))
     $counts = @{}; $unexpected = 0; $total = 0
     try {
@@ -56,7 +60,8 @@ if ($Mode -eq 'Decode') {
             }
         }
     } finally { $writer.Dispose() }
-    Write-Receipt 'decode-receipt.json' @{ events=$total; counts=$counts; unexpected=$unexpected; rawStaysLocal=$true }
+    Write-Receipt 'decode-receipt.json' @{ events=$total; counts=$counts; unexpected=$unexpected; rawStaysLocal=$true;
+        captureTransportComplete=($captureReceipt.complete -eq $true); correlationVerified=$false }
     return
 }
 $provider = Get-WinEvent -ListProvider 'Microsoft-Windows-TCPIP'
@@ -134,6 +139,8 @@ finally {
     }
     $durationMs = if ($driver.Stopped) { ($driver.StopQpc-$driver.StartQpc)*1000.0/[Hkscda.TcpPilot.NativeTraceDriver]::QpcFrequency } else { $null }
     $stats = $driver.FinalProperties
+    $complete = !$failure -and $null -ne $durationMs -and [Hkscda.TcpPilot.Scope]::CaptureComplete(
+        $driver.Enabled,$driver.Stopped,$durationMs,$fileBytes,$stats)
     Write-Receipt 'collector-receipt.json' @{ session=$session; admin=$admin; startCode=$driver.StartCode; enableCode=$driver.EnableCode;
         stopCode=$driver.StopCode; started=$driver.Started; enabled=$driver.Enabled; stopped=$driver.Stopped;
         startQpc=$driver.StartQpc; stopQpc=$driver.StopQpc; startUtcTicks=$driver.StartUtcTicks; stopUtcTicks=$driver.StopUtcTicks;
@@ -141,6 +148,7 @@ finally {
         watchdogStopped=$driver.WatchdogStopped; eventsLost=$stats.EventsLost; logBuffersLost=$stats.LogBuffersLost;
         realtimeBuffersLost=$stats.RealTimeBuffersLost; buffersWritten=$stats.BuffersWritten; bufferCount=$stats.NumberOfBuffers;
         etlBytes=$fileBytes; etlSha256=$hash; failure=$failure; rawStaysLocal=$true;
+        complete=$complete; completeScope='bounded stopped collector transport with no reported lost events; excludes workload, decoded event scope and flow correlation';
         withinLimits=($null -ne $durationMs -and $durationMs -le 20000 -and $fileBytes -le 32MB) }
 }
-if ($failure -or !$driver.Stopped -or $fileBytes -gt 32MB -or $durationMs -gt 20000) { throw 'Capture incomplete; inspect the private receipt; no retry' }
+if (!$complete) { throw 'Capture incomplete; inspect the private receipt; no retry' }

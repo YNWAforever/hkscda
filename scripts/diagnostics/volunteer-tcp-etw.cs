@@ -44,6 +44,12 @@ namespace Hkscda.TcpPilot
                 Array.Copy(BitConverter.GetBytes(EventIds[i]), 0, bytes, 4 + 2 * i, 2);
             return bytes;
         }
+        public static bool CaptureComplete(bool enabled, bool stopped, double elapsedMs, long fileBytes, TraceProperties statistics)
+        {
+            return enabled && stopped && elapsedMs > 0 && elapsedMs <= 20000 &&
+                fileBytes > 0 && fileBytes <= 32L * 1024 * 1024 &&
+                statistics.EventsLost == 0 && statistics.LogBuffersLost == 0 && statistics.RealTimeBuffersLost == 0;
+        }
     }
 
     public static class Capture

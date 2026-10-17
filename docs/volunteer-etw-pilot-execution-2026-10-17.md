@@ -61,7 +61,12 @@ raw ETL 及未過濾 decoded metadata 永不進 Git／交付 ZIP。
 命令：`pwsh -NoProfile -File scripts/diagnostics/volunteer-tcp-etw.test.ps1`。
 初次 RED exit 1：6 個缺失行為失敗；修正後 GREEN exit 0。
 另加「StartTrace 耗盡 deadline 時不能再 enable provider」：
-先 RED exit 1、再 GREEN exit 0，最終 **9/9**。全部測試零 ETW session。
+先 RED exit 1、再 GREEN exit 0，共 9/9。
+提交 `e9cb283c` 複核發現 lost-event 數字未令 exit／receipt 標記不完整，
+增加三個獨立 loss counter 回歸後先 RED exit 1（三個失敗），再修正為
+GREEN exit 0，最終 **13/13**。中途 `e9cb283c` 的 gates 主動停止，
+其完整通過狀態為 cancelled／未通過，不用它代替最終提交的 gates。
+全部測試零 ETW session。
 這是 collector contract 的 RED→GREEN，**不是後台加速的 RED→GREEN**。
 實際原生 event filter、lost events、20 秒／32 MiB 限制均未經成功擷取驗證。
 

@@ -84,5 +84,16 @@ Test-Case 'native properties enforce QPC, capped sequential files and no stack o
         Assert-True (!$driver.Started -and !$driver.Enabled) 'Construction must not start capture'
     } finally { $driver.Dispose() }
 }
+Test-Case 'a bounded stopped capture with no reported losses can be classified complete' {
+    $stats = [Hkscda.TcpPilot.TraceProperties]::new()
+    Assert-True ([Hkscda.TcpPilot.Scope]::CaptureComplete($true,$true,4000,65536,$stats)) 'Expected a bounded lossless transport receipt'
+}
+foreach ($lostField in @('EventsLost','LogBuffersLost','RealTimeBuffersLost')) {
+    Test-Case "$lostField must make a transport receipt incomplete" {
+        $stats = [Hkscda.TcpPilot.TraceProperties]::new()
+        $stats.$lostField = 1
+        Assert-True (![Hkscda.TcpPilot.Scope]::CaptureComplete($true,$true,4000,65536,$stats)) 'Dropped metadata was counted as complete'
+    }
+}
 if ($failures.Count) { throw "$($failures.Count) collector safety tests failed (no ETW session was started)" }
 Write-Output 'All collector safety tests passed; no ETW session was started.'
