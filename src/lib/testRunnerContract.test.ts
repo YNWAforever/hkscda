@@ -53,3 +53,19 @@ test("the setup-bun count catches a step that sets no version input", () => {
   expect(bunSetupSteps(pinnedStep + "\n" + bareStep)).toEqual({ steps: 2, pinned: 1 });
   expect(bunSetupSteps("      - uses: actions/checkout@v4")).toEqual({ steps: 0, pinned: 0 });
 });
+
+function workflowJob(workflow: string, name: string): string {
+  const lines = workflow.split(/\r?\n/);
+  const start = lines.indexOf(`  ${name}:`);
+  if (start < 0) return "";
+  const end = lines.findIndex((line, index) => index > start && /^ {2}[A-Za-z0-9_-]+:$/.test(line));
+  return lines.slice(start, end < 0 ? undefined : end).join("\n");
+}
+
+test("performance verification waits for the other CPU-heavy CI jobs", () => {
+  const job = workflowJob(readRepoFile(".github/workflows/ci.yml"), "performance-verify");
+
+  for (const dependency of ["verify", "brand-verify", "a11y-verify", "rls-matrix"])
+    expect(job).toMatch(new RegExp(`^\\s+- ${dependency}$`, "m"));
+  expect(job).toMatch(/if:\s*\$\{\{\s*always\(\)\s*&&\s*needs\.verify\.result == 'success'\s*\}\}/);
+});
