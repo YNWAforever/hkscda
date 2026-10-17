@@ -39,6 +39,7 @@ export function useListQueryState<Filters extends object>({
   const scopeChange = useRef(onScopeChange);
   scopeChange.current = onScopeChange;
   const route = useRef(routeState);
+  route.current = routeState;
   const defaults = useRef(initialFilters);
   const historyMode = useRef<"push" | "replace">("replace");
   const storageKey = "hkscda.admin.list.query." + key;
@@ -72,7 +73,18 @@ export function useListQueryState<Filters extends object>({
       scopeChange.current?.();
     };
     window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+    const onIdentityCleared = () => {
+      setDraftQuery("");
+      setQuery("");
+      setPage(1);
+      setFilters(defaults.current);
+      scopeChange.current?.();
+    };
+    window.addEventListener("hkscda-admin-identity-cleared", onIdentityCleared);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      window.removeEventListener("hkscda-admin-identity-cleared", onIdentityCleared);
+    };
     // Route identity and defaults belong to this mounted list.
   }, [storageKey]);
 
@@ -90,7 +102,7 @@ export function useListQueryState<Filters extends object>({
         window.location.pathname + (next ? "?" + next : "") + window.location.hash,
       );
     historyMode.current = "replace";
-  }, [filters, hydrated, page]);
+  }, [filters, hydrated, page, routeState]);
 
   useEffect(() => {
     if (!hydrated || composing || draftQuery.trim() === query) return;
@@ -129,6 +141,29 @@ export function useListQueryState<Filters extends object>({
     setDraftQuery(event.currentTarget.value);
     setComposing(false);
   }
+  function submitQuery() {
+    if (composing) return;
+    const next = draftQuery.trim();
+    try {
+      window.sessionStorage.setItem(storageKey, next);
+    } catch {
+      /* Optional persistence. */
+    }
+    setQuery(next);
+    setPage(1);
+    scopeChange.current?.();
+  }
+  function clearQuery() {
+    try {
+      window.sessionStorage.removeItem(storageKey);
+    } catch {
+      /* Optional persistence. */
+    }
+    setDraftQuery("");
+    setQuery("");
+    setPage(1);
+    scopeChange.current?.();
+  }
 
   return {
     filters,
@@ -139,6 +174,8 @@ export function useListQueryState<Filters extends object>({
     isDebouncing: composing || draftQuery.trim() !== query,
     setPage: changePage,
     changeFilter,
+    submitQuery,
+    clearQuery,
     queryInput: {
       value: draftQuery,
       onChange: changeQuery,

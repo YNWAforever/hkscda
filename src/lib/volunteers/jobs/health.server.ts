@@ -1,0 +1,40 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { volunteerJobHealth, type VolunteerJobHealth, type VolunteerHealthRun } from "./health";
+export async function readVolunteerJobHealth(
+  client: SupabaseClient,
+  now = () => new Date(),
+): Promise<VolunteerJobHealth> {
+  const unknown: VolunteerJobHealth = {
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    consecutiveFailures: 0,
+    state: "unknown",
+  };
+  try {
+    const [recent, success] = await Promise.all([
+      client
+        .from("volunteer_runtime_job_run")
+        .select("status,finished_at:updated_at,bucket")
+        .eq("job_key", "volunteer-hourly")
+        .order("bucket", { ascending: false })
+        .limit(50),
+      client
+        .from("volunteer_runtime_job_run")
+        .select("status,finished_at:updated_at,bucket")
+        .eq("job_key", "volunteer-hourly")
+        .eq("status", "complete")
+        .order("bucket", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    if (recent.error || success.error) return unknown;
+    const runs = [
+      ...(recent.data ?? []),
+      ...(success.data ? [success.data] : []),
+    ] as VolunteerHealthRun[];
+    const unique = [...new Map(runs.map((run) => [run.bucket, run])).values()];
+    return volunteerJobHealth(unique, now());
+  } catch {
+    return unknown;
+  }
+}

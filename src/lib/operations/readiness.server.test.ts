@@ -23,6 +23,7 @@ function deps(overrides: Partial<ReadinessDeps> = {}): ReadinessDeps {
       content: initialAdoptionInstructionContent,
     }),
     readPublicAdoption: async () => page,
+    readVolunteerJobs: async () => {},
     config: {
       isProduction: true,
       turnstileSiteKey: "synthetic-site",
@@ -46,6 +47,7 @@ describe("release readiness", () => {
         cms: { state: "ready" },
         adoption: { state: "ready" },
         antiAbuse: { state: "ready" },
+        volunteerJobs: { state: "ready" },
       },
     });
   });
@@ -171,6 +173,22 @@ describe("release readiness", () => {
     expect((await allowed.json()).state).toBe("ready");
     expect(calls).toBe(1);
   });
+});
+
+test("actor preflight failure prevents readiness without exposing private error text", async () => {
+  const report = await checkReadiness(
+    deps({
+      readVolunteerJobs: async () => {
+        throw { code: "VOLUNTEER_JOB_ACTOR_INELIGIBLE", message: "private@example.invalid" };
+      },
+    }),
+  );
+  expect(report.state).toBe("unavailable");
+  expect(report.features.volunteerJobs).toEqual({
+    state: "unavailable",
+    code: "VOLUNTEER_JOB_ACTOR_INELIGIBLE",
+  });
+  expect(JSON.stringify(report)).not.toContain("private@example.invalid");
 });
 
 test("private readiness alerts are rate limited and recovery is visible without payloads", async () => {

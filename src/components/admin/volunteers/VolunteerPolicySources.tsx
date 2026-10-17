@@ -1,15 +1,21 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { VolunteerLink } from "./VolunteerLink";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
 import { useAdminCopy } from "../i18n/copy";
+import { useAdminLanguage } from "../adminI18n";
 import { policySourcesCopy } from "./policySourcesCopy";
 import { LoadFailure } from "../LoadFailure";
-const api = <T,>(body: unknown) =>
+const api = <T,>(body: unknown, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/sources/", {
     method: "POST",
     body: JSON.stringify(body),
+    signal,
   });
 const input = "min-h-11 min-w-0 w-full rounded border px-3 py-2";
 type Preview = {
@@ -21,10 +27,11 @@ type Preview = {
 export type PolicySourcesInitial = { kind?: "shelter" | "credential" };
 export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesInitial } = {}) {
   const copy = useAdminCopy(policySourcesCopy);
+  const { language } = useAdminLanguage();
   const qc = useQueryClient();
   const q = useQuery({
-    queryKey: ["volunteer-policy-sources"],
-    queryFn: () => api<SourceListing>({ action: "list" }),
+    queryKey: volunteerQueryKeys.key("policySources"),
+    queryFn: ({ signal }) => api<SourceListing>({ action: "list" }, signal),
   });
   const [kind, setKind] = useState<"shelter" | "credential">(initial?.kind ?? "shelter"),
     [key, setKey] = useState(""),
@@ -52,7 +59,7 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
         reason,
       }),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-sources"] });
+      void refreshVolunteerQueries(qc, "source", language);
       setKey("");
       setNewRegistryKey(crypto.randomUUID());
       setLabel("");
@@ -81,13 +88,12 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
       preview.reset();
       setPublicationReason("");
       setPublicationKey(crypto.randomUUID());
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-sources"] });
-      void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+      void refreshVolunteerQueries(qc, "source", language);
     },
   });
   return (
-    <section className="space-y-6 p-4 md:p-6">
-      <h1 className="text-2xl font-bold">{copy.title}</h1>
+    <section className="space-y-6">
+      <VolunteerPageHeading pageId="sources" title={copy.title} />
       <WorkflowSections
         sections={[
           { id: "source-registry", label: copy.sections.registry },
@@ -95,9 +101,9 @@ export function VolunteerPolicySources({ initial }: { initial?: PolicySourcesIni
         ]}
       />
       <p>{copy.intro}</p>
-      <a className="underline" href="/admin/volunteers/settings">
+      <VolunteerLink className="underline" href="/admin/volunteers/settings">
         {copy.back}
-      </a>
+      </VolunteerLink>
       <section className="space-y-3 rounded border p-4">
         <h2 id="source-registry" className="text-lg font-bold">
           {copy.registry.title}

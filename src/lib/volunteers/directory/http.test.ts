@@ -1,6 +1,54 @@
 import { expect, test } from "bun:test";
 import { createDirectoryHandler } from "./http.server";
+import { MAX_ADMIN_JSON_BYTES } from "../../http/adminJson.server";
 const request = (query = "") => new Request(`http://localhost/api/admin/volunteers/people${query}`);
+
+test("POST body search preserves authorization and never reads a q URL", async () => {
+  const seen: unknown[] = [];
+  const handler = createDirectoryHandler({
+    authorize: async () => "staff",
+    read: async (_actor, input) => {
+      seen.push(input);
+      return { profiles: [], total: 0, page: 1, limit: 25 };
+    },
+  });
+  const response = await handler(
+    new Request("http://localhost/api/admin/volunteers/people", {
+      method: "POST",
+      body: JSON.stringify({ q: "audit@example.invalid", page: 1 }),
+      headers: { "content-type": "application/json" },
+    }),
+  );
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  expect(seen).toEqual([{ q: "audit@example.invalid", page: 1, limit: 25 }]);
+});
+test("POST oversized and invalid bodies are refused before reads", async () => {
+  let reads = 0;
+  const handler = createDirectoryHandler({
+    authorize: async () => "staff",
+    read: async () => {
+      reads++;
+      return null;
+    },
+  });
+  for (const [body, status] of [
+    ["{bad", 400],
+    [JSON.stringify({ q: "x".repeat(MAX_ADMIN_JSON_BYTES + 1) }), 413],
+  ] as const)
+    expect(
+      (
+        await handler(
+          new Request("http://localhost/api/admin/volunteers/people", {
+            method: "POST",
+            body: String(body),
+            headers: { "content-type": "application/json" },
+          }),
+        )
+      ).status,
+    ).toBe(status);
+  expect(reads).toBe(0);
+});
 test("unauthorized never reaches repository and response is not cached", async () => {
   let calls = 0;
   const handler = createDirectoryHandler({

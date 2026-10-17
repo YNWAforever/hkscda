@@ -1,19 +1,37 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys, invalidateVolunteerQueries } from "../../../lib/volunteers/queryKeys";
+import { adminIdentityQueryOptions, ADMIN_IDENTITY_QUERY_KEY } from "../../../lib/admin/identity";
+import {
+  createAttendanceController,
+  initialAttendanceRecoveryState,
+  attendancePointerKey,
+  readAttendanceOperationPointer,
+} from "../../../lib/volunteers/bulk/attendanceRecovery";
+import {
+  parseRosterAttendanceReply,
+  type RosterAttendanceOperation,
+} from "../../../lib/volunteers/bulk/attendance";
+import { ActivityAttendancePanel } from "./ActivityAttendancePanel";
+import { ActivityAttendanceRecovery } from "./ActivityAttendanceRecovery";
+import { workspaceTemplatesQueryOptions } from "./workspaceQueries";
 import { ActivityDetailSheet } from "./ActivityDetailSheet";
 import { ActivityOperationForm } from "./ActivityOperationForm";
 import { ActivityOperationPanel } from "./ActivityOperationPanel";
 import { ActivitySchedule } from "./ActivitySchedule";
+import {
+  calendarRangeProblem,
+  collectCalendarPage,
+  calendarCoverage,
+  type CalendarCollection,
+} from "./activityCalendar";
 import { VolunteerDraftForm } from "./VolunteerDraftForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import {
-  parseListPage,
-  useListQueryState,
-  type ListRouteState,
-} from "../../../lib/admin/useListQueryState";
+import { useListQueryState, type ListRouteState } from "../../../lib/admin/useListQueryState";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import {
-  activityFilterSchema,
   addHkDays,
   generationDates,
   hkDate,
@@ -30,17 +48,29 @@ import type {
   Operation,
   Reply,
   Row,
-  Template,
 } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import { readActivityReturnState } from "./activityReturnState";
+import { useVolunteerReturnPosition } from "./useVolunteerReturnPosition";
+import type { AdminMeResponse } from "../../../lib/admin/session";
+import {
+  readActivityRouteState,
+  writeActivityRouteState,
+  toActivityApiFilter,
+  type ActivityUiFilters,
+} from "./activityRouteState";
 
-const call = <T,>(body: unknown, signal?: AbortSignal) =>
-  fetchAdminJson<T>("/api/admin/volunteers/bulk", {
-    method: "POST",
-    body: JSON.stringify(body),
-    signal,
-  });
+const call = <T,>(body: unknown, signal?: AbortSignal, expectedActorUserId?: string) =>
+  fetchAdminJson<T>(
+    "/api/admin/volunteers/bulk",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      signal,
+    },
+    expectedActorUserId,
+  );
 const control =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm";
 const button =
@@ -63,70 +93,27 @@ function noticeText(notice: Notice | null, copy: typeof activityWorkspaceCopy.zh
 /** Separates the excluded dates staff type: whitespace and commas, ASCII or full-width. */
 const EXCLUDED_DATE_SEPARATOR = /[\s,，]+/; // admin-copy-exempt: parsing pattern for the full-width comma
 
-function initial() {
+function initial(defaultView?: "calendar") {
   const p = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
-  const parsed = activityFilterSchema.safeParse({
-    from: p.get("from") ?? hkDate(),
-    until: p.get("until") ?? addHkDays(hkDate(), 30),
-    q: "",
-    shelter: p.get("shelter") ?? "",
-    template: p.get("template") ?? "",
-    status: p.get("status") ?? "",
-    scenario: p.get("scenario") ?? "",
-    readiness: p.get("readiness") ?? "",
-    shortage: p.get("shortage") === "true",
-    sort: p.get("sort") ?? "asc",
-  });
+  const parsed = readActivityRouteState(p, hkDate());
   return {
-    filter: parsed.success
-      ? parsed.data
-      : { from: hkDate(), until: addHkDays(hkDate(), 30), sort: "asc" as const },
-    page: parseListPage(p.get("page")),
-    view: p.get("view") === "calendar" ? "calendar" : "table",
+    filter: parsed.filters,
+    page: parsed.page,
+    detailPage: parsed.detailPage,
+    view: p.has("view")
+      ? p.get("view") === "calendar"
+        ? "calendar"
+        : "table"
+      : (defaultView ?? "table"),
     selected: /^[0-9a-f-]{36}$/.test(p.get("selected") ?? "") ? p.get("selected")! : null,
     operation: /^[0-9a-f-]{36}$/.test(p.get("operation") ?? "") ? p.get("operation")! : null,
+    attendanceIntent: p.get("attendance_intent") === "apply",
   };
 }
-const ACTIVITY_FILTER_KEYS = [
-  "from",
-  "until",
-  "shelter",
-  "template",
-  "status",
-  "scenario",
-  "readiness",
-  "shortage",
-  "sort",
-] as const;
-const ACTIVITY_ROUTE: ListRouteState<ActivityFilter> = {
+const ACTIVITY_ROUTE: ListRouteState<ActivityUiFilters> = {
   key: "volunteer-workspace",
-  read: (params, defaults) => {
-    const parsed = activityFilterSchema.safeParse({
-      ...defaults,
-      from: params.get("from") ?? defaults.from,
-      until: params.get("until") ?? defaults.until,
-      q: "",
-      shelter: params.get("shelter") ?? "",
-      template: params.get("template") ?? "",
-      status: params.get("status") ?? "",
-      scenario: params.get("scenario") ?? "",
-      readiness: params.get("readiness") ?? "",
-      shortage: params.get("shortage") === "true",
-      sort: params.get("sort") ?? defaults.sort,
-    });
-    return {
-      filters: parsed.success ? parsed.data : defaults,
-      page: parseListPage(params.get("page")),
-    };
-  },
-  write: (params, filters, page) => {
-    for (const key of ACTIVITY_FILTER_KEYS) params.delete(key);
-    for (const key of ACTIVITY_FILTER_KEYS) {
-      const value = filters[key];
-      if (value !== undefined && value !== "" && value !== false) params.set(key, String(value));
-    }
-    params.set("page", String(page));
-  },
+  read: (params) => readActivityRouteState(params, hkDate()),
+  write: (params, filters, page) => writeActivityRouteState(params, { filters, page }),
 };
 
 function initialOperationDraft(): OperationDraft {
@@ -150,12 +137,162 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(activityWorkspaceCopy, language);
   const format = pickAdminCopy(volunteerFormatCopy, language);
-  const [state] = useState(initial);
-  const listState = useListQueryState<ActivityFilter>({
+  const cache = useQueryClient();
+  const identity = useQuery(adminIdentityQueryOptions());
+  const actorUserId = identity.data?.admin.authUserId ?? "";
+  const [state] = useState(() => initial(initialView));
+  const [view, setView] = useState(state.view);
+  const [selected, setSelected] = useState<string | null>(state.selected);
+  const [detailPage, setDetailPage] = useState(state.detailPage);
+  const [operation, setOperation] = useState<Operation | null>(null);
+  const [operationId, setOperationId] = useState<string | null>(state.operation);
+  const [attendanceIntent, setAttendanceIntent] = useState(state.attendanceIntent);
+  const [attendanceState, setAttendanceState] = useState(() =>
+    initialAttendanceRecoveryState(actorUserId),
+  );
+  const live = useRef({ cache, actorUserId, mounted: true });
+  live.current = { cache, actorUserId, mounted: live.current.mounted };
+  const [attendanceController] = useState(() =>
+    createAttendanceController({
+      send: (command, actor) => {
+        if (!live.current.mounted) throw new Error("Workspace is no longer mounted");
+        if (command.action === "status" || command.action === "attendance_lookup") {
+          const key =
+            command.action === "status"
+              ? volunteerQueryKeys.key("operationRestore", command.operation_id, actor)
+              : volunteerQueryKeys.key(
+                  "operationRestore",
+                  "attendance-lookup",
+                  command.idempotency_key,
+                  actor,
+                );
+          return live.current.cache.fetchQuery({
+            queryKey: key,
+            queryFn: ({ signal }) => call(command, signal, actor),
+            staleTime: 0,
+            retry: false,
+          });
+        }
+        return call(command, undefined, actor);
+      },
+      async savePointer(pointer) {
+        if (!live.current.mounted || live.current.actorUserId !== pointer.actorUserId)
+          throw new Error("Identity changed");
+        try {
+          const key = attendancePointerKey(pointer.actorUserId),
+            value = JSON.stringify(pointer);
+          window.sessionStorage.setItem(key, value);
+          if (window.sessionStorage.getItem(key) !== value)
+            throw new Error("Pointer readback differs");
+          return "session";
+        } catch {
+          if (!pointer.operationId) return "memory";
+          await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+          const search = new URLSearchParams(window.location.search);
+          return live.current.actorUserId === pointer.actorUserId &&
+            search.get("operation") === pointer.operationId &&
+            (pointer.phase !== "applying" || search.get("attendance_intent") === "apply")
+            ? "url"
+            : "memory";
+        }
+      },
+      readPointer(actor) {
+        try {
+          return readAttendanceOperationPointer(window.sessionStorage, actor);
+        } catch {
+          return null;
+        }
+      },
+      invalidate: () => invalidateVolunteerQueries(live.current.cache, "attendance"),
+      onState(next) {
+        if (!live.current.mounted) return;
+        if (next.actorUserId && next.actorUserId !== live.current.actorUserId) return;
+        setAttendanceState(next);
+        if (next.phase === "previewing") {
+          setOperation(null);
+          setOperationId(null);
+          setAttendanceIntent(false);
+        }
+        if (next.operationId) setOperationId(next.operationId);
+        if (next.applyIntent) setAttendanceIntent(true);
+        if (next.problem === "pointer_unavailable") setAttendanceIntent(false);
+      },
+    }),
+  );
+  function clearAttendanceOperation() {
+    if (
+      attendanceController.getState().phase !== "draft" ||
+      attendanceController.getState().actorUserId !== actorUserId
+    )
+      return;
+    try {
+      window.sessionStorage.removeItem(attendancePointerKey(actorUserId));
+    } catch {
+      /* Optional storage. */
+    }
+    setOperationId(null);
+    setAttendanceIntent(false);
+  }
+  function openOriginalAttendance() {
+    if (live.current.actorUserId !== actorUserId) return;
+    const original = attendanceController.getState().operation;
+    if (original) {
+      setSelected(original.activity_id);
+      setDetailPage(original.scope.page);
+    }
+  }
+  function invalidateUnsubmittedAttendance(
+    nextActivityId: string | null,
+    nextPage: number,
+    nextOperationId?: string | null,
+  ): string | null | undefined {
+    const current = attendanceController.getState();
+    if (!current.operationId && !current.previewKey) return undefined;
+    const terminal =
+      current.operation?.state === "completed" || current.operation?.state === "expired";
+    if (current.applyIntent && !terminal) return undefined;
+    const activity = current.operation?.activity_id ?? current.previewCommand?.activity_id;
+    const page = current.operation?.scope.page ?? current.previewCommand?.page;
+    const changedScope = Boolean(
+      nextActivityId && activity && (nextActivityId !== activity || nextPage !== page),
+    );
+    const changedOperation =
+      nextOperationId !== undefined && nextOperationId !== current.operationId;
+    if (terminal && !changedOperation) return undefined;
+    if (!changedScope && !changedOperation) return undefined;
+    const id = current.operationId;
+    attendanceController.cancelPreview(actorUserId);
+    if (attendanceController.getState().phase !== "draft") return undefined;
+    clearAttendanceOperation();
+    return id;
+  }
+  function changeDetailPage(next: number) {
+    if (next !== detailPage) invalidateUnsubmittedAttendance(selected, next);
+    setDetailPage(next);
+  }
+  const routeState = useMemo<ListRouteState<ActivityUiFilters>>(
+    () => ({
+      ...ACTIVITY_ROUTE,
+      write(params, filters, page) {
+        ACTIVITY_ROUTE.write(params, filters, page);
+        params.set("view", view);
+        if (selected) params.set("selected", selected);
+        else params.delete("selected");
+        if (operationId) params.set("operation", operationId);
+        else params.delete("operation");
+        if (operationId && attendanceIntent) params.set("attendance_intent", "apply");
+        else params.delete("attendance_intent");
+        if (selected && detailPage > 1) params.set("detail_page", String(detailPage));
+        else params.delete("detail_page");
+      },
+    }),
+    [operationId, selected, view, detailPage, attendanceIntent],
+  );
+  const listState = useListQueryState<ActivityUiFilters>({
     key: "volunteer-workspace",
     initialFilters: { ...state.filter, q: "" },
     initialPage: state.page,
-    routeState: ACTIVITY_ROUTE,
+    routeState,
     onScopeChange: () => {
       setIds([]);
       setSelection(null);
@@ -163,7 +300,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     },
   });
   const filter = useMemo(
-    () => ({ ...listState.filters, q: listState.query }),
+    () => toActivityApiFilter({ ...listState.filters, q: listState.query }),
     [listState.filters, listState.query],
   );
   const page = listState.page;
@@ -177,82 +314,180 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     filter.readiness,
     filter.shortage,
   ].filter(Boolean).length;
-  const [view, setView] = useState(initialView ?? state.view);
-  const [selected, setSelected] = useState<string | null>(state.selected);
-  const [detailPage, setDetailPage] = useState(1);
   const [historyPage, setHistoryPage] = useState(1);
   const [ids, setIds] = useState<string[]>([]);
   const [selection, setSelection] = useState<Operation | null>(null);
-  const [operation, setOperation] = useState<Operation | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [draft, setDraft] = useState<OperationDraft>(initialOperationDraft);
   const [reviewed, setReviewed] = useState<number[]>([]);
   const [reviewAll, setReviewAll] = useState(false);
   const [showOperation, setShowOperation] = useState(false);
-  const cache = useQueryClient();
   const tableHeading = useRef<HTMLHeadingElement>(null);
   const patchDraft = (patch: Partial<OperationDraft>) =>
     setDraft((current) => ({ ...current, ...patch }));
+  const rangeProblem = view === "calendar" ? calendarRangeProblem(filter) : null;
+  const calendarScope = JSON.stringify([actorUserId, filter]);
+  const [calendarPages, setCalendarPages] = useState<CalendarCollection<Row> | null>(null);
   const list = useQuery({
-    queryKey: ["volunteer-workspace", filter, page],
-    enabled: listState.hydrated,
+    queryKey: volunteerQueryKeys.key("workspace", filter, page),
+    enabled: listState.hydrated && !rangeProblem,
     placeholderData: keepPreviousData,
     queryFn: ({ signal }) =>
       call<{ activities: Row[]; total: number }>({ action: "list", filter, page }, signal),
   });
-  const templates = useQuery({
-    queryKey: ["volunteer-workspace-templates"],
-    queryFn: () => call<{ templates: Template[] }>({ action: "templates" }),
-  });
+  const currentCalendarPage =
+    view === "calendar" && !rangeProblem && list.isSuccess && !list.isPlaceholderData
+      ? list.data
+      : null;
+  const calendar = calendarCoverage(
+    currentCalendarPage
+      ? collectCalendarPage(calendarPages, calendarScope, page, currentCalendarPage)
+      : calendarPages,
+    calendarScope,
+  );
+  useEffect(() => {
+    if (currentCalendarPage)
+      setCalendarPages((previous) =>
+        collectCalendarPage(previous, calendarScope, page, currentCalendarPage),
+      );
+  }, [currentCalendarPage, calendarScope, page]);
+  const templates = useQuery(workspaceTemplatesQueryOptions());
   const detail = useQuery({
-    queryKey: ["volunteer-workspace-detail", selected, detailPage, historyPage],
+    queryKey: volunteerQueryKeys.key("workspaceDetail", selected, detailPage, historyPage),
     enabled: Boolean(selected),
-    queryFn: () =>
-      call<ActivityDetail>({
-        action: "detail",
-        activity_id: selected,
-        page: detailPage,
-        history_page: historyPage,
-      }),
+    queryFn: ({ signal }) =>
+      call<ActivityDetail>(
+        {
+          action: "detail",
+          activity_id: selected,
+          page: detailPage,
+          history_page: historyPage,
+        },
+        signal,
+      ),
   });
   const restored = useQuery({
-    queryKey: ["volunteer-operation-restore", state.operation],
-    enabled: Boolean(state.operation),
-    queryFn: () => call<Reply>({ action: "status", operation_id: state.operation }),
+    queryKey: volunteerQueryKeys.key("operationRestore", operationId, actorUserId),
+    enabled: Boolean(
+      operationId &&
+      actorUserId &&
+      operation?.id !== operationId &&
+      attendanceState.operation?.id !== operationId,
+    ),
+    queryFn: async ({ signal }) => {
+      const result = await call<Reply | { kind: string; operation: RosterAttendanceOperation }>(
+        { action: "status", operation_id: operationId },
+        signal,
+        actorUserId,
+      );
+      if (!result?.operation) throw new Error("Invalid operation response");
+      if (result.operation.action === "roster_attendance") parseRosterAttendanceReply(result);
+      return result;
+    },
+    retry: false,
   });
   useEffect(() => {
-    if (restored.data) {
-      setOperation(restored.data.operation);
+    if (
+      restored.data &&
+      !restored.isFetching &&
+      actorUserId &&
+      restored.data.operation.id === operationId
+    ) {
+      if (restored.data.operation.action === "roster_attendance") {
+        if (attendanceController.getState().operation?.id === operationId) return;
+        const original = parseRosterAttendanceReply(restored.data);
+        attendanceController.hydrate(original, actorUserId, attendanceIntent);
+        if (!selected) {
+          setSelected(original.activity_id);
+          setDetailPage(original.scope.page);
+        }
+        return;
+      }
+      const original = attendanceController.getState();
+      if (original.operationId && original.operationId !== restored.data.operation.id) return;
+      attendanceController.clearIdentity(actorUserId);
+      setOperation((restored.data as Reply).operation);
       setReviewed([]);
       setReviewAll(false);
       setShowOperation(true);
     }
-  }, [restored.data]);
+  }, [
+    restored.data,
+    restored.isFetching,
+    actorUserId,
+    operationId,
+    attendanceController,
+    attendanceIntent,
+    selected,
+  ]);
   useEffect(() => {
-    if (!listState.hydrated) return;
-    const params = new URLSearchParams(window.location.search);
-    params.set("view", view);
-    if (selected) params.set("selected", selected);
-    else params.delete("selected");
-    if (operation) params.set("operation", operation.id);
-    else params.delete("operation");
-    window.history.replaceState(
-      window.history.state,
-      "",
-      window.location.pathname + "?" + params.toString() + window.location.hash,
-    );
-  }, [listState.hydrated, view, selected, operation]);
+    if (live.current.actorUserId !== actorUserId) return;
+    if (!actorUserId) return;
+    if (attendanceController.getState().actorUserId !== actorUserId)
+      attendanceController.clearIdentity(actorUserId);
+    if (!operationId) void attendanceController.restore(actorUserId);
+    else if (operation?.id !== operationId)
+      attendanceController.beginRestore(actorUserId, operationId, attendanceIntent);
+  }, [actorUserId, operationId, attendanceIntent, operation?.id, attendanceController]);
+  useEffect(() => {
+    live.current.mounted = true;
+    const clear = () => {
+      live.current = { ...live.current, actorUserId: "" };
+      attendanceController.clearIdentity();
+      setOperation(null);
+      setSelection(null);
+      setIds([]);
+      setSelected(null);
+      setCalendarPages(null);
+      setDraft(initialOperationDraft());
+      setReviewed([]);
+      setReviewAll(false);
+      setShowOperation(false);
+    };
+    window.addEventListener("hkscda-admin-identity-cleared", clear);
+    return () => {
+      live.current.mounted = false;
+      window.removeEventListener("hkscda-admin-identity-cleared", clear);
+    };
+  }, [attendanceController]);
   useEffect(() => {
     const onPopState = () => {
-      const restored = initial();
+      const restored = initial(initialView);
+      const prior = attendanceController.getState();
+      const invalidated = invalidateUnsubmittedAttendance(
+        restored.selected,
+        restored.detailPage,
+        restored.operation,
+      );
       setView(restored.view);
       setSelected(restored.selected);
+      setDetailPage(restored.detailPage);
+      if (
+        !prior.applyIntent ||
+        prior.operation?.state === "completed" ||
+        prior.operation?.state === "expired"
+      ) {
+        const restoreId =
+          invalidated !== undefined && restored.operation === invalidated
+            ? null
+            : restored.operation;
+        setOperationId(restoreId);
+        setAttendanceIntent(Boolean(restoreId && restored.attendanceIntent));
+        setOperation(null);
+      }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, []);
-  function updateFilter(next: Partial<ActivityFilter>) {
-    listState.changeFilter(next);
+    // Read the current controller and scope when Back/Forward fires.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attendanceController, actorUserId]);
+  function updateFilter(next: Partial<ActivityUiFilters>) {
+    listState.changeFilter({
+      ...next,
+      ...(("from" in next || "until" in next) && !next.date_scope
+        ? { date_scope: "custom" as const }
+        : {}),
+    });
   }
   const choose = useMutation({
     mutationFn: (all: boolean) =>
@@ -309,7 +544,10 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       });
     },
     onSuccess: (data) => {
+      invalidateUnsubmittedAttendance(null, detailPage, data.operation.id);
       setOperation(data.operation);
+      setOperationId(data.operation.id);
+      setAttendanceIntent(false);
       setReviewed([]);
       setReviewAll(false);
       setShowOperation(true);
@@ -326,8 +564,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     onSuccess: (data) => {
       setOperation(data.operation);
       setReviewAll(false);
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
+      void refreshVolunteerQueries(cache, "activity", language);
     },
   });
   const sequence = useMutation({
@@ -343,8 +580,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       setOperation(latest);
       setReviewAll(false);
       setNotice({ code: halted ? "sequenceHalted" : "sequenceDone" });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace"] });
-      void cache.invalidateQueries({ queryKey: ["volunteer-workspace-detail"] });
+      void refreshVolunteerQueries(cache, "activity", language);
     },
   });
   const refresh = useMutation({
@@ -360,8 +596,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
     Boolean,
   );
   const error = failure ? (volunteerAdminErrorMessage(failure, language) ?? "") : "";
-  const rows = list.isError ? [] : (list.data?.activities ?? []);
-  const total = list.data?.total ?? 0;
+  const rows = list.isError || rangeProblem ? [] : (list.data?.activities ?? []);
+  const scheduleRows = view === "calendar" ? calendar.activities : rows;
+  const total = rangeProblem ? 0 : (list.data?.total ?? 0);
   const listRefreshing = list.isFetching || listState.isDebouncing || list.isPlaceholderData;
   const review = operation ? reviewBulkOperation(operation) : null;
   const templateList = templates.data?.templates ?? [];
@@ -371,18 +608,33 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
   const previewDisabled =
     preview.isPending ||
     sequence.isPending ||
+    ["applying", "outcome_unknown"].includes(attendanceState.phase) ||
     (draft.mode !== "generate" && draft.mode !== "copy" && !selection) ||
     (draft.mode === "copy" && !selection);
+  const returnParams = new URLSearchParams(
+    typeof window === "undefined" ? "" : window.location.search,
+  );
+  routeState.write(returnParams, listState.filters, page);
+  returnParams.set("return_from", initialView === "calendar" ? "calendar" : "activities");
+  const returnPosition = useVolunteerReturnPosition({
+    listKey: "volunteer-workspace",
+    actorUserId:
+      cache.getQueryData?.<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId ?? "",
+    scopeKey: JSON.stringify([filter, page, selected, detailPage]),
+    ready: Boolean(selected && detail.data) && !detail.isFetching && !detail.isError,
+  });
   function shift(days: number) {
+    if (listState.filters.date_scope !== "future") return;
     const start = filter.from ?? hkDate();
     updateFilter({
+      date_scope: "future",
       from: addHkDays(start, days),
       until: addHkDays(filter.until ?? addHkDays(start, 30), days),
     });
   }
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
+      <VolunteerPageHeading pageId={initialView === "calendar" ? "calendar" : "activities"}>
         <div>
           <h1 className="text-2xl font-bold">
             {initialView === "calendar" ? copy.calendarTitle : copy.title}
@@ -392,7 +644,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <a className={button} href="/admin/volunteers/settings">
           {copy.policyLink}
         </a>
-      </header>
+      </VolunteerPageHeading>
       <VolunteerDraftForm />
       <section aria-label={copy.filters.label} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <label className="col-span-2 sm:col-span-1">
@@ -512,27 +764,48 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
       <div className="flex flex-wrap gap-2">
         <button
           className={button}
-          onClick={() => updateFilter({ from: hkDate(), until: addHkDays(hkDate(), 30) })}
+          onClick={() => updateFilter({ date_scope: "custom", from: hkDate(), until: hkDate() })}
+        >
+          {copy.filters.today}
+        </button>
+        <button
+          className={button}
+          onClick={() =>
+            updateFilter({ date_scope: "future", from: hkDate(), until: addHkDays(hkDate(), 30) })
+          }
         >
           {copy.filters.next30}
         </button>
-        <button className={button} onClick={() => shift(-30)}>
+        <button
+          className={button}
+          disabled={listState.filters.date_scope !== "future"}
+          onClick={() => shift(-30)}
+        >
           {copy.filters.previous}
         </button>
-        <button className={button} onClick={() => shift(30)}>
+        <button
+          className={button}
+          disabled={listState.filters.date_scope !== "future"}
+          onClick={() => shift(30)}
+        >
           {copy.filters.next}
         </button>
         <button
           className={button}
           onClick={() =>
-            updateFilter({ from: undefined, until: addHkDays(hkDate(), -1), sort: "desc" })
+            updateFilter({
+              date_scope: "history",
+              from: undefined,
+              until: addHkDays(hkDate(), -1),
+              sort: "desc",
+            })
           }
         >
           {copy.filters.past}
         </button>
         <button
           className={button}
-          onClick={() => updateFilter({ from: undefined, until: undefined })}
+          onClick={() => updateFilter({ date_scope: "all", from: undefined, until: undefined })}
         >
           {copy.filters.allDates}
         </button>
@@ -558,9 +831,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         <LoadFailure
           error={loadError}
           onRetry={() => {
-            void list.refetch();
+            if (!rangeProblem) void list.refetch();
             void templates.refetch();
-            void restored.refetch();
+            if (operationId && actorUserId) void restored.refetch();
           }}
           title={volunteerAdminErrorMessage(loadError, language) ?? undefined}
           retryLabel={copy.reload}
@@ -582,6 +855,20 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         </div>
       )}
       <p role="status">{noticeText(notice, copy)}</p>
+      {(attendanceState.operationId || attendanceState.previewKey) &&
+        (!selected ||
+          attendanceState.operation?.activity_id !== selected ||
+          attendanceState.operation?.scope.page !== detailPage) && (
+          <ActivityAttendanceRecovery
+            state={attendanceState}
+            controller={attendanceController}
+            actorUserId={actorUserId}
+            onClearOperation={clearAttendanceOperation}
+            onOpenOriginal={openOriginalAttendance}
+            selectedActivityId={selected ?? undefined}
+            selectedPage={detailPage}
+          />
+        )}
       <section aria-label={copy.list.label}>
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
           {copy.list.heading(list.isError ? null : total)}
@@ -595,7 +882,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               setSelection(null);
             }}
           >
-            {copy.list.selectPage(rows.length)}
+            {view === "calendar"
+              ? copy.list.selectCalendarPage(page, rows.length)
+              : copy.list.selectPage(rows.length)}
           </button>
           <button
             className={button}
@@ -631,7 +920,59 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
           )}
         </div>
         {listRefreshing && list.data ? <p role="status">{copy.list.updating}</p> : null}
-        {list.isPending ? (
+        {rangeProblem ? (
+          <p role="status">{copy.schedule.rangeProblems[rangeProblem]}</p>
+        ) : view === "calendar" ? (
+          <>
+            <p role="status" aria-live="polite">
+              {list.isFetching
+                ? copy.list.loading
+                : list.isError
+                  ? copy.schedule.partialFailure(calendar.loaded)
+                  : calendar.changed
+                    ? copy.schedule.changed
+                    : calendar.complete
+                      ? copy.schedule.complete(calendar.loaded)
+                      : copy.schedule.partial(calendar.loaded, calendar.total)}
+            </p>
+            {calendar.changed && (
+              <button
+                className={button}
+                onClick={() => {
+                  setCalendarPages(null);
+                  if (page !== 1) setPage(1);
+                  else void list.refetch();
+                }}
+              >
+                {copy.reload}
+              </button>
+            )}
+            {calendar.complete && calendar.total === 0 ? (
+              <p>{copy.list.noMatch}</p>
+            ) : (
+              <ActivitySchedule
+                rows={scheduleRows}
+                view={view}
+                from={filter.from}
+                until={filter.until}
+                complete={calendar.complete && !list.isError && !list.isFetching}
+                ids={ids}
+                templateNames={templateNames}
+                onToggle={(id, checked) => {
+                  if (listRefreshing || list.isError) return;
+                  setIds(checked ? [...ids, id] : ids.filter((value) => value !== id));
+                  setSelection(null);
+                }}
+                onOpen={(id) => {
+                  invalidateUnsubmittedAttendance(id, 1);
+                  setSelected(id);
+                  setDetailPage(1);
+                  setHistoryPage(1);
+                }}
+              />
+            )}
+          </>
+        ) : list.isPending ? (
           <p role="status">{copy.list.loading}</p>
         ) : list.isError ? ( // admin-load-failure-ok: the LoadFailure above names the failure; this line only stands in for the list
           <p>{copy.list.unavailable}</p>
@@ -653,6 +994,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               setSelection(null);
             }}
             onOpen={(id) => {
+              invalidateUnsubmittedAttendance(id, 1);
               setSelected(id);
               setDetailPage(1);
               setHistoryPage(1);
@@ -705,6 +1047,47 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         />
       )}
       <ActivityDetailSheet
+        returnState={readActivityReturnState(returnParams)}
+        onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
+        attendanceRecovery={
+          <ActivityAttendanceRecovery
+            state={attendanceState}
+            controller={attendanceController}
+            actorUserId={actorUserId}
+            onClearOperation={clearAttendanceOperation}
+            onOpenOriginal={openOriginalAttendance}
+            selectedActivityId={selected ?? undefined}
+            selectedPage={detailPage}
+          />
+        }
+        attendance={
+          detail.data && (
+            <ActivityAttendancePanel
+              detail={detail.data}
+              page={detailPage}
+              actorUserId={actorUserId}
+              state={attendanceState}
+              controller={attendanceController}
+              refreshing={
+                detail.isFetching ||
+                Boolean(
+                  operationId &&
+                  operation?.id !== operationId &&
+                  attendanceState.operationId !== operationId,
+                )
+              }
+              onReload={async () => {
+                const result = await detail.refetch();
+                if (result.error) throw result.error;
+                return result.data;
+              }}
+              onClearOperation={clearAttendanceOperation}
+              onOpenOriginal={openOriginalAttendance}
+              returnState={readActivityReturnState(returnParams)}
+              onRegistrationOpen={(id) => returnPosition.remember(`registration-${id}`)}
+            />
+          )
+        }
         open={Boolean(selected)}
         onClose={() => {
           setSelected(null);
@@ -713,7 +1096,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         detail={detail}
         detailPage={detailPage}
         historyPage={historyPage}
-        onDetailPage={setDetailPage}
+        onDetailPage={changeDetailPage}
         onHistoryPage={setHistoryPage}
         onEdit={(activity) => {
           setIds([activity.id]);

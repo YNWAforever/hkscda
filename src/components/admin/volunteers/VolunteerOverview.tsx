@@ -1,3 +1,6 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { VolunteerLink } from "./VolunteerLink";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
@@ -100,20 +103,24 @@ export function VolunteerOverview() {
   const [centre, setCentre] = useState("all");
   const range = hongKongDayRange(new Date());
   const stats = useQuery({
-    queryKey: ["volunteer-overview", range.date, centre],
-    queryFn: () =>
+    queryKey: volunteerQueryKeys.key("overview", range.date, centre),
+    queryFn: ({ signal }) =>
       fetchAdminJson<OverviewData>(
         "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
+        { signal },
       ),
+    staleTime: 30_000,
     refetchInterval: 30000,
   });
   const calendar = useQuery({
-    queryKey: ["volunteer-calendar", range.from, range.until],
-    queryFn: () =>
+    queryKey: volunteerQueryKeys.key("calendarSummary", range.from, range.until),
+    queryFn: ({ signal }) =>
       fetchAdminJson<{ activities: TodayActivity[]; truncated?: boolean }>(
         "/api/admin/volunteers/calendar?" +
           new URLSearchParams({ from: range.from, until: range.until }),
+        { signal },
       ),
+    staleTime: 30_000,
     refetchInterval: 30000,
   });
   const cards = [
@@ -124,7 +131,7 @@ export function VolunteerOverview() {
     },
     {
       key: "pendingRegistrations" as const,
-      href: "/admin/volunteers/activities?registration_status=pending",
+      href: "/admin/volunteers/tasks?pending_scope=all",
       icon: ClipboardCheck,
     },
     {
@@ -138,7 +145,19 @@ export function VolunteerOverview() {
   const unnamedCentres = centres.filter((key) => !isNamedShelter(key));
   return (
     <section className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
+      {stats.data?.runtimeHealth && (
+        <section
+          role={stats.data.runtimeHealth.state === "degraded" ? "alert" : "status"}
+          className="rounded border p-4"
+        >
+          <h2 className="font-bold">{copy.jobHealth.title}</h2>
+          <p>{copy.jobHealth[stats.data.runtimeHealth.state]}</p>
+          {stats.data.runtimeHealth.lastSuccessAt && (
+            <p>{format.sessionTime(stats.data.runtimeHealth.lastSuccessAt)}</p>
+          )}
+        </section>
+      )}
+      <VolunteerPageHeading pageId="overview">
         <div>
           <p className="text-sm text-[var(--color-text-muted)]">
             {format.day(stats.data?.date ?? range.date)} · {copy.hongKongTime}
@@ -146,19 +165,19 @@ export function VolunteerOverview() {
           <h1 className="text-2xl font-bold">{copy.title}</h1>
           <p className="mt-2 text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
-        <a
+        <VolunteerLink
           href="/admin/volunteers/people"
           className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--color-primary)] px-4 text-[var(--color-primary-foreground)]"
         >
           <UserRoundSearch size={18} />
           {copy.findVolunteer}
-        </a>
-      </header>
+        </VolunteerLink>
+      </VolunteerPageHeading>
       <div className="grid gap-4 sm:grid-cols-3">
         {cards.map((card) => {
           const count = stats.data?.counts[card.key];
           return (
-            <a
+            <VolunteerLink
               key={card.key}
               href={card.href}
               className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
@@ -171,7 +190,7 @@ export function VolunteerOverview() {
               <p className="text-xs text-[var(--color-text-muted)]">
                 {count === null ? copy.cardUnavailable : copy.cards[card.key].hint}
               </p>
-            </a>
+            </VolunteerLink>
           );
         })}
       </div>
@@ -233,12 +252,12 @@ export function VolunteerOverview() {
           </p>
         )}
         <div className="mt-4 flex flex-wrap gap-4 text-sm">
-          <a className="min-h-11 py-2 underline" href="/admin/volunteers/activities">
+          <VolunteerLink className="min-h-11 py-2 underline" href="/admin/volunteers/activities">
             {copy.coverage.generateLink}
-          </a>
-          <a className="min-h-11 py-2 underline" href="/admin/volunteers/settings">
+          </VolunteerLink>
+          <VolunteerLink className="min-h-11 py-2 underline" href="/admin/volunteers/settings">
             {copy.coverage.policyLink}
-          </a>
+          </VolunteerLink>
         </div>
       </section>
       <section className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -247,13 +266,13 @@ export function VolunteerOverview() {
             <h2 className="text-lg font-bold">{copy.today.title}</h2>
             <p className="text-sm text-[var(--color-text-muted)]">{copy.today.hint}</p>
           </div>
-          <a
+          <VolunteerLink
             href="/admin/volunteers/calendar"
             className="inline-flex min-h-11 shrink-0 items-center gap-1 text-sm underline"
           >
             {copy.today.openCalendar}
             <ArrowRight size={16} />
-          </a>
+          </VolunteerLink>
         </div>
         {calendar.isLoading && <p role="status">{copy.today.loading}</p>}
         {calendar.error && (
@@ -269,9 +288,12 @@ export function VolunteerOverview() {
           <div className="py-8 text-center">
             <CalendarDays className="mx-auto mb-3 text-[var(--color-text-muted)]" />
             <p>{copy.today.empty}</p>
-            <a href="/admin/volunteers/activities" className="inline-block py-3 underline">
+            <VolunteerLink
+              href="/admin/volunteers/activities"
+              className="inline-block py-3 underline"
+            >
               {copy.today.viewActivities}
-            </a>
+            </VolunteerLink>
           </div>
         )}
         <div className="grid gap-3 lg:grid-cols-2">
@@ -298,31 +320,31 @@ export function VolunteerOverview() {
               ) : (
                 <p className="mt-2 text-sm">{copy.today.minimumMet}</p>
               )}
-              <a
+              <VolunteerLink
                 href={`/admin/volunteers/calendar?date=${range.date}&activity_id=${encodeURIComponent(a.id)}`}
                 className="mt-2 inline-block min-h-11 py-2 text-sm underline"
               >
                 {copy.today.viewSession}
-              </a>
+              </VolunteerLink>
             </article>
           ))}
         </div>
       </section>
       <div className="grid gap-4 sm:grid-cols-2">
-        <a
+        <VolunteerLink
           href="/admin/volunteers/people"
           className="rounded-xl border border-[var(--color-border)] p-5"
         >
           <h2 className="font-bold">{copy.links.findTitle}</h2>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">{copy.links.findText}</p>
-        </a>
-        <a
+        </VolunteerLink>
+        <VolunteerLink
           href="/admin/volunteers/tasks"
           className="rounded-xl border border-[var(--color-border)] p-5"
         >
           <h2 className="font-bold">{copy.links.followTitle}</h2>
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">{copy.links.followText}</p>
-        </a>
+        </VolunteerLink>
       </div>
     </section>
   );

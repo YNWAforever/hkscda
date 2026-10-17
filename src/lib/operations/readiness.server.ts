@@ -9,9 +9,10 @@ import {
 import { createSupabaseServiceClient } from "../donations/supabase.server";
 import { isProductionRuntime } from "../security/turnstile.server";
 import { authorizedCron } from "../volunteers/jobs/auth.server";
+import { validateVolunteerJobActor } from "../volunteers/jobs/repository.server";
 
 export type ReadinessState = "ready" | "degraded" | "unavailable";
-type Feature = "cms" | "adoption" | "antiAbuse";
+type Feature = "cms" | "adoption" | "antiAbuse" | "volunteerJobs";
 type FeatureState = { state: ReadinessState; code?: string; causeCode?: string };
 
 export type ReadinessReport = {
@@ -24,6 +25,7 @@ export type ReadinessReport = {
 export type ReadinessDeps = {
   readCmsRevision: () => Promise<unknown>;
   readPublicAdoption: () => Promise<PublicAdoptionPageData>;
+  readVolunteerJobs: () => Promise<void>;
   config: {
     isProduction: boolean;
     turnstileSiteKey?: string | null;
@@ -99,11 +101,32 @@ function antiAbuseState(config: ReadinessDeps["config"]): FeatureState {
 }
 
 export async function checkReadiness(deps: ReadinessDeps): Promise<ReadinessReport> {
-  const [cms, adoption] = await Promise.all([
+  const [cms, adoption, volunteerJobs] = await Promise.all([
     cmsState(deps.readCmsRevision),
     adoptionState(deps.readPublicAdoption),
+    (async (): Promise<FeatureState> => {
+      try {
+        await deps.readVolunteerJobs();
+        return ready;
+      } catch (error) {
+        const code =
+          typeof error === "object" && error !== null && "code" in error ? error.code : null;
+        return {
+          state: "unavailable",
+          code:
+            typeof code === "string" &&
+            [
+              "VOLUNTEER_JOB_ACTOR_UNCONFIGURED",
+              "VOLUNTEER_JOB_ACTOR_INVALID",
+              "VOLUNTEER_JOB_ACTOR_INELIGIBLE",
+            ].includes(code)
+              ? code
+              : "VOLUNTEER_JOB_ACTOR_READ_FAILED",
+        };
+      }
+    })(),
   ]);
-  const features = { cms, adoption, antiAbuse: antiAbuseState(deps.config) };
+  const features = { cms, adoption, volunteerJobs, antiAbuse: antiAbuseState(deps.config) };
   const states = Object.values(features).map((feature) => feature.state);
   return {
     state: states.includes("unavailable")
@@ -133,6 +156,9 @@ export function createReadinessDeps(
       return data;
     },
     readPublicAdoption: () => loadPublicAdoptionPage(),
+    readVolunteerJobs: async () => {
+      await validateVolunteerJobActor(client, env.VOLUNTEER_JOB_ACTOR_ID);
+    },
     config: {
       isProduction: isProductionRuntime(env),
       turnstileSiteKey: env.VITE_TURNSTILE_SITE_KEY,

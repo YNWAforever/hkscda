@@ -2,6 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { AdminRole, AdminStatus } from "./access";
 import { createSupabaseServiceClient } from "../supabase.server";
+import { requestTimingContext } from "../operations/requestTiming.server";
+export type AdminSessionOptions = {
+  activatePendingInvite?: boolean;
+  observeTiming?: (stage: "auth" | "role", durationMs: number) => void;
+  now?: () => number;
+};
 
 export type AdminUser = {
   id: string;
@@ -15,8 +21,9 @@ export async function requireAdmin(
   request: Request,
   allowedRoles: AdminRole[],
   client = createSupabaseServiceClient(),
+  options: AdminSessionOptions = {},
 ): Promise<AdminUser> {
-  const admin = await getAdminUserFromRequest(request, client);
+  const admin = await getAdminUserFromRequest(request, client, options);
   if (!allowedRoles.includes(admin.role)) {
     throw new Response("Forbidden", { status: 403 });
   }
@@ -26,27 +33,45 @@ export async function requireAdmin(
 export async function getAdminUserFromRequest(
   request: Request,
   client: SupabaseClient = createSupabaseServiceClient(),
-  options: { activatePendingInvite?: boolean } = {},
+  options: AdminSessionOptions = {},
 ): Promise<AdminUser> {
   const token = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   if (!token) {
     throw new Response("Missing authorization token", { status: 401 });
   }
+  const measure = async <T>(stage: "auth" | "role", operation: () => PromiseLike<T>) => {
+    const clock = options.now ?? (() => performance.now());
+    const start = clock();
+    try {
+      return await operation();
+    } finally {
+      try {
+        (options.observeTiming ?? requestTimingContext.getStore()?.observe)?.(
+          stage,
+          Math.max(0, clock() - start),
+        );
+      } catch {
+        /* Diagnostics cannot change authorization. */
+      }
+    }
+  };
 
   const {
     data: { user },
     error: userError,
-  } = await client.auth.getUser(token);
+  } = await measure("auth", () => client.auth.getUser(token));
 
   if (userError || !user?.id || !user.email) {
     throw new Response("Invalid authorization token", { status: 401 });
   }
 
-  const { data: admin, error: adminError } = await client
-    .from("admin_user")
-    .select("id,auth_user_id,email,role,status")
-    .eq("auth_user_id", user.id)
-    .maybeSingle();
+  const { data: admin, error: adminError } = await measure("role", () =>
+    client
+      .from("admin_user")
+      .select("id,auth_user_id,email,role,status")
+      .eq("auth_user_id", user.id)
+      .maybeSingle(),
+  );
 
   if (adminError) throw adminError;
   if (!admin || admin.status === "disabled") {

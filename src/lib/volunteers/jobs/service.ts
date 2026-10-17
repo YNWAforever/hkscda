@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { safeJobFailure, type VolunteerJobStage } from "./errors";
 export type RuntimeSummary = {
   kind: "complete" | "busy";
   generated: number;
@@ -8,6 +9,7 @@ export type RuntimeSummary = {
   deferred: number;
 };
 export interface VolunteerJobRepository {
+  preflight(): Promise<void>;
   claim(bucket: string, owner: string, lease: string): Promise<boolean>;
   finish(
     bucket: string,
@@ -75,26 +77,41 @@ export function createVolunteerRuntimeJobs(repo: VolunteerJobRepository, clock =
         };
       if (!(await repo.claim(bucket, owner, new Date(now.getTime() + 10 * 60000).toISOString())))
         return empty;
+      let stage: VolunteerJobStage = "preflight";
       try {
-        const generated = await repo.generate(now),
-          released = await repo.persistReleases(),
-          promoted = await repo.promote(now),
-          assessment = await repo.assess(now),
-          deferred = await repo.deferNotifications(now),
-          result = {
-            kind: "complete" as const,
-            generated,
-            released,
-            promoted,
-            assessment,
-            deferred,
-          };
+        await repo.preflight();
+        stage = "generate";
+        const generated = await repo.generate(now);
+        stage = "release";
+        const released = await repo.persistReleases();
+        stage = "promote";
+        const promoted = await repo.promote(now);
+        stage = "assess";
+        const assessment = await repo.assess(now);
+        stage = "defer";
+        const deferred = await repo.deferNotifications(now);
+        const result = {
+          kind: "complete" as const,
+          generated,
+          released,
+          promoted,
+          assessment,
+          deferred,
+        };
+        stage = "finish";
         await repo.finish(bucket, owner, "complete", result);
         return result;
       } catch (e) {
-        await repo.finish(bucket, owner, "failed", {
-          error: e instanceof Error ? e.message : "job_failed",
-        });
+        const failure = safeJobFailure(e, stage, owner);
+        try {
+          await repo.finish(bucket, owner, "failed", {
+            error: failure.code,
+            stage: failure.stage,
+            correlationId: failure.correlationId,
+          });
+        } catch {
+          console.error(JSON.stringify({ event: "volunteer_job_finish_failed", ...failure }));
+        }
         throw e;
       }
     },

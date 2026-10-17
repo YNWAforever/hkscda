@@ -16,7 +16,7 @@ function PeoplePage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   if (pathname.replace(/\/$/, "") !== "/admin/volunteers/people") return <Outlet />;
   return (
-    <VolunteerAdminShell intro="people">
+    <VolunteerAdminShell>
       <VolunteerDirectory search={search} />
     </VolunteerAdminShell>
   );

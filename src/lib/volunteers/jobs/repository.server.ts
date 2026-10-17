@@ -1,5 +1,33 @@
 import { promotionDenial } from "./promotion";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { parseVolunteerJobActorId, VolunteerJobActorError } from "./config";
+
+export async function validateVolunteerJobActor(
+  client: SupabaseClient,
+  raw: string | undefined,
+  now = () => new Date(),
+): Promise<string> {
+  const id = parseVolunteerJobActorId(raw);
+  const { data, error } = await client
+    .from("admin_user")
+    .select("auth_user_id")
+    .eq("role", "admin")
+    .eq("status", "active")
+    .eq("auth_user_id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new VolunteerJobActorError("VOLUNTEER_JOB_ACTOR_INELIGIBLE");
+  const { data: auth, error: authError } = await client.auth.admin.getUserById(id);
+  if (authError) throw authError;
+  const user = auth.user;
+  const banned = user && "banned_until" in user ? user.banned_until : null;
+  if (
+    !user?.email_confirmed_at ||
+    (typeof banned === "string" && Date.parse(banned) > now().getTime())
+  )
+    throw new VolunteerJobActorError("VOLUNTEER_JOB_ACTOR_INELIGIBLE");
+  return id;
+}
 import { dueAssessmentPeriod, type VolunteerJobRepository } from "./service";
 import { getEmailConfig } from "../../donations/config.server";
 import { createResendMailProvider } from "../../notifications/provider.server";
@@ -27,6 +55,9 @@ export function createVolunteerJobRepository(
     return data.auth_user_id as string;
   }
   return {
+    async preflight() {
+      await validateVolunteerJobActor(c, systemActorId);
+    },
     async claim(bucket, owner, lease) {
       const { data, error } = await c.rpc("claim_volunteer_runtime_job", {
         p_job_key: "volunteer-hourly",

@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  assessmentJobsQueryOptions,
+  assessmentListingQueryOptions,
+  shouldHydrateAssessmentDraft,
+} from "./assessmentQueries";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { hkDate } from "../../../lib/volunteers/bulk/service";
 import { initialMonthlyPolicy } from "../../../lib/volunteers/policy/catalogue";
@@ -74,44 +82,42 @@ export function VolunteerAssessments({
   const format = pickAdminCopy(policyFormatCopy, language);
   const [p, setP] = useState<P>(initial?.policy ?? initialMonthlyPolicy),
     [rev, setRev] = useState(initial?.revision ?? 0),
-    [data, setData] = useState<AssessmentListing>(initial?.data ?? {}),
     [message, setMessage] = useState<AssessmentMessage | undefined>(initial?.message),
     [reason, setReason] = useState(""),
     [effective, setEffective] = useState(hkDate(now())),
     [month, setMonth] = useState(""),
-    [scope, setScope] = useState(initial?.scope ?? "combined"),
-    [jobs, setJobs] = useState<AssessmentJob[]>(initial?.jobs ?? []),
-    // The error of loading the page, kept apart from the message of an action so it can be retried.
-    [loadError, setLoadError] = useState<{ cause: unknown } | undefined>(undefined);
+    [scope, setScope] = useState(initial?.scope ?? "combined");
+  const [dirty, setDirty] = useState(false);
+  const editEpoch = useRef(0);
+  const listing = useQuery({ ...assessmentListingQueryOptions(), initialData: initial?.data });
+  const notifications = useQuery({
+    ...assessmentJobsQueryOptions(),
+    initialData: initial?.jobs ? { jobs: initial.jobs } : undefined,
+  });
+  const queryClient = useQueryClient();
+  const data = listing.data ?? initial?.data ?? {};
+  const jobs = notifications.data?.jobs ?? initial?.jobs ?? [];
+  const loadError = listing.error ? { cause: listing.error } : undefined;
+  const incomingDraft = listing.data?.draft;
+  const newRevision = dirty && incomingDraft && incomingDraft.revision > rev;
   const fail = (cause: unknown) => setMessage({ code: "error", cause });
-  // Only state setters, which never change, are used here, so loading once on mount depends on nothing.
-  const load = useCallback(
-    () =>
-      cmd({ kind: "list" })
-        .then((x) => {
-          setLoadError(undefined);
-          setData(x);
-          if (x.draft) {
-            setP(monthlyPolicySchema.parse(x.draft.body));
-            setRev(x.draft.revision);
-          }
-        })
-        .catch((cause: unknown) => setLoadError({ cause })),
-    [],
-  );
-  const loadJobs = () =>
-    fetchAdminJson<{ jobs: AssessmentJob[] }>("/api/admin/volunteers/jobs/").then((x) =>
-      setJobs(x.jobs),
-    );
+  const load = () => listing.refetch();
   useEffect(() => {
-    void load();
-  }, [load]);
-  const change = <K extends keyof P>(k: K, v: P[K]) => setP((q) => ({ ...q, [k]: v }));
+    if (incomingDraft && shouldHydrateAssessmentDraft(dirty, rev, incomingDraft.revision)) {
+      setP(monthlyPolicySchema.parse(incomingDraft.body));
+      setRev(incomingDraft.revision);
+    }
+  }, [incomingDraft, dirty, rev]);
+  const change = <K extends keyof P>(k: K, v: P[K]) => {
+    editEpoch.current++;
+    setDirty(true);
+    setP((q) => ({ ...q, [k]: v }));
+  };
   const value = (v: unknown) => (typeof v === "string" ? v : "");
   const text = message ? assessmentMessageText(message, language) : "";
   return (
     <div className="space-y-5">
-      <header>
+      <VolunteerPageHeading pageId="assessments">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <WorkflowSections
           sections={[
@@ -123,7 +129,25 @@ export function VolunteerAssessments({
         />
         <span id="assessment-settings" />
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
-      </header>
+      </VolunteerPageHeading>
+      {listing.isPending && !initial && <p role="status">{copy.loading}</p>}
+      {newRevision && (
+        <p role="alert">
+          {copy.newRevision}
+          <button
+            className={c}
+            onClick={() => {
+              if (incomingDraft) {
+                setP(monthlyPolicySchema.parse(incomingDraft.body));
+                setRev(incomingDraft.revision);
+                setDirty(false);
+              }
+            }}
+          >
+            {copy.reloadDraft}
+          </button>
+        </p>
+      )}
       <section className="grid gap-3 rounded-lg border bg-white p-4 md:grid-cols-3">
         <label>
           {copy.fields.regularThreshold}
@@ -317,14 +341,20 @@ export function VolunteerAssessments({
       <div className="flex flex-wrap gap-2">
         <button
           className={c}
-          onClick={() =>
-            cmd({ kind: "save", body: p, expected_revision: rev })
+          onClick={() => {
+            const submittedEpoch = editEpoch.current;
+            void cmd({ kind: "save", body: p, expected_revision: rev })
               .then((x) => {
                 setRev(x.draft.revision);
+                if (editEpoch.current === submittedEpoch) {
+                  setP(monthlyPolicySchema.parse(x.draft.body));
+                  setDirty(false);
+                }
                 setMessage({ code: "draft_saved" });
+                void refreshVolunteerQueries(queryClient, "assessment", language);
               })
-              .catch(fail)
-          }
+              .catch(fail);
+          }}
         >
           {copy.save}
         </button>
@@ -359,7 +389,7 @@ export function VolunteerAssessments({
             cmd({ kind: "publish", expected_revision: rev, effective_from: effective, reason })
               .then(() => {
                 setMessage({ code: "published" });
-                load();
+                void refreshVolunteerQueries(queryClient, "assessment", language);
               })
               .catch(fail)
           }
@@ -395,7 +425,7 @@ export function VolunteerAssessments({
             cmd({ kind: "run", period_start: month + "-01", scope_key: scope })
               .then((x) => {
                 setMessage({ code: "run_done", profiles: x.profiles });
-                load();
+                void refreshVolunteerQueries(queryClient, "assessment", language);
               })
               .catch(fail)
           }
@@ -434,6 +464,14 @@ export function VolunteerAssessments({
           {copy.notifications.title}
         </h2>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.notifications.text}</p>
+        <p className="text-sm">{copy.notificationsLimit}</p>
+        {notifications.isPending && !initial?.jobs && <p role="status">{copy.loading}</p>}
+        {notifications.error && (
+          <LoadFailure error={notifications.error} onRetry={() => void notifications.refetch()} />
+        )}
+        {!notifications.error && !notifications.isPending && jobs.length === 0 && (
+          <p>{copy.noNotifications}</p>
+        )}
         <ul className="space-y-2">
           {jobs.map((job) => (
             <li key={job.id} className="flex flex-wrap items-center gap-2 text-sm">
@@ -454,7 +492,7 @@ export function VolunteerAssessments({
                     fetchAdminJson(`/api/admin/volunteers/jobs/${job.id}/retry`, { method: "POST" })
                       .then(() => {
                         setMessage({ code: "requeued" });
-                        void loadJobs();
+                        void notifications.refetch();
                       })
                       .catch(fail)
                   }

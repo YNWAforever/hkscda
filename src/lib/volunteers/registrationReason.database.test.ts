@@ -28,7 +28,8 @@ async function seed(tx: SQL): Promise<Fixture> {
   const f = { actor: randomUUID(), activity: randomUUID(), registration: randomUUID() };
   await tx`set local role postgres`;
   await tx`insert into public.admin_user(auth_user_id,email,role) values(${f.actor}::uuid,${f.actor + "@example.invalid"},'admin')`;
-  await tx`insert into public.volunteer_activity(id,type,title,starts_at,ends_at,location,capacity,status) values(${f.activity}::uuid,'volunteer_shift','Synthetic reason fixture',now()+interval '2 days',now()+interval '2 days 2 hours','Isolated test',10,'published')`;
+  // This suite checks legacy audit shape; future legacy bookings correctly require a policy.
+  await tx`insert into public.volunteer_activity(id,type,title,starts_at,ends_at,location,capacity,status) values(${f.activity}::uuid,'volunteer_shift','Synthetic reason fixture',now()-interval '2 days',now()-interval '2 days'+interval '2 hours','Isolated test',10,'published')`;
   await tx`insert into public.volunteer_registration(id,activity_id,registration_type,status,participant_count,contact_name,contact_email,contact_phone,status_token_hash,status_token_expires_at) values(${f.registration}::uuid,${f.activity}::uuid,'individual','pending',1,'Synthetic reason',${f.registration + "@example.invalid"},'00000000',${f.registration},now()+interval '1 day')`;
   const rows =
     await tx`select updated_at::text as version from public.volunteer_registration where id=${f.registration}::uuid`;

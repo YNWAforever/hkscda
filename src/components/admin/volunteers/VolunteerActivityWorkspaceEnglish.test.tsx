@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, setSystemTime, test } from "bun:test";
+import { afterEach, describe, expect, setSystemTime, spyOn, test } from "bun:test";
 
 import { AdminApiError } from "../../../lib/admin/session";
 import { BulkInputError } from "../../../lib/volunteers/bulk/service";
@@ -25,6 +25,83 @@ const { volunteerCommonCopy } = await import("./volunteerCommonCopy");
 const { FIXTURE } = kit;
 const ALLOW = [FIXTURE.activity, FIXTURE.location, FIXTURE.role, FIXTURE.template];
 const noop = () => {};
+
+test("a month calendar does date work per activity and day instead of their product", () => {
+  const rows = Array.from({ length: 25 }, (_, index) => ({
+    ...kit.workspaceRows[index % kit.workspaceRows.length],
+    id: `calendar-fixture-${index}`,
+    starts_at: "2026-10-10T01:00:00Z",
+  }));
+  const DateTimeFormat = Intl.DateTimeFormat;
+  let hongKongDayConversions = 0;
+  const formatter = spyOn(Intl, "DateTimeFormat").mockImplementation(function (
+    locales?: Intl.LocalesArgument,
+    options?: Intl.DateTimeFormatOptions,
+  ) {
+    if (locales === "en-CA" && options?.timeZone === "Asia/Hong_Kong") hongKongDayConversions++;
+    return new DateTimeFormat(locales, options);
+  } as typeof Intl.DateTimeFormat);
+  try {
+    const markup = renderAdminInEnglish(
+      <ActivitySchedule
+        rows={rows}
+        view="calendar"
+        from="2026-10-09"
+        until="2026-11-08"
+        ids={[]}
+        onToggle={noop}
+        onOpen={noop}
+      />,
+    );
+    expect(markup.match(/<article\b/g)?.length).toBe(25);
+    // 25 activity dates plus the 31 advances in this inclusive month.
+    expect(hongKongDayConversions).toBeLessThanOrEqual(56);
+  } finally {
+    formatter.mockRestore();
+  }
+});
+
+test("calendar grouping keeps Hong Kong midnight on leap day and the following day", () => {
+  const markup = renderAdminInEnglish(
+    <ActivitySchedule
+      rows={[
+        {
+          ...kit.workspaceRows[0],
+          id: "leap",
+          title: "Leap fixture",
+          starts_at: "2028-02-28T16:00:00Z",
+        },
+        {
+          ...kit.workspaceRows[0],
+          id: "march",
+          title: "March fixture",
+          starts_at: "2028-02-29T16:00:00Z",
+        },
+      ]}
+      view="calendar"
+      from="2028-02-29"
+      until="2028-03-01"
+      ids={[]}
+      onToggle={noop}
+      onOpen={noop}
+    />,
+  );
+  const march = markup.indexOf('aria-label="2028-03-01"');
+  expect(markup.slice(markup.indexOf('aria-label="2028-02-29"'), march)).toContain("Leap fixture");
+  expect(markup.slice(0, march)).not.toContain("March fixture");
+  expect(markup.slice(march)).toContain("March fixture");
+  expect(markup.slice(march)).not.toContain("Leap fixture");
+});
+
+test("Chinese activity statuses use shared labels, including a visible unknown fallback (UC08)", () => {
+  expect(activityOperationCopy.zh.detail.registrationStatus("approved")).toBe("已批准");
+  expect(activityOperationCopy.zh.detail.registrationStatus("waitlisted")).toBe("候補中");
+  expect(activityOperationCopy.zh.detail.attendanceStatus("not_marked")).not.toBe("not_marked");
+  expect(activityOperationCopy.zh.detail.registrationStatus("unrecognised")).toBeTruthy();
+  expect(activityOperationCopy.zh.detail.registrationStatus("unrecognised")).not.toBe(
+    "unrecognised",
+  );
+});
 
 // A test that fixes the clock puts it back, so no other test in the run sees the fixed time.
 afterEach(() => setSystemTime());
@@ -105,19 +182,27 @@ describe("the activity workspace in English", () => {
     // The workspace starts its range at today and runs 30 days, and the fixture sessions are on fixed
     // dates (10 and 12 Oct 2026), so the clock is fixed to the day before them.
     setSystemTime(new Date("2026-10-09T04:00:00Z"));
-    kit.withQueries(workspaceQueries(), () => {
-      const markup = renderAdminInEnglish(<VolunteerActivityWorkspace initialView="calendar" />);
-      expectNoChineseText(markup, { allow: ALLOW });
-      expect(markup).toContain("List view");
-      expect(markup).toContain('aria-label="Hong Kong date calendar"');
-      for (const day of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
-        expect(markup, day).toContain(`>${day}</span>`);
-      }
-      expect(markup).toContain(
-        "The calendar shows up to 25 activities on this page. Use the page controls below for the rest.",
-      );
-      expect(markup).toContain("Confirmed 8 · Waitlisted 2");
-    });
+    const activities = Array.from({ length: 25 }, (_, index) => ({
+      ...kit.workspaceRows[index % kit.workspaceRows.length],
+      id: `english-calendar-${index}`,
+    }));
+    kit.withQueries(
+      workspaceQueries({
+        "volunteer-workspace": kit.ok({ activities, total: 60 }),
+      }),
+      () => {
+        const markup = renderAdminInEnglish(<VolunteerActivityWorkspace initialView="calendar" />);
+        expectNoChineseText(markup, { allow: ALLOW });
+        expect(markup).toContain("List view");
+        expect(markup).toContain('aria-label="Hong Kong date calendar"');
+        for (const day of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]) {
+          expect(markup, day).toContain(`>${day}</span>`);
+        }
+        expect(markup).toContain("The calendar retains sessions loaded for this date range.");
+        expect(markup).toContain("Partial data: 25 / 60 sessions loaded.");
+        expect(markup).toContain("Confirmed 8 · Waitlisted 2");
+      },
+    );
   });
 
   test("tells the loading, the empty list and the failures in English with a next step", () => {
@@ -722,8 +807,8 @@ describe("the activity panel in English", () => {
     for (const text of [
       "編輯此活動",
       "報名及出席（30）",
-      FIXTURE.volunteer + " · approved · completed",
-      FIXTURE.volunteer + " · mystery · mystery",
+      FIXTURE.volunteer + " · 已批准 · 已完成",
+      FIXTURE.volunteer + " · 待核實 · 待核實",
       "上一頁報名",
       "操作紀錄（40）",
       " · volunteer_activity.create",

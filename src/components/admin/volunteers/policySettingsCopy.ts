@@ -12,6 +12,9 @@ type PreviewIssue = { path?: string; message?: string } | string;
 /** Copy for the volunteer policy settings screen (`VolunteerPolicySettings`). */
 export const policySettingsCopy = defineAdminCopy({
   zh: {
+    newerDraft: "已有新草稿版本，未儲存輸入已保留。",
+    reloadDraft: "捨棄輸入並載入新版本",
+    advancedToggle: "團體、職務、資格配額與補位進階設定",
     loadFailed: "未能載入義工政策。",
     loading: "正在載入義工政策…",
     title: "義工政策設定",
@@ -117,6 +120,9 @@ export const policySettingsCopy = defineAdminCopy({
     confirmSwitch: "目前有未儲存修改，確定切換模板？",
   },
   en: {
+    newerDraft: "A newer draft revision is available. Unsaved inputs are preserved.",
+    reloadDraft: "Discard inputs and load the new revision",
+    advancedToggle: "Advanced group, duty, qualification quotas and release settings",
     loadFailed: "Could not load the volunteer policy. Reload the page or try again later.",
     loading: "Loading the volunteer policy…",
     title: "Volunteer policy settings",

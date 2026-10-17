@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { volunteerActionEligibility } from "../../../lib/volunteers/actionEligibility";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -181,12 +182,12 @@ export function VolunteerManagement() {
   }
 
   const activitiesQuery = useQuery({
-    queryKey: ["volunteer-activities", activitySearch],
+    queryKey: volunteerQueryKeys.key("legacyActivities", activitySearch),
     queryFn: () =>
       fetchAdminJson<ActivityListResponse>(`/api/admin/volunteers/activities?${activitySearch}`),
   });
   const registrationsQuery = useQuery({
-    queryKey: ["volunteer-registrations", registrationSearch],
+    queryKey: volunteerQueryKeys.key("legacyRegistrations", registrationSearch),
     queryFn: () =>
       fetchAdminJson<RegistrationListResponse>(
         `/api/admin/volunteers/registrations?${registrationSearch}`,
@@ -211,8 +212,8 @@ export function VolunteerManagement() {
   ).length;
 
   const refreshAll = () => {
-    void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
-    void queryClient.invalidateQueries({ queryKey: ["volunteer-registrations"] });
+    void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("legacyActivities") });
+    void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("legacyRegistrations") });
   };
 
   const createActivity = useMutation({
@@ -237,7 +238,7 @@ export function VolunteerManagement() {
     onSuccess: () => {
       setDraft((current) => ({ ...current, title: "", startsAt: "", endsAt: "", location: "" }));
       setShowCreate(false);
-      void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] });
+      void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("legacyActivities") });
     },
   });
 
@@ -247,7 +248,8 @@ export function VolunteerManagement() {
         method: "PATCH",
         body: JSON.stringify(body),
       }),
-    onSettled: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
+    onSettled: () =>
+      void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("legacyActivities") }),
   });
 
   const cloneActivity = useMutation({
@@ -256,7 +258,8 @@ export function VolunteerManagement() {
         method: "POST",
         body: JSON.stringify({}),
       }),
-    onSettled: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-activities"] }),
+    onSettled: () =>
+      void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("legacyActivities") }),
   });
 
   const updateRegistration = useMutation({
@@ -280,7 +283,10 @@ export function VolunteerManagement() {
         method: "PATCH",
         body: JSON.stringify({ attendanceStatus: "completed", expectedUpdatedAt: updatedAt }),
       }),
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["volunteer-registrations"] }),
+    onSuccess: () =>
+      void queryClient.invalidateQueries({
+        queryKey: volunteerQueryKeys.key("legacyRegistrations"),
+      }),
   });
 
   const activityColumns: DataTableColumn<VolunteerActivitySummary>[] = [

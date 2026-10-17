@@ -1,3 +1,4 @@
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import type { SourceListing } from "../../../lib/volunteers/policy/sourceService";
@@ -107,7 +108,7 @@ function Cred({
 }) {
   const copy = useAdminCopy(policyAdvancedCopy).credentials;
   const registry = useQuery({
-    queryKey: ["volunteer-policy-sources"],
+    queryKey: volunteerQueryKeys.key("policySources"),
     queryFn: () =>
       fetchAdminJson<SourceListing>("/api/admin/volunteers/sources/", {
         method: "POST",

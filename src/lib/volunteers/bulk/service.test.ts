@@ -9,6 +9,32 @@ import {
   hkDate,
   hkTimeLabel,
 } from "./service";
+test("scoped attendance commands pass the same validated service boundary as existing operations", async () => {
+  const id = "90000000-0000-4000-8000-000000000001";
+  let calls = 0;
+  const service = createBulkService(async (actor, command) => {
+    calls++;
+    return { actor, action: command.action };
+  });
+  const response = await service.command(id, {
+    action: "attendance_preview",
+    activity_id: id,
+    expected_activity_updated_at: "2026-10-16T00:00:00.123456Z",
+    page: 1,
+    page_size: 25,
+    idempotency_key: id,
+    entries: [
+      {
+        registration_id: id,
+        expected_updated_at: "2026-10-16T00:00:00.123456Z",
+        attendance_status: "attended",
+        command: "record",
+      },
+    ],
+  });
+  expect(response).toEqual({ actor: id, action: "attendance_preview" });
+  expect(calls).toBe(1);
+});
 test("Hong Kong date conversion and four-week weekdays ignore device timezone", () => {
   expect(hkDate(new Date("2026-09-14T16:30:00Z"))).toBe("2026-09-15");
   expect(addHkDays("2026-12-31", 1)).toBe("2027-01-01");

@@ -1,8 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Send } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { useListQueryState } from "../../../lib/admin/useListQueryState";
 import type {
   GroupEnquiry,
   GroupEnquiryStatus,
@@ -20,6 +22,7 @@ import {
 } from "./groupEnquiryAdminLogic";
 import { groupEnquiryCopy } from "./groupEnquiryCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
 
 type GroupEnquiryListResponse = { enquiries: GroupEnquirySummary[]; total: number };
 
@@ -47,9 +50,15 @@ export function GroupEnquiryManagement() {
   const copy = useAdminCopy(groupEnquiryCopy);
   const format = useAdminCopy(volunteerFormatCopy);
   const queryClient = useQueryClient();
-  const [q, setQ] = useState("");
-  const [status, setStatus] = useState<GroupEnquiryStatus | "all">("all");
-  const [page, setPage] = useState(1);
+  const listState = useListQueryState({
+    key: "group-enquiries",
+    initialFilters: { status: "all" as GroupEnquiryStatus | "all" },
+    onScopeChange: () => setSelectedId(null),
+  });
+  const q = listState.query,
+    status = listState.filters.status,
+    page = listState.page;
+  const setPage = listState.setPage;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const search = useMemo(
@@ -58,15 +67,26 @@ export function GroupEnquiryManagement() {
   );
 
   const enquiriesQuery = useQuery({
-    queryKey: ["group-enquiries", search],
-    queryFn: () =>
-      fetchAdminJson<GroupEnquiryListResponse>(`/api/admin/volunteers/group-enquiries?${search}`),
+    queryKey: volunteerQueryKeys.key("groupEnquiries", search),
+    enabled: listState.hydrated,
+    staleTime: 30_000,
+    placeholderData: keepPreviousData,
+    queryFn: ({ signal }) =>
+      fetchAdminJson<GroupEnquiryListResponse>("/api/admin/volunteers/group-enquiries", {
+        method: "POST",
+        body: JSON.stringify({
+          action: "search",
+          query: { q, status: status === "all" ? undefined : status, page },
+        }),
+        signal,
+      }),
   });
   const detailQuery = useQuery({
-    queryKey: ["group-enquiry", selectedId],
-    queryFn: () =>
+    queryKey: volunteerQueryKeys.key("groupEnquiry", selectedId),
+    queryFn: ({ signal }) =>
       fetchAdminJson<{ enquiry: GroupEnquiry }>(
         `/api/admin/volunteers/group-enquiries?id=${selectedId}`,
+        { signal },
       ),
     enabled: Boolean(selectedId),
   });
@@ -80,15 +100,12 @@ export function GroupEnquiryManagement() {
         body: JSON.stringify(body),
       }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["group-enquiries"] });
-      void queryClient.invalidateQueries({ queryKey: ["group-enquiry", selectedId] });
+      void queryClient.invalidateQueries({ queryKey: volunteerQueryKeys.key("groupEnquiries") });
+      void queryClient.invalidateQueries({
+        queryKey: volunteerQueryKeys.key("groupEnquiry", selectedId),
+      });
     },
   });
-
-  function applyFilter(change: () => void) {
-    change();
-    setPage(1);
-  }
 
   const columns: DataTableColumn<GroupEnquirySummary>[] = [
     {
@@ -98,6 +115,7 @@ export function GroupEnquiryManagement() {
         <div>
           <button
             type="button"
+            disabled={enquiriesQuery.isFetching || listState.isDebouncing}
             className="cursor-pointer font-semibold text-[var(--color-primary)] hover:underline"
             onClick={() => setSelectedId(row.id)}
           >
@@ -155,21 +173,25 @@ export function GroupEnquiryManagement() {
   ];
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-6">
+      <VolunteerPageHeading pageId="group-enquiries">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>
           <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <button
           type="button"
-          onClick={() => void queryClient.invalidateQueries({ queryKey: ["group-enquiries"] })}
+          onClick={() =>
+            void queryClient.invalidateQueries({
+              queryKey: volunteerQueryKeys.key("groupEnquiries"),
+            })
+          }
           className={`${buttonBase} min-h-11 border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-surface-offset)]`}
         >
           <RefreshCw className="h-4 w-4" />
           {copy.refresh}
         </button>
-      </div>
+      </VolunteerPageHeading>
 
       <div className="flex flex-wrap gap-3">
         <label className="flex flex-col gap-1">
@@ -177,8 +199,7 @@ export function GroupEnquiryManagement() {
             {copy.filters.search}
           </span>
           <input
-            value={q}
-            onChange={(event) => applyFilter(() => setQ(event.target.value))}
+            {...listState.queryInput}
             placeholder={copy.filters.searchPlaceholder}
             className={inputClass}
           />
@@ -190,7 +211,7 @@ export function GroupEnquiryManagement() {
           <select
             value={status}
             onChange={(event) =>
-              applyFilter(() => setStatus(event.target.value as GroupEnquiryStatus | "all"))
+              listState.changeFilter({ status: event.target.value as GroupEnquiryStatus | "all" })
             }
             className={inputClass}
           >
@@ -231,7 +252,7 @@ export function GroupEnquiryManagement() {
         <EnquiryDetailPanel
           key={detail.id}
           detail={detail}
-          pending={patch.isPending}
+          pending={patch.isPending || enquiriesQuery.isFetching || listState.isDebouncing}
           failed={patch.isError ? updateFailure(patch.error) : null}
           onPatch={(body) => patch.mutate(body)}
         />

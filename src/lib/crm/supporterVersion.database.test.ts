@@ -49,6 +49,7 @@ async function update(expected: number, name: string, who = actor, at: string | 
 
 describe.skipIf(!sql)("T15 versioned supporter edits on isolated Postgres", () => {
   beforeAll(async () => {
+    await db()`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now()),(${staff}::uuid,${staff + "@example.invalid"},now()),(${disabled}::uuid,${disabled + "@example.invalid"},now())`;
     await db()`insert into public.admin_user(auth_user_id,email,role,status)
       values(${actor}::uuid,${actor + "@example.invalid"},'treasurer','active'),
         (${staff}::uuid,${staff + "@example.invalid"},'staff','active'),
@@ -64,6 +65,7 @@ describe.skipIf(!sql)("T15 versioned supporter edits on isolated Postgres", () =
     await sql`delete from public.supporter where id=${supporter}::uuid`;
     await sql`delete from public.admin_user where auth_user_id in
       (${actor}::uuid,${staff}::uuid,${disabled}::uuid)`;
+    await sql`delete from auth.users where id in (${actor}::uuid,${staff}::uuid,${disabled}::uuid)`;
     await sql.close();
   });
 

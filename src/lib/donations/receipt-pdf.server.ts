@@ -1,5 +1,4 @@
-import fontkit from "@pdf-lib/fontkit";
-import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
+import type { PDFFont } from "pdf-lib";
 
 import { getReceiptConfig } from "./config.server";
 import { loadReceiptFont } from "./receiptFont.server";
@@ -44,6 +43,11 @@ export function formatReceiptDate(issuedAt: string): string {
 
 export async function generateReceiptPdf(input: ReceiptPdfInput) {
   const config = getReceiptConfig();
+  // The SSR route registry also imports this helper for pages that never generate a receipt.
+  const [{ default: fontkit }, { PDFDocument, StandardFonts, rgb }] = await Promise.all([
+    import("@pdf-lib/fontkit"),
+    import("pdf-lib"),
+  ]);
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
   // This CJK font loses glyphs when pdf-lib/fontkit embeds it as a subset.

@@ -8,7 +8,10 @@ export const Route = createFileRoute("/api/jobs/volunteers")({
     handlers: {
       GET: async ({ request }) => {
         if (!authorizedCron(request, process.env.CRON_SECRET))
-          return Response.json({ error: "unauthorized" }, { status: 401 });
+          return Response.json(
+            { error: "unauthorized" },
+            { status: 401, headers: { "cache-control": "no-store" } },
+          );
         const result = await createVolunteerRuntimeJobs(
           createVolunteerJobRepository(
             createSupabaseServiceClient(),

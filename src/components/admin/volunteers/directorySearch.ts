@@ -21,7 +21,6 @@ export function parseDirectorySearch(value: Record<string, unknown>): DirectoryS
 }
 export function directoryQuery(search: DirectorySearch) {
   const params = new URLSearchParams({ page: String(search.page) });
-  if (search.q) params.set("q", search.q);
   if (search.status) params.set("status", search.status);
   if (search.tier) params.set("tier", search.tier);
   return params.toString();

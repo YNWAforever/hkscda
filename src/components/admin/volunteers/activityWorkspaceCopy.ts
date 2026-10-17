@@ -57,6 +57,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       policyMissing: "待綁定政策",
       shortage: "未達政策最低人手",
       next30: "今天起30天",
+      today: "今日場次",
       previous: "上一期",
       next: "下一期",
       past: "歷史活動",
@@ -74,6 +75,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       label: "活動列表",
       heading: (total: number | null) => `1. 選範圍 · 活動（${total ?? "資料暫不可用"}）`,
       selectPage: (count: number) => `選取本頁（${count}）`,
+      selectCalendarPage: (page: number, count: number) => `選取第 ${page} 頁（${count}）`,
       lockSelected: (count: number) => `鎖定已選跨頁項目（${count}）`,
       lockAll: (total: number) => `鎖定所有符合條件（${total}）`,
       clear: "清除選取",
@@ -121,7 +123,21 @@ export const activityWorkspaceCopy = defineAdminCopy({
       shortage: (role: string, missing: number) => `尚欠 ${role} ${missing} 人`,
       registrationsClosed: "已截止報名",
       calendarLabel: "香港日期月曆",
-      calendarNote: "月曆顯示本頁最多25場活動；使用下方頁碼查看其餘場次。每格可開啟活動詳情。",
+      calendarNote:
+        "月曆保留此日期範圍已載入的場次；使用下方頁碼逐頁載入其餘場次。選取本頁只涵蓋目前資料頁。",
+      rangeProblems: {
+        required: "請指定開始及結束日期；月曆每次最多查詢93日。",
+        invalid: "日期範圍無效，請檢查開始及結束日期。",
+        too_long: "日期範圍超過93日，請縮窄範圍。",
+      },
+      complete: (count: number) => `已完整載入此範圍 ${count} 場活動。`,
+      partial: (loaded: number, total: number | null) =>
+        `部分資料：已載入 ${loaded} / ${total ?? "待確認"} 場；請使用頁碼載入其餘場次。`,
+      partialFailure: (loaded: number) =>
+        `載入失敗；保留已載入 ${loaded} 場，未能確認範圍完整。請重試。`,
+      changed: "讀取期間資料已變更，未能確認範圍完整。請重新載入。",
+      emptyDay: "當日沒有符合條件的場次。",
+      unloadedDay: "資料未完整載入。",
       weekday: (index: number) => `星期${["日", "一", "二", "三", "四", "五", "六"][index]}`,
       cardStaffing: (approved: number, waitlisted: number) =>
         `已確認 ${approved} · 候補 ${waitlisted}`,
@@ -187,6 +203,7 @@ export const activityWorkspaceCopy = defineAdminCopy({
       policyMissing: "Policy not linked yet",
       shortage: "Below the policy's minimum staffing",
       next30: "Next 30 days from today",
+      today: "Today's sessions",
       previous: "Previous period",
       next: "Next period",
       past: "Past activities",
@@ -204,6 +221,8 @@ export const activityWorkspaceCopy = defineAdminCopy({
       heading: (total: number | null) =>
         `1. Choose the range · Activities (${total === null ? "data not available" : formatAdminNumber(total, "en")})`,
       selectPage: (count: number) => `Select this page (${formatAdminNumber(count, "en")})`,
+      selectCalendarPage: (page: number, count: number) =>
+        `Select page ${formatAdminNumber(page, "en")} (${formatAdminNumber(count, "en")})`,
       lockSelected: (count: number) =>
         `Lock the items selected across pages (${formatAdminNumber(count, "en")})`,
       lockAll: (total: number) => `Lock all matches (${formatAdminNumber(total, "en")})`,
@@ -252,7 +271,21 @@ export const activityWorkspaceCopy = defineAdminCopy({
       registrationsClosed: "Registration closed",
       calendarLabel: "Hong Kong date calendar",
       calendarNote:
-        "The calendar shows up to 25 activities on this page. Use the page controls below for the rest. Open any entry for activity details.",
+        "The calendar retains sessions loaded for this date range. Use the page controls below to load the rest. Select page covers only the current data page.",
+      rangeProblems: {
+        required: "Choose both dates. The calendar reads at most 93 days at a time.",
+        invalid: "The date range is invalid. Check both dates.",
+        too_long: "This range exceeds 93 days. Choose a shorter range.",
+      },
+      complete: (count: number) =>
+        `All ${formatAdminNumber(count, "en")} sessions in this range are loaded.`,
+      partial: (loaded: number, total: number | null) =>
+        `Partial data: ${formatAdminNumber(loaded, "en")} / ${total === null ? "unknown" : formatAdminNumber(total, "en")} sessions loaded. Use the page controls to load the rest.`,
+      partialFailure: (loaded: number) =>
+        `Loading failed. ${formatAdminNumber(loaded, "en")} loaded sessions are retained; completeness is unknown. Retry.`,
+      changed: "Data changed during reading. Completeness is unknown. Reload the range.",
+      emptyDay: "No matching sessions on this day.",
+      unloadedDay: "Data is not fully loaded.",
       weekday: (index: number) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][index],
       cardStaffing: (approved: number, waitlisted: number) =>
         `Confirmed ${formatAdminNumber(approved, "en")} · Waitlisted ${formatAdminNumber(waitlisted, "en")}`,

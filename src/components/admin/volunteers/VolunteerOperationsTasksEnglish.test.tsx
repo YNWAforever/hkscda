@@ -366,6 +366,34 @@ const tasksData = {
 };
 
 describe("today's volunteer tasks in English", () => {
+  test("pending cards expose session decision data and an explicitly unreserved capacity", () => {
+    const data = {
+      ...tasksData,
+      filteredTotal: 1,
+      pending: [
+        task({
+          title: "Synthetic session",
+          location: "Synthetic venue",
+          starts_at: "2026-10-16T01:00:00Z",
+          ends_at: "2026-10-16T03:00:00Z",
+          participant_count: 2,
+          capacity: 10,
+          approved_participants: 9,
+          remaining_capacity: 1,
+          status: "pending",
+        }),
+      ],
+    };
+    kit.withQueries({ "volunteer-tasks": kit.ok(data) }, () => {
+      const markup = renderAdminInEnglish(<VolunteerTasks />);
+      expect(markup).toContain("Synthetic venue");
+      expect(markup).toContain("2 participants");
+      expect(markup).toContain("1 remaining");
+      expect(markup).toContain("not reserved");
+      expect(markup).toContain("View / process application");
+      expect(markup).toContain('type="search"');
+    });
+  });
   test("shows the tasks, the follow-ups and the notifications without Chinese", () => {
     kit.withQueries({ "volunteer-tasks": kit.ok(tasksData) }, () => {
       const markup = renderAdminInEnglish(<VolunteerTasks />);
@@ -378,7 +406,7 @@ describe("today's volunteer tasks in English", () => {
         "Contact follow-up",
         "Notification status",
         "To contact or verify",
-        "Open " + FIXTURE.activity,
+        "View / process application",
         "Open related task",
         "Registration, cancellation or terms update · " + FIXTURE.volunteer,
         "Qualification exception to verify",
@@ -452,7 +480,7 @@ describe("today's volunteer tasks in English", () => {
         "記錄聯絡及跟進結果不會更改資格、名額或批准結果，也不等同訊息已送達。",
         "待審批",
         "待聯絡／核實",
-        "開啟" + FIXTURE.activity,
+        "查看／處理申請",
         "開啟相關工作",
         "報名／取消／條款更新 · " + FIXTURE.volunteer,
         "營運跟進",
