@@ -27,6 +27,10 @@ import { volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerRegistrationCopy } from "./volunteerRegistrationCopy";
 import { RegistrationReviewSummary } from "./RegistrationReviewSummary";
+import {
+  registrationReviewOutcome,
+  type RegistrationReviewOutcome,
+} from "./registrationReviewOutcome";
 import { registrationReviewCopy } from "./registrationReviewCopy";
 import { volunteerWorkspaceCopy } from "../volunteerWorkspaceCopy";
 import {
@@ -80,6 +84,8 @@ export function VolunteerRegistrationDetail({
   const [isCorrection, setIsCorrection] = useState(false);
   const [rejectStatus, setRejectStatus] = useState<VolunteerRegistrationStatus | null>(null);
   const [refreshFailed, setRefreshFailed] = useState(false);
+  const [reviewOutcome, setReviewOutcome] = useState<RegistrationReviewOutcome | null>(null);
+  const [reviewTargetStatus, setReviewTargetStatus] = useState<string | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: volunteerQueryKeys.key("registration", registrationId),
     queryFn: ({ signal }) =>
@@ -91,7 +97,14 @@ export function VolunteerRegistrationDetail({
   useBreadcrumbRecordName(data?.registration?.contactName);
   async function reloadRegistration() {
     const result = await refetch();
-    if (!result.error) setRefreshFailed(false);
+    if (!result.error) {
+      setRefreshFailed(false);
+      if (reviewOutcome === "unknown" && reviewTargetStatus) {
+        setReviewOutcome(
+          result.data?.registration?.status === reviewTargetStatus ? "recovered" : "failed",
+        );
+      }
+    }
   }
   // A registration belongs to the activities page; that is the heading until it loads.
   const destination = (
@@ -105,19 +118,35 @@ export function VolunteerRegistrationDetail({
     Boolean(data?.registration && data.registration.attendanceStatus !== "not_marked");
 
   const updateStatus = useMutation({
+    onMutate: (variables: { status: string; reason?: string }) => {
+      setReviewOutcome(null);
+      setReviewTargetStatus(variables.status);
+      setRefreshFailed(false);
+    },
     mutationFn: ({ status, reason }: { status: string; reason?: string }) =>
       sendRegistrationStatusChange(
         registrationId,
         { status, expectedUpdatedAt: data?.registration.updatedAt, reason },
         language,
       ),
-    onSettled: async (_data, error) => {
+    onSettled: async (_data, error, variables: { status: string; reason?: string }) => {
+      let refreshed = true;
       try {
         await invalidateVolunteerQueries(queryClient, "registration");
-        setRefreshFailed(false);
       } catch {
-        if (!error) setRefreshFailed(true);
+        refreshed = false;
       }
+      const observedStatus = queryClient.getQueryData<RegistrationResponse>(
+        volunteerQueryKeys.key("registration", registrationId),
+      )?.registration?.status;
+      const outcome = registrationReviewOutcome({
+        error,
+        refreshed,
+        requestedStatus: variables.status,
+        observedStatus,
+      });
+      setReviewOutcome(outcome);
+      setRefreshFailed(outcome === "saved_refresh_failed");
     },
   });
 
@@ -195,6 +224,11 @@ export function VolunteerRegistrationDetail({
   const attendanceActions = correctionEnabled
     ? correctionAttendanceActions
     : ordinaryAttendanceActions;
+  const reviewActionsLocked =
+    updateStatus.isPending || updateAttendance.isPending || reviewOutcome === "unknown";
+  const activityTime = registration.activity.endsAt
+    ? `${format.registrationDateTime(registration.activity.startsAt)} – ${format.registrationDateTime(registration.activity.endsAt)}`
+    : format.registrationDateTime(registration.activity.startsAt);
 
   return (
     <div className="space-y-5 p-6">
@@ -245,10 +279,8 @@ export function VolunteerRegistrationDetail({
         <RegistrationProfileLink profileId={registration.profileId} />
         <div className="mt-5 grid gap-4 md:grid-cols-3">
           <DetailItem label={text.activity} value={registration.activity.title} />
-          <DetailItem
-            label={text.date}
-            value={format.registrationDateTime(registration.activity.startsAt)}
-          />
+          <DetailItem label={text.activityTime} value={activityTime} />
+          <DetailItem label={text.location} value={registration.activity.location} />
           <DetailItem
             label={text.participants}
             value={format.number(registration.participantCount)}
@@ -276,16 +308,28 @@ export function VolunteerRegistrationDetail({
         <RegistrationReviewSummary registration={registration} />
         <button
           className="mt-3 min-h-11 rounded-md border border-[var(--color-border)] px-3 text-sm"
-          disabled={updateStatus.isPending || updateAttendance.isPending}
+          disabled={reviewActionsLocked}
           onClick={() => void reloadRegistration()}
         >
           {reviewCopy.reload}
         </button>
-        {updateStatus.error && updateStatus.variables?.status !== "rejected" && (
-          <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
-            {volunteerAdminErrorMessage(updateStatus.error, language)}
-          </p>
+        {updateStatus.isPending && <p role="status">{text.reviewSubmitting}</p>}
+        {(reviewOutcome === "saved" || updateStatus.isSuccess) && (
+          <p role="status">{text.reviewSaved}</p>
         )}
+        {reviewOutcome === "recovered" && <p role="status">{text.reviewRecovered}</p>}
+        {reviewOutcome === "unknown" && <p role="alert">{text.reviewUnknown}</p>}
+        {reviewOutcome === "failed" && !updateStatus.error && (
+          <p role="alert">{text.reviewReloadedNotSaved}</p>
+        )}
+        {updateStatus.error &&
+          updateStatus.variables?.status !== "rejected" &&
+          reviewOutcome !== "unknown" &&
+          reviewOutcome !== "recovered" && (
+            <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
+              {volunteerAdminErrorMessage(updateStatus.error, language)}
+            </p>
+          )}
         {updateAttendance.error && (
           <p role="alert" className="mt-4 text-sm text-[var(--color-error)]">
             {volunteerAdminErrorMessage(updateAttendance.error, language)}
@@ -322,7 +366,7 @@ export function VolunteerRegistrationDetail({
             <button
               key={status}
               type="button"
-              disabled={updateStatus.isPending}
+              disabled={reviewActionsLocked}
               onClick={() => {
                 if (isDestructiveTransition(status)) {
                   setRejectStatus(status);
@@ -344,8 +388,8 @@ export function VolunteerRegistrationDetail({
               key={attendanceStatus}
               type="button"
               disabled={
+                reviewActionsLocked ||
                 updateAttendance.isPending ||
-                updateStatus.isPending ||
                 (correctionEnabled && !correctionReason.trim())
               }
               onClick={() => updateAttendance.mutate(attendanceStatus)}

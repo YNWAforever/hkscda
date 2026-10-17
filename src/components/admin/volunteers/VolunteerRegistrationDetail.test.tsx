@@ -11,7 +11,7 @@ const query = await import("@tanstack/react-query");
 const router = await import("@tanstack/react-router");
 const mutations: Array<{
   mutationFn: (input: unknown) => Promise<unknown>;
-  onSettled: () => void;
+  onSettled: (data: unknown, error: unknown, variables: { status: string }) => void;
 }> = [];
 const requests: Array<{ url: string; body: unknown }> = [];
 const invalidated: unknown[] = [];
@@ -28,6 +28,7 @@ const registration = {
   registrationType: "group",
   activity: {
     title: "Fixture activity",
+    location: "Fixture venue",
     startsAt: "2026-09-06T00:00:00Z",
     endsAt: "2026-09-06T02:00:00Z",
     status: "published",
@@ -35,6 +36,11 @@ const registration = {
   },
 };
 let registrationError: Error | null = null;
+const mutationDisplay = {
+  isPending: false,
+  isSuccess: false,
+  error: new Error("活動名額不足") as Error | null,
+};
 
 mock.module("@tanstack/react-query", () => ({
   ...query,
@@ -42,6 +48,7 @@ mock.module("@tanstack/react-query", () => ({
     invalidateQueries: (input: unknown) => {
       invalidated.push(input);
     },
+    getQueryData: () => ({ registration }),
   }),
   useQuery: () => ({
     data: registrationError ? undefined : { registration },
@@ -51,10 +58,15 @@ mock.module("@tanstack/react-query", () => ({
   }),
   useMutation: (options: {
     mutationFn: (input: unknown) => Promise<unknown>;
-    onSettled: () => void;
+    onSettled: (data: unknown, error: unknown, variables: { status: string }) => void;
   }) => {
     mutations.push(options);
-    return { mutate: () => {}, isPending: false, error: new Error("活動名額不足") };
+    return {
+      mutate: () => {},
+      isPending: mutationDisplay.isPending,
+      isSuccess: mutationDisplay.isSuccess,
+      error: mutationDisplay.error,
+    };
   },
 }));
 mock.module("@tanstack/react-router", () => ({
@@ -119,13 +131,43 @@ test("status callback sends reviewed version and refreshes capacity after a reje
     status: "approved",
     expectedUpdatedAt: registration.updatedAt,
   });
-  mutations[0].onSettled();
+  await mutations[0].onSettled(undefined, new Error("Capacity conflict"), { status: "approved" });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-registration"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-activities"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-workspace"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-workspace-detail"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-calendar"] });
   expect(invalidated).toContainEqual({ queryKey: ["volunteer-tasks"] });
+});
+
+test("shows an explicit submitting and saved result for a review write", () => {
+  mutationDisplay.isPending = true;
+  mutationDisplay.isSuccess = false;
+  mutationDisplay.error = null;
+  try {
+    expect(
+      renderAdminInChinese(<VolunteerRegistrationDetail registrationId="registration-1" />),
+    ).toContain("正在儲存審核結果");
+    mutationDisplay.isPending = false;
+    mutationDisplay.isSuccess = true;
+    expect(
+      renderAdminInChinese(<VolunteerRegistrationDetail registrationId="registration-1" />),
+    ).toContain("審核結果已儲存");
+  } finally {
+    mutationDisplay.isPending = false;
+    mutationDisplay.isSuccess = false;
+    mutationDisplay.error = new Error("活動名額不足");
+  }
+});
+
+test("shows the activity's full Hong Kong time span and venue before review", () => {
+  const markup = renderAdminInChinese(
+    <VolunteerRegistrationDetail registrationId="registration-1" />,
+  );
+  expect(markup).toContain("活動時間");
+  expect(markup).toContain("08:00");
+  expect(markup).toContain("10:00");
+  expect(markup).toContain("Fixture venue");
 });
 
 test("shows a retry control instead of reporting a load failure as a deleted registration", () => {
