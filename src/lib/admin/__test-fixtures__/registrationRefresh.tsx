@@ -5,7 +5,7 @@ import { AdminLanguageProvider } from "../../../components/admin/adminI18n";
 import { VolunteerRegistrationDetail } from "../../../components/admin/volunteers/VolunteerRegistrationDetail";
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-function FixtureRegistration() {
+export function FixtureRegistration() {
   return (
     <QueryClientProvider client={client}>
       <AdminLanguageProvider initialLanguage="zh">
