@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
 import { isAdminAuthPath, loginUrlFor } from "../../lib/admin/loginRedirect";
-import { supabase } from "../../lib/supabase";
+import { subscribeToAdminAuth } from "../../lib/admin/supabaseAuthEvents";
 import { isLapsedSession } from "./failureClass";
 
 export type SessionExpiryDeps = {
@@ -92,8 +92,7 @@ export function watchSessionExpiry(deps: SessionExpiryDeps): SessionExpiryWatche
 }
 
 function subscribeToSupabaseAuth(listener: (event: string) => void) {
-  const { data } = supabase.auth.onAuthStateChange((event) => listener(event));
-  return () => data.subscription.unsubscribe();
+  return subscribeToAdminAuth((event) => listener(event));
 }
 
 /**

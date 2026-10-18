@@ -36,3 +36,18 @@ The background jobs are seven scheduled tasks that Vercel runs by itself: they s
 - The next day, the three daily jobs show 200 responses in the Vercel logs. Check `public-media-repair` on day one in particular.
 - **To pause everything:** remove `CRON_SECRET` and redeploy. The missing-secret error then appears in the logs, which is expected. While `CRON_SECRET` is removed, creating a background export also answers 503 and `/api/internal/readiness` answers 401, so the live-readiness check (`scripts/verify-live-readiness.ts`) cannot run until the secret is restored.
 - **To pause one job:** remove its entry from `vercel.json`, add its path with the reason to `INTENTIONALLY_UNSCHEDULED` in `src/lib/cronScheduleContract.test.ts` in the same commit, and deploy. For sponsorships only, removing `SPONSORSHIP_JOB_ACTOR_ID` and redeploying also works.
+
+# Volunteer actor preflight (2026-10-13)
+
+The hourly volunteer run claims its existing lease, then checks `VOLUNTEER_JOB_ACTOR_ID`
+before generation, releases, promotions, assessments or notification dispatch. The value
+must be a UUID identifying an active `admin_user` with confirmed, unbanned Auth identity.
+An invalid actor records a failed run without domain work. Duplicate claims do no work.
+Private `/api/internal/readiness` checks the same actor without claiming or executing a run;
+its `volunteerJobs` feature reports a fixed configuration/eligibility/read-failure code.
+Raw IDs and provider messages are never included in those readiness diagnostics.
+
+Only the release owner may update production configuration under separate release approval.
+Keep `CRON_SECRET`; configuration changes require a redeploy. Do not substitute another admin.
+Local tests use synthetic actors and never load production secrets. Production acceptance
+still requires three consecutive native cycles with DB/run readback at the approved SHA.

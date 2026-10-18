@@ -146,6 +146,7 @@ export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
     kind: "inline",
     ui: ["volunteers/ActivityOperationForm.tsx"],
     routes: [{ method: "POST", path: "/api/admin/volunteers/bulk" }],
-    sentBy: ["volunteers/VolunteerActivityWorkspace.tsx"],
+    sentBy: ["volunteers/VolunteerActivityWorkspace.tsx", "volunteers/workspaceQueries.ts"],
+    note: "workspaceQueries only reads templates on this shared POST route; cancellation remains in ActivityOperationForm.",
   },
 ];

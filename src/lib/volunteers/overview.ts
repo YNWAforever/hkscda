@@ -1,8 +1,11 @@
 import { volunteerServerErrorText } from "./serverErrors";
 import type { SessionCoverage } from "./sessionCoverage";
+import type { PendingCounts } from "./pending";
+import type { VolunteerJobHealth } from "./jobs/health";
 export type OverviewCounts = {
   pendingProfiles: number | null;
   pendingRegistrations: number | null;
+  pendingBreakdown?: PendingCounts | null;
   todayActivities: number | null;
 };
 export type OverviewCoverage = {
@@ -11,6 +14,7 @@ export type OverviewCoverage = {
   next30: SessionCoverage;
 };
 export type OverviewData = {
+  runtimeHealth?: VolunteerJobHealth;
   date: string;
   counts: OverviewCounts;
   coverage?: OverviewCoverage | null;
@@ -33,7 +37,8 @@ export function hongKongDayRange(now: Date) {
 export function createOverviewHandler(
   deps: {
     authorize: (request: Request) => Promise<unknown>;
-    read: (range: ReturnType<typeof hongKongDayRange>) => Promise<OverviewCounts>;
+    readHealth?: () => Promise<VolunteerJobHealth>;
+    read: (range: ReturnType<typeof hongKongDayRange>, snapshot: Date) => Promise<OverviewCounts>;
     readCoverage?: (query: {
       from: string;
       centre: string;
@@ -54,14 +59,20 @@ export function createOverviewHandler(
           { error: volunteerServerErrorText("overview_invalid_centre") },
           { status: 400, headers },
         );
-      const [counts, coverage] = await Promise.all([
-        deps.read(range),
+      const [counts, coverage, runtimeHealth] = await Promise.all([
+        deps.read(range, snapshot),
         deps.readCoverage
           ? deps.readCoverage({ from: range.date, centre, now: snapshot }).catch(() => null)
           : Promise.resolve(undefined),
+        deps.readHealth?.(),
       ]);
       return Response.json(
-        { date: range.date, counts, ...(deps.readCoverage ? { coverage } : {}) },
+        {
+          date: range.date,
+          counts,
+          ...(deps.readCoverage ? { coverage } : {}),
+          ...(runtimeHealth ? { runtimeHealth } : {}),
+        },
         { headers },
       );
     } catch (error) {

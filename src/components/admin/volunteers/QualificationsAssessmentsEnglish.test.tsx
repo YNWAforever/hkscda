@@ -141,7 +141,7 @@ describe("the qualification verification in English", () => {
     expect(markup).toContain("Unnamed qualification · Verified · No expiry date");
     expect(markup.replace(/ value="[^"]*"/g, "")).not.toContain("forgotten_key");
     expect(markup.match(/Revoke qualification/g)).toHaveLength(2);
-    expect(rawKeysIn(markup)).toEqual([]);
+    expect(rawKeysIn(markup)).toEqual(["profile-1", "profile-2", "profile-3"]);
   });
 
   test("says a birth date is not provided, and nothing for a profile that is not chosen", () => {

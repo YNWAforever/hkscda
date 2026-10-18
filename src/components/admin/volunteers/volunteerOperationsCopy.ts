@@ -42,6 +42,7 @@ export const volunteerOperationsCopy = defineAdminCopy({
       size: "團體人數",
       submit: "提交待確認團體",
       noEnquiries: "未有與此已驗證電郵相符的團體查詢。請先提交團體查詢，或聯絡職員協助。",
+      noAdminEnquiries: "未有可安排的團體查詢。請先到團體查詢跟進，並核對場次、窗口及資格。",
     },
     records: {
       title: "團體申請記錄",
@@ -114,6 +115,8 @@ export const volunteerOperationsCopy = defineAdminCopy({
       submit: "Submit group for confirmation",
       noEnquiries:
         "No group enquiry matches this verified email. Submit a group enquiry first or ask staff for help.",
+      noAdminEnquiries:
+        "No group enquiries are available to arrange. Follow up in group enquiries and check the session, window and qualifications.",
     },
     records: {
       title: "Group request records",

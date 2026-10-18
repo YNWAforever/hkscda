@@ -1,3 +1,6 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { WorkflowSections } from "./WorkflowSections";
 import { useEffect, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -152,16 +155,17 @@ export function OperationsWorkspace({
   const [destinationId, setDestinationId] = useState("");
   const [role, setRole] = useState("volunteer");
   const endpoint = publicMode ? "/api/volunteer/operations" : "/api/admin/volunteers/operations";
-  const api = <T,>(command: object) =>
+  const api = <T,>(command: object, signal?: AbortSignal) =>
     fetchAdminJson<T>(endpoint, {
       method: "POST",
+      signal,
       body: JSON.stringify(
         publicMode ? { command, turnstileToken: captcha || undefined } : command,
       ),
     });
   const listing = useQuery({
-    queryKey: ["volunteer-operations", publicMode, userId],
-    queryFn: () => api<OperationListing>({ action: "list" }),
+    queryKey: volunteerQueryKeys.key("operations", publicMode, userId),
+    queryFn: ({ signal }) => api<OperationListing>({ action: "list" }, signal),
   });
   const data = listing.data;
   const mutate = useMutation({
@@ -195,9 +199,7 @@ export function OperationsWorkspace({
       } else {
         setPreview(undefined);
         setNotice(result.kind === "requested" ? "requested" : "applied");
-        void qc.invalidateQueries({ queryKey: ["volunteer-operations"] });
-        void qc.invalidateQueries({ queryKey: ["volunteer-calendar"] });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "operation", language);
       }
     },
     onError: () => setPreview(undefined),
@@ -223,14 +225,14 @@ export function OperationsWorkspace({
     return a ? `${a.title} · ${format.operationsTime(a.starts_at)}` : copy.records.originalSession;
   };
   return (
-    <div className="space-y-6 p-4 md:p-6">
-      <header className="space-y-2">
+    <div className="space-y-6">
+      <VolunteerPageHeading pageId="operations">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p>{copy.intro}</p>
         <a className="underline" href={publicMode ? "/volunteer" : "/admin/volunteers/calendar"}>
           {publicMode ? copy.backPublic : copy.backAdmin}
         </a>
-      </header>
+      </VolunteerPageHeading>
       <WorkflowSections
         label={copy.stepsLabel}
         sections={[
@@ -326,7 +328,11 @@ export function OperationsWorkspace({
             >
               {copy.create.submit}
             </button>
-            {data.enquiries.length === 0 && <p>{copy.create.noEnquiries}</p>}
+            {data.enquiries.length === 0 && (
+              <p>
+                {data.staff && !publicMode ? copy.create.noAdminEnquiries : copy.create.noEnquiries}
+              </p>
+            )}
           </section>
           <section className="space-y-3 rounded-lg border p-4">
             <h2 id="operations-records" className="text-lg font-bold">

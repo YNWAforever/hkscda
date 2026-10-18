@@ -12,6 +12,7 @@ if (databaseUrl) {
     url.hash ||
     ![
       "57322/postgres",
+      ...(process.env.VOLUNTEER_REVIEW_BULK_ALLOW_POLICY_STACK === "1" ? ["56322/postgres"] : []),
       "52322/audit_pr135_20260929",
       ...(process.env.CI ? ["55322/postgres"] : []),
     ].includes(target)

@@ -5,6 +5,12 @@ import { adminCommonCopy } from "../i18n/adminCommonCopy";
 /** Copy for the volunteer operations overview (`VolunteerOverview`). */
 export const volunteerOverviewCopy = defineAdminCopy({
   zh: {
+    jobHealth: {
+      title: "義工背景工作",
+      healthy: "最近工作正常",
+      degraded: "工作受阻，請聯絡管理員跟進",
+      unknown: "未能確認排程健康，請重新載入",
+    },
     hongKongTime: "香港時間",
     title: "義工營運總覽",
     intro: "由待辦開始，連接每位義工、每個場次及服務紀錄。",
@@ -82,6 +88,12 @@ export const volunteerOverviewCopy = defineAdminCopy({
     },
   },
   en: {
+    jobHealth: {
+      title: "Volunteer background jobs",
+      healthy: "Recent runs are healthy",
+      degraded: "Work is blocked. Contact an administrator",
+      unknown: "Job health is unknown. Reload to check",
+    },
     hongKongTime: "Hong Kong time",
     title: adminCommonCopy.en.navItems.volunteers,
     intro: "Start from what needs doing, then follow each volunteer, session and service record.",

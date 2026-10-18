@@ -20,6 +20,7 @@ export function ActivitySchedule({
   onToggle,
   onOpen,
   templateNames = {},
+  complete = false,
 }: {
   rows: Row[];
   view: string;
@@ -30,6 +31,7 @@ export function ActivitySchedule({
   onOpen: (id: string) => void;
   /** The name of each template by its key, so English can show a name rather than a key. */
   templateNames?: Record<string, string>;
+  complete?: boolean;
 }) {
   const { language } = useAdminLanguage();
   const workspace = pickAdminCopy(activityWorkspaceCopy, language);
@@ -47,7 +49,10 @@ export function ActivitySchedule({
   );
   const status = (r: Row) => states[r.status] ?? common.unknown(r.status);
   const open = (r: Row) => (
-    <button className="min-h-11 text-left font-semibold underline" onClick={() => onOpen(r.id)}>
+    <button
+      className="min-h-11 min-w-0 text-left font-semibold break-words underline"
+      onClick={() => onOpen(r.id)}
+    >
       {r.title}
     </button>
   );
@@ -111,63 +116,82 @@ export function ActivitySchedule({
         </table>
       </div>
     );
-  const first = from ?? (rows[0] ? hkDate(new Date(rows[0].starts_at)) : hkDate());
+  const rowsByDay = new Map<string, Row[]>();
+  for (const row of rows) {
+    const day = hkDate(new Date(row.starts_at));
+    const group = rowsByDay.get(day);
+    if (group) group.push(row);
+    else rowsByDay.set(day, [row]);
+  }
+  const first = from ?? rowsByDay.keys().next().value ?? hkDate();
   const last = until ?? addHkDays(first, 30);
+  const singleDay = first === last;
   const contiguous = Date.parse(last) - Date.parse(first) <= 92 * 86400000;
   const days = contiguous
     ? generationDates(first, last, [0, 1, 2, 3, 4, 5, 6], [])
-    : Array.from(new Set(rows.map((r) => hkDate(new Date(r.starts_at))))).sort();
+    : Array.from(rowsByDay.keys()).sort();
   const padding = contiguous ? new Date(first + "T12:00:00+08:00").getUTCDay() : 0;
   return (
     <section aria-label={copy.calendarLabel}>
       <p className="mb-3 text-sm">{copy.calendarNote}</p>
-      <div className="hidden grid-cols-7 sm:grid" aria-hidden="true">
+      <div className={singleDay ? "hidden" : "hidden grid-cols-7 sm:grid"} aria-hidden="true">
         {[0, 1, 2, 3, 4, 5, 6].map((day) => (
           <span className="p-2" key={day}>
             {copy.weekday(day)}
           </span>
         ))}
       </div>
-      <div className="grid gap-2 sm:grid-cols-7">
-        {Array.from({ length: padding }, (_, n) => (
+      <div className={"grid gap-2" + (singleDay ? "" : " sm:grid-cols-7")}>
+        {Array.from({ length: singleDay ? 0 : padding }, (_, n) => (
           <div key={"pad" + n} className="hidden sm:block" />
         ))}
-        {days.map((day) => (
-          <section
-            key={day}
-            aria-label={day}
-            className={
-              "min-h-24 rounded border border-[var(--color-border)] p-2" +
-              (rows.some((r) => hkDate(new Date(r.starts_at)) === day) ? "" : " hidden sm:block")
-            }
-          >
-            <h3 className="text-sm font-bold">{day.slice(5)}</h3>
-            {rows
-              .filter((r) => hkDate(new Date(r.starts_at)) === day)
-              .map((r) => (
-                <article
-                  key={r.id}
-                  className="my-2 rounded bg-[var(--color-surface-offset)] p-2 text-xs"
-                >
-                  <div className="flex items-start gap-2">
-                    {select(r)}
-                    {open(r)}
-                  </div>
-                  <p>{format.sessionTime(r.starts_at)}</p>
-                  <p>
-                    {r.shelter_key === null
-                      ? r.location
-                      : common.shelterKey(r.shelter_key, r.location)}{" "}
-                    · {status(r)}
-                  </p>
-                  <p>{copy.cardStaffing(r.approved, r.waitlisted)}</p>
-                  <p>
-                    {r.policy_version_id ? copy.policyVersion(r.policy_revision) : copy.policyUnset}
-                  </p>
-                </article>
-              ))}
-          </section>
-        ))}
+        {days.map((day) => {
+          const dayRows = rowsByDay.get(day) ?? [];
+          return (
+            <section
+              key={day}
+              aria-label={day}
+              className={
+                "min-h-24 min-w-0 rounded border border-[var(--color-border)] p-2" +
+                (dayRows.length ? "" : " hidden sm:block")
+              }
+            >
+              <h3 className="text-sm font-bold">{day.slice(5)}</h3>
+              {!dayRows.length && (
+                <p className="text-xs">{complete ? copy.emptyDay : copy.unloadedDay}</p>
+              )}
+              <div className={singleDay ? "grid gap-2 sm:grid-cols-2 xl:grid-cols-3" : ""}>
+                {dayRows.map((r) => (
+                  <article
+                    key={r.id}
+                    className={
+                      "min-w-0 rounded bg-[var(--color-surface-offset)] p-2 text-xs" +
+                      (singleDay ? "" : " my-2")
+                    }
+                  >
+                    <div className="flex items-start gap-2">
+                      {select(r)}
+                      {open(r)}
+                    </div>
+                    <p>{format.sessionTime(r.starts_at)}</p>
+                    <p>
+                      {r.shelter_key === null
+                        ? r.location
+                        : common.shelterKey(r.shelter_key, r.location)}{" "}
+                      · {status(r)}
+                    </p>
+                    <p>{copy.cardStaffing(r.approved, r.waitlisted)}</p>
+                    <p>
+                      {r.policy_version_id
+                        ? copy.policyVersion(r.policy_revision)
+                        : copy.policyUnset}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { useListQueryState } from "../../../lib/admin/useListQueryState";
+import { distinguishProfileId } from "./profileIdentity";
 import type { DirectoryList } from "../../../lib/volunteers/directory/types";
 import { useAdminCopy } from "../i18n/copy";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
@@ -13,14 +15,17 @@ export function QualificationProfileSearch({
   disabled?: boolean;
 }) {
   const copy = useAdminCopy(volunteerDirectoryCopy).search;
-  const [text, setText] = useState("");
-  const [search, setSearch] = useState("");
+  const listState = useListQueryState({ key: "qualification-picker", initialFilters: {} });
+  const search = listState.query;
+  const text = listState.draftQuery;
   const query = useQuery({
-    queryKey: ["volunteer-directory", "qualification-picker", search],
-    queryFn: () =>
-      fetchAdminJson<DirectoryList>(
-        "/api/admin/volunteers/people?" + new URLSearchParams({ q: search, limit: "10" }),
-      ),
+    queryKey: volunteerQueryKeys.key("directory", "qualification-picker", search),
+    queryFn: ({ signal }) =>
+      fetchAdminJson<DirectoryList>("/api/admin/volunteers/people", {
+        method: "POST",
+        body: JSON.stringify({ q: search, limit: 10 }),
+        signal,
+      }),
     enabled: !!search,
   });
   return (
@@ -31,7 +36,7 @@ export function QualificationProfileSearch({
         className="flex flex-wrap gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          setSearch(text.trim());
+          listState.submitQuery();
         }}
       >
         <label className="min-w-0 flex-1">
@@ -41,8 +46,7 @@ export function QualificationProfileSearch({
             className="min-h-11 w-full rounded-lg border px-3"
             placeholder={copy.placeholder}
             maxLength={200}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
+            {...listState.queryInput}
           />
         </label>
         <button
@@ -72,12 +76,18 @@ export function QualificationProfileSearch({
           {query.data.profiles.map((p) => (
             <button
               key={p.id}
-              disabled={disabled}
+              disabled={disabled || query.isFetching || listState.isDebouncing}
               onClick={() => onSelect(p.id)}
               className="flex min-h-11 w-full flex-wrap justify-between gap-2 rounded-lg border p-3 text-left"
             >
               <span>
                 <strong>{p.display_name}</strong>
+                <span className="block break-all font-mono text-xs">
+                  {distinguishProfileId(
+                    p.id,
+                    query.data.profiles.map((profile) => profile.id),
+                  )}
+                </span>
                 <span className="block break-all text-sm">{p.linked_email ?? copy.noEmail}</span>
               </span>
               <span className="text-sm">{copy.choose[p.status]}</span>

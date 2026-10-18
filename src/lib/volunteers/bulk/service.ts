@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { AdminLanguage } from "../../admin/language";
+import { attendanceCommandSchema, normalizeAttendancePreviewCommand } from "./attendance";
 export const hkDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -55,7 +56,7 @@ const inputSchema = z.union([
     .strict()
     .refine((v) => v.command !== "correct" || Boolean(v.reason), "更正需要原因"),
 ]);
-export const bulkCommandSchema = z.discriminatedUnion("action", [
+const legacyBulkCommandSchema = z.discriminatedUnion("action", [
   z
     .object({
       action: z.literal("list"),
@@ -99,6 +100,7 @@ export const bulkCommandSchema = z.discriminatedUnion("action", [
     .strict(),
   z.object({ action: z.literal("status"), operation_id: uuid }).strict(),
 ]);
+export const bulkCommandSchema = z.union([legacyBulkCommandSchema, attendanceCommandSchema]);
 export type BulkCommand = z.infer<typeof bulkCommandSchema>;
 export type ActivityFilter = z.infer<typeof activityFilterSchema>;
 export function createBulkService(
@@ -106,7 +108,9 @@ export function createBulkService(
 ) {
   return {
     command(actor: string, raw: unknown) {
-      const command = bulkCommandSchema.parse(raw);
+      const parsed = bulkCommandSchema.parse(raw);
+      const command =
+        parsed.action === "attendance_preview" ? normalizeAttendancePreviewCommand(parsed) : parsed;
       if (command.action === "preview") {
         const input = command.input;
         const valid =

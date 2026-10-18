@@ -1,4 +1,5 @@
 import type { BulkOperation } from "./activityOperationCopy";
+import type { AttendanceActionCapability } from "../../../lib/volunteers/bulk/attendance";
 
 /** One activity as the workspace list reads it. */
 export type Row = {
@@ -64,12 +65,17 @@ export type Reply = { kind: string; operation: Operation };
 
 /** One activity's detail, read when staff open it. */
 export type ActivityDetail = {
+  attendance_contract?: 1;
+  asOf?: string;
   activity: Row & { description: string | null };
   registrations: {
     id: string;
     contact_name: string;
     status: string;
     attendance_status: string;
+    updated_at?: string;
+    participant_count?: number;
+    attendance_actions?: AttendanceActionCapability[];
   }[];
   total: number;
   history_total: number;

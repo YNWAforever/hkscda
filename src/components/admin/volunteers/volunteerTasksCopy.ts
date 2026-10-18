@@ -12,9 +12,40 @@ export const volunteerTasksCopy = defineAdminCopy({
     loading: "載入中…",
     loadFailed: "未能載入待辦。",
     reload: "重新載入",
+    pager: {
+      contactLabel: "聯絡跟進分頁",
+      notificationsLabel: "通知狀態分頁",
+      followUps: (total: number, page: number, pages: number) =>
+        `${total} 項聯絡跟進 · 第 ${page} 頁，共 ${pages} 頁`,
+      notifications: (total: number, page: number, pages: number) =>
+        `${total} 項通知工作 · 第 ${page} 頁，共 ${pages} 頁`,
+      previous: "上一頁",
+      next: "下一頁",
+    },
     pending: {
       title: "待審批",
       none: "目前沒有待審批報名。",
+      scope: "待審批範圍",
+      scopes: { all: "全部未處理", upcoming: "即將開始", overdue: "逾期未處理" },
+      counts: (upcoming: number, overdue: number, total: number) =>
+        `即將開始 ${upcoming} · 逾期 ${overdue} · 全部 ${total}`,
+      asOf: (time: string) => `資料截至 ${time}`,
+      previous: "上一頁",
+      next: "下一頁",
+      search: "搜尋待審申請",
+      searchHint: "姓名、報名編號、活動或場地",
+      clear: "清除搜尋",
+      matched: (total: number) => `符合條件 ${total} 筆`,
+      reference: (id: string) => `報名編號 ${id}`,
+      participants: (count: number) => `本次報名 ${count} 人`,
+      capacity: (capacity: number, approved: number, remaining: number) =>
+        `名額 ${capacity} · 已批准 ${approved} 人 · 尚餘 ${remaining} 人`,
+      notReserved: "此為當下資料，未預留名額；批准時會重新驗證。",
+      process: "查看／處理申請",
+      openSession: "開啟場次名單",
+      unavailable: "資料待重新載入",
+      updating: "正在更新待審清單…",
+      status: "待審批",
     },
     open: (title: string | undefined) => `開啟${title || "相關工作"}`,
     contact: {
@@ -66,9 +97,40 @@ export const volunteerTasksCopy = defineAdminCopy({
     loading: "Loading…",
     loadFailed: "Could not load the tasks. ",
     reload: "Reload",
+    pager: {
+      contactLabel: "Contact follow-up pages",
+      notificationsLabel: "Notification status pages",
+      followUps: (total: number, page: number, pages: number) =>
+        `${pluralCount(total, "follow-up")} · Page ${page} of ${pages}`,
+      notifications: (total: number, page: number, pages: number) =>
+        `${pluralCount(total, "notification job")} · Page ${page} of ${pages}`,
+      previous: "Previous",
+      next: "Next",
+    },
     pending: {
       title: "Awaiting approval",
       none: "No registrations are awaiting approval.",
+      scope: "Pending scope",
+      scopes: { all: "All unresolved", upcoming: "Upcoming", overdue: "Overdue" },
+      counts: (upcoming: number, overdue: number, total: number) =>
+        `Upcoming ${upcoming} · Overdue ${overdue} · Total ${total}`,
+      asOf: (time: string) => `Snapshot at ${time}`,
+      previous: "Previous page",
+      next: "Next page",
+      search: "Search pending applications",
+      searchHint: "Name, application reference, session or venue",
+      clear: "Clear search",
+      matched: (total: number) => `${total} matching applications`,
+      reference: (id: string) => `Application ${id}`,
+      participants: (count: number) => pluralCount(count, "participant"),
+      capacity: (capacity: number, approved: number, remaining: number) =>
+        `Capacity ${capacity} · Approved ${approved} · ${remaining} remaining`,
+      notReserved: "Places are not reserved. Approval rechecks availability.",
+      process: "View / process application",
+      openSession: "Open session roster",
+      unavailable: "Reload to check this information",
+      updating: "Updating pending applications…",
+      status: "Awaiting approval",
     },
     open: (title: string | undefined) => `Open ${title || "related task"}`,
     contact: {

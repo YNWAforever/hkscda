@@ -233,6 +233,53 @@ describe("the volunteer overview in English", () => {
     }),
   };
 
+  test("reuses recent overview reads on a quick return and keeps the existing refresh interval", async () => {
+    kit.state.queryOptionsByKey = {};
+    kit.withQueries(full, () => {
+      renderAdminInChinese(<VolunteerOverview />);
+    });
+
+    const overviewOptions = kit.state.queryOptionsByKey["volunteer-overview"];
+    const calendarOptions = kit.state.queryOptionsByKey["volunteer-calendar"];
+    expect(overviewOptions?.staleTime).toBe(30_000);
+    expect(calendarOptions?.staleTime).toBe(30_000);
+    expect(overviewOptions?.refetchInterval).toBe(30_000);
+    expect(calendarOptions?.refetchInterval).toBe(30_000);
+
+    const { QueryClient } = await import("@tanstack/react-query");
+    const client = new QueryClient();
+    let overviewReads = 0;
+    let calendarReads = 0;
+    try {
+      const overviewKey = overviewOptions?.queryKey as readonly unknown[];
+      const calendarKey = calendarOptions?.queryKey as readonly unknown[];
+      await client.fetchQuery({
+        queryKey: overviewKey,
+        queryFn: async () => ({ read: ++overviewReads }),
+        staleTime: overviewOptions?.staleTime as number,
+      });
+      await client.fetchQuery({
+        queryKey: overviewKey,
+        queryFn: async () => ({ read: ++overviewReads }),
+        staleTime: overviewOptions?.staleTime as number,
+      });
+      await client.fetchQuery({
+        queryKey: calendarKey,
+        queryFn: async () => ({ read: ++calendarReads }),
+        staleTime: calendarOptions?.staleTime as number,
+      });
+      await client.fetchQuery({
+        queryKey: calendarKey,
+        queryFn: async () => ({ read: ++calendarReads }),
+        staleTime: calendarOptions?.staleTime as number,
+      });
+      expect(overviewReads).toBe(1);
+      expect(calendarReads).toBe(1);
+    } finally {
+      client.clear();
+    }
+  });
+
   test("shows the figures, the coverage, today's sessions and the links without Chinese", () => {
     kit.withQueries(full, () => {
       const markup = renderAdminInEnglish(<VolunteerOverview />);

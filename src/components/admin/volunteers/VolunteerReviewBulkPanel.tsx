@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { useEffect, useState } from "react";
 
 import { BulkReview } from "../bulk/BulkReview";
@@ -25,6 +26,7 @@ export function VolunteerReviewBulkPanel({
   selectionDisabled: boolean;
 }) {
   const { language } = useAdminLanguage();
+  const queryClient = useQueryClient();
   const copy = pickAdminCopy(volunteerDirectoryCopy, language).reviewPanel;
   const users = useQuery({
     queryKey: ["admin-access-users"],
@@ -121,6 +123,7 @@ export function VolunteerReviewBulkPanel({
           body: JSON.stringify({ action: "apply", operationId: operation.operationId }),
         }),
       );
+      await refreshVolunteerQueries(queryClient, "reviewerAssignment", language);
     } catch (cause) {
       setProblem({ code: "apply_failed", cause });
       try {

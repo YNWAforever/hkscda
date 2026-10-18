@@ -27,6 +27,7 @@ export const state = {
   pathname: "/admin/volunteers",
   role: "admin" as TestRole,
   queries: {} as Record<string, unknown>,
+  queryOptionsByKey: {} as Record<string, Record<string, unknown>>,
   mutationError: null as unknown,
   mutationData: undefined as unknown,
 };
@@ -116,8 +117,10 @@ mock.module("@tanstack/react-query", () => ({
     isSuccess: state.mutationData !== undefined,
     reset: () => {},
   }),
-  useQuery: ({ queryKey }: { queryKey: unknown[] }) => {
+  useQuery: (options: { queryKey: readonly unknown[]; [key: string]: unknown }) => {
+    const { queryKey } = options;
     const key = String(queryKey[0]);
+    state.queryOptionsByKey[key] = options;
     if (key === "admin-me") {
       return {
         data: state.role ? { admin: { email: "staff@example.org", role: state.role } } : undefined,

@@ -1,8 +1,12 @@
+import { VolunteerPageHeading } from "../VolunteerPageHeading";
+import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
+import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useUnsavedVolunteerDraft } from "./useUnsavedVolunteerDraft";
 import { WorkflowSections } from "./WorkflowSections";
 import { PolicyChangeSummary } from "./PolicyChangeSummary";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { canHydrateVolunteerDraft } from "./draftHydration";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { initialPolicyCatalogue } from "../../../lib/volunteers/policy/catalogue";
 import { PolicyAdvancedFields } from "./PolicyAdvancedFields";
@@ -67,10 +71,11 @@ export type PolicySettingsInitial = {
   notice?: PolicyNotice;
   activityIds?: string[];
 };
-const api = <T,>(x: object) =>
+const api = <T,>(x: object, signal?: AbortSignal) =>
     fetchAdminJson<T>("/api/admin/volunteers/settings", {
       method: "POST",
       body: JSON.stringify(x),
+      signal,
     }),
   ic = "min-h-11 w-full rounded-md border border-[var(--color-border)] bg-white px-3 py-2 text-sm",
   bc = "min-h-11 rounded-md px-4 text-sm font-semibold disabled:opacity-50",
@@ -91,17 +96,18 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
   const format = pickAdminCopy(policyFormatCopy, language);
   const change = pickAdminCopy(policyChangeCopy, language);
   const registry = useQuery({
-    queryKey: ["volunteer-policy-sources"],
-    queryFn: () =>
+    queryKey: volunteerQueryKeys.key("policySources"),
+    queryFn: ({ signal }) =>
       fetchAdminJson<SourceListing>("/api/admin/volunteers/sources/", {
         method: "POST",
         body: JSON.stringify({ action: "list" }),
+        signal,
       }),
   });
   const qc = useQueryClient(),
     q = useQuery({
-      queryKey: ["volunteer-policy-settings"],
-      queryFn: () => api<L>({ action: "list" }),
+      queryKey: volunteerQueryKeys.key("policySettings"),
+      queryFn: ({ signal }) => api<L>({ action: "list" }, signal),
     });
   const [key, setKey] = useState(
       initial?.draft?.template_key ?? initialPolicyCatalogue[0].template_key,
@@ -118,16 +124,29 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     [notice, setNotice] = useState<PolicyNotice | undefined>(initial?.notice);
   const row = q.data?.drafts.find((x) => x.template_key === key),
     base = initialPolicyCatalogue.find((x) => x.template_key === key);
+  const loaded = useRef({ identity: key, revision: initial?.draft ? (initial.revision ?? 0) : -1 });
+  const editEpoch = useRef(0);
+  const submittedEpoch = useRef(0);
+  const newerDraft = dirty && row && row.revision > loaded.current.revision;
   useEffect(() => {
     const x = row?.body ?? base;
-    if (x) {
+    if (
+      x &&
+      canHydrateVolunteerDraft({
+        dirty,
+        identityChanged: loaded.current.identity !== key,
+        loadedRevision: loaded.current.revision,
+        incomingRevision: row?.revision ?? 0,
+      })
+    ) {
+      loaded.current = { identity: key, revision: row?.revision ?? 0 };
       setDraft(structuredClone(x));
       setRev(row?.revision ?? 0);
       setDirty(false);
       setPreview(undefined);
       setIds([]);
     }
-  }, [row, base, key]);
+  }, [row, base, key, dirty]);
   const leaveDialog = useUnsavedVolunteerDraft(dirty);
   const [switchKey, setSwitchKey] = useState<string | null>(null);
   const shared = pickAdminCopy(confirmActionCopy, language);
@@ -139,12 +158,14 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
     if (!draft) return;
     const x = structuredClone(draft);
     f(x);
+    editEpoch.current++;
     setDraft(x);
     setDirty(true);
     setPreview(undefined);
   };
   const save = useMutation({
       mutationFn: () => {
+        submittedEpoch.current = editEpoch.current;
         const p = policyDraftSchema.parse(draft);
         return api<{ draft: D }>({
           action: "save",
@@ -154,11 +175,18 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         });
       },
       onSuccess: (r) => {
+        if (r.draft.template_key !== key) {
+          void refreshVolunteerQueries(qc, "policy", language);
+          return;
+        }
+        loaded.current = { identity: key, revision: r.draft.revision };
         setRev(r.draft.revision);
-        setDraft(r.draft.body);
-        setDirty(false);
+        if (editEpoch.current === submittedEpoch.current) {
+          setDraft(r.draft.body);
+          setDirty(false);
+        }
         setNotice({ code: "draft_saved" });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "policy", language);
       },
     }),
     pre = useMutation({
@@ -188,29 +216,32 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
       onSuccess: (x) => {
         setPreview(undefined);
         setNotice({ code: "published", count: x.activity_ids.length });
-        void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] });
+        void refreshVolunteerQueries(qc, "policy", language);
       },
     }),
     gen = useMutation({
       mutationFn: () =>
         api({ action: "generate", template_key: key, date, idempotency_key: crypto.randomUUID() }),
-      onSuccess: () => setNotice({ code: "generated" }),
+      onSuccess: () => {
+        setNotice({ code: "generated" });
+        void refreshVolunteerQueries(qc, "activity", language);
+      },
     }),
     cp = useMutation({
       mutationFn: (id: string) => api({ action: "copy", version_id: id, expected_revision: rev }),
-      onSuccess: () => void qc.invalidateQueries({ queryKey: ["volunteer-policy-settings"] }),
+      onSuccess: () => void refreshVolunteerQueries(qc, "policy", language),
     });
   if (q.isError)
     return (
-      <div className="space-y-3 p-6">
-        <h1 className="text-2xl font-bold">{copy.title}</h1>
+      <div className="space-y-3">
+        <VolunteerPageHeading pageId="settings" title={copy.title} />
         <LoadFailure error={q.error} onRetry={() => void q.refetch()} title={copy.loadFailed} />
       </div>
     );
   if (q.isLoading || !draft || !q.data)
     return (
-      <div className="space-y-3 p-6">
-        <h1 className="text-2xl font-bold">{copy.title}</h1>
+      <div className="space-y-3">
+        <VolunteerPageHeading pageId="settings" title={copy.title} />
         <p>{copy.loading}</p>
       </div>
     );
@@ -239,7 +270,7 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
       ),
     };
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-6">
       {leaveDialog}
       <ConfirmActionDialog
         open={switchKey !== null}
@@ -252,10 +283,11 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         destructive
         reason="none"
         onConfirm={async () => {
+          setDirty(false);
           if (switchKey !== null) setKey(switchKey);
         }}
       />
-      <header>
+      <VolunteerPageHeading pageId="settings">
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <a className="inline-block min-h-11 py-2 underline" href="/admin/volunteers/sources">
           {copy.links.sources}
@@ -281,7 +313,15 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
           {copy.links.daily}
         </a>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro(rev, dirty)}</p>
-      </header>
+      </VolunteerPageHeading>
+      {newerDraft && (
+        <p role="alert">
+          {copy.newerDraft}
+          <button className={bc} onClick={() => setSwitchKey(key)}>
+            {copy.reloadDraft}
+          </button>
+        </p>
+      )}
       <WorkflowSections
         sections={[
           { id: "policy-basic", label: copy.sections.basic },
@@ -518,7 +558,12 @@ export function VolunteerPolicySettings({ initial }: { initial?: PolicySettingsI
         </p>
       </section>
       <div id="policy-rules">
-        <PolicyAdvancedFields policy={draft} onChange={edit} templates={savedTemplates} />
+        <details>
+          <summary className="flex min-h-11 cursor-pointer items-center">
+            {copy.advancedToggle}
+          </summary>
+          <PolicyAdvancedFields policy={draft} onChange={edit} templates={savedTemplates} />
+        </details>
       </div>
       <div id="policy-source">
         <PolicySourceFields policy={draft} onChange={edit} />

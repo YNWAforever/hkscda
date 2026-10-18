@@ -1,4 +1,5 @@
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
+import type { ReactNode } from "react";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../../ui/sheet";
@@ -6,6 +7,12 @@ import { activityOperationCopy } from "./activityOperationCopy";
 import type { ActivityDetail } from "./activityWorkspaceTypes";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import { Link } from "@tanstack/react-router";
+import {
+  activityRouterSearch,
+  readActivityReturnState,
+  type ActivityReturnState,
+} from "./activityReturnState";
 
 const button =
   "min-h-11 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm " +
@@ -28,6 +35,10 @@ export function ActivityDetailBody({
   onDetailPage,
   onHistoryPage,
   onEdit,
+  returnState,
+  onRegistrationOpen,
+  attendance,
+  attendanceRecovery,
 }: {
   detail: ActivityDetailQuery;
   detailPage: number;
@@ -35,22 +46,40 @@ export function ActivityDetailBody({
   onDetailPage: (page: number) => void;
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
+  returnState?: ActivityReturnState;
+  onRegistrationOpen?: (id: string) => void;
+  attendance?: ReactNode;
+  attendanceRecovery?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;
   const format = pickAdminCopy(volunteerFormatCopy, language);
-  if (detail.isPending) return <p role="status">{text.loading}</p>;
+  if (detail.isPending)
+    return (
+      <>
+        {attendanceRecovery}
+        <p role="status">{text.loading}</p>
+      </>
+    );
   if (detail.isError)
     return (
-      <LoadFailure
-        error={detail.error}
-        onRetry={() => void detail.refetch()}
-        title={volunteerAdminErrorMessage(detail.error, language) ?? undefined}
-        retryLabel={text.retry}
-      />
+      <div className="space-y-4">
+        {attendanceRecovery}
+        <LoadFailure
+          error={detail.error}
+          onRetry={() => void detail.refetch()}
+          title={volunteerAdminErrorMessage(detail.error, language) ?? undefined}
+          retryLabel={text.retry}
+        />
+      </div>
     );
-  if (!detail.data) return null;
+  if (!detail.data) return attendanceRecovery ?? null;
   const { activity, registrations, total, history, history_total } = detail.data;
+  const inline = Boolean(
+    attendance &&
+    detail.data.attendance_contract === 1 &&
+    registrations.every((row) => row.updated_at && row.participant_count && row.attendance_actions),
+  );
   return (
     <div className="space-y-4">
       <p>
@@ -60,16 +89,37 @@ export function ActivityDetailBody({
       <button className={button} onClick={() => onEdit(activity)}>
         {text.edit}
       </button>
-      <h3 className="font-bold">{text.registrations(total)}</h3>
-      {registrations.map((r) => (
-        <p key={r.id}>
-          {text.registrationLine(
-            r.contact_name,
-            text.registrationStatus(r.status),
-            text.attendanceStatus(r.attendance_status),
-          )}
-        </p>
-      ))}
+      <h3 id="activity-roster-heading" tabIndex={-1} className="font-bold">
+        {text.registrations(total)}
+      </h3>
+      {attendance}
+      {!inline &&
+        registrations.map((r) => (
+          <p id={`registration-${r.id}`} tabIndex={-1} key={r.id}>
+            <Link
+              to="/admin/volunteers/registrations/$id"
+              params={{ id: r.id }}
+              onClick={() => onRegistrationOpen?.(r.id)}
+              search={
+                {
+                  ...activityRouterSearch(
+                    returnState ?? readActivityReturnState(new URLSearchParams()),
+                  ),
+                  return_from: returnState?.from ?? "activities",
+                } as never
+              }
+              className="inline-flex min-h-11 items-center underline"
+            >
+              {text.registrationLine(
+                r.contact_name,
+                text.registrationStatus(r.status),
+                text.attendanceStatus(r.attendance_status),
+              )}
+              {" · "}
+              {text.openRegistration}
+            </Link>
+          </p>
+        ))}
       <button
         className={button}
         disabled={detailPage === 1}
@@ -126,6 +176,10 @@ export function ActivityDetailSheet({
   onDetailPage: (page: number) => void;
   onHistoryPage: (page: number) => void;
   onEdit: (activity: ActivityDetail["activity"]) => void;
+  returnState?: ActivityReturnState;
+  onRegistrationOpen?: (id: string) => void;
+  attendance?: ReactNode;
+  attendanceRecovery?: ReactNode;
 }) {
   const { language } = useAdminLanguage();
   const text = pickAdminCopy(activityOperationCopy, language).detail;

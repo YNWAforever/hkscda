@@ -14,6 +14,8 @@ export function scopeVenue(scopeKey: string): string {
 /** Copy for the daily volunteer quota screen (`VolunteerDailySettings`). */
 export const dailySettingsCopy = defineAdminCopy({
   zh: {
+    newerDraft: "已有新配額版本，未儲存輸入已保留。",
+    reloadDraft: "捨棄輸入並載入新版本",
     title: "全日義工配額",
     intro: "同一範圍及日期的場次共用同一配額。先預覽全日名單影響，再發布；不會自動取消已有報名。",
     back: "返回義工政策設定",
@@ -95,6 +97,8 @@ export const dailySettingsCopy = defineAdminCopy({
     },
   },
   en: {
+    newerDraft: "A newer quota revision is available. Unsaved inputs are preserved.",
+    reloadDraft: "Discard inputs and load the new revision",
     title: volunteerWorkspaceCopy.en.pages["daily-settings"].label,
     intro:
       "Sessions in the same scope and on the same date share one quota. Preview the effect on the whole day's list first, then publish. Existing registrations are not cancelled automatically.",

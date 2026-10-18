@@ -33,6 +33,24 @@ function createAdminClient(admin = activeAdmin) {
 
 const { getAdminUserFromRequest, requireAdmin } = await import("./session.server");
 
+test("optional auth/role observer sees both stages and cannot change authorization", async () => {
+  const stages: string[] = [];
+  let clock = 0;
+  const result = await getAdminUserFromRequest(
+    new Request("https://example.invalid", { headers: { authorization: "Bearer valid-token" } }),
+    createAdminClient() as never,
+    {
+      now: () => clock++,
+      observeTiming: (stage) => {
+        stages.push(stage);
+        throw new Error("observer failed");
+      },
+    },
+  );
+  expect(result.authUserId).toBe("auth-user");
+  expect(stages).toEqual(["auth", "role"]);
+});
+
 describe("admin server session", () => {
   test("loads an active admin from a bearer token", async () => {
     await expect(
