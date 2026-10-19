@@ -75,6 +75,8 @@ Runner 只傳平台 path 類環境，禁載 `.env`，不繼承 provider／produc
 
 同一 fixture 的 RED 可用 `HKSCDA_COMPAT_TEST_ALLOW_OWNED_DB=1` 加 `HKSCDA_COMPAT_TEST_BASELINE=1` 重播原 M2/M3 payload，在不放寬 assertions 的情況下重現；GREEN 只設前者。此旗標僅在 test，production preparer 沒有 baseline 模式。
 
+完整 suite 第一輪在 `d2f1eb99` 為 **7,246 pass／700 skipped／1 fail**，失敗是既有 calendar browser fixture：合成資料只在10月18日使用未加日期的場次標題，`Today's sessions` 卻使用真實10月19日時鐘。固定 browser clock 為19日可穩定重現同一 locator timeout；改為 fixture 的18日後，四個 calendar 案例全部通過。只改測試時鐘，沒有放寬 locator、assertion 或 timeout，也沒有改正式「今日」邏輯。原完整 suite FAIL 的 receipt/log 保留為 `test-d2f1eb99-first.json/log`；最終新 commit 重新跑四個 gates。
+
 Review SQL 由本機 `prepare-review.ts` 產生，含 BEGIN、5s lock timeout、30s statement timeout、三段具名 SQL 及 COMMIT。輸出名稱綁定生成時 HEAD，manifest 另記 preparer／三個原檔／SQL hash。**只產檔，不執行**；任何正式套用仍須另批 fresh catalog、備份、升級／回退及角色驗收範圍。
 
 ## 驗證邊界及回退
