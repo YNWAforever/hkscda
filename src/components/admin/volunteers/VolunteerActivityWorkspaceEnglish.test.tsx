@@ -210,12 +210,14 @@ describe("the activity workspace in English", () => {
       const markup = renderAdminInEnglish(<VolunteerActivityWorkspace />);
       expectNoChineseText(markup);
       expect(markup).toContain("Loading activities…");
-      expect(markup).toContain("Activities (0)");
+      expect(markup).toContain("Activities (data not available)");
+      expect(markup).not.toContain("Activities (0)");
     });
     kit.withQueries(
       workspaceQueries({ "volunteer-workspace": kit.ok({ activities: [], total: 0 }) }),
       () => {
         const markup = renderAdminInEnglish(<VolunteerActivityWorkspace />);
+        expect(markup).toContain("Activities (0)");
         expect(markup).toContain(
           "There are no activities in this period. You can generate new sessions from published templates.",
         );

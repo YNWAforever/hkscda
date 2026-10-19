@@ -13,7 +13,7 @@ import type {
 import { useAdminLanguage } from "../adminI18n";
 import { useBreadcrumbRecordName } from "../adminBreadcrumbRecord";
 import { DestinationHeading } from "../DestinationHeading";
-import { isLapsedSession } from "../failureClass";
+import { failureClass, isLapsedSession } from "../failureClass";
 import { pickAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
@@ -113,6 +113,15 @@ export function VolunteerRegistrationDetail({
       label={pickAdminCopy(volunteerWorkspaceCopy, language).pages.activities.label}
     />
   );
+  const returnLink = (
+    <Link
+      to={`/admin/volunteers/${safeReturn.from}`}
+      search={registrationRouterSearch(safeReturn) as never}
+      className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--color-primary)] underline focus-visible:outline-2 focus-visible:outline-[var(--color-primary)]"
+    >
+      {safeReturn.from === "tasks" ? text.backTasks : text.back}
+    </Link>
+  );
 
   const correctionEnabled =
     isCorrection &&
@@ -176,6 +185,7 @@ export function VolunteerRegistrationDetail({
     return (
       <div className="space-y-3 p-6">
         {destination}
+        {returnLink}
         <p className="text-sm text-[var(--color-text-muted)]">{shared.common.loading}</p>
       </div>
     );
@@ -183,6 +193,7 @@ export function VolunteerRegistrationDetail({
     return (
       <div className="space-y-3 p-6">
         {destination}
+        {returnLink}
         {refreshFailed && <p role="alert">{common.savedRefreshFailed}</p>}
         <LoadFailure
           error={error}
@@ -190,7 +201,9 @@ export function VolunteerRegistrationDetail({
           title={
             isLapsedSession(error)
               ? (volunteerAdminErrorMessage(error, language) ?? undefined)
-              : undefined
+              : failureClass(error) === "not_found"
+                ? text.notFound
+                : undefined
           }
         />
       </div>
@@ -200,6 +213,7 @@ export function VolunteerRegistrationDetail({
     return (
       <div className="space-y-3 p-6">
         {destination}
+        {returnLink}
         <p className="text-sm text-[var(--color-primary)]">{text.notFound}</p>
       </div>
     );
@@ -258,13 +272,7 @@ export function VolunteerRegistrationDetail({
           if (request) await updateStatus.mutateAsync(request);
         }}
       />
-      <Link
-        to={`/admin/volunteers/${safeReturn.from}`}
-        search={registrationRouterSearch(safeReturn) as never}
-        className="text-sm font-semibold text-[var(--color-primary)]"
-      >
-        {safeReturn.from === "tasks" ? text.backTasks : text.back}
-      </Link>
+      {returnLink}
       <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
