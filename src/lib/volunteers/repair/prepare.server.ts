@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { prepareVolunteerReleaseGuards } from "./releaseGuards.server";
 
 export type VolunteerDbRepairSources = Readonly<{
   registrationReason: string;
@@ -79,10 +80,11 @@ end
 $reason_preflight$;
 `;
 
-/** Prepares reviewable SQL only. The caller must provide one explicit transaction. */
+/** Stage fields are for compatibility regression only. Publish only releaseSql in one transaction. */
 export function prepareVolunteerDbRepair(
   sources: VolunteerDbRepairSources,
-): VolunteerDbRepairSources {
+  reviewedMetadata: unknown = {},
+): VolunteerDbRepairSources & Readonly<{ releaseSql: string }> {
   const registrationReason = reviewedSource("registrationReason", sources.registrationReason);
   const single = reviewedSource("singleProjection", sources.singleProjection);
   let page = reviewedSource("pageProjection", sources.pageProjection);
@@ -101,9 +103,10 @@ export function prepareVolunteerDbRepair(
     "begin\n if (length(definition)",
     "begin\n" + chooseBranchEnding + " if (length(definition)",
   );
-  return {
+  const stages = {
     registrationReason: registrationPreflight + registrationReason,
     singleProjection,
     pageProjection,
   };
+  return { ...stages, releaseSql: prepareVolunteerReleaseGuards(stages, reviewedMetadata) };
 }
