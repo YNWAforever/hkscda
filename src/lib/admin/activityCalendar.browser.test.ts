@@ -112,6 +112,8 @@ import assert from"node:assert/strict";
 const browser=await chromium.launch({channel:"chrome",headless:true});
 try{
  const page=await browser.newPage();const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ // Match the service date of this synthetic calendar fixture.
+ await page.clock.setFixedTime(new Date("2026-10-18T02:00:00Z"));
  page.setDefaultTimeout(8000);
  const origin=process.env.CALENDAR_FIXTURE_ORIGIN;
  const url=(from,until=from,extra="")=>origin+"/?view=calendar&date_scope=custom&from="+from+"&until="+until+extra;

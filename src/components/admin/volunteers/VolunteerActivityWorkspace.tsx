@@ -871,7 +871,9 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
         )}
       <section aria-label={copy.list.label}>
         <h2 ref={tableHeading} tabIndex={-1} className="text-lg font-bold">
-          {copy.list.heading(list.isError ? null : total)}
+          {copy.list.heading(
+            list.isPending || list.isError || list.isPlaceholderData ? null : total,
+          )}
         </h2>
         <div className="my-3 flex flex-wrap items-center gap-2">
           <button
@@ -972,7 +974,7 @@ export function VolunteerActivityWorkspace({ initialView }: { initialView?: "cal
               />
             )}
           </>
-        ) : list.isPending ? (
+        ) : list.isPending || (list.isPlaceholderData && !rows.length && !list.isError) ? (
           <p role="status">{copy.list.loading}</p>
         ) : list.isError ? ( // admin-load-failure-ok: the LoadFailure above names the failure; this line only stands in for the list
           <p>{copy.list.unavailable}</p>
