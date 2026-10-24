@@ -470,6 +470,91 @@ describe("the volunteer overview in English", () => {
     expect(collectCopyStrings(volunteerOverviewCopy.en).length).toBeGreaterThan(40);
   });
 
+  test("shows labeled run times and sanitized diagnostics in both languages", () => {
+    kit.withQueries(
+      {
+        "volunteer-calendar": kit.ok({ activities: [] }),
+        "volunteer-overview": kit.ok({
+          date: "2026-10-25",
+          counts: { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 },
+          runtimeHealth: {
+            state: "degraded",
+            consecutiveFailures: 2,
+            lastSuccessAt: "2026-10-25T00:15:00Z",
+            lastFailureAt: "2026-10-25T02:15:00Z",
+            diagnostic: { code: "42501", stage: "generate", since: "2026-10-25T01:15:00Z" },
+          },
+        }),
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("Last successful run:");
+        expect(en).toContain("Latest failed run:");
+        expect(en).toContain("2 consecutive runs failed");
+        expect(en).toContain("Error code: 42501");
+        expect(en).toContain("Failed stage: Session generation");
+        expect(en).toContain("Consecutive failures are recorded from at least");
+        const zh = renderAdminInChinese(<VolunteerOverview />);
+        expect(zh).toContain("上次成功：");
+        expect(zh).toContain("最近失敗：");
+        expect(zh).toContain("錯誤代碼：42501");
+        expect(zh).toContain("失敗階段：產生場次");
+        expect(zh).toContain("已有連續失敗紀錄");
+      },
+    );
+  });
+
+  test("job health distinguishes unknown codes and stale-only evidence", () => {
+    const show = (runtimeHealth: object, work: () => void) =>
+      kit.withQueries(
+        {
+          "volunteer-calendar": kit.ok({ activities: [] }),
+          "volunteer-overview": kit.ok({
+            date: "2026-10-25",
+            counts: { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 },
+            runtimeHealth,
+          }),
+        },
+        work,
+      );
+    show(
+      {
+        state: "unknown",
+        consecutiveFailures: 1,
+        lastSuccessAt: null,
+        lastFailureAt: "2026-10-25T02:15:00Z",
+        diagnostic: { code: null, since: "2026-10-25T02:15:00Z" },
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("No readable error code is available");
+        expect(en).toContain("Consecutive failures are recorded from at least");
+        expect(en).not.toContain("Failed stage:");
+        expect(renderAdminInChinese(<VolunteerOverview />)).toContain("未有可讀取的錯誤代碼");
+      },
+    );
+    show(
+      {
+        state: "degraded",
+        consecutiveFailures: 0,
+        lastSuccessAt: "2026-10-25T00:15:00Z",
+        lastFailureAt: null,
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("Two scheduled intervals have passed without a successful run");
+        expect(en).not.toContain("Error code:");
+        expect(en).not.toContain("consecutive runs failed");
+        expect(renderAdminInChinese(<VolunteerOverview />)).toContain(
+          "已超過兩個排程週期未有成功紀錄",
+        );
+      },
+    );
+  });
+
   test("keeps the Chinese overview as it was", () => {
     kit.withQueries(full, () => {
       const markup = renderAdminInChinese(<VolunteerOverview />);

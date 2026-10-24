@@ -70,11 +70,21 @@ test("overview keeps available counts through optional timeouts and recovers par
         volunteerJobHealth(
           mode === "partial"
             ? [
-                { status: "failed", finished_at: "2026-10-25T02:15:00Z" },
+                {
+                  status: "failed",
+                  finished_at: "2026-10-25T02:15:00Z",
+                  result: {
+                    error: "42501",
+                    stage: "generate",
+                    message: "synthetic-private-detail",
+                  },
+                },
                 { status: "failed", finished_at: "2026-10-25T01:15:00Z" },
               ]
             : [{ status: "complete", finished_at: "2026-10-25T02:15:00Z" }],
           now,
+          undefined,
+          true,
         ),
     },
     () => now,
@@ -144,6 +154,9 @@ try {
  assert.match(await card("待核實義工").innerText(),/7/);
  await mode("partial");await page.reload();await page.getByRole("button",{name:"重試統計",exact:true}).waitFor();
  await page.getByText("工作受阻，請聯絡管理員跟進",{exact:true}).waitFor();
+ await page.getByText("錯誤代碼：42501",{exact:true}).waitFor();
+ await page.getByText("失敗階段：產生場次",{exact:true}).waitFor();
+ assert.equal(await page.getByText("synthetic-private-detail",{exact:true}).count(),0);
  assert.match(await card("待核實義工").innerText(),/7/);assert.match(await card("今日開始的場次").innerText(),/3/);
  assert.match(await card("待審批報名").innerText(),/此項暫未能讀取/);
  await mode("healthy");

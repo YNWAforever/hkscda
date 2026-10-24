@@ -186,8 +186,50 @@ export function VolunteerOverview() {
         >
           <h2 className="font-bold">{copy.jobHealth.title}</h2>
           <p>{copy.jobHealth[stats.data.runtimeHealth.state]}</p>
+          {stats.data.runtimeHealth.state === "degraded" && (
+            <p>
+              {stats.data.runtimeHealth.consecutiveFailures >= 2
+                ? copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)
+                : copy.jobHealth.stale}
+            </p>
+          )}
           {stats.data.runtimeHealth.lastSuccessAt && (
-            <p>{format.sessionTime(stats.data.runtimeHealth.lastSuccessAt)}</p>
+            <p>
+              {copy.jobHealth.lastSuccess(
+                format.sessionTime(stats.data.runtimeHealth.lastSuccessAt),
+              )}
+            </p>
+          )}
+          {stats.data.runtimeHealth.state !== "healthy" &&
+            stats.data.runtimeHealth.lastFailureAt && (
+              <p>
+                {copy.jobHealth.lastFailure(
+                  format.sessionTime(stats.data.runtimeHealth.lastFailureAt),
+                )}
+              </p>
+            )}
+          {stats.data.runtimeHealth.state !== "healthy" && stats.data.runtimeHealth.diagnostic && (
+            <>
+              {stats.data.runtimeHealth.diagnostic.since && (
+                <p>
+                  {copy.jobHealth.failureSince(
+                    format.sessionTime(stats.data.runtimeHealth.diagnostic.since),
+                  )}
+                </p>
+              )}
+              <p className="break-all">
+                {stats.data.runtimeHealth.diagnostic.code
+                  ? copy.jobHealth.code(stats.data.runtimeHealth.diagnostic.code)
+                  : copy.jobHealth.noCode}
+              </p>
+              {stats.data.runtimeHealth.diagnostic.stage && (
+                <p>
+                  {copy.jobHealth.stage(
+                    copy.jobHealth.stages[stats.data.runtimeHealth.diagnostic.stage],
+                  )}
+                </p>
+              )}
+            </>
           )}
         </section>
       )}

@@ -1,12 +1,49 @@
 import { expect, mock, spyOn, test } from "bun:test";
+import type { VolunteerHealthRun } from "./jobs/health";
 const tables: string[] = [];
 const rpcs: string[] = [];
 let allowed = true;
 let stalledSource: string | null = null;
 let failedSource: string | null = null;
+let role: "admin" | "staff" = "admin";
+const jobSelections: string[] = [];
 const client = {
   from(table: string) {
     tables.push(table);
+    if (table === "volunteer_runtime_job_run") {
+      let fields = "";
+      const runs: VolunteerHealthRun[] = [
+        {
+          status: "failed",
+          bucket: "2026-10-25T02:00:00Z",
+          finished_at: "2026-10-25T02:15:00Z",
+          result: { error: "42501", stage: "generate", message: "synthetic-private-detail" },
+        },
+        { status: "failed", bucket: "2026-10-25T01:00:00Z", finished_at: "2026-10-25T01:15:00Z" },
+        { status: "complete", bucket: "2026-10-25T00:00:00Z", finished_at: "2026-10-25T00:15:00Z" },
+      ];
+      const projected = () =>
+        runs.map((row) => {
+          const value = { ...row };
+          if (!fields.includes("result")) delete value.result;
+          return value;
+        });
+      const query = {
+        select: (value: string) => {
+          fields = value;
+          jobSelections.push(value);
+          return query;
+        },
+        eq: () => query,
+        order: () => query,
+        limit: () => query,
+        abortSignal: () => query,
+        maybeSingle: async () => ({ data: projected().at(-1), error: null }),
+        then: (resolve: (value: unknown) => unknown) =>
+          Promise.resolve({ data: projected(), error: null }).then(resolve),
+      };
+      return query;
+    }
     const query = {
       select: () => query,
       eq: () => query,
@@ -66,7 +103,7 @@ mock.module("../donations/supabase.server", () => ({
   createSupabaseServiceClient: () => client,
   requireAdmin: async () => {
     if (!allowed) throw new Response("Forbidden", { status: 403 });
-    return { authUserId: "00000000-0000-4000-8000-000000000001" };
+    return { authUserId: "00000000-0000-4000-8000-000000000001", role };
   },
 }));
 const { handleVolunteerOverview } = await import("./overview.server");
@@ -100,6 +137,32 @@ test("denied selected reads never reach the repository", async () => {
     expect(rpcs).toEqual([]);
   } finally {
     allowed = true;
+  }
+});
+
+test("only an authorized admin reads and receives sanitized job diagnostics", async () => {
+  try {
+    for (const current of ["admin", "staff"] as const) {
+      role = current;
+      jobSelections.length = 0;
+      const response = await handleVolunteerOverview(new Request("https://example.invalid"));
+      const body = await response.json();
+      expect(body.runtimeHealth.state).toBe("degraded");
+      if (current === "admin") {
+        expect(body.runtimeHealth.diagnostic).toEqual({
+          code: "42501",
+          stage: "generate",
+          since: "2026-10-25T01:15:00Z",
+        });
+        expect(jobSelections.some((fields) => fields.includes("result"))).toBe(true);
+      } else {
+        expect(body.runtimeHealth.diagnostic).toBeUndefined();
+        expect(jobSelections.some((fields) => fields.includes("result"))).toBe(false);
+      }
+      expect(JSON.stringify(body)).not.toContain("synthetic-private");
+    }
+  } finally {
+    role = "admin";
   }
 });
 

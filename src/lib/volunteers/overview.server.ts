@@ -7,13 +7,15 @@ import { logVolunteerFailure } from "./telemetry.server";
 export async function handleVolunteerOverview(request: Request, countTimeoutMs = 5_000) {
   const client = createSupabaseServiceClient();
   let actorId = "";
+  let jobDiagnostics = false;
   return createOverviewHandler({
     authorize: async (request) => {
       const actor = await requireAdmin(request, ["staff", "admin"], client);
       actorId = actor.authUserId;
+      jobDiagnostics = actor.role === "admin";
     },
     readCoverage: (query) => readVolunteerCoverage(client, query),
-    readHealth: (signal) => readVolunteerJobHealth(client, undefined, signal),
+    readHealth: (signal) => readVolunteerJobHealth(client, undefined, signal, jobDiagnostics),
     reportFailure: (part, error) => logVolunteerFailure(`overview_${part}`, error),
     read: async (range, snapshot, selected = overviewStatKeys) => {
       const signals = overviewStatKeys.map((key) =>

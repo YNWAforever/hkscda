@@ -4,6 +4,7 @@ export async function readVolunteerJobHealth(
   client: SupabaseClient,
   now = () => new Date(),
   signal?: AbortSignal,
+  includeDiagnostics = false,
 ): Promise<VolunteerJobHealth> {
   const unknown: VolunteerJobHealth = {
     lastSuccessAt: null,
@@ -14,7 +15,11 @@ export async function readVolunteerJobHealth(
   try {
     const recentQuery = client
       .from("volunteer_runtime_job_run")
-      .select("status,finished_at:updated_at,bucket")
+      .select(
+        includeDiagnostics
+          ? "status,finished_at:updated_at,bucket,result"
+          : "status,finished_at:updated_at,bucket",
+      )
       .eq("job_key", "volunteer-hourly")
       .order("bucket", { ascending: false })
       .limit(50);
@@ -35,7 +40,7 @@ export async function readVolunteerJobHealth(
       ...(success.data ? [success.data] : []),
     ] as VolunteerHealthRun[];
     const unique = [...new Map(runs.map((run) => [run.bucket, run])).values()];
-    return volunteerJobHealth(unique, now());
+    return volunteerJobHealth(unique, now(), undefined, includeDiagnostics);
   } catch {
     return unknown;
   }
