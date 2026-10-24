@@ -3,7 +3,7 @@ import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
 import { distinguishProfileId } from "./profileIdentity";
 import { VolunteerLegacyReconciliation } from "./VolunteerLegacyReconciliation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { QualificationProfileSearch } from "./QualificationProfileSearch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
@@ -15,6 +15,7 @@ import { qualificationsCopy } from "./qualificationsCopy";
 import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
 import { LoadFailure } from "../LoadFailure";
+import { canHydrateVolunteerDraft } from "./draftHydration";
 
 type Profile = {
   id: string;
@@ -40,6 +41,7 @@ type Data = {
   credentials: Credential[];
   credential_definitions: { key: string; label: string }[];
 };
+type QualificationCommand = { action: string } & Record<string, unknown>;
 const post = <T,>(body: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/qualifications", {
     method: "POST",
@@ -75,22 +77,45 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const [from, setFrom] = useState("");
   const [until, setUntil] = useState("");
   const [evidence, setEvidence] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const [draftRevision, setDraftRevision] = useState(0);
+  const loaded = useRef({ identity: "", revision: -1 });
   const profile = query.data?.profiles.find((p) => p.id === selected);
   const mutation = useMutation({
-    mutationFn: (command: object) => post(command),
-    onSuccess: async () => {
+    mutationFn: (command: QualificationCommand) =>
+      post<{ profile_id?: string; revision?: number }>(command),
+    onSuccess: async (result, command) => {
+      if (result.profile_id === loaded.current.identity && typeof result.revision === "number") {
+        loaded.current = { identity: result.profile_id, revision: result.revision };
+        setDraftRevision(result.revision);
+      }
+      if (command.action === "verify") setDirty(false);
       await refreshVolunteerQueries(queryClient, "qualification", language);
     },
   });
   const profileTier = profile?.tier;
   const profileJoined = profile?.joined_on;
   const profileCoverage = profile?.history_coverage_start;
+  const profileRevision = profile?.revision;
   useEffect(() => {
-    if (!profileTier) return;
+    if (
+      !profileTier ||
+      profileRevision === undefined ||
+      !canHydrateVolunteerDraft({
+        dirty,
+        identityChanged: loaded.current.identity !== selected,
+        loadedRevision: loaded.current.revision,
+        incomingRevision: profileRevision,
+      })
+    )
+      return;
+    loaded.current = { identity: selected, revision: profileRevision };
+    setDraftRevision(profileRevision);
     setTier(profileTier);
     setJoined(profileJoined ?? "");
     setCoverage(profileCoverage ?? "");
-  }, [selected, profileTier, profileJoined, profileCoverage]);
+    setDirty(false);
+  }, [selected, profileTier, profileJoined, profileCoverage, profileRevision, dirty]);
   const selectProfile = (id: string) => {
     if (mutation.isPending) return;
     setSelected(id);
@@ -104,11 +129,11 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
     url.searchParams.set("profile_id", id);
     window.history.replaceState(null, "", url);
   };
-  const act = (command: object) => {
+  const act = (command: QualificationCommand) => {
     if (profile && reason.trim())
       mutation.mutate({
         profile_id: profile.id,
-        expected_revision: profile.revision,
+        expected_revision: draftRevision,
         reason,
         ...command,
       });
@@ -170,7 +195,11 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
             <select
               className={inputClass}
               value={tier}
-              onChange={(e) => setTier(e.target.value as Profile["tier"])}
+              disabled={mutation.isPending}
+              onChange={(e) => {
+                setTier(e.target.value as Profile["tier"]);
+                setDirty(true);
+              }}
             >
               {tierKeys.map((k) => (
                 <option key={k} value={k}>
@@ -186,6 +215,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
               required
               maxLength={1000}
               value={reason}
+              disabled={mutation.isPending}
               onChange={(e) => setReason(e.target.value)}
             />
           </label>
@@ -196,7 +226,11 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
                 className={inputClass}
                 type="date"
                 value={joined}
-                onChange={(e) => setJoined(e.target.value)}
+                disabled={mutation.isPending}
+                onChange={(e) => {
+                  setJoined(e.target.value);
+                  setDirty(true);
+                }}
               />
             </label>
             <label>
@@ -205,7 +239,11 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
                 className={inputClass}
                 type="date"
                 value={coverage}
-                onChange={(e) => setCoverage(e.target.value)}
+                disabled={mutation.isPending}
+                onChange={(e) => {
+                  setCoverage(e.target.value);
+                  setDirty(true);
+                }}
               />
             </label>
           </div>
@@ -236,7 +274,12 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
           <h2 className="text-lg font-semibold">{copy.credential.title}</h2>
           <label className="flex flex-col gap-2">
             {copy.credential.label}
-            <select className={inputClass} value={key} onChange={(e) => setKey(e.target.value)}>
+            <select
+              className={inputClass}
+              value={key}
+              disabled={mutation.isPending}
+              onChange={(e) => setKey(e.target.value)}
+            >
               <option value="">{copy.credential.choose}</option>
               {query.data?.credential_definitions.map((d) => (
                 <option key={d.key} value={d.key}>
@@ -252,6 +295,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
                 className={inputClass}
                 type="date"
                 value={from}
+                disabled={mutation.isPending}
                 onChange={(e) => setFrom(e.target.value)}
               />
             </label>
@@ -261,6 +305,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
                 className={inputClass}
                 type="date"
                 value={until}
+                disabled={mutation.isPending}
                 onChange={(e) => setUntil(e.target.value)}
               />
             </label>
@@ -271,6 +316,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
               className={inputClass}
               maxLength={2000}
               value={evidence}
+              disabled={mutation.isPending}
               onChange={(e) => setEvidence(e.target.value)}
             />
           </label>
