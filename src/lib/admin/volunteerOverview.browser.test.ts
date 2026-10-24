@@ -30,15 +30,29 @@ test("overview keeps available counts through optional timeouts and recovers par
   const fixtureId = crypto.randomUUID();
   let mode = "healthy";
   let cancelled = false;
+  let holdRetry = false;
+  let waiting = false;
+  let releaseRetry = () => {};
   const now = new Date("2026-10-25T03:00:00Z");
   const handler = createOverviewHandler(
     {
       authorize: async () => {},
-      read: async () => ({
-        pendingProfiles: 7,
-        pendingRegistrations: mode === "partial" ? null : 11,
-        todayActivities: 3,
-      }),
+      read: async (_range, _snapshot, selected) => {
+        const counts = {
+          pendingProfiles: selected ? 999 : mode === "newer" ? 8 : 7,
+          pendingRegistrations: mode === "partial" ? null : mode === "newer" ? 22 : 11,
+          todayActivities: selected ? 999 : mode === "newer" ? 4 : 3,
+        };
+        if (selected && holdRetry) {
+          holdRetry = false;
+          waiting = true;
+          await new Promise<void>((resolve) => {
+            releaseRetry = resolve;
+          });
+          waiting = false;
+        }
+        return counts;
+      },
       readCoverage: async ({ signal }) => {
         if (mode === "stalled")
           return new Promise(() => {
@@ -75,9 +89,18 @@ test("overview keeps available counts through optional timeouts and recovers par
         return Response.json({ fixtureId, backend: "memory", database: null, externalAuth: false });
       if (url.pathname === "/__fixture/mode") {
         const value = (await request.json()) as { mode: string };
-        if (!["healthy", "partial", "stalled"].includes(value.mode))
+        if (!["healthy", "partial", "stalled", "newer"].includes(value.mode))
           return new Response(null, { status: 400 });
         mode = value.mode;
+        return Response.json({ fixtureId });
+      }
+      if (url.pathname === "/__fixture/hold") {
+        holdRetry = true;
+        return Response.json({ fixtureId });
+      }
+      if (url.pathname === "/__fixture/waiting") return Response.json({ waiting });
+      if (url.pathname === "/__fixture/release") {
+        releaseRetry();
         return Response.json({ fixtureId });
       }
       if (url.pathname === "/fixture.js")
@@ -123,9 +146,49 @@ try {
  await page.getByText("工作受阻，請聯絡管理員跟進",{exact:true}).waitFor();
  assert.match(await card("待核實義工").innerText(),/7/);assert.match(await card("今日開始的場次").innerText(),/3/);
  assert.match(await card("待審批報名").innerText(),/此項暫未能讀取/);
- await mode("healthy");await page.getByRole("button",{name:"重試統計",exact:true}).click();
+ await mode("healthy");
+ const retryResponse=page.waitForResponse(r=>r.url().includes("/api/admin/volunteers/overview"));
+ await page.getByRole("button",{name:"重試統計",exact:true}).click();
+ const retry=await retryResponse;
+ assert.equal(new URL(retry.url()).searchParams.get("stats"),"pendingRegistrations");
  await page.getByRole("button",{name:"重試統計",exact:true}).waitFor({state:"detached"});
  assert.match(await card("待審批報名").innerText(),/11/);
+ assert.match(await card("待核實義工").innerText(),/7/);assert.match(await card("今日開始的場次").innerText(),/3/);
+ await page.getByText("工作受阻，請聯絡管理員跟進",{exact:true}).waitFor();
+ await mode("partial");await page.reload();await page.getByRole("button",{name:"重試統計",exact:true}).waitFor();
+ await page.request.post(origin+"/__fixture/hold");await mode("healthy");
+ const equalDelayed=page.waitForResponse(r=>new URL(r.url()).searchParams.has("stats"));
+ await page.getByRole("button",{name:"重試統計",exact:true}).click();
+ await page.waitForFunction(async()=>{const r=await fetch("/__fixture/waiting");return (await r.json()).waiting;});
+ await mode("partial");const equalRefresh=page.waitForResponse(r=>r.url().includes("/api/admin/volunteers/overview")&&!new URL(r.url()).searchParams.has("stats"));
+ await page.getByRole("button",{name:"Simulate a newer overview refresh",exact:true}).click();await equalRefresh;
+ await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+ await page.request.post(origin+"/__fixture/release");await equalDelayed;
+ await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+ assert.match(await card("待審批報名").innerText(),/此項暫未能讀取/);
+ await mode("partial");await page.reload();await page.getByRole("button",{name:"重試統計",exact:true}).waitFor();
+ await page.request.post(origin+"/__fixture/hold");await mode("healthy");
+ const delayed=page.waitForResponse(r=>new URL(r.url()).searchParams.has("stats"));
+ await page.getByRole("button",{name:"重試統計",exact:true}).click();
+ await page.waitForFunction(async()=>{const r=await fetch("/__fixture/waiting");return (await r.json()).waiting;});
+ assert.equal(await page.getByRole("button",{name:"重試統計",exact:true}).isDisabled(),true);
+ await mode("newer");await page.getByRole("button",{name:"Simulate a newer overview refresh",exact:true}).click();
+ await page.getByRole("button",{name:"重試統計",exact:true}).waitFor({state:"detached"});
+ assert.match(await card("待審批報名").innerText(),/22/);
+ await page.request.post(origin+"/__fixture/release");await delayed;
+ await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+ assert.match(await card("待審批報名").innerText(),/22/);
+ assert.match(await card("待核實義工").innerText(),/8/);assert.match(await card("今日開始的場次").innerText(),/4/);
+ await mode("partial");await page.reload();await page.getByRole("button",{name:"重試統計",exact:true}).waitFor();
+ await page.request.post(origin+"/__fixture/hold");await mode("healthy");
+ await page.getByRole("button",{name:"重試統計",exact:true}).click();
+ await page.waitForFunction(async()=>{const r=await fetch("/__fixture/waiting");return (await r.json()).waiting;});
+ const cancelledRequest=page.waitForEvent("requestfailed",{predicate:r=>new URL(r.url()).searchParams.has("stats")});
+ await mode("newer");await page.getByRole("button",{name:"Clear synthetic identity cache",exact:true}).click();
+ await cancelledRequest;await page.getByText("Synthetic identity cache cleared",{exact:true}).waitFor();
+ await page.request.post(origin+"/__fixture/release");
+ await page.getByRole("button",{name:"重試統計",exact:true}).waitFor({state:"detached"});
+ assert.match(await card("待審批報名").innerText(),/22/);
  await mode("stalled");await page.reload();await page.getByText("最近工作正常",{exact:true}).waitFor();
  assert.match(await card("待核實義工").innerText(),/7/);assert.match(await card("待審批報名").innerText(),/11/);
  assert.match(await card("今日開始的場次").innerText(),/3/);
@@ -145,6 +208,7 @@ try {
     expect(exit, err || out).toBe(0);
     expect(cancelled).toBe(true);
   } finally {
+    releaseRetry();
     if (child.exitCode === null) child.kill();
     await server.stop(true);
   }

@@ -1,5 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { hongKongDayRange, createOverviewHandler } from "./overview";
+import {
+  hongKongDayRange,
+  createOverviewHandler,
+  failedOverviewStats,
+  mergeOverviewStats,
+  type OverviewData,
+} from "./overview";
 import { volunteerServerErrorText } from "./serverErrors";
 describe("volunteer overview", () => {
   test("uses Hong Kong day boundaries across UTC month end", () => {
@@ -102,6 +108,87 @@ describe("the overview's messages", () => {
   });
 });
 
+describe("selected overview statistics", () => {
+  test("only null statistics are retried and unselected data stays intact", () => {
+    const previous: OverviewData = {
+      date: "2026-10-25",
+      counts: { pendingProfiles: 0, pendingRegistrations: null, todayActivities: 3 },
+      runtimeHealth: {
+        state: "degraded",
+        lastSuccessAt: null,
+        lastFailureAt: null,
+        consecutiveFailures: 2,
+      },
+    };
+    const update: OverviewData = {
+      date: "2026-10-25",
+      counts: { pendingProfiles: 999, pendingRegistrations: 11, todayActivities: 999 },
+    };
+    expect(failedOverviewStats(previous.counts)).toEqual(["pendingRegistrations"]);
+    expect(mergeOverviewStats(previous, update, ["pendingRegistrations"])).toEqual({
+      ...previous,
+      counts: {
+        pendingProfiles: 0,
+        pendingRegistrations: 11,
+        todayActivities: 3,
+        pendingBreakdown: null,
+      },
+    });
+    expect(
+      mergeOverviewStats(previous, { ...update, date: "2026-10-26" }, ["pendingRegistrations"]),
+    ).toBe(previous);
+  });
+  test("validates the selection after authorization before any read", async () => {
+    let reads = 0;
+    const handler = createOverviewHandler({
+      authorize: async () => {},
+      read: async () => {
+        reads++;
+        return { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 };
+      },
+    });
+    for (const selection of [
+      "",
+      "unknown",
+      "pendingProfiles,pendingProfiles",
+      "pendingProfiles,unknown",
+      "pendingProfiles&stats=todayActivities",
+    ]) {
+      expect(
+        (await handler(new Request("https://example.invalid?stats=" + selection))).status,
+      ).toBe(400);
+    }
+    expect(reads).toBe(0);
+  });
+
+  test("a selected-stat retry does no unrelated optional reads", async () => {
+    let requested: readonly string[] | undefined;
+    let optionalReads = 0;
+    const handler = createOverviewHandler({
+      authorize: async () => {},
+      read: async (_range, _snapshot, selected) => {
+        requested = selected;
+        return { pendingProfiles: null, pendingRegistrations: 11, todayActivities: null };
+      },
+      readCoverage: async () => {
+        optionalReads++;
+        throw new Error("should not read");
+      },
+      readHealth: async () => {
+        optionalReads++;
+        throw new Error("should not read");
+      },
+    });
+    const response = await handler(
+      new Request("https://example.invalid?stats=pendingRegistrations"),
+    );
+    expect(response.status).toBe(200);
+    expect(requested).toEqual(["pendingRegistrations"]);
+    expect(optionalReads).toBe(0);
+    expect(await response.json()).not.toHaveProperty("runtimeHealth");
+  });
+});
+
 describe("optional overview reads", () => {
   const counts = { pendingProfiles: 7, pendingRegistrations: 11, todayActivities: 3 };
   const unknownHealth = {
@@ -110,6 +197,34 @@ describe("optional overview reads", () => {
     lastFailureAt: null,
     consecutiveFailures: 0,
   };
+
+  test("a successful optional read clears its deadline without later aborting", async () => {
+    let signal: AbortSignal | undefined;
+    const failures: string[] = [];
+    const handler = createOverviewHandler(
+      {
+        authorize: async () => {},
+        read: async () => counts,
+        readHealth: async (incoming) => {
+          signal = incoming;
+          return {
+            state: "healthy",
+            lastSuccessAt: "2026-10-25T02:15:00Z",
+            lastFailureAt: null,
+            consecutiveFailures: 0,
+          };
+        },
+        reportFailure: (part) => failures.push(part),
+      },
+      () => new Date("2026-10-25T03:00:00Z"),
+      10,
+    );
+    const response = await handler(new Request("https://example.invalid"));
+    expect((await response.json()).runtimeHealth.state).toBe("healthy");
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    expect(signal?.aborted).toBe(false);
+    expect(failures).toEqual([]);
+  });
 
   test("a stalled coverage read cannot withhold successful counts and is cancelled", async () => {
     let signal: AbortSignal | undefined;

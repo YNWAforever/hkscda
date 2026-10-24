@@ -1,11 +1,17 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { VolunteerLink } from "./VolunteerLink";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { hongKongDayRange, type OverviewData } from "../../../lib/volunteers/overview";
+import {
+  failedOverviewStats,
+  hongKongDayRange,
+  mergeOverviewStats,
+  type OverviewData,
+} from "../../../lib/volunteers/overview";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import type { SessionCoverage } from "../../../lib/volunteers/sessionCoverage";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
@@ -102,8 +108,10 @@ export function VolunteerOverview() {
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const [centre, setCentre] = useState("all");
   const range = hongKongDayRange(new Date());
+  const cache = useQueryClient();
+  const statsKey = volunteerQueryKeys.key("overview", range.date, centre);
   const stats = useQuery({
-    queryKey: volunteerQueryKeys.key("overview", range.date, centre),
+    queryKey: statsKey,
     queryFn: ({ signal }) =>
       fetchAdminJson<OverviewData>(
         "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
@@ -111,6 +119,32 @@ export function VolunteerOverview() {
       ),
     staleTime: 30_000,
     refetchInterval: 30000,
+  });
+  const retryStats = useMutation({
+    mutationFn: async () => {
+      const previous = cache.getQueryData<OverviewData>(statsKey);
+      if (!previous) return;
+      const generation = cache.getQueryState(statsKey)?.dataUpdateCount;
+      const selected = failedOverviewStats(previous.counts);
+      if (!selected.length) return;
+      const update = await cache.fetchQuery({
+        queryKey: [...statsKey, "retry", ...selected],
+        queryFn: ({ signal }) =>
+          fetchAdminJson<OverviewData>(
+            "/api/admin/volunteers/overview?" +
+              new URLSearchParams({ centre, stats: selected.join(",") }),
+            { signal },
+          ),
+        staleTime: 0,
+        gcTime: 0,
+        retry: false,
+      });
+      cache.setQueryData<OverviewData>(statsKey, (current) =>
+        current === previous && cache.getQueryState(statsKey)?.dataUpdateCount === generation
+          ? mergeOverviewStats(current, update, selected)
+          : current,
+      );
+    },
   });
   const calendar = useQuery({
     queryKey: volunteerQueryKeys.key("calendarSummary", range.from, range.until),
@@ -201,12 +235,17 @@ export function VolunteerOverview() {
           title={copy.statsFailed}
           retryLabel={copy.retryStats}
         />
-      ) : Object.values(stats.data?.counts ?? {}).some((x) => x === null) ? (
+      ) : stats.data && failedOverviewStats(stats.data.counts).length > 0 ? (
         <div role="alert">
           {copy.statsFailed}
-          <button onClick={() => void stats.refetch()} className="min-h-11 px-3 underline">
+          <button
+            onClick={() => retryStats.mutate()}
+            disabled={retryStats.isPending}
+            className="min-h-11 px-3 underline"
+          >
             {copy.retryStats}
           </button>
+          {retryStats.error && <p>{volunteerAdminErrorMessage(retryStats.error, language)}</p>}
         </div>
       ) : null}
       <section

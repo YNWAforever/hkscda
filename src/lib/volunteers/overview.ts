@@ -19,6 +19,27 @@ export type OverviewData = {
   counts: OverviewCounts;
   coverage?: OverviewCoverage | null;
 };
+export const overviewStatKeys = [
+  "pendingProfiles",
+  "pendingRegistrations",
+  "todayActivities",
+] as const;
+export type OverviewStatKey = (typeof overviewStatKeys)[number];
+export function failedOverviewStats(counts: OverviewCounts): OverviewStatKey[] {
+  return overviewStatKeys.filter((key) => counts[key] === null);
+}
+export function mergeOverviewStats(
+  previous: OverviewData,
+  update: OverviewData,
+  selected: readonly OverviewStatKey[],
+): OverviewData {
+  if (previous.date !== update.date) return previous;
+  const counts = { ...previous.counts };
+  for (const key of selected) counts[key] = update.counts[key];
+  if (selected.includes("pendingRegistrations"))
+    counts.pendingBreakdown = update.counts.pendingBreakdown ?? null;
+  return { ...previous, counts };
+}
 export function hongKongDayRange(now: Date) {
   const date = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Hong_Kong",
@@ -39,7 +60,11 @@ export function createOverviewHandler(
     authorize: (request: Request) => Promise<unknown>;
     readHealth?: (signal: AbortSignal) => Promise<VolunteerJobHealth>;
     reportFailure?: (part: "coverage" | "health", error: unknown) => void;
-    read: (range: ReturnType<typeof hongKongDayRange>, snapshot: Date) => Promise<OverviewCounts>;
+    read: (
+      range: ReturnType<typeof hongKongDayRange>,
+      snapshot: Date,
+      selected?: readonly OverviewStatKey[],
+    ) => Promise<OverviewCounts>;
     readCoverage?: (query: {
       from: string;
       centre: string;
@@ -56,12 +81,26 @@ export function createOverviewHandler(
       await deps.authorize(request);
       const snapshot = now();
       const range = hongKongDayRange(snapshot);
-      const centre = new URL(request.url).searchParams.get("centre") ?? "all";
+      const parameters = new URL(request.url).searchParams;
+      const centre = parameters.get("centre") ?? "all";
       if (centre !== "all" && !/^[a-z][a-z0-9_-]{0,79}$/.test(centre))
         return Response.json(
           { error: volunteerServerErrorText("overview_invalid_centre") },
           { status: 400, headers },
         );
+      const selections = parameters.getAll("stats");
+      const keys = selections.length ? selections[0].split(",") : undefined;
+      if (
+        selections.length > 1 ||
+        (keys &&
+          (new Set(keys).size !== keys.length ||
+            keys.some((key) => !overviewStatKeys.includes(key as OverviewStatKey))))
+      )
+        return Response.json(
+          { error: volunteerServerErrorText("overview_invalid_stats") },
+          { status: 400, headers },
+        );
+      const selected = keys as OverviewStatKey[] | undefined;
       const optionalRead = async <T>(
         part: "coverage" | "health",
         read: (signal: AbortSignal) => Promise<T>,
@@ -90,15 +129,15 @@ export function createOverviewHandler(
         }
       };
       const [counts, coverage, runtimeHealth] = await Promise.all([
-        deps.read(range, snapshot),
-        deps.readCoverage
+        deps.read(range, snapshot, selected),
+        deps.readCoverage && !selected
           ? optionalRead<OverviewCoverage | null>(
               "coverage",
               (signal) => deps.readCoverage!({ from: range.date, centre, now: snapshot, signal }),
               null,
             )
           : Promise.resolve(undefined),
-        deps.readHealth
+        deps.readHealth && !selected
           ? optionalRead<VolunteerJobHealth>("health", (signal) => deps.readHealth!(signal), {
               state: "unknown",
               lastSuccessAt: null,
@@ -111,7 +150,7 @@ export function createOverviewHandler(
         {
           date: range.date,
           counts,
-          ...(deps.readCoverage ? { coverage } : {}),
+          ...(deps.readCoverage && !selected ? { coverage } : {}),
           ...(runtimeHealth ? { runtimeHealth } : {}),
         },
         { headers },

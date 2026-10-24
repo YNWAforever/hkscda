@@ -52,7 +52,7 @@ describe("the table of volunteer server messages", () => {
         `${code}: ${english}`,
       ).toBe(true);
     }
-    expect(VOLUNTEER_SERVER_ERROR_CODES.length).toBe(40);
+    expect(VOLUNTEER_SERVER_ERROR_CODES.length).toBe(41);
   });
 });
 
@@ -67,6 +67,11 @@ describe("the overview, the calendar, the tasks and the directory", () => {
     expectReaches(
       await reach(() => handler(get("/api/admin/volunteers/overview?centre=BAD"))),
       "overview_invalid_centre",
+      400,
+    );
+    expectReaches(
+      await reach(() => handler(get("/api/admin/volunteers/overview?stats=unknown"))),
+      "overview_invalid_stats",
       400,
     );
     expectReaches(
@@ -643,8 +648,12 @@ describe("every Chinese string the volunteer server code holds", () => {
         for (const literal of chineseLiterals(readFileSync(path, "utf8"))) held.add(literal);
       }
     }
-    // The overview handler reads its two messages from the table.
-    const fromTable = new Set(["overview_invalid_centre", "overview_load_failed"]);
+    // The overview handler reads its messages from the table.
+    const fromTable = new Set([
+      "overview_invalid_centre",
+      "overview_invalid_stats",
+      "overview_load_failed",
+    ]);
     const missing = VOLUNTEER_SERVER_ERROR_CODES.filter(
       (code) => !fromTable.has(code) && !held.has(volunteerServerErrorText(code)),
     );
