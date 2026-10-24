@@ -3,6 +3,7 @@ import { volunteerJobHealth, type VolunteerJobHealth, type VolunteerHealthRun } 
 export async function readVolunteerJobHealth(
   client: SupabaseClient,
   now = () => new Date(),
+  signal?: AbortSignal,
 ): Promise<VolunteerJobHealth> {
   const unknown: VolunteerJobHealth = {
     lastSuccessAt: null,
@@ -11,21 +12,22 @@ export async function readVolunteerJobHealth(
     state: "unknown",
   };
   try {
+    const recentQuery = client
+      .from("volunteer_runtime_job_run")
+      .select("status,finished_at:updated_at,bucket")
+      .eq("job_key", "volunteer-hourly")
+      .order("bucket", { ascending: false })
+      .limit(50);
+    const successQuery = client
+      .from("volunteer_runtime_job_run")
+      .select("status,finished_at:updated_at,bucket")
+      .eq("job_key", "volunteer-hourly")
+      .eq("status", "complete")
+      .order("bucket", { ascending: false })
+      .limit(1);
     const [recent, success] = await Promise.all([
-      client
-        .from("volunteer_runtime_job_run")
-        .select("status,finished_at:updated_at,bucket")
-        .eq("job_key", "volunteer-hourly")
-        .order("bucket", { ascending: false })
-        .limit(50),
-      client
-        .from("volunteer_runtime_job_run")
-        .select("status,finished_at:updated_at,bucket")
-        .eq("job_key", "volunteer-hourly")
-        .eq("status", "complete")
-        .order("bucket", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
+      signal ? recentQuery.abortSignal(signal) : recentQuery,
+      (signal ? successQuery.abortSignal(signal) : successQuery).maybeSingle(),
     ]);
     if (recent.error || success.error) return unknown;
     const runs = [

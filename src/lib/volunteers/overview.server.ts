@@ -3,6 +3,7 @@ import { createOverviewHandler } from "./overview";
 import { readVolunteerCoverage } from "./sessionCoverage.server";
 import { readPendingSnapshot } from "./pending";
 import { readVolunteerJobHealth } from "./jobs/health.server";
+import { logVolunteerFailure } from "./telemetry.server";
 export async function handleVolunteerOverview(request: Request) {
   const client = createSupabaseServiceClient();
   let actorId = "";
@@ -12,7 +13,8 @@ export async function handleVolunteerOverview(request: Request) {
       actorId = actor.authUserId;
     },
     readCoverage: (query) => readVolunteerCoverage(client, query),
-    readHealth: () => readVolunteerJobHealth(client),
+    readHealth: (signal) => readVolunteerJobHealth(client, undefined, signal),
+    reportFailure: (part, error) => logVolunteerFailure(`overview_${part}`, error),
     read: async (range, snapshot) => {
       const results = await Promise.allSettled([
         client

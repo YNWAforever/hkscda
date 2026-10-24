@@ -37,15 +37,18 @@ export function hongKongDayRange(now: Date) {
 export function createOverviewHandler(
   deps: {
     authorize: (request: Request) => Promise<unknown>;
-    readHealth?: () => Promise<VolunteerJobHealth>;
+    readHealth?: (signal: AbortSignal) => Promise<VolunteerJobHealth>;
+    reportFailure?: (part: "coverage" | "health", error: unknown) => void;
     read: (range: ReturnType<typeof hongKongDayRange>, snapshot: Date) => Promise<OverviewCounts>;
     readCoverage?: (query: {
       from: string;
       centre: string;
       now: Date;
+      signal?: AbortSignal;
     }) => Promise<OverviewCoverage>;
   },
   now = () => new Date(),
+  optionalReadTimeoutMs = 5_000,
 ) {
   return async (request: Request) => {
     const headers = { "cache-control": "no-store" };
@@ -59,12 +62,50 @@ export function createOverviewHandler(
           { error: volunteerServerErrorText("overview_invalid_centre") },
           { status: 400, headers },
         );
+      const optionalRead = async <T>(
+        part: "coverage" | "health",
+        read: (signal: AbortSignal) => Promise<T>,
+        unavailable: T,
+      ): Promise<T> => {
+        const controller = new AbortController();
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        try {
+          return await new Promise<T>((resolve, reject) => {
+            timeout = setTimeout(() => {
+              const error = Object.assign(new Error("Overview read timed out"), {
+                code: "TIMEOUT",
+              });
+              controller.abort(error);
+              reject(error);
+            }, optionalReadTimeoutMs);
+            Promise.resolve()
+              .then(() => read(controller.signal))
+              .then(resolve, reject);
+          });
+        } catch (error) {
+          deps.reportFailure?.(part, error);
+          return unavailable;
+        } finally {
+          clearTimeout(timeout);
+        }
+      };
       const [counts, coverage, runtimeHealth] = await Promise.all([
         deps.read(range, snapshot),
         deps.readCoverage
-          ? deps.readCoverage({ from: range.date, centre, now: snapshot }).catch(() => null)
+          ? optionalRead<OverviewCoverage | null>(
+              "coverage",
+              (signal) => deps.readCoverage!({ from: range.date, centre, now: snapshot, signal }),
+              null,
+            )
           : Promise.resolve(undefined),
-        deps.readHealth?.(),
+        deps.readHealth
+          ? optionalRead<VolunteerJobHealth>("health", (signal) => deps.readHealth!(signal), {
+              state: "unknown",
+              lastSuccessAt: null,
+              lastFailureAt: null,
+              consecutiveFailures: 0,
+            })
+          : Promise.resolve(undefined),
       ]);
       return Response.json(
         {

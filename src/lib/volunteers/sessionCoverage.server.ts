@@ -24,24 +24,26 @@ type RawActivity = {
 /** Service-role read after the overview handler has authorized staff/admin. */
 export async function readVolunteerCoverage(
   client: SupabaseClient,
-  { from, centre, now }: { from: string; centre: string; now: Date },
+  { from, centre, now, signal }: { from: string; centre: string; now: Date; signal?: AbortSignal },
 ): Promise<OverviewCoverage> {
   const to30 = addHkDays(from, 29);
   const until = addHkDays(from, 30) + "T00:00:00+08:00";
   const start = from + "T00:00:00+08:00";
+  const versions = client
+    .from("volunteer_policy_version")
+    .select("id,template_key,body,effective_from,effective_until,created_at", { count: "exact" })
+    .order("effective_from", { ascending: false })
+    .range(0, 500);
+  const activitiesQuery = client
+    .from("volunteer_activity")
+    .select("id,template_key,shelter_key,starts_at,status,policy_version_id", { count: "exact" })
+    .gte("starts_at", start)
+    .lt("starts_at", until)
+    .order("starts_at")
+    .range(0, 2000);
   const [versionResult, activityResult] = await Promise.all([
-    client
-      .from("volunteer_policy_version")
-      .select("id,template_key,body,effective_from,effective_until,created_at", { count: "exact" })
-      .order("effective_from", { ascending: false })
-      .range(0, 500),
-    client
-      .from("volunteer_activity")
-      .select("id,template_key,shelter_key,starts_at,status,policy_version_id", { count: "exact" })
-      .gte("starts_at", start)
-      .lt("starts_at", until)
-      .order("starts_at")
-      .range(0, 2000),
+    signal ? versions.abortSignal(signal) : versions,
+    signal ? activitiesQuery.abortSignal(signal) : activitiesQuery,
   ]);
   if (versionResult.error) throw versionResult.error;
   if (activityResult.error) throw activityResult.error;

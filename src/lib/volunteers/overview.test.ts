@@ -101,3 +101,80 @@ describe("the overview's messages", () => {
     expect(volunteerServerErrorText("overview_load_failed")).toBe("未能載入營運總覽，請重試。");
   });
 });
+
+describe("optional overview reads", () => {
+  const counts = { pendingProfiles: 7, pendingRegistrations: 11, todayActivities: 3 };
+  const unknownHealth = {
+    state: "unknown",
+    lastSuccessAt: null,
+    lastFailureAt: null,
+    consecutiveFailures: 0,
+  };
+
+  test("a stalled coverage read cannot withhold successful counts and is cancelled", async () => {
+    let signal: AbortSignal | undefined;
+    const failures: string[] = [];
+    const handler = createOverviewHandler(
+      {
+        authorize: async () => {},
+        read: async () => counts,
+        readCoverage: async (query) => {
+          signal = query.signal;
+          return new Promise(() => {});
+        },
+        reportFailure: (part) => failures.push(part),
+      },
+      () => new Date("2026-10-25T03:00:00Z"),
+      10,
+    );
+    const pending = handler(new Request("https://example.invalid"));
+    const response = await Promise.race([
+      pending,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 100)),
+    ]);
+    expect(response).not.toBeNull();
+    expect(response?.status).toBe(200);
+    expect(await response?.json()).toMatchObject({ counts, coverage: null });
+    expect(signal?.aborted).toBe(true);
+    expect(failures).toEqual(["coverage"]);
+  });
+
+  test("a stalled health read returns unknown without losing successful counts", async () => {
+    let signal: AbortSignal | undefined;
+    const handler = createOverviewHandler(
+      {
+        authorize: async () => {},
+        read: async () => counts,
+        readHealth: async (incoming) => {
+          signal = incoming;
+          return new Promise(() => {});
+        },
+      },
+      () => new Date("2026-10-25T03:00:00Z"),
+      10,
+    );
+    const response = await Promise.race([
+      handler(new Request("https://example.invalid")),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 100)),
+    ]);
+    expect(response).not.toBeNull();
+    expect(await response?.json()).toMatchObject({ counts, runtimeHealth: unknownHealth });
+    expect(signal?.aborted).toBe(true);
+  });
+
+  test("a rejected health read stays unknown rather than failing available counts", async () => {
+    const failures: string[] = [];
+    const handler = createOverviewHandler({
+      authorize: async () => {},
+      read: async () => counts,
+      readHealth: async () => {
+        throw new Error("Synthetic upstream detail");
+      },
+      reportFailure: (part) => failures.push(part),
+    });
+    const response = await handler(new Request("https://example.invalid"));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ counts, runtimeHealth: unknownHealth });
+    expect(failures).toEqual(["health"]);
+  });
+});
