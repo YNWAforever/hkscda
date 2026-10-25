@@ -1,11 +1,17 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
 import { VolunteerLink } from "./VolunteerLink";
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { hongKongDayRange, type OverviewData } from "../../../lib/volunteers/overview";
+import {
+  failedOverviewStats,
+  hongKongDayRange,
+  mergeOverviewStats,
+  type OverviewData,
+} from "../../../lib/volunteers/overview";
+import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import type { SessionCoverage } from "../../../lib/volunteers/sessionCoverage";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
@@ -13,18 +19,21 @@ import { isNamedShelter, volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOverviewCopy } from "./volunteerOverviewCopy";
 import { LoadFailure } from "../LoadFailure";
-type TodayActivity = {
-  id: string;
-  title: string;
-  starts_at: string;
-  ends_at: string | null;
-  location: string;
-  status: string;
-  policy?: unknown;
-  approved_participants: number;
-  capacity: number;
-  shortages: { role: string; missing: number }[];
-};
+import { VolunteerHourlyRetry } from "./VolunteerHourlyRetry";
+import type { Row } from "./activityWorkspaceTypes";
+type TodayActivity = Pick<
+  Row,
+  | "id"
+  | "title"
+  | "starts_at"
+  | "ends_at"
+  | "location"
+  | "status"
+  | "policy_version_id"
+  | "approved"
+  | "capacity"
+  | "shortages"
+>;
 function CoverageCard({ label, coverage }: { label: string; coverage: SessionCoverage }) {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerOverviewCopy, language);
@@ -102,8 +111,10 @@ export function VolunteerOverview() {
   const format = pickAdminCopy(volunteerFormatCopy, language);
   const [centre, setCentre] = useState("all");
   const range = hongKongDayRange(new Date());
+  const cache = useQueryClient();
+  const statsKey = volunteerQueryKeys.key("overview", range.date, centre);
   const stats = useQuery({
-    queryKey: volunteerQueryKeys.key("overview", range.date, centre),
+    queryKey: statsKey,
     queryFn: ({ signal }) =>
       fetchAdminJson<OverviewData>(
         "/api/admin/volunteers/overview?" + new URLSearchParams({ centre }),
@@ -111,6 +122,32 @@ export function VolunteerOverview() {
       ),
     staleTime: 30_000,
     refetchInterval: 30000,
+  });
+  const retryStats = useMutation({
+    mutationFn: async () => {
+      const previous = cache.getQueryData<OverviewData>(statsKey);
+      if (!previous) return;
+      const generation = cache.getQueryState(statsKey)?.dataUpdateCount;
+      const selected = failedOverviewStats(previous.counts);
+      if (!selected.length) return;
+      const update = await cache.fetchQuery({
+        queryKey: [...statsKey, "retry", ...selected],
+        queryFn: ({ signal }) =>
+          fetchAdminJson<OverviewData>(
+            "/api/admin/volunteers/overview?" +
+              new URLSearchParams({ centre, stats: selected.join(",") }),
+            { signal },
+          ),
+        staleTime: 0,
+        gcTime: 0,
+        retry: false,
+      });
+      cache.setQueryData<OverviewData>(statsKey, (current) =>
+        current === previous && cache.getQueryState(statsKey)?.dataUpdateCount === generation
+          ? mergeOverviewStats(current, update, selected)
+          : current,
+      );
+    },
   });
   const calendar = useQuery({
     queryKey: volunteerQueryKeys.key("calendarSummary", range.from, range.until),
@@ -152,9 +189,52 @@ export function VolunteerOverview() {
         >
           <h2 className="font-bold">{copy.jobHealth.title}</h2>
           <p>{copy.jobHealth[stats.data.runtimeHealth.state]}</p>
-          {stats.data.runtimeHealth.lastSuccessAt && (
-            <p>{format.sessionTime(stats.data.runtimeHealth.lastSuccessAt)}</p>
+          {stats.data.runtimeHealth.state === "degraded" && (
+            <p>
+              {stats.data.runtimeHealth.consecutiveFailures >= 2
+                ? copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)
+                : copy.jobHealth.stale}
+            </p>
           )}
+          {stats.data.runtimeHealth.lastSuccessAt && (
+            <p>
+              {copy.jobHealth.lastSuccess(
+                format.sessionTime(stats.data.runtimeHealth.lastSuccessAt),
+              )}
+            </p>
+          )}
+          {stats.data.runtimeHealth.state !== "healthy" &&
+            stats.data.runtimeHealth.lastFailureAt && (
+              <p>
+                {copy.jobHealth.lastFailure(
+                  format.sessionTime(stats.data.runtimeHealth.lastFailureAt),
+                )}
+              </p>
+            )}
+          {stats.data.runtimeHealth.state !== "healthy" && stats.data.runtimeHealth.diagnostic && (
+            <>
+              {stats.data.runtimeHealth.diagnostic.since && (
+                <p>
+                  {copy.jobHealth.failureSince(
+                    format.sessionTime(stats.data.runtimeHealth.diagnostic.since),
+                  )}
+                </p>
+              )}
+              <p className="break-all">
+                {stats.data.runtimeHealth.diagnostic.code
+                  ? copy.jobHealth.code(stats.data.runtimeHealth.diagnostic.code)
+                  : copy.jobHealth.noCode}
+              </p>
+              {stats.data.runtimeHealth.diagnostic.stage && (
+                <p>
+                  {copy.jobHealth.stage(
+                    copy.jobHealth.stages[stats.data.runtimeHealth.diagnostic.stage],
+                  )}
+                </p>
+              )}
+            </>
+          )}
+          <VolunteerHourlyRetry candidate={stats.data.runtimeHealth.retryCandidate} />
         </section>
       )}
       <VolunteerPageHeading pageId="overview">
@@ -201,12 +281,17 @@ export function VolunteerOverview() {
           title={copy.statsFailed}
           retryLabel={copy.retryStats}
         />
-      ) : Object.values(stats.data?.counts ?? {}).some((x) => x === null) ? (
+      ) : stats.data && failedOverviewStats(stats.data.counts).length > 0 ? (
         <div role="alert">
           {copy.statsFailed}
-          <button onClick={() => void stats.refetch()} className="min-h-11 px-3 underline">
+          <button
+            onClick={() => retryStats.mutate()}
+            disabled={retryStats.isPending}
+            className="min-h-11 px-3 underline"
+          >
             {copy.retryStats}
           </button>
+          {retryStats.error && <p>{volunteerAdminErrorMessage(retryStats.error, language)}</p>}
         </div>
       ) : null}
       <section
@@ -307,9 +392,9 @@ export function VolunteerOverview() {
               <p className="text-sm text-[var(--color-text-muted)]">{a.location}</p>
               <p className="mt-3 flex items-center gap-2 text-sm">
                 <Users size={16} />
-                {copy.today.confirmed(a.approved_participants, a.capacity)}
+                {copy.today.confirmed(a.approved, a.capacity)}
               </p>
-              {!a.policy ? (
+              {!a.policy_version_id ? (
                 <p className="mt-2 text-sm">{copy.today.noPolicy}</p>
               ) : a.shortages.length ? (
                 <p className="mt-2 text-sm text-[var(--color-warning)]">

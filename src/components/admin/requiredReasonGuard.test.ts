@@ -60,6 +60,7 @@ const EXPECTED_IDS: readonly RequiredReasonId[] = [
   "sponsorship_finance.adjust",
   "adoption_case.close",
   "volunteer_activity.bulk_cancel",
+  "volunteer_runtime_job.retry",
 ];
 
 function escapeRegExp(text: string): string {
@@ -526,7 +527,7 @@ function uiProblems(action: RequiredReasonAction): string[] {
 describe("required-reason registry", () => {
   test("(c) the registry holds exactly the expected IDs, once each", () => {
     const ids = REQUIRED_REASON_ACTIONS.map((action) => action.id);
-    expect(ids).toHaveLength(14);
+    expect(ids).toHaveLength(15);
     expect(new Set(ids).size).toBe(ids.length);
     expect([...ids].sort()).toEqual([...EXPECTED_IDS].sort());
   });
@@ -1018,8 +1019,8 @@ describe("M14: an inline marker must sit at its reason field", () => {
 });
 
 describe("guard is not vacuous", () => {
-  test("the registry has the 14 IDs and the tests directory is readable", () => {
-    expect(REQUIRED_REASON_ACTIONS).toHaveLength(14);
+  test("the registry has the 15 IDs and the tests directory is readable", () => {
+    expect(REQUIRED_REASON_ACTIONS).toHaveLength(15);
     expect(walkTests("src").length).toBeGreaterThan(100);
   });
 

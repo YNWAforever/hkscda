@@ -186,6 +186,7 @@ const emptyCoverage = (state: string) =>
     inapplicableDays: null,
     nextApprovedAt: null,
   });
+// Calendar summaries use the bulk-list contract: approved + policy_version_id.
 const todaySession = (over: Record<string, unknown> = {}) => ({
   id: "session-1",
   title: FIXTURE.activity,
@@ -193,8 +194,8 @@ const todaySession = (over: Record<string, unknown> = {}) => ({
   ends_at: "2026-10-09T04:00:00Z",
   location: FIXTURE.location,
   status: "published",
-  policy: { id: "policy-1" },
-  approved_participants: 6,
+  policy_version_id: "policy-1",
+  approved: 6,
   capacity: 12,
   shortages: [] as { role: string; missing: number }[],
   ...over,
@@ -225,7 +226,7 @@ describe("the volunteer overview in English", () => {
     "volunteer-calendar": kit.ok({
       activities: [
         todaySession({ shortages: [{ role: FIXTURE.role, missing: 2 }] }),
-        todaySession({ id: "session-2", policy: null, ends_at: null }),
+        todaySession({ id: "session-2", policy_version_id: null, ends_at: null }),
         todaySession({ id: "session-3" }),
         todaySession({ id: "session-4", status: "draft", title: "should not show" }),
       ],
@@ -444,7 +445,7 @@ describe("the volunteer overview in English", () => {
         },
       }),
       "volunteer-calendar": kit.ok({
-        activities: [todaySession({ approved_participants: 1500, capacity: 2000 })],
+        activities: [todaySession({ approved: 1500, capacity: 2000 })],
       }),
     };
     kit.withQueries(big, () => {
@@ -468,6 +469,91 @@ describe("the volunteer overview in English", () => {
       ).toBeTruthy();
     }
     expect(collectCopyStrings(volunteerOverviewCopy.en).length).toBeGreaterThan(40);
+  });
+
+  test("shows labeled run times and sanitized diagnostics in both languages", () => {
+    kit.withQueries(
+      {
+        "volunteer-calendar": kit.ok({ activities: [] }),
+        "volunteer-overview": kit.ok({
+          date: "2026-10-25",
+          counts: { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 },
+          runtimeHealth: {
+            state: "degraded",
+            consecutiveFailures: 2,
+            lastSuccessAt: "2026-10-25T00:15:00Z",
+            lastFailureAt: "2026-10-25T02:15:00Z",
+            diagnostic: { code: "42501", stage: "generate", since: "2026-10-25T01:15:00Z" },
+          },
+        }),
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("Last successful run:");
+        expect(en).toContain("Latest failed run:");
+        expect(en).toContain("2 consecutive runs failed");
+        expect(en).toContain("Error code: 42501");
+        expect(en).toContain("Failed stage: Session generation");
+        expect(en).toContain("Consecutive failures are recorded from at least");
+        const zh = renderAdminInChinese(<VolunteerOverview />);
+        expect(zh).toContain("上次成功：");
+        expect(zh).toContain("最近失敗：");
+        expect(zh).toContain("錯誤代碼：42501");
+        expect(zh).toContain("失敗階段：產生場次");
+        expect(zh).toContain("已有連續失敗紀錄");
+      },
+    );
+  });
+
+  test("job health distinguishes unknown codes and stale-only evidence", () => {
+    const show = (runtimeHealth: object, work: () => void) =>
+      kit.withQueries(
+        {
+          "volunteer-calendar": kit.ok({ activities: [] }),
+          "volunteer-overview": kit.ok({
+            date: "2026-10-25",
+            counts: { pendingProfiles: 0, pendingRegistrations: 0, todayActivities: 0 },
+            runtimeHealth,
+          }),
+        },
+        work,
+      );
+    show(
+      {
+        state: "unknown",
+        consecutiveFailures: 1,
+        lastSuccessAt: null,
+        lastFailureAt: "2026-10-25T02:15:00Z",
+        diagnostic: { code: null, since: "2026-10-25T02:15:00Z" },
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("No readable error code is available");
+        expect(en).toContain("Consecutive failures are recorded from at least");
+        expect(en).not.toContain("Failed stage:");
+        expect(renderAdminInChinese(<VolunteerOverview />)).toContain("未有可讀取的錯誤代碼");
+      },
+    );
+    show(
+      {
+        state: "degraded",
+        consecutiveFailures: 0,
+        lastSuccessAt: "2026-10-25T00:15:00Z",
+        lastFailureAt: null,
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("Two scheduled intervals have passed without a successful run");
+        expect(en).not.toContain("Error code:");
+        expect(en).not.toContain("consecutive runs failed");
+        expect(renderAdminInChinese(<VolunteerOverview />)).toContain(
+          "已超過兩個排程週期未有成功紀錄",
+        );
+      },
+    );
   });
 
   test("keeps the Chinese overview as it was", () => {

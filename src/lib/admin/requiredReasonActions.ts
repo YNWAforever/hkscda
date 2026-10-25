@@ -19,7 +19,8 @@ export type RequiredReasonId =
   | "sponsorship_proof.reject"
   | "sponsorship_finance.adjust"
   | "adoption_case.close"
-  | "volunteer_activity.bulk_cancel";
+  | "volunteer_activity.bulk_cancel"
+  | "volunteer_runtime_job.retry";
 
 /**
  * A request the server checks the reason on. `path` is the API path with each path parameter
@@ -52,6 +53,12 @@ export type RequiredReasonAction = {
 };
 
 export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
+  {
+    id: "volunteer_runtime_job.retry",
+    kind: "dialog",
+    ui: ["volunteers/VolunteerHourlyRetry.tsx"],
+    routes: [{ method: "POST", path: "/api/admin/volunteers/runtime/retry" }],
+  },
   {
     id: "receipt.void",
     kind: "dialog",

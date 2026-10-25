@@ -1,6 +1,7 @@
 import { promotionDenial } from "./promotion";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { parseVolunteerJobActorId, VolunteerJobActorError } from "./config";
+import { VolunteerJobLeaseLostError } from "./errors";
 
 export async function validateVolunteerJobActor(
   client: SupabaseClient,
@@ -69,7 +70,7 @@ export function createVolunteerJobRepository(
       return data === true;
     },
     async finish(bucket, owner, status, result) {
-      const { error } = await c.rpc("finish_volunteer_runtime_job", {
+      const { data, error } = await c.rpc("finish_volunteer_runtime_job", {
         p_job_key: "volunteer-hourly",
         p_bucket: bucket,
         p_owner: owner,
@@ -77,6 +78,7 @@ export function createVolunteerJobRepository(
         p_result: result,
       });
       if (error) throw error;
+      if (data !== true) throw new VolunteerJobLeaseLostError();
     },
     async generate() {
       const { data, error } = await c.rpc("generate_due_volunteer_sessions", {

@@ -263,6 +263,7 @@ import { Route as ApiAdminVolunteersDailySettingsIndexRouteImport } from './rout
 import { Route as ApiAdminVolunteersJobsIndexRouteImport } from './routes/api/admin/volunteers/jobs/index'
 import { Route as ApiAdminVolunteersOperationsIndexRouteImport } from './routes/api/admin/volunteers/operations/index'
 import { Route as ApiAdminVolunteersRegistrationsIdRouteImport } from './routes/api/admin/volunteers/registrations/$id'
+import { Route as ApiAdminVolunteersRuntimeRetryRouteImport } from './routes/api/admin/volunteers/runtime/retry'
 import { Route as ApiAdminVolunteersSettingsIndexRouteImport } from './routes/api/admin/volunteers/settings/index'
 import { Route as ApiAdminVolunteersSimulationIndexRouteImport } from './routes/api/admin/volunteers/simulation/index'
 import { Route as ApiAdminVolunteersSourcesIndexRouteImport } from './routes/api/admin/volunteers/sources/index'
@@ -1682,6 +1683,12 @@ const ApiAdminVolunteersRegistrationsIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminVolunteersRegistrationsRoute,
   } as any)
+const ApiAdminVolunteersRuntimeRetryRoute =
+  ApiAdminVolunteersRuntimeRetryRouteImport.update({
+    id: '/api/admin/volunteers/runtime/retry',
+    path: '/api/admin/volunteers/runtime/retry',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminVolunteersSettingsIndexRoute =
   ApiAdminVolunteersSettingsIndexRouteImport.update({
     id: '/api/admin/volunteers/settings/',
@@ -2106,6 +2113,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/volunteers/runtime/retry': typeof ApiAdminVolunteersRuntimeRetryRoute
   '/api/admin/animals/draft-photo-upload-url/': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   '/api/admin/animals/publication/': typeof ApiAdminAnimalsPublicationIndexRoute
   '/api/admin/volunteers/assessments/': typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -2390,6 +2398,7 @@ export interface FileRoutesByTo {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/volunteers/runtime/retry': typeof ApiAdminVolunteersRuntimeRetryRoute
   '/api/admin/animals/draft-photo-upload-url': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   '/api/admin/animals/publication': typeof ApiAdminAnimalsPublicationIndexRoute
   '/api/admin/volunteers/assessments': typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -2676,6 +2685,7 @@ export interface FileRoutesById {
   '/api/admin/supporters/$id/consents': typeof ApiAdminSupportersIdConsentsRoute
   '/api/admin/volunteers/activities/$id': typeof ApiAdminVolunteersActivitiesIdRouteWithChildren
   '/api/admin/volunteers/registrations/$id': typeof ApiAdminVolunteersRegistrationsIdRouteWithChildren
+  '/api/admin/volunteers/runtime/retry': typeof ApiAdminVolunteersRuntimeRetryRoute
   '/api/admin/animals/draft-photo-upload-url/': typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   '/api/admin/animals/publication/': typeof ApiAdminAnimalsPublicationIndexRoute
   '/api/admin/volunteers/assessments/': typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -2963,6 +2973,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/volunteers/runtime/retry'
     | '/api/admin/animals/draft-photo-upload-url/'
     | '/api/admin/animals/publication/'
     | '/api/admin/volunteers/assessments/'
@@ -3247,6 +3258,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/volunteers/runtime/retry'
     | '/api/admin/animals/draft-photo-upload-url'
     | '/api/admin/animals/publication'
     | '/api/admin/volunteers/assessments'
@@ -3532,6 +3544,7 @@ export interface FileRouteTypes {
     | '/api/admin/supporters/$id/consents'
     | '/api/admin/volunteers/activities/$id'
     | '/api/admin/volunteers/registrations/$id'
+    | '/api/admin/volunteers/runtime/retry'
     | '/api/admin/animals/draft-photo-upload-url/'
     | '/api/admin/animals/publication/'
     | '/api/admin/volunteers/assessments/'
@@ -3724,6 +3737,7 @@ export interface RootRouteChildren {
   ApiAdminAdoptionsReportsExportsRoute: typeof ApiAdminAdoptionsReportsExportsRouteWithChildren
   ApiAdminAdoptionsReportsSummaryRoute: typeof ApiAdminAdoptionsReportsSummaryRoute
   ApiAdminAnimalsIdArchiveRoute: typeof ApiAdminAnimalsIdArchiveRoute
+  ApiAdminVolunteersRuntimeRetryRoute: typeof ApiAdminVolunteersRuntimeRetryRoute
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute: typeof ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute
   ApiAdminAnimalsPublicationIndexRoute: typeof ApiAdminAnimalsPublicationIndexRoute
   ApiAdminVolunteersAssessmentsIndexRoute: typeof ApiAdminVolunteersAssessmentsIndexRoute
@@ -5520,6 +5534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminVolunteersRegistrationsIdRouteImport
       parentRoute: typeof ApiAdminVolunteersRegistrationsRoute
     }
+    '/api/admin/volunteers/runtime/retry': {
+      id: '/api/admin/volunteers/runtime/retry'
+      path: '/api/admin/volunteers/runtime/retry'
+      fullPath: '/api/admin/volunteers/runtime/retry'
+      preLoaderRoute: typeof ApiAdminVolunteersRuntimeRetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/volunteers/settings/': {
       id: '/api/admin/volunteers/settings/'
       path: '/api/admin/volunteers/settings'
@@ -6675,6 +6696,7 @@ const rootRouteChildren: RootRouteChildren = {
     ApiAdminAdoptionsReportsExportsRouteWithChildren,
   ApiAdminAdoptionsReportsSummaryRoute: ApiAdminAdoptionsReportsSummaryRoute,
   ApiAdminAnimalsIdArchiveRoute: ApiAdminAnimalsIdArchiveRoute,
+  ApiAdminVolunteersRuntimeRetryRoute: ApiAdminVolunteersRuntimeRetryRoute,
   ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute:
     ApiAdminAnimalsDraftPhotoUploadUrlIndexRoute,
   ApiAdminAnimalsPublicationIndexRoute: ApiAdminAnimalsPublicationIndexRoute,

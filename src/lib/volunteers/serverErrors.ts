@@ -29,6 +29,10 @@ const VOLUNTEER_SERVER_TEXT = {
     zh: "服務地點無效",
     en: "The service location is not valid. Choose a location from the list and try again.",
   },
+  overview_invalid_stats: {
+    zh: "統計項目無效，請重新載入後重試。",
+    en: "The statistics selection is not valid. Reload the page and try again.",
+  },
   overview_load_failed: {
     zh: "未能載入營運總覽，請重試。",
     en: "Could not load the operations overview. Try again.",
