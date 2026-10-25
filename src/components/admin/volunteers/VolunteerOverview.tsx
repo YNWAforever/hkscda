@@ -127,6 +127,7 @@ export function VolunteerOverview() {
     mutationFn: async () => {
       const previous = cache.getQueryData<OverviewData>(statsKey);
       if (!previous) return;
+      const generation = cache.getQueryState(statsKey)?.dataUpdateCount;
       const selected = failedOverviewStats(previous.counts);
       if (!selected.length) return;
       const update = await cache.fetchQuery({
@@ -142,7 +143,10 @@ export function VolunteerOverview() {
         retry: false,
       });
       cache.setQueryData<OverviewData>(statsKey, (current) =>
-        applyRetriedOverviewStats(current, update, selected),
+        applyRetriedOverviewStats(current, update, selected, {
+          previous,
+          unchanged: cache.getQueryState(statsKey)?.dataUpdateCount === generation,
+        }),
       );
     },
   });

@@ -29,16 +29,17 @@ export function failedOverviewStats(counts: OverviewCounts): OverviewStatKey[] {
   return overviewStatKeys.filter((key) => counts[key] === null);
 }
 /**
- * Keep a partial stat retry on the overview the admin is looking at.
- * A background refetch may replace the cache while the retry is in flight;
- * the selected figures are still applied when that replacement is the same day.
+ * Apply a partial stat retry only onto the overview snapshot the click read.
+ * A refetch that lands first, even one that is still missing the same figure,
+ * is newer and must not be overwritten by the in-flight response.
  */
 export function applyRetriedOverviewStats(
   current: OverviewData | undefined,
   update: OverviewData,
   selected: readonly OverviewStatKey[],
+  snapshot: { previous: OverviewData; unchanged: boolean },
 ): OverviewData | undefined {
-  if (!current) return current;
+  if (!current || !snapshot.unchanged || current !== snapshot.previous) return current;
   return mergeOverviewStats(current, update, selected);
 }
 export function mergeOverviewStats(

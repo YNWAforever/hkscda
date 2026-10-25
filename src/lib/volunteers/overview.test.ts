@@ -139,7 +139,7 @@ describe("selected overview statistics", () => {
       mergeOverviewStats(previous, { ...update, date: "2026-10-26" }, ["pendingRegistrations"]),
     ).toBe(previous);
   });
-  test("a stat retry stays on the overview when a refetch replaces it during the click", () => {
+  test("a stat retry does not overwrite a refetch that landed while it was in flight", () => {
     const clicked: OverviewData = {
       date: "2026-10-25",
       counts: { pendingProfiles: null, pendingRegistrations: 4, todayActivities: 1 },
@@ -152,20 +152,42 @@ describe("selected overview statistics", () => {
     };
     const refetched: OverviewData = {
       ...clicked,
-      counts: { pendingProfiles: null, pendingRegistrations: 5, todayActivities: 2 },
+      counts: { pendingProfiles: null, pendingRegistrations: null, todayActivities: 2 },
     };
     const update: OverviewData = {
       date: "2026-10-25",
-      counts: { pendingProfiles: 7, pendingRegistrations: 9, todayActivities: 9 },
+      counts: { pendingProfiles: 7, pendingRegistrations: 11, todayActivities: 9 },
     };
-    expect(applyRetriedOverviewStats(refetched, update, ["pendingProfiles"])).toEqual({
-      ...refetched,
-      counts: { pendingProfiles: 7, pendingRegistrations: 5, todayActivities: 2 },
+    const selected = ["pendingProfiles", "pendingRegistrations"] as const;
+    expect(
+      applyRetriedOverviewStats(clicked, update, selected, { previous: clicked, unchanged: true }),
+    ).toEqual({
+      ...clicked,
+      counts: {
+        pendingProfiles: 7,
+        pendingRegistrations: 11,
+        todayActivities: 1,
+        pendingBreakdown: null,
+      },
     });
     expect(
-      applyRetriedOverviewStats(refetched, { ...update, date: "2026-10-26" }, ["pendingProfiles"]),
+      applyRetriedOverviewStats(refetched, update, selected, {
+        previous: clicked,
+        unchanged: false,
+      }),
     ).toBe(refetched);
-    expect(applyRetriedOverviewStats(undefined, update, ["pendingProfiles"])).toBeUndefined();
+    expect(
+      applyRetriedOverviewStats(clicked, { ...update, date: "2026-10-26" }, selected, {
+        previous: clicked,
+        unchanged: true,
+      }),
+    ).toBe(clicked);
+    expect(
+      applyRetriedOverviewStats(undefined, update, selected, {
+        previous: clicked,
+        unchanged: true,
+      }),
+    ).toBeUndefined();
   });
   test("validates the selection after authorization before any read", async () => {
     let reads = 0;
