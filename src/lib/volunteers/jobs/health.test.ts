@@ -1,5 +1,65 @@
 import { expect, test } from "bun:test";
 import { volunteerJobHealth } from "./health";
+
+test("only admins receive a current failed bucket with an exact retry fence", () => {
+  const runs = [
+    {
+      status: "failed",
+      bucket: "2026-10-25T03:00:00+00:00",
+      finished_at: "2026-10-25T03:15:00.123456+00:00",
+      lease_until: null,
+    },
+  ];
+  const now = new Date("2026-10-25T03:20:00Z");
+  expect(volunteerJobHealth(runs, now, undefined, true).retryCandidate).toEqual({
+    bucket: "2026-10-25T03:00:00+00:00",
+    expectedUpdatedAt: "2026-10-25T03:15:00.123456+00:00",
+  });
+  expect(volunteerJobHealth(runs, now).retryCandidate).toBeUndefined();
+});
+for (const changes of [
+  { status: "running" },
+  { status: "complete" },
+  { bucket: "2026-10-25T02:00:00Z" },
+  { bucket: "2026-10-25T04:00:00Z" },
+  { lease_until: "2026-10-25T03:21:00Z" },
+  { lease_until: "invalid" },
+  { lease_until: "infinity" },
+  { lease_until: "-infinity" },
+  { lease_until: undefined },
+  { finished_at: null },
+  { status: "running", lease_until: "2026-10-25T03:00:00Z" },
+] as const) {
+  test(`retry candidate fails closed for ${JSON.stringify(changes)}`, () => {
+    const run = {
+      status: "failed",
+      bucket: "2026-10-25T03:00:00Z",
+      finished_at: "2026-10-25T03:15:00Z",
+      lease_until: null,
+      ...changes,
+    };
+    expect(
+      volunteerJobHealth([run], new Date("2026-10-25T03:20:00Z"), undefined, true).retryCandidate,
+    ).toBeUndefined();
+  });
+}
+test("a failed bucket with an expired lease remains eligible without reclaiming running work", () => {
+  expect(
+    volunteerJobHealth(
+      [
+        {
+          status: "failed",
+          bucket: "2026-10-25T03:00:00Z",
+          finished_at: "2026-10-25T03:15:00Z",
+          lease_until: "2026-10-25T03:10:00Z",
+        },
+      ],
+      new Date("2026-10-25T03:20:00Z"),
+      undefined,
+      true,
+    ).retryCandidate,
+  ).toBeDefined();
+});
 const now = new Date("2026-10-13T03:00:00Z");
 test("two consecutive failures and stale native success degrade; absent evidence is unknown", () => {
   expect(

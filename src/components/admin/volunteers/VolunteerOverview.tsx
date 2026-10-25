@@ -19,6 +19,7 @@ import { isNamedShelter, volunteerCommonCopy } from "./volunteerCommonCopy";
 import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOverviewCopy } from "./volunteerOverviewCopy";
 import { LoadFailure } from "../LoadFailure";
+import { VolunteerHourlyRetry } from "./VolunteerHourlyRetry";
 type TodayActivity = {
   id: string;
   title: string;
@@ -231,6 +232,7 @@ export function VolunteerOverview() {
               )}
             </>
           )}
+          <VolunteerHourlyRetry candidate={stats.data.runtimeHealth.retryCandidate} />
         </section>
       )}
       <VolunteerPageHeading pageId="overview">

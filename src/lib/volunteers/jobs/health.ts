@@ -38,12 +38,14 @@ export type VolunteerJobHealth = {
   consecutiveFailures: number;
   state: "healthy" | "degraded" | "unknown";
   diagnostic?: { code: string | null; stage?: VolunteerJobStage; since?: string };
+  retryCandidate?: { bucket: string; expectedUpdatedAt: string };
 };
 export type VolunteerHealthRun = {
   status: string;
   finished_at: string | null;
   bucket?: string;
   result?: unknown;
+  lease_until?: string | null;
 };
 export function volunteerJobHealth(
   runs: VolunteerHealthRun[],
@@ -73,6 +75,25 @@ export function volunteerJobHealth(
     consecutiveFailures,
     state: consecutiveFailures >= 2 || stale ? "degraded" : success ? "healthy" : "unknown",
   };
+  if (includeDiagnostics) {
+    const current = runs.find(
+      (run) =>
+        run.bucket && Date.parse(run.bucket) === Math.floor(now.getTime() / 3_600_000) * 3_600_000,
+    );
+    if (
+      current?.status === "failed" &&
+      current.bucket &&
+      current.finished_at &&
+      Number.isFinite(Date.parse(current.finished_at)) &&
+      (current.lease_until === null ||
+        (typeof current.lease_until === "string" &&
+          Date.parse(current.lease_until) <= now.getTime()))
+    )
+      health.retryCandidate = {
+        bucket: current.bucket,
+        expectedUpdatedAt: current.finished_at,
+      };
+  }
   if (includeDiagnostics && health.state !== "healthy" && consecutiveFailures > 0 && failure) {
     const result = failure.result;
     const rawCode =

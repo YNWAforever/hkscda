@@ -17,7 +17,7 @@ export async function readVolunteerJobHealth(
       .from("volunteer_runtime_job_run")
       .select(
         includeDiagnostics
-          ? "status,finished_at:updated_at,bucket,result"
+          ? "status,finished_at:updated_at,bucket,result,lease_until"
           : "status,finished_at:updated_at,bucket",
       )
       .eq("job_key", "volunteer-hourly")
