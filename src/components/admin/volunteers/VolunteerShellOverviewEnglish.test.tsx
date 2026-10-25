@@ -186,6 +186,7 @@ const emptyCoverage = (state: string) =>
     inapplicableDays: null,
     nextApprovedAt: null,
   });
+// Calendar summaries use the bulk-list contract: approved + policy_version_id.
 const todaySession = (over: Record<string, unknown> = {}) => ({
   id: "session-1",
   title: FIXTURE.activity,
@@ -193,8 +194,8 @@ const todaySession = (over: Record<string, unknown> = {}) => ({
   ends_at: "2026-10-09T04:00:00Z",
   location: FIXTURE.location,
   status: "published",
-  policy: { id: "policy-1" },
-  approved_participants: 6,
+  policy_version_id: "policy-1",
+  approved: 6,
   capacity: 12,
   shortages: [] as { role: string; missing: number }[],
   ...over,
@@ -225,7 +226,7 @@ describe("the volunteer overview in English", () => {
     "volunteer-calendar": kit.ok({
       activities: [
         todaySession({ shortages: [{ role: FIXTURE.role, missing: 2 }] }),
-        todaySession({ id: "session-2", policy: null, ends_at: null }),
+        todaySession({ id: "session-2", policy_version_id: null, ends_at: null }),
         todaySession({ id: "session-3" }),
         todaySession({ id: "session-4", status: "draft", title: "should not show" }),
       ],
@@ -444,7 +445,7 @@ describe("the volunteer overview in English", () => {
         },
       }),
       "volunteer-calendar": kit.ok({
-        activities: [todaySession({ approved_participants: 1500, capacity: 2000 })],
+        activities: [todaySession({ approved: 1500, capacity: 2000 })],
       }),
     };
     kit.withQueries(big, () => {

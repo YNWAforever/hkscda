@@ -20,18 +20,20 @@ import { volunteerFormatCopy } from "./volunteerFormatCopy";
 import { volunteerOverviewCopy } from "./volunteerOverviewCopy";
 import { LoadFailure } from "../LoadFailure";
 import { VolunteerHourlyRetry } from "./VolunteerHourlyRetry";
-type TodayActivity = {
-  id: string;
-  title: string;
-  starts_at: string;
-  ends_at: string | null;
-  location: string;
-  status: string;
-  policy?: unknown;
-  approved_participants: number;
-  capacity: number;
-  shortages: { role: string; missing: number }[];
-};
+import type { Row } from "./activityWorkspaceTypes";
+type TodayActivity = Pick<
+  Row,
+  | "id"
+  | "title"
+  | "starts_at"
+  | "ends_at"
+  | "location"
+  | "status"
+  | "policy_version_id"
+  | "approved"
+  | "capacity"
+  | "shortages"
+>;
 function CoverageCard({ label, coverage }: { label: string; coverage: SessionCoverage }) {
   const { language } = useAdminLanguage();
   const copy = pickAdminCopy(volunteerOverviewCopy, language);
@@ -390,9 +392,9 @@ export function VolunteerOverview() {
               <p className="text-sm text-[var(--color-text-muted)]">{a.location}</p>
               <p className="mt-3 flex items-center gap-2 text-sm">
                 <Users size={16} />
-                {copy.today.confirmed(a.approved_participants, a.capacity)}
+                {copy.today.confirmed(a.approved, a.capacity)}
               </p>
-              {!a.policy ? (
+              {!a.policy_version_id ? (
                 <p className="mt-2 text-sm">{copy.today.noPolicy}</p>
               ) : a.shortages.length ? (
                 <p className="mt-2 text-sm text-[var(--color-warning)]">
