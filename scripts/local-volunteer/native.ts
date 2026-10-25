@@ -107,7 +107,8 @@ try {
   });
   for (const item of [
     { status: "complete", lease: null },
-    { status: "running", lease: "2000-01-01T00:00:00Z" },
+    { status: "running", lease: "9999-01-01T00:00:00Z" },
+    { status: "running", lease: null },
     { status: "failed", lease: "9999-01-01T00:00:00Z" },
     { status: "failed", lease: "infinity" },
     { status: "failed", lease: "-infinity" },
@@ -116,6 +117,10 @@ try {
       await tx`update public.volunteer_runtime_job_run set status=${item.status},lease_until=${item.lease}::timestamptz where job_key='volunteer-hourly' and bucket=date_trunc('hour',clock_timestamp())`;
       assert.equal(await claim(tx), false);
     });
+  await rollback("expired running lease can be retried", async (tx) => {
+    await tx`update public.volunteer_runtime_job_run set status='running',lease_until='2000-01-01T00:00:00Z' where job_key='volunteer-hourly' and bucket=date_trunc('hour',clock_timestamp())`;
+    assert.equal(await claim(tx), true);
+  });
   await rollback("audit exception rolls back claim", async (tx) => {
     const before = await current(tx);
     await tx.unsafe(

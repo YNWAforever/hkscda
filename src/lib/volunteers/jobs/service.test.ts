@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { authorizedCron } from "./auth.server";
 import {
+  createVolunteerJobCronHandler,
   createVolunteerRuntimeJobs,
   dueAssessmentPeriod,
   type VolunteerJobRepository,
@@ -92,7 +93,7 @@ test("failed preflight records the run but performs zero domain work", async () 
     },
     preflight: async () => {
       calls.push("preflight");
-      throw Object.assign(new Error("VOLUNTEER_JOB_ACTOR_INVALID"), {
+      throw Object.assign(new Error("private@example.invalid"), {
         code: "VOLUNTEER_JOB_ACTOR_INVALID",
       });
     },
@@ -108,10 +109,45 @@ test("failed preflight records the run but performs zero domain work", async () 
     },
     deferNotifications: work,
   };
-  await expect(createVolunteerRuntimeJobs(repo).run()).rejects.toThrow(
-    "VOLUNTEER_JOB_ACTOR_INVALID",
-  );
+  const result = await createVolunteerRuntimeJobs(repo).run();
+  expect(result).toEqual({
+    kind: "failed",
+    code: "VOLUNTEER_JOB_ACTOR_INVALID",
+    stage: "preflight",
+  });
+  expect(JSON.stringify(result)).not.toContain("private");
   expect(calls).toEqual(["claim", "preflight", "finish:failed"]);
+});
+
+test("the cron returns a persisted failure without the provider message, and hides an unstored one", async () => {
+  const recorded = await createVolunteerJobCronHandler(
+    () => true,
+    async () => ({ kind: "failed", code: "22P02", stage: "generate" }),
+  )(new Request("https://example.invalid"));
+  expect(recorded.status).toBe(200);
+  expect(recorded.headers.get("cache-control")).toBe("no-store");
+  expect(await recorded.json()).toEqual({ kind: "failed", code: "22P02", stage: "generate" });
+
+  const unstored = await createVolunteerJobCronHandler(
+    () => true,
+    async () => {
+      throw Object.assign(new Error("smtp private@example.invalid"), { code: "08006" });
+    },
+  )(new Request("https://example.invalid"));
+  expect(unstored.status).toBe(500);
+  const body = await unstored.text();
+  expect(body).not.toContain("private");
+  expect(body).not.toContain("smtp");
+  expect(JSON.parse(body)).toEqual({ error: "08006", code: "08006" });
+
+  const denied = await createVolunteerJobCronHandler(
+    () => false,
+    async () => {
+      throw new Error("private@example.invalid");
+    },
+  )(new Request("https://example.invalid"));
+  expect(denied.status).toBe(401);
+  expect(await denied.text()).not.toContain("private");
 });
 
 test("monthly assessment reconciles after its due time and respects short months", () => {

@@ -557,6 +557,24 @@ describe("the volunteer overview in English", () => {
     show(
       {
         state: "degraded",
+        consecutiveFailures: 1,
+        lastSuccessAt: "2026-10-25T00:15:00Z",
+        lastFailureAt: "2026-10-25T02:15:00Z",
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("One recent run failed. Check that run record.");
+        expect(en).not.toContain("Two scheduled intervals have passed");
+        expect(en).not.toContain("consecutive runs failed");
+        const zh = renderAdminInChinese(<VolunteerOverview />);
+        expect(zh).toContain("最近有一次失敗紀錄，請檢查該次工作記錄。");
+        expect(zh).not.toContain("已超過兩個排程週期未有成功紀錄");
+      },
+    );
+    show(
+      {
+        state: "degraded",
         consecutiveFailures: 0,
         lastSuccessAt: "2026-10-25T02:15:00Z",
         lastFailureAt: null,

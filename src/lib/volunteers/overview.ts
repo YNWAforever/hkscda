@@ -28,6 +28,19 @@ export type OverviewStatKey = (typeof overviewStatKeys)[number];
 export function failedOverviewStats(counts: OverviewCounts): OverviewStatKey[] {
   return overviewStatKeys.filter((key) => counts[key] === null);
 }
+/**
+ * Keep a partial stat retry on the overview the admin is looking at.
+ * A background refetch may replace the cache while the retry is in flight;
+ * the selected figures are still applied when that replacement is the same day.
+ */
+export function applyRetriedOverviewStats(
+  current: OverviewData | undefined,
+  update: OverviewData,
+  selected: readonly OverviewStatKey[],
+): OverviewData | undefined {
+  if (!current) return current;
+  return mergeOverviewStats(current, update, selected);
+}
 export function mergeOverviewStats(
   previous: OverviewData,
   update: OverviewData,

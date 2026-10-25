@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   hongKongDayRange,
   createOverviewHandler,
+  applyRetriedOverviewStats,
   failedOverviewStats,
   mergeOverviewStats,
   type OverviewData,
@@ -137,6 +138,34 @@ describe("selected overview statistics", () => {
     expect(
       mergeOverviewStats(previous, { ...update, date: "2026-10-26" }, ["pendingRegistrations"]),
     ).toBe(previous);
+  });
+  test("a stat retry stays on the overview when a refetch replaces it during the click", () => {
+    const clicked: OverviewData = {
+      date: "2026-10-25",
+      counts: { pendingProfiles: null, pendingRegistrations: 4, todayActivities: 1 },
+      runtimeHealth: {
+        state: "degraded",
+        lastSuccessAt: null,
+        lastFailureAt: null,
+        consecutiveFailures: 2,
+      },
+    };
+    const refetched: OverviewData = {
+      ...clicked,
+      counts: { pendingProfiles: null, pendingRegistrations: 5, todayActivities: 2 },
+    };
+    const update: OverviewData = {
+      date: "2026-10-25",
+      counts: { pendingProfiles: 7, pendingRegistrations: 9, todayActivities: 9 },
+    };
+    expect(applyRetriedOverviewStats(refetched, update, ["pendingProfiles"])).toEqual({
+      ...refetched,
+      counts: { pendingProfiles: 7, pendingRegistrations: 5, todayActivities: 2 },
+    });
+    expect(
+      applyRetriedOverviewStats(refetched, { ...update, date: "2026-10-26" }, ["pendingProfiles"]),
+    ).toBe(refetched);
+    expect(applyRetriedOverviewStats(undefined, update, ["pendingProfiles"])).toBeUndefined();
   });
   test("validates the selection after authorization before any read", async () => {
     let reads = 0;

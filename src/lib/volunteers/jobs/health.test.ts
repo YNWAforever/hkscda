@@ -28,7 +28,7 @@ for (const changes of [
   { lease_until: "-infinity" },
   { lease_until: undefined },
   { finished_at: null },
-  { status: "running", lease_until: "2026-10-25T03:00:00Z" },
+  { status: "running", lease_until: "2026-10-25T03:20:00Z" },
 ] as const) {
   test(`retry candidate fails closed for ${JSON.stringify(changes)}`, () => {
     const run = {
@@ -43,7 +43,7 @@ for (const changes of [
     ).toBeUndefined();
   });
 }
-test("an open lease stays healthy and an expired running lease is degraded without a retry", () => {
+test("an open lease stays healthy and an expired running lease is a degraded retry", () => {
   const now = new Date("2026-10-25T03:20:00Z");
   const recentSuccess = {
     status: "complete",
@@ -99,7 +99,10 @@ test("an open lease stays healthy and an expired running lease is degraded witho
   );
   expect(expired.state).toBe("degraded");
   expect(expired.expiredLease).toBe(true);
-  expect(expired.retryCandidate).toBeUndefined();
+  expect(expired.retryCandidate).toEqual({
+    bucket: "2026-10-25T03:00:00Z",
+    expectedUpdatedAt: "2026-10-25T03:16:00Z",
+  });
   expect(expired.diagnostic).toEqual({ code: "VOLUNTEER_JOB_LEASE_LOST" });
   expect(JSON.stringify(expired)).not.toContain("synthetic-private");
   expect(JSON.stringify(expired)).not.toContain("42501");
@@ -161,6 +164,22 @@ test("a missing or non-finite running lease is unfinished, and a later success c
   expect(recovered.expiredLease).toBeUndefined();
   expect(recovered.state).toBe("healthy");
   expect(recovered.diagnostic).toBeUndefined();
+
+  const previousHour = volunteerJobHealth(
+    [
+      {
+        status: "running",
+        bucket: "2026-10-25T02:00:00Z",
+        finished_at: "2026-10-25T02:16:00Z",
+        lease_until: "2026-10-25T02:20:00Z",
+      },
+    ],
+    now,
+    undefined,
+    true,
+  );
+  expect(previousHour.expiredLease).toBe(true);
+  expect(previousHour.retryCandidate).toBeUndefined();
 });
 
 test("a failed bucket with an expired lease remains eligible without reclaiming running work", () => {
@@ -181,6 +200,66 @@ test("a failed bucket with an expired lease remains eligible without reclaiming 
   ).toBeDefined();
 });
 const now = new Date("2026-10-13T03:00:00Z");
+test("a live lease splits failure streaks without hiding an older expired lease", () => {
+  const at = new Date("2026-10-13T03:00:00Z");
+  const live = {
+    status: "running",
+    finished_at: "2026-10-13T02:30:00Z",
+    lease_until: "2026-10-13T03:10:00Z",
+  };
+  expect(
+    volunteerJobHealth(
+      [
+        { status: "failed", finished_at: "2026-10-13T02:45:00Z" },
+        live,
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      ],
+      at,
+    ).consecutiveFailures,
+  ).toBe(1);
+  expect(
+    volunteerJobHealth(
+      [
+        live,
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+        { status: "failed", finished_at: "2026-10-13T01:00:00Z" },
+      ],
+      at,
+    ),
+  ).toMatchObject({ consecutiveFailures: 0, state: "unknown" });
+  expect(
+    volunteerJobHealth(
+      [
+        { status: "failed", finished_at: "2026-10-13T02:45:00Z" },
+        {
+          status: "running",
+          finished_at: "2026-10-13T02:20:00Z",
+          lease_until: "2026-10-13T02:30:00Z",
+        },
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      ],
+      at,
+    ),
+  ).toMatchObject({ consecutiveFailures: 2, expiredLease: true });
+  const olderStuck = volunteerJobHealth(
+    [
+      live,
+      { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      {
+        status: "running",
+        finished_at: "2026-10-13T01:10:00Z",
+        lease_until: "2026-10-13T01:20:00Z",
+      },
+    ],
+    at,
+    undefined,
+    true,
+  );
+  expect(olderStuck.consecutiveFailures).toBe(0);
+  expect(olderStuck.expiredLease).toBe(true);
+  expect(olderStuck.retryCandidate).toBeUndefined();
+});
+
 test("two consecutive failures and stale native success degrade; absent evidence is unknown", () => {
   expect(
     volunteerJobHealth(

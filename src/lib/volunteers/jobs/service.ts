@@ -1,13 +1,15 @@
 import { randomUUID } from "node:crypto";
 import { safeJobFailure, type VolunteerJobStage } from "./errors";
-export type RuntimeSummary = {
-  kind: "complete" | "busy";
-  generated: number;
-  promoted: number;
-  released: number;
-  assessment: boolean;
-  deferred: number;
-};
+export type RuntimeSummary =
+  | {
+      kind: "complete" | "busy";
+      generated: number;
+      promoted: number;
+      released: number;
+      assessment: boolean;
+      deferred: number;
+    }
+  | { kind: "failed"; code: string; stage: VolunteerJobStage };
 export interface VolunteerJobRepository {
   preflight(): Promise<void>;
   claim(bucket: string, owner: string, lease: string): Promise<boolean>;
@@ -111,9 +113,27 @@ export function createVolunteerRuntimeJobs(repo: VolunteerJobRepository, clock =
           });
         } catch {
           console.error(JSON.stringify({ event: "volunteer_job_finish_failed", ...failure }));
+          throw e;
         }
-        throw e;
+        return { kind: "failed" as const, code: failure.code, stage: failure.stage };
       }
     },
+  };
+}
+const cronHeaders = { "cache-control": "no-store" };
+/** HTTP boundary for the hourly cron. A persisted failure is 200; an unstored one never includes the cause. */
+export function createVolunteerJobCronHandler(
+  authorize: (request: Request) => boolean,
+  run: () => Promise<RuntimeSummary>,
+) {
+  return async (request: Request) => {
+    if (!authorize(request))
+      return Response.json({ error: "unauthorized" }, { status: 401, headers: cronHeaders });
+    try {
+      return Response.json(await run(), { headers: cronHeaders });
+    } catch (error) {
+      const code = safeJobFailure(error, "finish", "redacted").code;
+      return Response.json({ error: code, code }, { status: 500, headers: cronHeaders });
+    }
   };
 }

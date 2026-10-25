@@ -271,6 +271,24 @@ describe("atomic claim acknowledgement gates the existing worker", () => {
     expect(claims).toBe(0);
     expect(calls).toEqual([]);
   });
+  test("a recorded stage failure is not a conflict and hides the provider message", async () => {
+    const calls: string[] = [];
+    const repo = repository(calls);
+    repo.preflight = async () => {
+      throw Object.assign(new Error("private@example.invalid"), { code: "22P02" });
+    };
+    const response = await createHourlyRetryHandler(
+      {
+        authorize: async () => ({ authUserId: actor }),
+        run: (command, actorId) => runHourlyRetry(repo, async () => true, actorId, command, now),
+      },
+      now,
+    )(request());
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ kind: "failed", code: "22P02", stage: "preflight" });
+    expect(JSON.stringify(calls)).not.toContain("private");
+    expect(calls).toEqual(["finish:failed"]);
+  });
   test("lost finish acknowledgement never produces a successful HTTP response", async () => {
     const calls: string[] = [];
     const repo = repository(calls);

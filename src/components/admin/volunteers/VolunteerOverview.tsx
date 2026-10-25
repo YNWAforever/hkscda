@@ -6,9 +6,9 @@ import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import {
+  applyRetriedOverviewStats,
   failedOverviewStats,
   hongKongDayRange,
-  mergeOverviewStats,
   type OverviewData,
 } from "../../../lib/volunteers/overview";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
@@ -127,7 +127,6 @@ export function VolunteerOverview() {
     mutationFn: async () => {
       const previous = cache.getQueryData<OverviewData>(statsKey);
       if (!previous) return;
-      const generation = cache.getQueryState(statsKey)?.dataUpdateCount;
       const selected = failedOverviewStats(previous.counts);
       if (!selected.length) return;
       const update = await cache.fetchQuery({
@@ -143,9 +142,7 @@ export function VolunteerOverview() {
         retry: false,
       });
       cache.setQueryData<OverviewData>(statsKey, (current) =>
-        current === previous && cache.getQueryState(statsKey)?.dataUpdateCount === generation
-          ? mergeOverviewStats(current, update, selected)
-          : current,
+        applyRetriedOverviewStats(current, update, selected),
       );
     },
   });
@@ -194,6 +191,8 @@ export function VolunteerOverview() {
               {stats.data.runtimeHealth.expiredLease ? <p>{copy.jobHealth.expiredLease}</p> : null}
               {stats.data.runtimeHealth.consecutiveFailures >= 2 ? (
                 <p>{copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)}</p>
+              ) : stats.data.runtimeHealth.consecutiveFailures === 1 ? (
+                <p>{copy.jobHealth.singleFailure}</p>
               ) : stats.data.runtimeHealth.expiredLease ? null : (
                 <p>{copy.jobHealth.stale}</p>
               )}
