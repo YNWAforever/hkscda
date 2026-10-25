@@ -18,7 +18,7 @@ export async function readVolunteerJobHealth(
       .select(
         includeDiagnostics
           ? "status,finished_at:updated_at,bucket,result,lease_until"
-          : "status,finished_at:updated_at,bucket",
+          : "status,finished_at:updated_at,bucket,lease_until",
       )
       .eq("job_key", "volunteer-hourly")
       .order("bucket", { ascending: false })

@@ -14,6 +14,8 @@ export const volunteerOverviewCopy = defineAdminCopy({
       lastFailure: (when: string) => `最近失敗：${when}`,
       failureSince: (when: string) => `至少自 ${when} 已有連續失敗紀錄。`,
       failures: (count: number) => `已至少連續 ${count} 次失敗，請檢查最近的工作記錄。`,
+      expiredLease:
+        "有一輪工作在租約結束後仍標示為執行中，完成結果未被記錄。請查看該小時的工作記錄。",
       stale: "已超過兩個排程週期未有成功紀錄，請檢查排程及工作記錄。",
       code: (value: string) => `錯誤代碼：${value}`,
       noCode: "未有可讀取的錯誤代碼，請查閱排程記錄。",
@@ -115,6 +117,8 @@ export const volunteerOverviewCopy = defineAdminCopy({
       failureSince: (when: string) => `Consecutive failures are recorded from at least ${when}.`,
       failures: (count: number) =>
         `At least ${formatAdminNumber(count, "en")} consecutive runs failed. Check the recent run records.`,
+      expiredLease:
+        "A run is still marked running after its lease ended, so its result was not recorded. Check that hour's run record.",
       stale:
         "Two scheduled intervals have passed without a successful run. Check the schedule and run records.",
       code: (value: string) => `Error code: ${value}`,

@@ -554,6 +554,27 @@ describe("the volunteer overview in English", () => {
         );
       },
     );
+    show(
+      {
+        state: "degraded",
+        consecutiveFailures: 0,
+        lastSuccessAt: "2026-10-25T02:15:00Z",
+        lastFailureAt: null,
+        expiredLease: true,
+        diagnostic: { code: "VOLUNTEER_JOB_LEASE_LOST" },
+      },
+      () => {
+        const en = renderAdminInEnglish(<VolunteerOverview />);
+        expectNoChineseText(en);
+        expect(en).toContain("still marked running after its lease ended");
+        expect(en).toContain("Error code: VOLUNTEER_JOB_LEASE_LOST");
+        expect(en).not.toContain("Two scheduled intervals have passed");
+        expect(en).not.toContain("consecutive runs failed");
+        expect(renderAdminInChinese(<VolunteerOverview />)).toContain(
+          "仍標示為執行中，完成結果未被記錄",
+        );
+      },
+    );
   });
 
   test("keeps the Chinese overview as it was", () => {

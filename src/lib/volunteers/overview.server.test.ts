@@ -159,6 +159,7 @@ test("only an authorized admin reads and receives sanitized job diagnostics", as
         expect(body.runtimeHealth.diagnostic).toBeUndefined();
         expect(jobSelections.some((fields) => fields.includes("result"))).toBe(false);
       }
+      expect(jobSelections.some((fields) => fields.includes("lease_until"))).toBe(true);
       expect(JSON.stringify(body)).not.toContain("synthetic-private");
     }
   } finally {

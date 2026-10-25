@@ -37,9 +37,20 @@ export type VolunteerJobHealth = {
   lastFailureAt: string | null;
   consecutiveFailures: number;
   state: "healthy" | "degraded" | "unknown";
+  /** A run is still `running` after its lease ended, so nobody recorded its outcome. */
+  expiredLease?: true;
   diagnostic?: { code: string | null; stage?: VolunteerJobStage; since?: string };
   retryCandidate?: { bucket: string; expectedUpdatedAt: string };
 };
+function openLease(run: VolunteerHealthRun, now: Date) {
+  if (run.status !== "running" || typeof run.lease_until !== "string") return false;
+  const lease = Date.parse(run.lease_until);
+  // Equal to now still satisfies finish (`lease_until >= clock_timestamp()`).
+  return Number.isFinite(lease) && lease >= now.getTime();
+}
+function expiredRunning(run: VolunteerHealthRun, now: Date) {
+  return run.status === "running" && !openLease(run, now);
+}
 export type VolunteerHealthRun = {
   status: string;
   finished_at: string | null;
@@ -61,9 +72,18 @@ export function volunteerJobHealth(
   const failure = ordered.find((run) => run.status === "failed" && run.finished_at);
   let consecutiveFailures = 0;
   let failureSince: string | null = null;
+  let expiredLease = false;
+  let newestProblem: VolunteerHealthRun | undefined;
   for (const run of ordered) {
-    if (run.status === "running") continue;
+    // A lease that is still open is in progress. It neither fails the streak nor hides one.
+    if (openLease(run, now)) continue;
+    if (expiredRunning(run, now)) {
+      expiredLease = true;
+      newestProblem ??= run;
+      continue;
+    }
     if (run.status !== "failed") break;
+    newestProblem ??= run;
     consecutiveFailures++;
     failureSince = run.finished_at ?? failureSince;
   }
@@ -73,7 +93,13 @@ export function volunteerJobHealth(
     lastSuccessAt: success?.finished_at ?? null,
     lastFailureAt: failure?.finished_at ?? null,
     consecutiveFailures,
-    state: consecutiveFailures >= 2 || stale ? "degraded" : success ? "healthy" : "unknown",
+    ...(expiredLease ? { expiredLease: true } : {}),
+    state:
+      consecutiveFailures >= 2 || stale || expiredLease
+        ? "degraded"
+        : success
+          ? "healthy"
+          : "unknown",
   };
   if (includeDiagnostics) {
     const current = runs.find(
@@ -93,6 +119,15 @@ export function volunteerJobHealth(
         bucket: current.bucket,
         expectedUpdatedAt: current.finished_at,
       };
+  }
+  if (
+    includeDiagnostics &&
+    health.state !== "healthy" &&
+    newestProblem &&
+    expiredRunning(newestProblem, now)
+  ) {
+    // The row never finished, so its result payload is not a recorded diagnostic.
+    return { ...health, diagnostic: { code: "VOLUNTEER_JOB_LEASE_LOST" } };
   }
   if (includeDiagnostics && health.state !== "healthy" && consecutiveFailures > 0 && failure) {
     const result = failure.result;

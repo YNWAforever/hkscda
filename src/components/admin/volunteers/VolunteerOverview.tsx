@@ -190,11 +190,14 @@ export function VolunteerOverview() {
           <h2 className="font-bold">{copy.jobHealth.title}</h2>
           <p>{copy.jobHealth[stats.data.runtimeHealth.state]}</p>
           {stats.data.runtimeHealth.state === "degraded" && (
-            <p>
-              {stats.data.runtimeHealth.consecutiveFailures >= 2
-                ? copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)
-                : copy.jobHealth.stale}
-            </p>
+            <>
+              {stats.data.runtimeHealth.expiredLease ? <p>{copy.jobHealth.expiredLease}</p> : null}
+              {stats.data.runtimeHealth.consecutiveFailures >= 2 ? (
+                <p>{copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)}</p>
+              ) : stats.data.runtimeHealth.expiredLease ? null : (
+                <p>{copy.jobHealth.stale}</p>
+              )}
+            </>
           )}
           {stats.data.runtimeHealth.lastSuccessAt && (
             <p>
