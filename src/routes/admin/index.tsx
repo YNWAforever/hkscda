@@ -13,7 +13,6 @@ import {
 import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { MediaRepairQueue } from "../../components/admin/MediaRepairQueue";
-import { LoadFailure } from "../../components/admin/LoadFailure";
 import { fetchAdminJson } from "../../lib/admin/http";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
@@ -90,9 +89,10 @@ export function AdminDashboardContent({
   const [missingPhoto, setMissingPhoto] = useState(false);
   const animalsQuery = useQuery({
     queryKey: ["admin-animals", section, identity?.admin.id, search, missingPhoto],
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       fetchAdminJson<{ animals: Animal[]; total: number; page: number }>(
         `/api/admin/animals/list?${new URLSearchParams({ section, q: search.q, archived: String(search.archived), status: search.status, page: String(search.page), missingPhoto: String(missingPhoto) })}`,
+        { signal },
       ),
     enabled: identity != null && isAnimalSection && !showPledgeReview,
   });
@@ -201,16 +201,6 @@ export function AdminDashboardContent({
         </section>
       ) : showPledgeReview ? (
         <PledgeReviewLane />
-      ) : isLoading ? (
-        <div className="py-12 text-center text-[var(--color-text-muted)]">
-          {copy.common.loading}
-        </div>
-      ) : animalsQuery.isError ? (
-        <LoadFailure
-          error={animalsQuery.error}
-          onRetry={() => void animalsQuery.refetch()}
-          retrying={animalsQuery.isFetching}
-        />
       ) : (
         <>
           <label className="block text-sm">
@@ -224,7 +214,7 @@ export function AdminDashboardContent({
             />{" "}
             {page.missingPhoto}
           </label>
-          {missingPhoto ? (
+          {missingPhoto && animalsQuery.isSuccess ? (
             <p
               role="status"
               className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-3 text-sm text-[var(--color-panel)]"
@@ -238,6 +228,18 @@ export function AdminDashboardContent({
             serverTotal={animalsQuery.data?.total}
             state={search}
             onStateChange={changeListState}
+            resultsState={
+              isLoading
+                ? { kind: "loading" }
+                : animalsQuery.isError
+                  ? {
+                      kind: "error",
+                      error: animalsQuery.error,
+                      onRetry: () => void animalsQuery.refetch(),
+                      retrying: animalsQuery.isFetching,
+                    }
+                  : { kind: "ready" }
+            }
             onDeleted={() =>
               queryClient.invalidateQueries({ queryKey: ["admin-animals", section] })
             }

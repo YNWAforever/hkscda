@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { fetchAdminJson } from "../../lib/admin/session";
 import { isArchivedAnimal } from "../../lib/animals/adminSearch";
@@ -11,8 +11,10 @@ import {
   type AnimalListState,
 } from "../../lib/animals/adminListState";
 import { needsSpeciesVerification } from "../../lib/animals/adminCatalogue";
+import { useAnimalSearch } from "../../lib/animals/useAnimalSearch";
 import type { Animal, AnimalPublicationState } from "../../types/animal";
 import { ConfirmActionDialog } from "./ConfirmActionDialog";
+import { LoadFailure } from "./LoadFailure";
 import { DataTable, type DataTableColumn } from "./DataTable";
 import { StatusPill, type StatusTone } from "./StatusBadge";
 import { useAdminLanguage } from "./adminI18n";
@@ -26,6 +28,10 @@ interface AnimalsTableProps {
   state: AnimalListState;
   onStateChange: (state: AnimalListState) => void;
   onDeleted: () => void;
+  resultsState?:
+    | { kind: "ready" }
+    | { kind: "loading" }
+    | { kind: "error"; error: unknown; onRetry: () => void; retrying: boolean };
 }
 
 const statusTones: Record<string, StatusTone> = {
@@ -81,13 +87,30 @@ export function AnimalsTable({
   onDeleted,
   state,
   onStateChange,
+  resultsState = { kind: "ready" },
 }: AnimalsTableProps) {
   const { copy, language } = useAdminLanguage();
   const text = useAdminCopy(animalListCopy);
+  const search = useAnimalSearch(state, onStateChange);
   const changeFilters = (filters: Partial<Omit<AnimalListState, "page">>) =>
-    onStateChange(updateAnimalListFilters(state, filters));
-  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+    search.reset(updateAnimalListFilters(state, filters));
+  const [confirmDelete, setConfirmDelete] = useState<{
+    id: string;
+    state: AnimalListState;
+    animals: Animal[];
+  } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const archiveTarget =
+    resultsState.kind === "ready" &&
+    confirmDelete?.state === state &&
+    confirmDelete.animals === animals
+      ? confirmDelete.id
+      : null;
+  // The controls survive query transitions; a confirmation belongs only to the
+  // result snapshot on which it was opened, including cached navigation.
+  useEffect(() => {
+    setConfirmDelete(null);
+  }, [state, animals, resultsState.kind]);
 
   // Searching matched only names, so the reference number printed on an
   // animal's own public page found nothing. Archived records are excluded by
@@ -104,7 +127,6 @@ export function AnimalsTable({
           pageCount: Math.max(1, Math.ceil(serverTotal / 20)),
         };
   const filtered = list.filtered;
-  const archivedCount = animals.filter(isArchivedAnimal).length;
   // Species must be cat or dog. These still carry the legacy 'sponsor'
   // placeholder and need a human to say which -- it cannot be derived, and
   // guessing from a name is exactly the incorrect matching the plan forbids.
@@ -172,7 +194,7 @@ export function AnimalsTable({
         ) : (
           <button
             type="button"
-            onClick={() => setConfirmDelete(animal.id)}
+            onClick={() => setConfirmDelete({ id: animal.id, state, animals })}
             className="inline-flex min-h-11 items-center px-1 text-xs text-[var(--color-error)] hover:underline"
             title={text.archiveHint}
           >
@@ -241,7 +263,7 @@ export function AnimalsTable({
   return (
     <div className="space-y-4">
       <ConfirmActionDialog
-        open={confirmDelete !== null}
+        open={archiveTarget !== null}
         onOpenChange={(open) => {
           if (!open) setConfirmDelete(null);
         }}
@@ -251,13 +273,13 @@ export function AnimalsTable({
         destructive
         reason="none"
         onConfirm={async () => {
-          if (confirmDelete !== null) await handleArchive(confirmDelete, false);
+          if (archiveTarget !== null) await handleArchive(archiveTarget, false);
         }}
       />
       <div className="flex flex-wrap items-center gap-4">
         <input
-          value={state.q}
-          onChange={(event) => changeFilters({ q: event.target.value })}
+          {...search.input}
+          maxLength={200}
           placeholder={text.search}
           aria-label={text.search}
           className="min-h-11 w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-highlight)]"
@@ -278,94 +300,109 @@ export function AnimalsTable({
             ))}
           </select>
         </label>
-        {state.q || state.archived || state.status !== "all" ? (
+        {search.input.value || state.archived || state.status !== "all" ? (
           <button
             type="button"
-            onClick={() => onStateChange({ ...animalListDefaults })}
+            onClick={() => {
+              search.reset({ ...animalListDefaults });
+            }}
             className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]"
           >
             {text.clearFilters}
           </button>
         ) : null}
-        {archivedCount > 0 || state.archived ? (
-          <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-            <input
-              type="checkbox"
-              checked={state.archived}
-              onChange={(event) => changeFilters({ archived: event.target.checked })}
-              className="h-4 w-4"
-            />
-            {text.archived} ({archivedCount})
-          </label>
-        ) : null}
+        <label className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <input
+            type="checkbox"
+            checked={state.archived}
+            onChange={(event) => changeFilters({ archived: event.target.checked })}
+            className="h-4 w-4"
+          />
+          {text.archived}
+        </label>
       </div>
 
-      {needsSpeciesCount > 0 ? (
-        <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
-          {text.needsSpecies(needsSpeciesCount)}
-        </p>
-      ) : null}
+      {resultsState.kind === "loading" ? (
+        <div role="status" className="py-12 text-center text-[var(--color-text-muted)]">
+          {copy.common.loading}
+        </div>
+      ) : resultsState.kind === "error" ? (
+        <LoadFailure
+          error={resultsState.error}
+          onRetry={resultsState.onRetry}
+          retrying={resultsState.retrying}
+        />
+      ) : (
+        <>
+          {needsSpeciesCount > 0 ? (
+            <p className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-sm text-[var(--color-text-muted)]">
+              {text.needsSpecies(needsSpeciesCount)}
+            </p>
+          ) : null}
 
-      {actionError ? (
-        <p role="alert" className="text-sm text-[var(--color-error)]">
-          {actionError}
-        </p>
-      ) : null}
+          {actionError ? (
+            <p role="alert" className="text-sm text-[var(--color-error)]">
+              {actionError}
+            </p>
+          ) : null}
 
-      <DataTable
-        columns={columns}
-        rows={list.rows}
-        getRowKey={(animal) => animal.id}
-        empty={animals.length === 0 ? text.empty : text.noResults}
-        renderMobileCard={(animal) => (
-          <div className="flex items-start gap-3">
-            <AnimalAvatar animal={animal} />
-            <div className="min-w-0 flex-1 space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <span className="truncate font-medium">
-                  {localizedText(animal.name, animal.name_en, language)}
-                  {englishAlongside(animal.name_en, language) && (
-                    <span className="ml-1 font-normal text-[var(--color-text-muted)]">
-                      {animal.name_en}
+          <DataTable
+            columns={columns}
+            rows={list.rows}
+            getRowKey={(animal) => animal.id}
+            empty={state.q || state.status !== "all" ? text.noResults : text.empty}
+            renderMobileCard={(animal) => (
+              <div className="flex items-start gap-3">
+                <AnimalAvatar animal={animal} />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate font-medium">
+                      {localizedText(animal.name, animal.name_en, language)}
+                      {englishAlongside(animal.name_en, language) && (
+                        <span className="ml-1 font-normal text-[var(--color-text-muted)]">
+                          {animal.name_en}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <AnimalStatus status={animal.status} />
+                    <AnimalStatus status={animal.status} />
+                  </div>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    {copy.gender[animal.gender]} ·{" "}
+                    {localizedText(animal.age, animal.age_en, language)}
+                  </p>
+                  <AnimalActions animal={animal} />
+                </div>
               </div>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                {copy.gender[animal.gender]} · {localizedText(animal.age, animal.age_en, language)}
-              </p>
-              <AnimalActions animal={animal} />
-            </div>
-          </div>
-        )}
-      />
-      {list.total > 0 ? (
-        <nav
-          aria-label={text.pagination}
-          className="flex flex-wrap items-center justify-between gap-3 text-sm"
-        >
-          <p aria-live="polite">{text.summary(list.total, list.page, list.pageCount)}</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              disabled={list.page <= 1}
-              onClick={() => onStateChange({ ...state, page: list.page - 1 })}
-              className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
+            )}
+          />
+          {list.total > 0 ? (
+            <nav
+              aria-label={text.pagination}
+              className="flex flex-wrap items-center justify-between gap-3 text-sm"
             >
-              {text.previous}
-            </button>
-            <button
-              type="button"
-              disabled={list.page >= list.pageCount}
-              onClick={() => onStateChange({ ...state, page: list.page + 1 })}
-              className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
-            >
-              {text.next}
-            </button>
-          </div>
-        </nav>
-      ) : null}
+              <p aria-live="polite">{text.summary(list.total, list.page, list.pageCount)}</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={list.page <= 1}
+                  onClick={() => onStateChange({ ...state, page: list.page - 1 })}
+                  className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
+                >
+                  {text.previous}
+                </button>
+                <button
+                  type="button"
+                  disabled={list.page >= list.pageCount}
+                  onClick={() => onStateChange({ ...state, page: list.page + 1 })}
+                  className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 disabled:opacity-50"
+                >
+                  {text.next}
+                </button>
+              </div>
+            </nav>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
