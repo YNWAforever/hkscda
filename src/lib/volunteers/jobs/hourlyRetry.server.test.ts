@@ -11,7 +11,7 @@ const input = {
 };
 const actor = "00000000-0000-4000-8000-000000000001";
 const request = (body: unknown = input) =>
-  new Request("https://example.invalid/api/admin/volunteers/jobs/", {
+  new Request("https://example.invalid/api/admin/volunteers/runtime/retry", {
     method: "POST",
     body: JSON.stringify(body),
   });

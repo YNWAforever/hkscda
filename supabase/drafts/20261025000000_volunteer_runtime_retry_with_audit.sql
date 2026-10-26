@@ -39,7 +39,8 @@ begin
   v_failed := v_run.status = 'failed'
     and (v_run.lease_until is null
       or (isfinite(v_run.lease_until) and v_run.lease_until <= v_now));
-  -- Equality still counts as held, matching finish and the overview's open lease.
+  -- Equality still counts as an open lease, matching the overview. Retry waits
+  -- until the timestamp is strictly before now.
   v_expired_running := v_run.status = 'running'
     and v_run.lease_until is not null
     and isfinite(v_run.lease_until)

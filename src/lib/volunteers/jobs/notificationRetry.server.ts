@@ -1,14 +1,13 @@
 import { z } from "zod";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 import { logVolunteerFailure } from "../telemetry.server";
+import { readErrorCode } from "./errors";
 
 type Dependencies = {
   authorize: (request: Request) => Promise<{ authUserId: string }>;
   retry: (id: string, actorId: string) => Promise<unknown>;
   reportFailure?: (error: unknown) => void;
 };
-const codeOf = (error: unknown) =>
-  error && typeof error === "object" && "code" in error ? error.code : null;
 
 export function createNotificationRetryHandler(deps: Dependencies) {
   const headers = { "cache-control": "no-store" };
@@ -29,7 +28,7 @@ export function createNotificationRetryHandler(deps: Dependencies) {
         response.headers.set("cache-control", "no-store");
         return response;
       }
-      const code = codeOf(error);
+      const code = readErrorCode(error);
       if (code === "42501") return failure(403, "volunteer_notification_retry_forbidden");
       if (code === "22023" || code === "22P02")
         return failure(400, "volunteer_notification_retry_invalid");

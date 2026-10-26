@@ -7,6 +7,7 @@ import {
 } from "../../http/publicJson.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 import { logVolunteerFailure } from "../telemetry.server";
+import { readErrorCode } from "./errors";
 import { createVolunteerJobRepository } from "./repository.server";
 import {
   createVolunteerRuntimeJobs,
@@ -32,8 +33,6 @@ type Dependencies = {
 };
 
 class HourlyRetryUnavailableError extends Error {}
-const codeOf = (error: unknown) =>
-  error && typeof error === "object" && "code" in error ? error.code : null;
 
 export function createHourlyRetryHandler(deps: Dependencies, clock = () => new Date()) {
   const headers = { "cache-control": "no-store" };
@@ -58,7 +57,7 @@ export function createHourlyRetryHandler(deps: Dependencies, clock = () => new D
         return failure(413, "volunteer_hourly_retry_invalid");
       if (error instanceof z.ZodError || error instanceof InvalidRequestJsonError)
         return failure(400, "volunteer_hourly_retry_invalid");
-      const code = codeOf(error);
+      const code = readErrorCode(error);
       if (code === "42501") return failure(403, "volunteer_hourly_retry_forbidden");
       if (code === "22023") return failure(400, "volunteer_hourly_retry_invalid");
       deps.reportFailure?.(error);

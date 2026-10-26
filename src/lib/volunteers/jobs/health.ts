@@ -1,4 +1,4 @@
-import type { VolunteerJobStage } from "./errors";
+import { isVolunteerJobStage, volunteerJobFailureCodes, type VolunteerJobStage } from "./errors";
 // A result's legacy error field may contain a message. Never display arbitrary
 // strings solely because they resemble a SQLSTATE or provider code.
 const diagnosticCodes: readonly string[] = [
@@ -27,10 +27,7 @@ const diagnosticCodes: readonly string[] = [
   "PGRST301",
   "PGRST302",
   "UNEXPECTED",
-  "VOLUNTEER_JOB_ACTOR_UNCONFIGURED",
-  "VOLUNTEER_JOB_ACTOR_INVALID",
-  "VOLUNTEER_JOB_ACTOR_INELIGIBLE",
-  "VOLUNTEER_JOB_LEASE_LOST",
+  ...volunteerJobFailureCodes,
 ];
 export type VolunteerJobHealth = {
   lastSuccessAt: string | null;
@@ -45,7 +42,8 @@ export type VolunteerJobHealth = {
 function openLease(run: VolunteerHealthRun, now: Date) {
   if (run.status !== "running" || typeof run.lease_until !== "string") return false;
   const lease = Date.parse(run.lease_until);
-  // Equal to now still satisfies finish (`lease_until >= clock_timestamp()`).
+  // Equal to now is still open. A running lease is expired only once it is
+  // strictly before now, which is also when the current hour becomes retryable.
   return Number.isFinite(lease) && lease >= now.getTime();
 }
 function expiredRunning(run: VolunteerHealthRun, now: Date) {
@@ -153,19 +151,8 @@ export function volunteerJobHealth(
     const rawStage =
       result && typeof result === "object" && "stage" in result ? result.stage : undefined;
     const code = typeof rawCode === "string" && diagnosticCodes.includes(rawCode) ? rawCode : null;
-    const stages: readonly string[] = [
-      "preflight",
-      "generate",
-      "release",
-      "promote",
-      "assess",
-      "defer",
-      "finish",
-    ];
     const stage =
-      typeof rawStage === "string" && stages.includes(rawStage)
-        ? (rawStage as VolunteerJobStage)
-        : undefined;
+      typeof rawStage === "string" && isVolunteerJobStage(rawStage) ? rawStage : undefined;
     return {
       ...health,
       diagnostic: {
