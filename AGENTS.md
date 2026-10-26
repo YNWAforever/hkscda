@@ -72,7 +72,10 @@ enforces the pairing.
 - App-called RPCs go in the `public` schema and must be granted to `service_role` —
   the `private` schema is not exposed to PostgREST.
 - Public POST endpoints accepting a **user-submitted form** are rate limited
-  (`enforceRateLimit`) and Turnstile-verified. Both fail _open_ when unconfigured;
+  (`enforceRateLimit`) and Turnstile-verified. Missing Turnstile secrets fail closed
+  in production and allow local/preview fixtures. Rate-limit callers setting
+  `requireAvailability: true` fail closed in production when Upstash is absent or
+  unavailable; other callers retain fail-open limiting.
   `assertTurnstileConfigFromEnv()`/`assertUpstashConfigFromEnv()` boot-fail on an
   inconsistent production pair (one of the two required env vars set, one missing).
   A fully-absent Upstash pair doesn't boot-fail (may be an intentional, deferred

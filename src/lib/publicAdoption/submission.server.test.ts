@@ -385,6 +385,50 @@ describe("parseAdoptionSubmission", () => {
 });
 
 describe("resumePublicAdoptionCase", () => {
+  for (const failure of ["restore", "link"] as const) {
+    test(`returns the recovered case when intake ${failure} fails without deleting saved intake data`, async () => {
+      const { client, state } = createFakeClient(
+        failure === "restore"
+          ? { failInsertTable: "adoption_intake_item" }
+          : { failUpdateTable: "adoption_intake_item" },
+      );
+      const coordinator = coordinatorService();
+      const errors: unknown[][] = [];
+
+      const result = await resumePublicAdoptionCase({
+        client,
+        parsed: parsedSubmission(),
+        coordinatorService: coordinator.service,
+        logger: { error: (...args: unknown[]) => errors.push(args) },
+      });
+
+      expect(result).toEqual({ caseId });
+      expect(errors).toHaveLength(1);
+      expect(state.calls.filter((call) => call.method === "delete")).toEqual([]);
+      expect(state.storageCalls).toEqual([]);
+      expect(callsFor(state.calls, "adoption_intake_item", "update")).toHaveLength(1);
+    });
+  }
+
+  test("propagates a coordinator retry failure without changing the saved application or intake", async () => {
+    const { client, state } = createFakeClient();
+
+    await expect(
+      resumePublicAdoptionCase({
+        client,
+        parsed: parsedSubmission(),
+        coordinatorService: {
+          async createCaseFromPublicApplication() {
+            throw new Error("coordinator unavailable");
+          },
+        },
+      }),
+    ).rejects.toThrow("coordinator unavailable");
+
+    expect(state.calls).toEqual([]);
+    expect(state.storageCalls).toEqual([]);
+  });
+
   test("creates only the missing case and links the existing intake item", async () => {
     const { client, state } = createFakeClient();
     const coordinator = coordinatorService(state.calls);

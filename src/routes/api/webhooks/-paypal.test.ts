@@ -6,7 +6,69 @@ import {
   getPayPalReconcileOrderId,
   shouldCapturePayPalEvent,
   shouldReconcilePayPalEvent,
+  handleVerifiedPayPalWebhook,
 } from "./paypal";
+
+describe("PayPal refund recovery", () => {
+  test("retries a refund whose provider capture has not reached REFUNDED", async () => {
+    let refundCalls = 0;
+    let reviewCalls = 0;
+    await expect(
+      handleVerifiedPayPalWebhook(
+        {
+          id: "evt-refund-pending",
+          event_type: "PAYMENT.CAPTURE.REFUNDED",
+          resource: {
+            id: "refund-pending",
+            supplementary_data: { related_ids: { capture_id: "capture-1" } },
+          },
+        },
+        {
+          client: {} as never,
+          getPayPalCapture: async () => ({
+            id: "capture-1",
+            status: "COMPLETED",
+            supplementary_data: { related_ids: { order_id: "order-1" } },
+          }),
+          refundProviderPayment: async () => {
+            refundCalls++;
+            return { kind: "refunded", donationId: "donation-1" };
+          },
+          flagProviderWebhookForReview: async () => {
+            reviewCalls++;
+            return { kind: "manual_review", donationId: "donation-1", paymentId: "payment-1" };
+          },
+        },
+      ),
+    ).rejects.toThrow("PayPal refund capture has unexpected status: COMPLETED");
+    expect(refundCalls).toBe(0);
+    expect(reviewCalls).toBe(0);
+  });
+
+  test("does not acknowledge an unmapped refund when durable manual review fails", async () => {
+    let refundCalls = 0;
+    await expect(
+      handleVerifiedPayPalWebhook(
+        {
+          id: "evt-refund-unmapped",
+          event_type: "PAYMENT.CAPTURE.REFUNDED",
+          resource: { id: "refund-unmapped" },
+        },
+        {
+          client: {} as never,
+          flagProviderWebhookForReview: async () => {
+            throw new Error("audit unavailable");
+          },
+          refundProviderPayment: async () => {
+            refundCalls++;
+            return { kind: "refunded", donationId: "donation-1" };
+          },
+        },
+      ),
+    ).rejects.toThrow("audit unavailable");
+    expect(refundCalls).toBe(0);
+  });
+});
 
 describe("PayPal webhook event routing", () => {
   test("captures approved checkout orders without reconciling them as succeeded", () => {
