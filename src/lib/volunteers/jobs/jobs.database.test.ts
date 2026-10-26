@@ -5,6 +5,37 @@ const url = process.env.VOLUNTEER_TEST_DATABASE_URL;
 const enabled = Boolean(url) && process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES === "1";
 
 test.skipIf(!enabled)(
+  "the owner records the outcome after the lease time while they still own the row",
+  async () => {
+    const db = new SQL(url!, { max: 1, prepare: false });
+    const bucket = new Date(
+      Date.now() + 50_000_000 + Math.floor(Math.random() * 1000000),
+    ).toISOString();
+    const owner = crypto.randomUUID();
+    try {
+      expect(
+        (
+          await db`select public.finish_volunteer_runtime_job('acceptance-expired',${bucket}::timestamptz,${owner}::uuid,'complete','{}') ok`
+        )[0].ok,
+      ).toBe(false);
+      expect(
+        (
+          await db`select public.claim_volunteer_runtime_job('acceptance-expired',${bucket}::timestamptz,${owner}::uuid,clock_timestamp()-interval '1 minute') ok`
+        )[0].ok,
+      ).toBe(true);
+      expect(
+        (
+          await db`select public.finish_volunteer_runtime_job('acceptance-expired',${bucket}::timestamptz,${owner}::uuid,'failed','{"error":"VOLUNTEER_JOB_LEASE_LOST","stage":"finish"}') ok`
+        )[0].ok,
+      ).toBe(true);
+    } finally {
+      await db.close({ timeout: 1 });
+    }
+  },
+  30000,
+);
+
+test.skipIf(!enabled)(
   "runtime lease is fenced and failed notifications require active admin retry",
   async () => {
     const db = new SQL(url!, { max: 1, prepare: false });

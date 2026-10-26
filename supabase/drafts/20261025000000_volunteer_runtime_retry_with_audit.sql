@@ -1,8 +1,9 @@
--- DRAFT ONLY — NOT APPLIED. This directory is outside supabase/migrations.
--- Requires separate target verification, schema review and application approval.
+-- Local install script. Production applies
+-- supabase/migrations/20261025193000_volunteer_runtime_retry_expired_lease.sql,
+-- which replaces this function with the same body.
 -- No tables, role policies, cron behavior or existing claim/finish RPCs are changed.
 begin;
-create function public.retry_volunteer_runtime_job_with_audit(
+create or replace function public.retry_volunteer_runtime_job_with_audit(
   p_actor uuid,
   p_bucket timestamptz,
   p_expected_updated_at timestamptz,
@@ -18,6 +19,8 @@ declare
   v_run public.volunteer_runtime_job_run%rowtype;
   v_now timestamptz;
   v_reason text := btrim(p_reason, E' \t\r\n');
+  v_failed boolean;
+  v_expired_running boolean;
 begin
   perform public.volunteer_policy_admin(p_actor);
   if p_confirmed is distinct from true or p_bucket is null
@@ -33,11 +36,17 @@ begin
   if not found then return false; end if;
   -- Evaluate AFTER waiting on the lock, including an hour rollover while waiting.
   v_now := clock_timestamp();
+  v_failed := v_run.status = 'failed'
+    and (v_run.lease_until is null
+      or (isfinite(v_run.lease_until) and v_run.lease_until <= v_now));
+  -- Equality still counts as held, matching finish and the overview's open lease.
+  v_expired_running := v_run.status = 'running'
+    and v_run.lease_until is not null
+    and isfinite(v_run.lease_until)
+    and v_run.lease_until < v_now;
   if p_bucket <> (date_trunc('hour', v_now at time zone 'UTC') at time zone 'UTC')
-     or v_run.status <> 'failed'
      or v_run.updated_at <> p_expected_updated_at
-     or (v_run.lease_until is not null and
-       (not isfinite(v_run.lease_until) or v_run.lease_until > v_now)) then
+     or not (v_failed is true or v_expired_running is true) then
     return false;
   end if;
 

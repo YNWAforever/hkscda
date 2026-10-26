@@ -46,7 +46,7 @@ export function createHourlyRetryHandler(deps: Dependencies, clock = () => new D
       if (Date.parse(input.bucket) !== Date.parse(runtimeBucket(clock())))
         return failure(409, "volunteer_hourly_retry_conflict");
       const result = await deps.run(input, actor.authUserId);
-      if (result.kind !== "complete") return failure(409, "volunteer_hourly_retry_conflict");
+      if (result.kind === "busy") return failure(409, "volunteer_hourly_retry_conflict");
       return Response.json(result, { headers });
     } catch (error) {
       if (error instanceof Response) {

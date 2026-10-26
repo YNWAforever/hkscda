@@ -28,6 +28,20 @@ export type OverviewStatKey = (typeof overviewStatKeys)[number];
 export function failedOverviewStats(counts: OverviewCounts): OverviewStatKey[] {
   return overviewStatKeys.filter((key) => counts[key] === null);
 }
+/**
+ * Apply a partial stat retry only onto the overview snapshot the click read.
+ * A refetch that lands first, even one that is still missing the same figure,
+ * is newer and must not be overwritten by the in-flight response.
+ */
+export function applyRetriedOverviewStats(
+  current: OverviewData | undefined,
+  update: OverviewData,
+  selected: readonly OverviewStatKey[],
+  snapshot: { previous: OverviewData; unchanged: boolean },
+): OverviewData | undefined {
+  if (!current || !snapshot.unchanged || current !== snapshot.previous) return current;
+  return mergeOverviewStats(current, update, selected);
+}
 export function mergeOverviewStats(
   previous: OverviewData,
   update: OverviewData,

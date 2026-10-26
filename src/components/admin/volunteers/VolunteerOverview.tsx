@@ -6,9 +6,9 @@ import { useState } from "react";
 import { ArrowRight, CalendarDays, ClipboardCheck, UserRoundSearch, Users } from "lucide-react";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import {
+  applyRetriedOverviewStats,
   failedOverviewStats,
   hongKongDayRange,
-  mergeOverviewStats,
   type OverviewData,
 } from "../../../lib/volunteers/overview";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
@@ -143,9 +143,10 @@ export function VolunteerOverview() {
         retry: false,
       });
       cache.setQueryData<OverviewData>(statsKey, (current) =>
-        current === previous && cache.getQueryState(statsKey)?.dataUpdateCount === generation
-          ? mergeOverviewStats(current, update, selected)
-          : current,
+        applyRetriedOverviewStats(current, update, selected, {
+          previous,
+          unchanged: cache.getQueryState(statsKey)?.dataUpdateCount === generation,
+        }),
       );
     },
   });
@@ -190,11 +191,16 @@ export function VolunteerOverview() {
           <h2 className="font-bold">{copy.jobHealth.title}</h2>
           <p>{copy.jobHealth[stats.data.runtimeHealth.state]}</p>
           {stats.data.runtimeHealth.state === "degraded" && (
-            <p>
-              {stats.data.runtimeHealth.consecutiveFailures >= 2
-                ? copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)
-                : copy.jobHealth.stale}
-            </p>
+            <>
+              {stats.data.runtimeHealth.expiredLease ? <p>{copy.jobHealth.expiredLease}</p> : null}
+              {stats.data.runtimeHealth.consecutiveFailures >= 2 ? (
+                <p>{copy.jobHealth.failures(stats.data.runtimeHealth.consecutiveFailures)}</p>
+              ) : stats.data.runtimeHealth.consecutiveFailures === 1 ? (
+                <p>{copy.jobHealth.singleFailure}</p>
+              ) : stats.data.runtimeHealth.expiredLease ? null : (
+                <p>{copy.jobHealth.stale}</p>
+              )}
+            </>
           )}
           {stats.data.runtimeHealth.lastSuccessAt && (
             <p>

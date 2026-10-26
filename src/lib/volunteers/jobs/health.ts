@@ -37,9 +37,33 @@ export type VolunteerJobHealth = {
   lastFailureAt: string | null;
   consecutiveFailures: number;
   state: "healthy" | "degraded" | "unknown";
+  /** A run is still `running` after its lease ended, so nobody recorded its outcome. */
+  expiredLease?: true;
   diagnostic?: { code: string | null; stage?: VolunteerJobStage; since?: string };
   retryCandidate?: { bucket: string; expectedUpdatedAt: string };
 };
+function openLease(run: VolunteerHealthRun, now: Date) {
+  if (run.status !== "running" || typeof run.lease_until !== "string") return false;
+  const lease = Date.parse(run.lease_until);
+  // Equal to now still satisfies finish (`lease_until >= clock_timestamp()`).
+  return Number.isFinite(lease) && lease >= now.getTime();
+}
+function expiredRunning(run: VolunteerHealthRun, now: Date) {
+  return run.status === "running" && !openLease(run, now);
+}
+function finiteLease(lease: string | null | undefined) {
+  if (typeof lease !== "string") return null;
+  const parsed = Date.parse(lease);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+/** Current-hour rows an admin may retry. A running lease is eligible only after it has ended. */
+function retryableCurrentRun(run: VolunteerHealthRun, now: Date) {
+  const lease = finiteLease(run.lease_until);
+  if (run.status === "failed")
+    return run.lease_until === null || (lease !== null && lease <= now.getTime());
+  if (run.status === "running") return lease !== null && lease < now.getTime();
+  return false;
+}
 export type VolunteerHealthRun = {
   status: string;
   finished_at: string | null;
@@ -61,9 +85,25 @@ export function volunteerJobHealth(
   const failure = ordered.find((run) => run.status === "failed" && run.finished_at);
   let consecutiveFailures = 0;
   let failureSince: string | null = null;
+  let expiredLease = false;
+  let countingFailures = true;
+  let newestProblem: VolunteerHealthRun | undefined;
   for (const run of ordered) {
-    if (run.status === "running") continue;
+    // A lease that is still open is in progress. It splits the streak: older
+    // failures are not consecutive with anything newer, and this row is not a
+    // failure. Keep scanning so an older expired lease stays visible.
+    if (openLease(run, now)) {
+      countingFailures = false;
+      continue;
+    }
+    if (expiredRunning(run, now)) {
+      expiredLease = true;
+      newestProblem ??= run;
+      continue;
+    }
     if (run.status !== "failed") break;
+    if (!countingFailures) continue;
+    newestProblem ??= run;
     consecutiveFailures++;
     failureSince = run.finished_at ?? failureSince;
   }
@@ -73,7 +113,13 @@ export function volunteerJobHealth(
     lastSuccessAt: success?.finished_at ?? null,
     lastFailureAt: failure?.finished_at ?? null,
     consecutiveFailures,
-    state: consecutiveFailures >= 2 || stale ? "degraded" : success ? "healthy" : "unknown",
+    ...(expiredLease ? { expiredLease: true } : {}),
+    state:
+      consecutiveFailures >= 2 || stale || expiredLease
+        ? "degraded"
+        : success
+          ? "healthy"
+          : "unknown",
   };
   if (includeDiagnostics) {
     const current = runs.find(
@@ -81,18 +127,24 @@ export function volunteerJobHealth(
         run.bucket && Date.parse(run.bucket) === Math.floor(now.getTime() / 3_600_000) * 3_600_000,
     );
     if (
-      current?.status === "failed" &&
-      current.bucket &&
+      current?.bucket &&
       current.finished_at &&
       Number.isFinite(Date.parse(current.finished_at)) &&
-      (current.lease_until === null ||
-        (typeof current.lease_until === "string" &&
-          Date.parse(current.lease_until) <= now.getTime()))
+      retryableCurrentRun(current, now)
     )
       health.retryCandidate = {
         bucket: current.bucket,
         expectedUpdatedAt: current.finished_at,
       };
+  }
+  if (
+    includeDiagnostics &&
+    health.state !== "healthy" &&
+    newestProblem &&
+    expiredRunning(newestProblem, now)
+  ) {
+    // The row never finished, so its result payload is not a recorded diagnostic.
+    return { ...health, diagnostic: { code: "VOLUNTEER_JOB_LEASE_LOST" } };
   }
   if (includeDiagnostics && health.state !== "healthy" && consecutiveFailures > 0 && failure) {
     const result = failure.result;

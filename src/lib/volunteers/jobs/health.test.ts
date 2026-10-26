@@ -28,7 +28,7 @@ for (const changes of [
   { lease_until: "-infinity" },
   { lease_until: undefined },
   { finished_at: null },
-  { status: "running", lease_until: "2026-10-25T03:00:00Z" },
+  { status: "running", lease_until: "2026-10-25T03:20:00Z" },
 ] as const) {
   test(`retry candidate fails closed for ${JSON.stringify(changes)}`, () => {
     const run = {
@@ -43,6 +43,145 @@ for (const changes of [
     ).toBeUndefined();
   });
 }
+test("an open lease stays healthy and an expired running lease is a degraded retry", () => {
+  const now = new Date("2026-10-25T03:20:00Z");
+  const recentSuccess = {
+    status: "complete",
+    bucket: "2026-10-25T02:00:00Z",
+    finished_at: "2026-10-25T02:15:00Z",
+  };
+  const live = volunteerJobHealth(
+    [
+      {
+        status: "running",
+        bucket: "2026-10-25T03:00:00Z",
+        finished_at: "2026-10-25T03:16:00Z",
+        lease_until: "2026-10-25T03:26:00Z",
+      },
+      recentSuccess,
+    ],
+    now,
+    undefined,
+    true,
+  );
+  expect(live).toMatchObject({ state: "healthy", consecutiveFailures: 0 });
+  expect(live.expiredLease).toBeUndefined();
+  expect(live.retryCandidate).toBeUndefined();
+  expect(
+    volunteerJobHealth(
+      [
+        {
+          status: "running",
+          bucket: "2026-10-25T03:00:00Z",
+          finished_at: "2026-10-25T03:10:00Z",
+          lease_until: "2026-10-25T03:20:00Z",
+        },
+        recentSuccess,
+      ],
+      now,
+    ).state,
+  ).toBe("healthy");
+
+  const expired = volunteerJobHealth(
+    [
+      {
+        status: "running",
+        bucket: "2026-10-25T03:00:00Z",
+        finished_at: "2026-10-25T03:16:00Z",
+        lease_until: "2026-10-25T03:19:00Z",
+        result: { error: "42501", message: "synthetic-private-detail" },
+      },
+      recentSuccess,
+    ],
+    now,
+    undefined,
+    true,
+  );
+  expect(expired.state).toBe("degraded");
+  expect(expired.expiredLease).toBe(true);
+  expect(expired.retryCandidate).toEqual({
+    bucket: "2026-10-25T03:00:00Z",
+    expectedUpdatedAt: "2026-10-25T03:16:00Z",
+  });
+  expect(expired.diagnostic).toEqual({ code: "VOLUNTEER_JOB_LEASE_LOST" });
+  expect(JSON.stringify(expired)).not.toContain("synthetic-private");
+  expect(JSON.stringify(expired)).not.toContain("42501");
+
+  const staff = volunteerJobHealth(
+    [
+      {
+        status: "running",
+        bucket: "2026-10-25T03:00:00Z",
+        finished_at: "2026-10-25T03:16:00Z",
+        lease_until: "2026-10-25T03:19:00Z",
+        result: { message: "synthetic-private-detail" },
+      },
+      recentSuccess,
+    ],
+    now,
+  );
+  expect(staff).toMatchObject({ state: "degraded", expiredLease: true, consecutiveFailures: 0 });
+  expect(staff.diagnostic).toBeUndefined();
+  expect(staff.retryCandidate).toBeUndefined();
+  expect(JSON.stringify(staff)).not.toContain("synthetic-private");
+});
+
+test("a missing or non-finite running lease is unfinished, and a later success closes an older one", () => {
+  const now = new Date("2026-10-25T03:20:00Z");
+  for (const lease_until of [null, undefined, "invalid", "infinity", "-infinity"] as const) {
+    expect(
+      volunteerJobHealth(
+        [
+          {
+            status: "running",
+            bucket: "2026-10-25T03:00:00Z",
+            finished_at: "2026-10-25T03:16:00Z",
+            lease_until,
+          },
+        ],
+        now,
+      ).expiredLease,
+    ).toBe(true);
+  }
+  const recovered = volunteerJobHealth(
+    [
+      {
+        status: "complete",
+        bucket: "2026-10-25T03:00:00Z",
+        finished_at: "2026-10-25T03:10:00Z",
+      },
+      {
+        status: "running",
+        bucket: "2026-10-25T02:00:00Z",
+        finished_at: "2026-10-25T02:10:00Z",
+        lease_until: "2026-10-25T02:20:00Z",
+      },
+    ],
+    now,
+    undefined,
+    true,
+  );
+  expect(recovered.expiredLease).toBeUndefined();
+  expect(recovered.state).toBe("healthy");
+  expect(recovered.diagnostic).toBeUndefined();
+
+  const previousHour = volunteerJobHealth(
+    [
+      {
+        status: "running",
+        bucket: "2026-10-25T02:00:00Z",
+        finished_at: "2026-10-25T02:16:00Z",
+        lease_until: "2026-10-25T02:20:00Z",
+      },
+    ],
+    now,
+    undefined,
+    true,
+  );
+  expect(previousHour.expiredLease).toBe(true);
+  expect(previousHour.retryCandidate).toBeUndefined();
+});
+
 test("a failed bucket with an expired lease remains eligible without reclaiming running work", () => {
   expect(
     volunteerJobHealth(
@@ -61,6 +200,66 @@ test("a failed bucket with an expired lease remains eligible without reclaiming 
   ).toBeDefined();
 });
 const now = new Date("2026-10-13T03:00:00Z");
+test("a live lease splits failure streaks without hiding an older expired lease", () => {
+  const at = new Date("2026-10-13T03:00:00Z");
+  const live = {
+    status: "running",
+    finished_at: "2026-10-13T02:30:00Z",
+    lease_until: "2026-10-13T03:10:00Z",
+  };
+  expect(
+    volunteerJobHealth(
+      [
+        { status: "failed", finished_at: "2026-10-13T02:45:00Z" },
+        live,
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      ],
+      at,
+    ).consecutiveFailures,
+  ).toBe(1);
+  expect(
+    volunteerJobHealth(
+      [
+        live,
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+        { status: "failed", finished_at: "2026-10-13T01:00:00Z" },
+      ],
+      at,
+    ),
+  ).toMatchObject({ consecutiveFailures: 0, state: "unknown" });
+  expect(
+    volunteerJobHealth(
+      [
+        { status: "failed", finished_at: "2026-10-13T02:45:00Z" },
+        {
+          status: "running",
+          finished_at: "2026-10-13T02:20:00Z",
+          lease_until: "2026-10-13T02:30:00Z",
+        },
+        { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      ],
+      at,
+    ),
+  ).toMatchObject({ consecutiveFailures: 2, expiredLease: true });
+  const olderStuck = volunteerJobHealth(
+    [
+      live,
+      { status: "failed", finished_at: "2026-10-13T02:00:00Z" },
+      {
+        status: "running",
+        finished_at: "2026-10-13T01:10:00Z",
+        lease_until: "2026-10-13T01:20:00Z",
+      },
+    ],
+    at,
+    undefined,
+    true,
+  );
+  expect(olderStuck.consecutiveFailures).toBe(0);
+  expect(olderStuck.expiredLease).toBe(true);
+  expect(olderStuck.retryCandidate).toBeUndefined();
+});
+
 test("two consecutive failures and stale native success degrade; absent evidence is unknown", () => {
   expect(
     volunteerJobHealth(
