@@ -1,0 +1,9 @@
+# Reliable animal dashboard search
+
+The user delegated selection and implementation of one high-impact improvement and a PR. Inspection found that the animal dashboard unmounts `AnimalsTable`, including its search input, whenever a new search query loads or fails. Every keystroke immediately navigates and starts a request. The archived toggle is conditional on archived rows in a page that excludes them by default.
+
+Finish this existing list workflow using its current API, URL search contract, React Query, bilingual copy and table. Keep the controls mounted during initial loading, subsequent loading and errors; display loading or `LoadFailure` in the results area, never stale actionable rows. Debounce text input by 300 ms and pause during IME composition. URL navigation restores the input and cancels pending text commits. Pass React Query's AbortSignal to the existing HTTP client. Always expose the archived toggle; do not imply a page-local count is a catalogue total.
+
+Alternatives considered: keeping previous data alone preserves the table only after a successful read and still loses controls on errors; a new list-state/router framework expands the change unnecessarily. The selected approach adds a small controlled-search hook and an optional results state to the existing table. Selection is the implementer's call under the user's delegated scope.
+
+Scope excludes database changes, new filters, archive mutation policy, other admin lists, production data and deployment. Existing animal API authorization and audit behavior stay in force. Browser acceptance uses synthetic in-memory API responses and synthetic Auth only: continuous typing retains focus, one settled request, no requests during composition, superseded reads abort, errors retain filters and permit retry, archive inclusion is reachable from an ordinary or empty page, and Back/tab changes supersede pending search text. Verify desktop and mobile widths. No migration is needed.
