@@ -1,9 +1,7 @@
 import { z } from "zod";
+import type { VolunteerJobActorCode } from "./errors";
 
-export type VolunteerJobActorCode =
-  | "VOLUNTEER_JOB_ACTOR_UNCONFIGURED"
-  | "VOLUNTEER_JOB_ACTOR_INVALID"
-  | "VOLUNTEER_JOB_ACTOR_INELIGIBLE";
+export type { VolunteerJobActorCode };
 export class VolunteerJobActorError extends Error {
   constructor(readonly code: VolunteerJobActorCode) {
     super(code);

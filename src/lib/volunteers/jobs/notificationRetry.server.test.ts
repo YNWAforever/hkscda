@@ -3,7 +3,8 @@ import { createNotificationRetryHandler } from "./notificationRetry.server";
 
 const actor = "00000000-0000-4000-8000-000000000001";
 const id = "00000000-0000-4000-8000-000000000002";
-const request = () => new Request("https://example.invalid/api/admin/volunteers/jobs/" + id);
+const request = () =>
+  new Request("https://example.invalid/api/admin/volunteers/jobs/" + id + "/retry");
 
 describe("notification job retry HTTP boundary", () => {
   test("returns an auth denial without calling the RPC", async () => {

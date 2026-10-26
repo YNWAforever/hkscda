@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { volunteerJobFailureCodes } from "./errors";
 import { volunteerJobHealth } from "./health";
 
 test("only admins receive a current failed bucket with an exact retry fence", () => {
@@ -312,6 +313,26 @@ test("admin diagnostics project safe codes and stages without raw result fields"
   });
   expect(JSON.stringify(health)).not.toContain("synthetic-private");
   expect(JSON.stringify(health)).not.toContain("synthetic-hidden");
+});
+
+test("admin diagnostics keep every fixed volunteer job code", () => {
+  for (const code of volunteerJobFailureCodes) {
+    const health = volunteerJobHealth(
+      [
+        {
+          status: "failed",
+          finished_at: "2026-10-13T02:00:00Z",
+          result: { error: code, message: "synthetic-private-detail" },
+        },
+        { status: "failed", finished_at: "2026-10-13T01:00:00Z" },
+      ],
+      now,
+      undefined,
+      true,
+    );
+    expect(health.diagnostic?.code).toBe(code);
+    expect(JSON.stringify(health)).not.toContain("synthetic-private");
+  }
 });
 
 test("unknown private errors are not promoted into display codes or stages", () => {

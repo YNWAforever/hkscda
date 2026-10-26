@@ -30,7 +30,7 @@ The background jobs are seven scheduled tasks that Vercel runs by itself: they s
 ## Verify, and pause if needed
 
 - Within about an hour, Vercel runtime logs show no `CRON_SECRET is not set in production` error.
-- In Supabase (Table Editor), `volunteer_runtime_job_run` has a row for the current hour with status `complete`. If the row is `failed`, read its result. `volunteer_job_actor_missing` means the UUID is not an active admin. `job_failed` is what an empty or malformed value records, but it is also the generic name for any other database error. Recheck step 2 first.
+- In Supabase (Table Editor), `volunteer_runtime_job_run` has a row for the current hour with status `complete`. If the row is `failed`, read `result.error`. `VOLUNTEER_JOB_ACTOR_UNCONFIGURED` means the actor id is missing, `VOLUNTEER_JOB_ACTOR_INVALID` means it is not a UUID, and `VOLUNTEER_JOB_ACTOR_INELIGIBLE` means that user is not an active admin with a confirmed, unbanned Auth identity. `UNEXPECTED` is the stored code for any other failure. Recheck step 2 first. A `running` row whose `lease_until` is already past has no recorded outcome. The worker that still owns that row can record one; an administrator can retry the current hour only after that lease has ended. An earlier hour stays an expired lease and is not offered for retry.
 - In Vercel, under Settings → Environment Variables, `SPONSORSHIP_JOB_ACTOR_ID` is set for Production. Then, within about an hour, open the Vercel runtime logs for `/api/jobs/sponsorships`. A 200 is expected. The job reports `disabled` when the actor is not set, `queued` (leaving any queued deliveries untouched) when `RESEND_API_KEY` is not set, and `processed` otherwise, even when the queue is empty. A 500 means the run failed. With `RESEND_API_KEY` set, the usual cause is that the `SPONSORSHIP_JOB_ACTOR_ID` user is not an active staff, admin or treasurer, and the job then fails again every hour until you fix step 2 and redeploy.
 - In the admin, export a supporters or donations list that matches more than 5,000 rows. The admin then offers "Create background export" ("建立背景匯出"), and the file becomes ready within about five minutes. If no list is that large, skip this check: smaller exports never use the job.
 - The next day, the three daily jobs show 200 responses in the Vercel logs. Check `public-media-repair` on day one in particular.
@@ -39,10 +39,13 @@ The background jobs are seven scheduled tasks that Vercel runs by itself: they s
 
 # Volunteer actor preflight (2026-10-13)
 
-The hourly volunteer run claims its existing lease, then checks `VOLUNTEER_JOB_ACTOR_ID`
+The hourly volunteer run claims a ten-minute lease, then checks `VOLUNTEER_JOB_ACTOR_ID`
 before generation, releases, promotions, assessments or notification dispatch. The value
 must be a UUID identifying an active `admin_user` with confirmed, unbanned Auth identity.
 An invalid actor records a failed run without domain work. Duplicate claims do no work.
+The lease stops a second worker from taking that hour. It does not stop the worker that
+still owns the row from recording `complete` or `failed` after `lease_until` has passed.
+A later claim changes `lease_owner`, so the original finish then matches nothing.
 Private `/api/internal/readiness` checks the same actor without claiming or executing a run;
 its `volunteerJobs` feature reports a fixed configuration/eligibility/read-failure code.
 Raw IDs and provider messages are never included in those readiness diagnostics.
