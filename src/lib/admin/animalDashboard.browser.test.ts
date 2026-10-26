@@ -119,6 +119,9 @@ try {
  await page.route("**/*",r=>new URL(r.request().url()).origin===origin?r.continue():(external.push(r.request().url()),r.abort()));
  const input=page.getByRole("textbox",{name:"Search name or reference number"});
  const settle=q=>page.waitForFunction(q=>[...document.querySelectorAll("td,span")].some(e=>e.textContent==="Result "+q),q);
+ const hold=()=>page.evaluate(()=>window.dispatchEvent(new Event("fixture:hold-navigation")));
+ const release=()=>page.evaluate(()=>window.dispatchEvent(new Event("fixture:release-navigation")));
+ const pending=()=>page.evaluate(()=>JSON.parse(document.documentElement.dataset.pendingSearch||"null"));
  await page.goto(origin);try {await settle("initial");}catch(e){console.error({errors,requests,body:await page.locator("body").innerText()});throw e;}
  ${script}
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
@@ -200,3 +203,59 @@ test("animal dashboard discards archive confirmations when the list changes", as
  assert.ok(!requests.includes("discard-on-back"),"Back/forward supersedes pending text");
  `);
 }, 20_000);
+
+test("delayed search commits preserve newer draft text", async () => {
+  await runDashboard(`
+ await hold();await input.fill("committed");
+ await page.waitForFunction(()=>JSON.parse(document.documentElement.dataset.pendingSearch||"null")?.q==="committed");
+ await input.fill("newer draft");await release();await settle("committed");
+ assert.equal(await input.inputValue(),"newer draft","the committed URL must not replace newer typing");
+ await settle("newer draft");
+ `);
+}, 15_000);
+
+test("delayed search commits preserve active IME composition", async () => {
+  await runDashboard(`
+ await hold();await input.fill("committed");
+ await page.waitForFunction(()=>JSON.parse(document.documentElement.dataset.pendingSearch||"null")?.q==="committed");
+ await input.dispatchEvent("compositionstart");await input.fill("貓");
+ await release();await settle("committed");await page.waitForTimeout(400);
+ assert.equal(await input.inputValue(),"貓","the committed URL must not replace IME input");
+ assert.deepEqual(requests,["","committed"],"URL sync must not end composition");
+ await input.fill("貓貓");await input.dispatchEvent("compositionend");await settle("貓貓");
+ `);
+}, 15_000);
+
+for (const filter of ["status", "archived"]) {
+  test(`animal ${filter} changes cancel debounce before delayed navigation`, async () => {
+    await runDashboard(`
+ await hold();await input.fill("discarded draft");
+ ${filter === "status" ? 'await page.getByRole("combobox").selectOption("adopted");' : 'await page.getByRole("checkbox",{name:"Include archived records"}).click();'}
+ await page.waitForFunction(()=>Boolean(document.documentElement.dataset.pendingSearch));
+ await page.waitForTimeout(400);
+ const next=await pending();
+ assert.equal(next.q,"","a pending debounce must not replace the filter navigation");
+ assert.equal(next.${filter},${filter === "status" ? '"adopted"' : "true"});
+ assert.equal(await input.inputValue(),"");
+ await input.fill("after filter");await page.waitForTimeout(400);
+ assert.deepEqual(await pending(),next,"new typing must wait for the selected filter");
+ await release();
+ await page.waitForFunction(({key,value})=>new URLSearchParams(location.search).get(key)===value,{key:"${filter}",value:"${filter === "status" ? "adopted" : "true"}"});
+ assert.equal(await input.inputValue(),"after filter","filter acknowledgement must preserve newer typing");
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("q")==="after filter");
+ assert.equal(new URL(page.url()).searchParams.get("${filter}"),"${filter === "status" ? "adopted" : "true"}");
+ assert.ok(!requests.includes("discarded draft"));
+ `);
+  }, 15_000);
+}
+
+test("Back cancels a pending filter navigation without blocking later search", async () => {
+  await runDashboard(`
+ await input.fill("previous");await settle("previous");
+ await hold();await page.getByRole("combobox").selectOption("adopted");
+ await page.waitForFunction(()=>Boolean(document.documentElement.dataset.pendingSearch));
+ await page.goBack();await release();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("status")!=="adopted");
+ await input.fill("after back");await settle("after back");
+ `);
+}, 15_000);

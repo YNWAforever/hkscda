@@ -91,9 +91,9 @@ export function AnimalsTable({
 }: AnimalsTableProps) {
   const { copy, language } = useAdminLanguage();
   const text = useAdminCopy(animalListCopy);
+  const search = useAnimalSearch(state, onStateChange);
   const changeFilters = (filters: Partial<Omit<AnimalListState, "page">>) =>
-    onStateChange(updateAnimalListFilters(state, filters));
-  const search = useAnimalSearch(state, (q) => changeFilters({ q }));
+    search.reset(updateAnimalListFilters(state, filters));
   const [confirmDelete, setConfirmDelete] = useState<{
     id: string;
     state: AnimalListState;
@@ -304,8 +304,7 @@ export function AnimalsTable({
           <button
             type="button"
             onClick={() => {
-              search.reset();
-              onStateChange({ ...animalListDefaults });
+              search.reset({ ...animalListDefaults });
             }}
             className="min-h-11 rounded-lg border border-[var(--color-border)] px-3 text-sm text-[var(--color-panel)]"
           >
