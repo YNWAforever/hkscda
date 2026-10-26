@@ -1,3 +1,5 @@
+import { redactSensitivePagePath } from "./analytics";
+
 type LovableErrorOptions = {
   mechanism?: "manual" | "onerror" | "unhandledrejection" | "react_error_boundary";
   handled?: boolean;
@@ -24,8 +26,8 @@ export function reportLovableError(error: unknown, context: Record<string, unkno
     error,
     {
       source: "react_error_boundary",
-      route: window.location.pathname,
       ...context,
+      route: redactSensitivePagePath(window.location.pathname) ?? window.location.pathname,
     },
     {
       mechanism: "react_error_boundary",

@@ -1,4 +1,4 @@
-import { gtagEvent } from "../analytics";
+import { gtagEvent, redactSensitivePagePath } from "../analytics";
 import type { HelpCategory, HelpLanguage } from "./faq";
 import { sanitizeHelpQuery } from "./sanitizeQuery";
 import type { HelpSearchConfidence } from "./search";
@@ -36,7 +36,7 @@ export function trackHelpEvent(action: HelpAnalyticsAction, params: HelpAnalytic
     language: params.language,
     result_count: params.resultCount,
     confidence_bucket: params.confidenceBucket,
-    page_path: pagePath,
+    page_path: pagePath ? (redactSensitivePagePath(pagePath) ?? pagePath) : undefined,
     redacted: sanitized?.redacted ?? false,
     query_topic: sanitized && !sanitized.redacted ? sanitized.queryTopic : undefined,
   });
