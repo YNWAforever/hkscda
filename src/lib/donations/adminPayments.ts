@@ -5,7 +5,7 @@ import type { AdminRole } from "../admin/access";
 export const PAYMENT_RECONCILE_PAGE_SIZE = 25;
 
 export const paymentStatuses = ["pending", "succeeded", "failed", "refunded"] as const;
-export const paymentProviders = ["stripe", "paypal", "fps", "payme", "manual"] as const;
+export const paymentProviders = ["stripe", "paypal", "cod", "fps", "payme", "manual"] as const;
 
 export type PaymentStatus = (typeof paymentStatuses)[number];
 export type PaymentProvider = (typeof paymentProviders)[number];

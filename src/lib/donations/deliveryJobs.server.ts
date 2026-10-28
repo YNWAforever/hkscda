@@ -124,6 +124,37 @@ export class DonationDeliveryError extends Error {
     this.name = "DonationDeliveryError";
   }
 }
+
+// The success trigger already committed this job with the donation. Use its
+// lease and retry policy for immediate delivery too, so provider/status requests
+// cannot send around a processing, backed-off or attention-required job.
+export async function deliverDonationPayment(
+  client: SupabaseClient,
+  paymentId: string,
+  worker?: DonationDeliveryWorker,
+): Promise<void> {
+  const { data, error } = await client
+    .from("donation_delivery_job")
+    .select("id,status")
+    .eq("payment_id", paymentId)
+    .maybeSingle<{ id: string; status: DeliveryJobStatus }>();
+  if (error) throw error;
+  if (!data) throw new Error("Donation delivery job missing after reconciliation");
+  if (data.status === "complete") return;
+
+  const repository = createSupabaseDeliveryJobRepository(client);
+  const deliveryWorker =
+    worker ??
+    createDonationDeliveryWorker({ repository, deliver: createDonationDeliveryHandler(client) });
+  const result = await deliveryWorker.run(data.id);
+  if (result.kind === "complete") return;
+  if (result.kind === "busy" && (await repository.status(data.id)) === "complete") return;
+  throw new DonationDeliveryError(
+    result.kind === "busy" ? "delivery_pending" : result.code,
+    result.kind !== "attention_required",
+  );
+}
+
 // Retain the established idempotent receipt allocator and provider message key.
 // A queued acknowledgement (including missing provider configuration) is not completion.
 export function createDonationDeliveryHandler(

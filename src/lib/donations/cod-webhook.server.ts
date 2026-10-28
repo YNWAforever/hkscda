@@ -2,9 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { CodConfig } from "./config.server";
 import { decodeBase64Strict, verifyRsaSha256 } from "./cod-crypto.server";
+import { reconcileCodPayment } from "./cod-reconcile.server";
 import {
   flagProviderWebhookForReview,
-  reconcileProviderPayment,
   refundProviderPayment,
   type ReconcileProviderArgs,
 } from "./reconcile.server";
@@ -193,7 +193,7 @@ export async function processCodNotification({
   envelope,
   config,
   client,
-  reconcile = reconcileProviderPayment,
+  reconcile = reconcileCodPayment,
   refund = refundProviderPayment,
   flagForReview = flagProviderWebhookForReview,
 }: ProcessDependencies) {

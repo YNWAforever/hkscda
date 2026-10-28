@@ -405,3 +405,15 @@ describe("listAdminPaymentExportRows", () => {
     expect(new Set(rows.map((row) => row.paymentId)).size).toBe(1001);
   });
 });
+
+test("COD filter selects only AlipayHK payments in finance list and export", async () => {
+  const { client } = createClient([
+    paymentRow("cod-paid", { provider: "cod", status: "succeeded" }),
+    paymentRow("stripe-paid", { provider: "stripe", status: "succeeded" }),
+  ]);
+  const page = await listAdminPaymentPage(client, { provider: "cod" });
+  expect(page.total).toBe(1);
+  expect(page.payments.map((row) => row.id)).toEqual(["cod-paid"]);
+  const exported = await listAdminPaymentExportRows(client, { provider: "cod" });
+  expect(exported.map((row) => row.paymentId)).toEqual(["cod-paid"]);
+});

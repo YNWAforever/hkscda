@@ -56,6 +56,7 @@ export const paymentsCopy = defineAdminCopy({
     providerNames: {
       stripe: "Stripe",
       paypal: "PayPal",
+      cod: "AlipayHK（COD）",
       fps: "FPS",
       payme: "PayMe",
       manual: "Manual",
@@ -111,6 +112,7 @@ export const paymentsCopy = defineAdminCopy({
     providerNames: {
       stripe: "Stripe",
       paypal: "PayPal",
+      cod: "AlipayHK (COD)",
       fps: "FPS",
       payme: "PayMe",
       manual: "Manual",

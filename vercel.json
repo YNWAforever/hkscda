@@ -4,6 +4,7 @@
   "buildCommand": "bun run build",
   "git": {
     "deploymentEnabled": {
+      "codex/d2-alipay-receipt": false,
       "feat/public-layout-v2": false,
       "feat/layout-*": false,
       "chore/layout-*": false,

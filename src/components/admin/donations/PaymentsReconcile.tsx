@@ -8,6 +8,7 @@ import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { adminErrorMessage } from "../../../lib/admin/session";
 import {
   PAYMENT_RECONCILE_PAGE_SIZE,
+  paymentProviders,
   type AdminPaymentListResult,
 } from "../../../lib/donations/adminPayments";
 import { Button } from "../../ui/button";
@@ -59,14 +60,7 @@ const STATUS_VALUES: PaymentFilters["status"][] = [
   "refunded",
 ];
 
-const PROVIDER_VALUES: PaymentFilters["provider"][] = [
-  "all",
-  "stripe",
-  "paypal",
-  "fps",
-  "payme",
-  "manual",
-];
+const PROVIDER_VALUES: PaymentFilters["provider"][] = ["all", ...paymentProviders];
 
 export function PaymentsReconcile() {
   const liveActor = useLiveAdminActor();
