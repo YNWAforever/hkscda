@@ -5,6 +5,7 @@ import { safeFileName as sanitizeFileName } from "../../../../../lib/publicUploa
 import { MAX_PROOF_BYTES, validateProofDescriptor } from "../../../../../lib/sponsorship/schemas";
 import { readBoundedFormData } from "../../../../../lib/http/boundedFormData.server";
 import { SPONSORSHIP_PROOF_BUCKET } from "../../../../../lib/sponsorship/submission.server";
+import { recordPledgePaymentSchema } from "../../../../../lib/sponsorshipAdmin/schemas";
 import { jsonResponse, withErrors } from "../../../../../lib/sponsorshipAdmin/http.server";
 import type { AdminUser } from "../../../../../lib/donations/supabase.server";
 import type { createSponsorshipAdminService } from "../../../../../lib/sponsorshipAdmin/service";
@@ -68,6 +69,10 @@ export async function handleRecordPaymentUpload({
         return jsonResponse({ error: "Invalid payment payload" }, { status: 400 });
       }
 
+      // Validate all payment facts before reserving or uploading an object.
+      // Keep the raw values for the service boundary's canonical parse.
+      payload = z.record(z.unknown()).parse(payload);
+      recordPledgePaymentSchema.parse({ ...payload, file: undefined });
       const submissionKey = z.string().uuid().parse(payload.idempotencyKey);
       const fileValue = formData.get("file");
       let file:

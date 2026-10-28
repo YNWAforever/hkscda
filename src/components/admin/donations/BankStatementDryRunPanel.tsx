@@ -127,7 +127,13 @@ type PreviewError = "file_too_large" | "preview_failed";
 /** Why the confirmation snapshot could not be made, read or applied. */
 type OperationError = "restore_failed" | "create_failed" | "refresh_failed" | "apply_failed";
 
-export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string }) {
+export function BankStatementDryRunPanel({
+  actorUserId,
+  onPaymentsChanged,
+}: {
+  actorUserId: string;
+  onPaymentsChanged?: () => void;
+}) {
   const copy = useAdminCopy(bankPanelCopy);
   const review = useAdminCopy(bankReviewCopy);
   const format = useAdminCopy(donationFormatCopy);
@@ -152,6 +158,8 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
   const operationGeneration = useRef(0);
   const operationBusy = useRef(false);
   const mounted = useRef(true);
+  const paymentsChanged = useRef(onPaymentsChanged);
+  paymentsChanged.current = onPaymentsChanged;
 
   useEffect(() => {
     mounted.current = true;
@@ -171,6 +179,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
           if (mounted.current && operationGeneration.current === generation) {
             setOperation(saved);
             setOperationReadFailed(false);
+            paymentsChanged.current?.();
           }
         })
         .catch(() => {
@@ -277,6 +286,7 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       if (!current()) return;
       setOperation(saved);
       setOperationReadFailed(false);
+      paymentsChanged.current?.();
     } catch {
       if (current()) {
         setOperationReadFailed(true);
@@ -333,6 +343,10 @@ export function BankStatementDryRunPanel({ actorUserId }: { actorUserId: string 
       if (current()) {
         operationBusy.current = false;
         setApplyingOrdinal(null);
+        // A PATCH response or the following snapshot read may be lost after
+        // commit. Refresh the visible payment facts even in that case; never
+        // infer a failed payment from a failed snapshot read.
+        paymentsChanged.current?.();
       }
     }
   }

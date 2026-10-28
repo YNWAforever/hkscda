@@ -140,6 +140,8 @@ export function PaymentsReconcile() {
   function refresh() {
     queryClient.invalidateQueries({ queryKey: ["admin-payments"] });
     queryClient.invalidateQueries({ queryKey: ["admin-finance-activity"] });
+    queryClient.invalidateQueries({ queryKey: ["finance-delivery-worklist"] });
+    queryClient.invalidateQueries({ queryKey: ["crm-supporter"] });
   }
 
   function updateFilters(patch: Partial<PaymentFilters>) {
@@ -388,6 +390,7 @@ export function PaymentsReconcile() {
           <BankStatementDryRunPanel
             key={`${identityData.admin.authUserId}:${adminRole}`}
             actorUserId={identityData.admin.authUserId}
+            onPaymentsChanged={refresh}
           />
         )}
       {(adminRole === "treasurer" || adminRole === "admin") && <DonationDeliveryWorklist />}

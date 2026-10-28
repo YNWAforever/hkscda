@@ -427,3 +427,71 @@ describe("handleRecordPaymentUpload", () => {
     }
   });
 });
+
+for (const payload of [
+  "null",
+  "[]",
+  "42",
+  JSON.stringify({
+    idempotencyKey: "55555555-5555-4555-8555-555555555555",
+    paymentMethod: "fps",
+    amountCents: -1,
+    paymentDate: "2026-02-30",
+  }),
+]) {
+  test(`invalid payment facts are rejected before any proof upload: ${payload}`, async () => {
+    const service = createService();
+    const { client, upload, reserve } = createClient();
+    const response = await handleRecordPaymentUpload({
+      request: multipartRequest({ payload, file: proofFile() }),
+      pledgeId,
+      client: client as never,
+      service: service as never,
+      requireCoordinator: requireCoordinator(),
+    });
+    expect(response.status).toBe(400);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(upload).not.toHaveBeenCalled();
+    expect(reserve).not.toHaveBeenCalled();
+    expect(service.recordPayment).not.toHaveBeenCalled();
+  });
+}
+
+for (const stage of ["reservation", "recording"] as const) {
+  test(`role revoked during proof ${stage} returns forbidden`, async () => {
+    const service = createService(
+      stage === "recording"
+        ? {
+            recordPayment: mock(async () => {
+              throw { code: "42501" };
+            }),
+          }
+        : {},
+    );
+    const { client, upload } = createClient(
+      stage === "reservation"
+        ? {
+            reserve: mock(async () => ({ data: null, error: { code: "42501" } })),
+          }
+        : {},
+    );
+    const response = await handleRecordPaymentUpload({
+      request: multipartRequest({
+        payload: { paymentMethod: "fps", amountCents: 100, paymentDate: "2026-10-28" },
+        file: proofFile(),
+      }),
+      pledgeId,
+      client: client as never,
+      service: service as never,
+      requireCoordinator: requireCoordinator(),
+    });
+    expect(response.status).toBe(403);
+    if (stage === "reservation") {
+      expect(upload).not.toHaveBeenCalled();
+      expect(service.recordPayment).not.toHaveBeenCalled();
+    } else {
+      expect(upload).toHaveBeenCalledTimes(1);
+      expect(service.recordPayment).toHaveBeenCalledTimes(1);
+    }
+  });
+}

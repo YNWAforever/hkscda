@@ -133,6 +133,8 @@ const copy = {
     manualVerification:
       "原付款指示已撤回或暫時未能核實。請聯絡職員，並提供以下參考編號；請勿沿用舊付款資料。",
     reference: "付款參考編號",
+    assistedProof:
+      "如已按職員確認的安排轉帳，請將轉帳相片或紀錄電郵至以下地址，註明金額、付款日期及參考編號（如有）。職員核對入帳後才會確認收款，請勿重複付款。",
     submitError: "暫時未能建立捐款，請稍後再試。",
     checkoutRecoveryRequired: "付款建立結果未能確認。請聯絡職員核實，暫時不要重複付款。",
     recoveryReference: "查詢編號",
@@ -179,6 +181,8 @@ const copy = {
     manualVerification:
       "The payment instructions were withdrawn or cannot be verified. Contact our team with the reference below; do not reuse old payment details.",
     reference: "Payment reference",
+    assistedProof:
+      "If you have transferred using arrangements confirmed by staff, email your transfer photo or record to the address below with the amount, payment date and reference (if available). Staff will confirm payment after checking the deposit; please do not pay again.",
     submitError: "Donation could not be created. Please try again later.",
     checkoutRecoveryRequired:
       "We cannot confirm the checkout outcome. Please contact our team before trying to pay again.",
@@ -565,6 +569,7 @@ export function DonatePage({
                     香港註冊慈善機構 {brand.org.charityFileNumber}
                     。捐款用於糧食、醫療、絕育及領養工作。
                   </p>
+                  <p>{t.assistedProof}</p>
                   <a
                     className="inline-flex min-h-11 items-center font-semibold text-[var(--color-primary)] hover:underline"
                     href={`mailto:${brand.org.donationEmail}`}
