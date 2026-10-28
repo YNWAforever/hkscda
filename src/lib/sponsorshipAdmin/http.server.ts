@@ -115,6 +115,12 @@ export async function withErrors(
     return await operation();
   } catch (error) {
     if (error instanceof Response) return responseError(error);
+    // Audited RPCs recheck the role after HTTP authorization. A withdrawal
+    // during the request is a permission refusal, including PostgREST errors
+    // that are plain objects rather than Error instances.
+    if (error && typeof error === "object" && "code" in error && error.code === "42501") {
+      return jsonResponse({ error: "Access denied" }, { status: 403 });
+    }
     if (error instanceof RequestBodyTooLargeError)
       return jsonResponse({ error: "Request body too large" }, { status: 413 });
     if (error instanceof InvalidRequestJsonError)

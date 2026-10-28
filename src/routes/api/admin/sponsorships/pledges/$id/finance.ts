@@ -13,19 +13,17 @@ import {
   createSponsorshipFinanceRepository,
   financeCommandSchema,
 } from "../../../../../../lib/sponsorshipAdmin/finance.server";
+import { createSponsorshipFinanceReadHandler } from "../../../../../../lib/sponsorshipAdmin/finance.http.server";
 export const Route = createFileRoute("/api/admin/sponsorships/pledges/$id/finance")({
   server: {
     handlers: {
       GET: ({ request, params }) =>
         withErrors(async () => {
-          const id = requiredUuid(params, "id");
           const client = createSupabaseServiceClient();
-          const actor = await requireAdmin(request, ["staff", "treasurer", "admin"], client);
-          return jsonResponse({
-            ...(await createSponsorshipFinanceRepository(client).read(id)),
-            canRefund: ["admin", "treasurer"].includes(actor.role),
-            canCoordinate: ["admin", "staff"].includes(actor.role),
-          });
+          return createSponsorshipFinanceReadHandler({
+            requireReader: (input) => requireAdmin(input, ["staff", "treasurer", "admin"], client),
+            read: createSponsorshipFinanceRepository(client).read,
+          })({ request, params });
         }),
       POST: ({ request, params }) =>
         withErrors(async () => {

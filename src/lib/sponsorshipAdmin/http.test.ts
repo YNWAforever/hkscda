@@ -488,3 +488,27 @@ test.each([
     log.mockRestore();
   }
 });
+
+test("proof review maps a SQL role recheck refusal to 403 without exposing DB details", async () => {
+  const service = createService({
+    reviewProof: mock(async () => {
+      throw { code: "42501", message: "private database detail" };
+    }),
+  });
+  const handlers = createSponsorshipAdminHandlers({
+    requireReader: requireCoordinator(),
+    requireFinance: requireCoordinator(),
+    requireCoordinator: requireCoordinator(),
+    service: service as never,
+  });
+  const response = await handlers.reviewProof({
+    request: request(`http://localhost/api/admin/sponsorships/pledges/${pledgeId}/review`, {
+      method: "POST",
+      body: "{}",
+    }),
+    params: { id: pledgeId },
+  });
+  expect(response.status).toBe(403);
+  expect(await response.json()).toEqual({ error: "Access denied" });
+  expect(response.headers.get("cache-control")).toBe("no-store");
+});

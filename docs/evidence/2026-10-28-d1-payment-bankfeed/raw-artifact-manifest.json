@@ -1,0 +1,30 @@
+{
+  "scope": "Fresh local DI/browser fixtures, synthetic data; screenshots retained locally per docs/evidence/.gitignore",
+  "artifacts": [
+    {
+      "path": "/workspace/cli-logs/hkscda-d1-fixture/bank-confirmed.png",
+      "bytes": 235556,
+      "sha256": "b39d4a5d609bcc2441a9e2ca4fdfecc264be78ca8ea0815288701c5026378445"
+    },
+    {
+      "path": "/workspace/cli-logs/hkscda-d1-fixture/sponsorship-approved.png",
+      "bytes": 280750,
+      "sha256": "12397858c33ca0d153054a195fbd29fd6c3c4199e64780fd2cce39b7a612c889"
+    },
+    {
+      "path": "/workspace/cli-logs/hkscda-d1-fixture/sponsorship-bank-linked.png",
+      "bytes": 277390,
+      "sha256": "7c4b7cf11921ffa3669e16b5421dfd054b54e9284e48c3ac61020f265b8e0ebf"
+    },
+    {
+      "path": "/workspace/cli-logs/hkscda-d1-fixture/donation-assisted-zh.png",
+      "bytes": 303883,
+      "sha256": "3749ace05709a15446280d1a4cb05d448cf10b936a47b1af0ebac82da21752a4"
+    },
+    {
+      "path": "/workspace/cli-logs/hkscda-d1-fixture/donation-assisted-en.png",
+      "bytes": 274022,
+      "sha256": "f888fbf565f7a72789ce62c4113bc648b28890526b917afb8d6f3d8ddef5efbb"
+    }
+  ]
+}

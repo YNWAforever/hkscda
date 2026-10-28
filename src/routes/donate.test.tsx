@@ -378,3 +378,16 @@ test("the consent legend follows the page language", async () => {
   expect(html).toContain("收據及通訊同意");
   expect(html).not.toContain("Receipts and communication consent");
 });
+
+test("gated donation page explains the existing email proof handoff without enabling checkout", async () => {
+  const { DonatePage } = await import("./donate");
+  const { brand } = await import("../lib/brand/brand");
+  const html = renderToStaticMarkup(
+    <DonatePage initialSlots={[]} initialMethods={[]} initialSearch={{}} checkoutEnabled={false} />,
+  );
+  expect(html).toContain("轉帳相片或紀錄電郵");
+  expect(html).toContain("金額、付款日期及參考編號");
+  expect(html).toContain(`href="mailto:${brand.org.donationEmail}"`);
+  expect(html).toMatch(/<fieldset disabled=""/);
+  expect(html).toContain("網上捐款尚未啟用");
+});

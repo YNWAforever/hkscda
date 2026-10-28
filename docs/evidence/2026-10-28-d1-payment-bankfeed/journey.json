@@ -1,0 +1,23 @@
+{
+  "scope": "Local browser, actual components and DI HTTP/services; in-memory storage/repositories; no database, live provider, email delivery, terms publication or UAT account",
+  "publicProofBytes": 68,
+  "paymentStatus": "succeeded",
+  "donationStatus": "succeeded",
+  "paymentReads": 3,
+  "lostSnapshotRecovered": true,
+  "legacySponsorshipPaymentLinked": true,
+  "sponsorshipStatus": "active",
+  "proofStatus": "approved",
+  "calls": [
+    "public intent registered in fixture",
+    "public object uploaded",
+    "bank fixture applied",
+    "staff object uploaded",
+    "staff proof persisted in fixture",
+    "email stub only",
+    "exact sponsorship proof reviewed in fixture",
+    "email stub only",
+    "existing bank payment linked to legacy proof in fixture"
+  ],
+  "pageErrors": []
+}

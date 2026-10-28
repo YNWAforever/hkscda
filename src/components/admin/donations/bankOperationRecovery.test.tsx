@@ -5,6 +5,7 @@ let index = 0,
   effects: (() => void | (() => void))[] = [],
   cleanup: (() => void)[] = [];
 const storage = new Map<string, string>();
+const paymentsChanged = mock(() => {});
 mock.module("react", () => ({
   ...React,
   useEffect: (f: () => void | (() => void)) => {
@@ -58,6 +59,8 @@ type Props = {
   onChange?: (e: { target: { files: File[] } }) => void;
   onToggle?: (n: number) => void;
   operation?: { operationId: string };
+  onApply?: (ordinal: number) => void;
+  onConfirm?: () => Promise<void>;
 };
 function walk(n: ReactNode, out: ReactElement<Props>[] = []): ReactElement<Props>[] {
   if (Array.isArray(n)) for (const x of n) walk(x, out);
@@ -70,7 +73,9 @@ function walk(n: ReactNode, out: ReactElement<Props>[] = []): ReactElement<Props
 let actorUserId = "actor-a";
 function render() {
   index = 0;
-  const out = Reflect.apply(BankStatementDryRunPanel, undefined, [{ actorUserId }]);
+  const out = Reflect.apply(BankStatementDryRunPanel, undefined, [
+    { actorUserId, onPaymentsChanged: paymentsChanged },
+  ]);
   for (const f of effects.splice(0)) {
     const c = f();
     if (c) cleanup.push(c);
@@ -113,6 +118,7 @@ beforeEach(() => {
   effects = [];
   cleanup = [];
   storage.clear();
+  paymentsChanged.mockClear();
   Object.assign(globalThis, {
     sessionStorage: {
       getItem: (k: string) => storage.get(k) ?? null,
@@ -192,3 +198,58 @@ test("another actor does not recover or get locked by the previous actor's snaps
   expect(storage.get("hkscda-finance-bank-match-operation:actor-a")).toBe("A");
   expect(storage.get("hkscda-finance-bank-match-operation:actor-b")).toBe("B");
 });
+
+for (const failure of ["none", "snapshot read", "apply response"] as const) {
+  test(`refreshes payment facts after bank apply with ${failure} failure`, async () => {
+    const pending = {
+      ...operation("A"),
+      items: [
+        {
+          ordinal: 1,
+          status: "pending",
+          paymentId: "payment",
+          bankReference: "REF",
+          paymentHint: "HINT",
+          amountCents: 100,
+          reasonCode: null,
+          deliveryJobId: null,
+          appliedAt: null,
+        },
+      ],
+    };
+    storage.set("hkscda-finance-bank-match-operation:actor-a", "A");
+    fetcher = async () => pending;
+    render();
+    await flush();
+    paymentsChanged.mockClear();
+    walk(render()).find((n) => n.type === BankMatchOperationReview)!.props.onApply!(1);
+    fetcher = async (_url, options) => {
+      if (options?.method === "PATCH") {
+        if (failure === "apply response") throw Error("lost response after commit");
+        return { status: "succeeded" };
+      }
+      if (failure === "snapshot read") throw Error("snapshot unavailable");
+      return {
+        ...pending,
+        state: "done",
+        items: pending.items.map((i) => ({ ...i, status: "succeeded" })),
+      };
+    };
+    const { ConfirmActionDialog } = await import("../ConfirmActionDialog");
+    await walk(render()).find((n) => n.type === ConfirmActionDialog)!.props.onConfirm!();
+    expect(paymentsChanged).toHaveBeenCalledTimes(1);
+    if (failure !== "none") {
+      expect(walk(render()).find((n) => n.type === BankMatchOperationReview)!.props.disabled).toBe(
+        true,
+      );
+      paymentsChanged.mockClear();
+      fetcher = async () => ({
+        ...pending,
+        state: "done",
+        items: pending.items.map((i) => ({ ...i, status: "succeeded" })),
+      });
+      await walk(render()).find((n) => n.props.children === "重新讀取確認結果")!.props.onClick!();
+      expect(paymentsChanged).toHaveBeenCalledTimes(1);
+    }
+  });
+}
