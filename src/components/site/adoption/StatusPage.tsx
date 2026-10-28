@@ -15,8 +15,10 @@ import {
 import type { ReactNode } from "react";
 
 import { PublicStateShell } from "../PublicStateShell";
+import type { PublicAdoptionProgress } from "../../../lib/publicAdoption/statusProgress";
 
 type PublicStatusSummary = {
+  progress: PublicAdoptionProgress;
   reference: string;
   submittedAt: string;
   applicantName: string;
@@ -71,6 +73,25 @@ const NEXT_STEPS = [
     body: "如申請貓隻，請先準備窗網；如申請狗隻，請準備牽引及日常照顧安排。",
   },
 ];
+
+const PROGRESS_COPY: Record<PublicAdoptionProgress, { title: string; body: string }> = {
+  received: {
+    title: "領養申請已收到",
+    body: "HKSCDA 已收到你的申請，會按申請資料及動物情況安排義工跟進。",
+  },
+  in_progress: {
+    title: "領養申請跟進中",
+    body: "義工正在跟進你的申請。請留意電郵、電話或 WhatsApp，具體安排以職員通知為準。",
+  },
+  closed: {
+    title: "領養申請已結案",
+    body: "此申請已完成本輪處理，結果及後續安排以職員通知為準。如有疑問，請以參考編號聯絡 HKSCDA。",
+  },
+  completed: {
+    title: "領養手續已完成",
+    body: "HKSCDA 已記錄此申請的成功領養。如需跟進接送或領養後的照顧安排，請以參考編號聯絡職員。",
+  },
+};
 
 const dateFormatter = new Intl.DateTimeFormat("zh-HK", {
   dateStyle: "medium",
@@ -205,15 +226,17 @@ function GenericErrorState({ onRetry }: { onRetry: () => void }) {
 }
 
 function StatusContent({ status }: { status: PublicStatusSummary }) {
+  const progress = status.progress ?? "received";
+  const progressCopy = PROGRESS_COPY[progress];
   return (
     <main className="bg-[var(--color-bg)] py-8">
       <div className="container-wide">
         <header className="grid gap-5 rounded-lg border border-[var(--color-border)] bg-[var(--color-panel)] p-5 text-[var(--color-text-inverse)] shadow-panel md:grid-cols-[minmax(0,1fr)_260px] md:p-7">
           <div>
             <p className="text-sm font-semibold text-[var(--color-secondary)]">領養申請狀態</p>
-            <h1 className="mt-2 text-3xl font-bold">領養申請已收到</h1>
+            <h1 className="mt-2 text-3xl font-bold">{progressCopy.title}</h1>
             <p className="mt-3 max-w-2xl text-sm text-[var(--color-surface-offset-2)]">
-              這頁只顯示申請摘要及下一步安排，不包含相片、詳細問卷或內部審批狀態。
+              這頁只顯示申請摘要及公開進度，不包含相片、詳細問卷或內部審批紀錄。
             </p>
           </div>
           <div className="rounded-lg border border-[var(--color-secondary)] bg-[var(--color-panel-2)] p-4">
@@ -238,11 +261,9 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-primary)]">目前公開狀態</p>
                   <h2 className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-                    申請已進入義工跟進流程
+                    {progressCopy.title}
                   </h2>
-                  <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                    HKSCDA 會按申請資料及動物情況安排聯絡。此頁不顯示內部審批或配對狀態。
-                  </p>
+                  <p className="mt-2 text-sm text-[var(--color-text-muted)]">{progressCopy.body}</p>
                 </div>
               </div>
             </article>
@@ -277,26 +298,28 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
               </div>
             </article>
 
-            <article className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft">
-              <h2 className="text-xl font-bold text-[var(--color-panel)]">下一步</h2>
-              <ol className="mt-4 space-y-3">
-                {NEXT_STEPS.map((step, index) => (
-                  <li key={step.title} className="flex gap-3">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--color-panel)] text-xs font-bold text-[var(--color-text-inverse)]">
-                      {index + 1}
-                    </span>
-                    <span>
-                      <span className="block text-sm font-semibold text-[var(--color-panel)]">
-                        {step.title}
+            {(progress === "received" || progress === "in_progress") && (
+              <article className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-soft">
+                <h2 className="text-xl font-bold text-[var(--color-panel)]">下一步</h2>
+                <ol className="mt-4 space-y-3">
+                  {NEXT_STEPS.map((step, index) => (
+                    <li key={step.title} className="flex gap-3">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--color-panel)] text-xs font-bold text-[var(--color-text-inverse)]">
+                        {index + 1}
                       </span>
-                      <span className="block text-sm text-[var(--color-text-muted)]">
-                        {step.body}
+                      <span>
+                        <span className="block text-sm font-semibold text-[var(--color-panel)]">
+                          {step.title}
+                        </span>
+                        <span className="block text-sm text-[var(--color-text-muted)]">
+                          {step.body}
+                        </span>
                       </span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </article>
+                    </li>
+                  ))}
+                </ol>
+              </article>
+            )}
           </section>
 
           <aside className="space-y-5">
@@ -345,7 +368,9 @@ function StatusContent({ status }: { status: PublicStatusSummary }) {
                 </div>
               ) : (
                 <p className="mt-3 text-sm text-[var(--color-text-muted)]">
-                  未有探訪偏好資料。義工聯絡時會再確認合適時間。
+                  {progress === "closed" || progress === "completed"
+                    ? "未有探訪偏好資料。"
+                    : "未有探訪偏好資料。義工聯絡時會再確認合適時間。"}
                 </p>
               )}
             </article>
