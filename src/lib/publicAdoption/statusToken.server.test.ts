@@ -21,6 +21,14 @@ describe("status tokens", () => {
     expect(isTokenExpired("2026-07-03T00:00:00.000Z", now)).toBe(false);
   });
 
+  test("fails closed when a bearer token has an invalid or nonfinite expiry", () => {
+    const now = new Date("2026-10-28T00:00:00.000Z");
+    for (const expiry of ["", "not-a-date", "infinity", "-infinity"]) {
+      expect(isTokenExpired(expiry, now)).toBe(true);
+    }
+    expect(isTokenExpired("2026-10-28T00:00:00.000Z", now)).toBe(true);
+  });
+
   test("maps status rows to a public-safe summary", () => {
     const summary = buildPublicStatusSummary({
       application: {
@@ -43,6 +51,7 @@ describe("status tokens", () => {
     });
 
     expect(summary).toEqual({
+      progress: "received",
       reference: "APP-APP-1",
       submittedAt: "2026-07-02T01:00:00.000Z",
       applicantName: "Ada",

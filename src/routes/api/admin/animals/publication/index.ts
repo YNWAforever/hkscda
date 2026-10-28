@@ -34,6 +34,19 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             );
           throw error;
         }
+        // A missing revision becomes SQL NULL and bypasses the draft RPC's
+        // stale-write comparison. Enforce the fence before any mutation.
+        if (
+          command.kind === "save" &&
+          (typeof command.expected_revision !== "number" ||
+            !Number.isSafeInteger(command.expected_revision) ||
+            command.expected_revision < 0)
+        ) {
+          return Response.json(
+            { error: "A non-negative integer draft revision is required" },
+            { status: 422, headers: { "cache-control": "no-store" } },
+          );
+        }
         if (command.kind === "publish") {
           delete command.published_image_url;
           delete command.publication_gallery;

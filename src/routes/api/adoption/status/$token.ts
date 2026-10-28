@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { createSupabaseServiceClient } from "../../../../lib/donations/supabase.server";
+import { loadPublicAdoptionProgress } from "../../../../lib/publicAdoption/statusProgress.server";
 import {
   buildPublicStatusSummary,
   hashStatusToken,
@@ -57,7 +58,7 @@ async function loadPublicAdoptionStatus({ params }: HandlerContext) {
       console.error("Failed to update adoption status token last_viewed_at", updateError);
     }
 
-    const [applicationResult, preferencesResult, visitResult] = await Promise.all([
+    const [applicationResult, preferencesResult, visitResult, progress] = await Promise.all([
       client
         .from("adoption_applications")
         .select("id,created_at,applicant_name,email,phone")
@@ -73,6 +74,7 @@ async function loadPublicAdoptionStatus({ params }: HandlerContext) {
         .select("date_range_start,date_range_end,preferred_time_windows,notes")
         .eq("public_application_id", tokenRow.entity_id)
         .maybeSingle(),
+      loadPublicAdoptionProgress(client, tokenRow.entity_id),
     ]);
 
     if (applicationResult.error) throw applicationResult.error;
@@ -84,6 +86,7 @@ async function loadPublicAdoptionStatus({ params }: HandlerContext) {
 
     return jsonNoStore({
       status: buildPublicStatusSummary({
+        progress,
         application: applicationResult.data,
         preferences: preferencesResult.data ?? [],
         visit: visitResult.data ?? null,

@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import type { PublicAdoptionProgress } from "./statusProgress";
 
 export const STATUS_TOKEN_DAYS = 30;
 
@@ -21,10 +22,12 @@ export function statusTokenExpiry(now = () => new Date()) {
 }
 
 export function isTokenExpired(expiresAt: string, now = new Date()) {
-  return new Date(expiresAt).getTime() <= now.getTime();
+  const expiry = Date.parse(expiresAt);
+  return !Number.isFinite(expiry) || expiry <= now.getTime();
 }
 
 type PublicStatusSummaryInput = {
+  progress?: PublicAdoptionProgress;
   application: {
     id: string;
     created_at: string;
@@ -52,6 +55,7 @@ export function applicationReference(id: string) {
 
 export function buildPublicStatusSummary(input: PublicStatusSummaryInput) {
   return {
+    progress: input.progress ?? "received",
     reference: applicationReference(input.application.id),
     submittedAt: input.application.created_at,
     applicantName: input.application.applicant_name,

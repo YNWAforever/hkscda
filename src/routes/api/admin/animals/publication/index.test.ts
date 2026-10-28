@@ -25,6 +25,53 @@ function queryRow(data: unknown) {
   return { select: () => query };
 }
 
+test("draft saves require an explicit safe revision before the mutation RPC", async () => {
+  const rpc = mock(async () => ({ data: { kind: "saved", revision: 2 }, error: null }));
+  activeClient = { rpc };
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  for (const revision of [undefined, null, "1", -1, 0.5, Number.MAX_SAFE_INTEGER + 1]) {
+    const response = await handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({
+          kind: "save",
+          animal_id: "11111111-1111-4111-8111-111111111111",
+          expected_revision: revision,
+          body: { name: "Synthetic draft" },
+        }),
+      }),
+    } as never);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(422);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  }
+  expect(rpc).not.toHaveBeenCalled();
+});
+
+test("valid draft revisions retain saved and stale-write responses", async () => {
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  for (const [revision, data, status] of [
+    [0, { kind: "saved", revision: 1 }, 200],
+    [1, { kind: "saved", revision: 2 }, 200],
+    [1, { kind: "conflict" }, 409],
+  ] as const) {
+    activeClient = { rpc: async () => ({ data, error: null }) };
+    const response = await handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({ kind: "save", expected_revision: revision }),
+      }),
+    } as never);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(status);
+    expect(await response.json()).toEqual(data);
+  }
+});
+
 test("does not expose a preview owned by another staff member before the publish RPC rejects it", async () => {
   const download = mock(async () => ({ data: new Blob(["private image"]), error: null }));
   const upload = mock(async () => ({ error: null }));
