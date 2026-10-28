@@ -2,11 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createCodClient, type CodOrderDetails } from "./cod-client.server";
 import { getCodConfig, type CodConfig } from "./config.server";
-import {
-  reconcileProviderPayment,
-  retrySucceededDonationSideEffects,
-  type ReconcileProviderArgs,
-} from "./reconcile.server";
+import type { ReconcileProviderArgs } from "./reconcile.server";
+import { reconcileCodPayment } from "./cod-reconcile.server";
+import { deliverDonationPayment } from "./deliveryJobs.server";
 
 type CodPayment = {
   id: string;
@@ -60,8 +58,8 @@ export async function refreshPendingCodDonation({
   client,
   config,
   createClient = () => createCodClient(),
-  reconcile = reconcileProviderPayment,
-  recoverSideEffects = retrySucceededDonationSideEffects,
+  reconcile = reconcileCodPayment,
+  recoverSideEffects = deliverDonationPayment,
 }: RefreshDependencies) {
   const { data, error } = await client
     .from("payment")
@@ -74,8 +72,8 @@ export async function refreshPendingCodDonation({
   if (!data) return { kind: "not_applicable" as const };
 
   // A prior reconciliation may have committed the terminal rows before its
-  // receipt/email work failed. Re-run those idempotent effects on every public
-  // status check until they complete.
+  // receipt/email work failed. Attempt its durable job; the job's lease,
+  // backoff and attention state also govern public status checks.
   if (data.status === "succeeded") {
     await recoverSideEffects(client, data.id);
     return { kind: "recovered" as const };

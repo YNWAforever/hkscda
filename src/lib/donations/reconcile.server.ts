@@ -78,6 +78,7 @@ export type ReconcileDeps = {
   generatePdf?: ReceiptPdfGenerator;
   now?: () => Date;
   sendAcknowledgement?: typeof sendDonationAcknowledgement;
+  deliver?: (paymentId: string) => Promise<unknown>;
 };
 
 type ApplyOptions = {
@@ -415,7 +416,8 @@ async function applySucceededPayment(
 
   if (plan.kind === "duplicate") {
     try {
-      await completeDonationSideEffects(client, payment, deps);
+      if (deps.deliver) await deps.deliver(payment.id);
+      else await completeDonationSideEffects(client, payment, deps);
     } catch {
       // A successful payment has its own durable delivery job. Provider replay
       // is not the receipt/email retry mechanism.
@@ -507,7 +509,9 @@ async function applySucceededPayment(
   if (!donationTransitioned) return handleTransitionMiss();
 
   try {
-    const receiptNo = await completeDonationSideEffects(client, payment, deps);
+    let receiptNo: string | undefined;
+    if (deps.deliver) await deps.deliver(payment.id);
+    else receiptNo = await completeDonationSideEffects(client, payment, deps);
     return { kind: "applied" as const, donationId: payment.donation.id, receiptNo };
   } catch {
     // The succeeded donation transition queued durable delivery in its database

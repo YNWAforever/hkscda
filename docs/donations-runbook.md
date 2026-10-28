@@ -94,6 +94,54 @@ signed URLs when needed.
   credited or reversed.
 - Receipts: only issue for requested gifts of HK$100 or more.
 
+## COD receipt and acknowledgement recovery (D2)
+
+Channels/checkout still gated; no live COD activation. Keep
+`VITE_PUBLIC_DONATION_CHECKOUT_ENABLED=false`. A-04 sponsorship terms remain
+unavailable; A-05 preview environment setup remains an external gate.
+
+Verified COD `payment.paid` notifications and fully bound paid order refreshes
+use the existing reconciliation lifecycle. The donation success transaction
+queues the existing `donation_delivery_job`; the immediate receipt/email attempt
+now claims that job through the same worker as cron and finance retry. Replayed
+notifications and public status polling respect its lease, backoff and
+`attention_required` state. A completed job does not send again. Payment success
+remains committed when PDF storage or mail fails.
+
+Receipt eligibility uses the retained gift amount after refunds: a receipt must
+be requested and the amount must be at least HK$100 (10,000 integer HKD cents).
+`issue_receipt` allocates one issued receipt per donation; a PDF repair reuses its
+number and private storage path `{tax_year}/{receipt_no}.pdf`. Acknowledgement
+email includes the receipt number when eligible; this is the existing email
+format, without a new PDF attachment or bulk-mail product. Provider acceptance
+(`sent`) and confirmed delivery (`delivered`) remain distinct. Missing Resend
+configuration leaves the message queued and the job retryable, not complete.
+
+An existing active `treasurer` or `admin` can recover delivery:
+
+1. Open the failed delivery worklist in finance (`/api/admin/finance/delivery-jobs`).
+   It includes COD jobs without a provider filter, and shows the payment ID,
+   failure code, attempts and next attempt time. There is no bulk-retry action.
+   The separate finance payment list/export supports the `AlipayHK (COD)`
+   provider filter (`provider=cod`) to locate its receipt actions; COD still
+   requires verified provider settlement rather than manual bank reconciliation.
+2. For a missing PDF, use the existing receipt issue action
+   (`POST /api/admin/receipts`, JSON `{ "donationId": "<uuid>" }`; optional
+   `supporterId` must match). It uses the audited receipt RPC and repairs the
+   existing number. Issuance alone does not send email.
+3. After correcting the cause, confirm retry of the existing delivery job
+   (`POST /api/admin/donations/delivery/<jobId>/retry`). The audited retry rechecks
+   current Auth/admin eligibility and requires both payment and donation to
+   remain succeeded. The worker reuses the receipt and acknowledgement key.
+   Staff, unauthenticated, banned and unconfirmed users cannot retry.
+
+Automatic dispatch still requires `CRON_SECRET` and the existing donation cron.
+This change does not configure it or install credentials. The ordered migration
+chain must include the existing delivery-success trigger and receipt RPC grants;
+a missing job is reported as incomplete recovery, never bypassed by an unleased
+send. Fixture proof and UAT limitations are recorded in
+`docs/evidence/2026-10-28-d2-alipay-receipt.md`.
+
 ## External Payment Gates
 
 Keep real payment activity disabled by default. A real sandbox smoke test needs

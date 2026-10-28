@@ -347,3 +347,19 @@ describe("payment search params", () => {
     });
   });
 });
+
+test("COD filter survives request parsing and retains existing finance permissions", () => {
+  expect(adminPaymentSearchSchema.parse({ provider: "cod" }).provider).toBe("cod");
+  expect(en.providerNames.cod).toBe("AlipayHK (COD)");
+  expect(zh.providerNames.cod).toBe("AlipayHK（COD）");
+  const pending = payment({ provider: "cod" });
+  expect(canReconcile(pending, "treasurer")).toBe(false);
+  const paid = payment({
+    ...pending,
+    status: "succeeded",
+    donation: { ...pending.donation, status: "succeeded" },
+  });
+  expect(canIssueReceipt(paid, [], "treasurer")).toBe(true);
+  expect(canIssueReceipt(paid, [], "admin")).toBe(true);
+  expect(canIssueReceipt(paid, [], "staff")).toBe(false);
+});
