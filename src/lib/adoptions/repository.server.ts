@@ -303,10 +303,14 @@ function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
 }
 
+const HONG_KONG_UTC_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+/** Midnight-to-midnight bounds of a Hong Kong calendar month (UTC+8, no daylight saving). */
 function monthBounds(month: string) {
   const [year, monthNumber] = month.split("-").map(Number);
-  const start = new Date(Date.UTC(year, monthNumber - 1, 1));
-  const end = new Date(Date.UTC(year, monthNumber, 1));
+  // Date.UTC alone counted 00:00-07:59 HKT on the 1st in the previous month (BUG-09).
+  const start = new Date(Date.UTC(year, monthNumber - 1, 1) - HONG_KONG_UTC_OFFSET_MS);
+  const end = new Date(Date.UTC(year, monthNumber, 1) - HONG_KONG_UTC_OFFSET_MS);
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
