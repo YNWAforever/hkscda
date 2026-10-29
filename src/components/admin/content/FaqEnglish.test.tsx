@@ -338,6 +338,30 @@ describe("the FAQ question form in English", () => {
     );
   });
 
+  test("an inactive entry can be reactivated from the form; an active one cannot be hidden from it", () => {
+    const edit = (isActive: boolean) =>
+      renderAdminInEnglish(
+        <FaqEntryForm
+          draft={{
+            ...draft,
+            id: "77777777-7777-4777-8777-777777777777",
+            isActive,
+            initiallyActive: isActive,
+          }}
+          onDraftChange={noop}
+          onSubmit={noop}
+          onCancel={noop}
+          pending={false}
+          failed={false}
+        />,
+      );
+    // Hidden entries have no other way back onto /help (the table offers only Disable, for
+    // active entries), so the checkbox stays for them.
+    expect(edit(false)).toContain("Show on the /help page");
+    // Hiding an active entry takes the reasoned Disable action instead (BUG-07).
+    expect(edit(true)).not.toContain("Show on the /help page");
+  });
+
   test("keeps the Chinese form as it was", () => {
     const markup = renderAdminInChinese(form(true));
     expectAll(markup, [
