@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { AdminRole } from "../../../../../../lib/admin/access";
 import { readAdminJson } from "../../../../../../lib/http/adminJson.server";
 import {
   createSupabaseServiceClient,
@@ -27,19 +28,23 @@ export const Route = createFileRoute("/api/admin/sponsorships/pledges/$id/financ
         }),
       POST: ({ request, params }) =>
         withErrors(async () => {
+          // Authenticate before reading the body: an anonymous caller used to get the
+          // body's 400 (and have up to 8 MB parsed) instead of 401 (BUG-26). The role a
+          // command needs depends on its action, so that check follows the parse.
+          const client = createSupabaseServiceClient();
+          const actor = await requireAdmin(request, ["staff", "treasurer", "admin"], client);
           const id = requiredUuid(params, "id");
           const input = financeCommandSchema.parse(await readAdminJson(request));
-          const client = createSupabaseServiceClient();
-          const roles =
+          const roles: readonly AdminRole[] =
             input.action === "refund" ||
             input.action === "reconcile" ||
             input.action === "receipt_requested" ||
             input.action === "verify_contact" ||
             input.action === "reverse" ||
             input.action === "allocate"
-              ? (["admin", "treasurer"] as const)
-              : (["admin", "staff"] as const);
-          const actor = await requireAdmin(request, [...roles], client);
+              ? ["admin", "treasurer"]
+              : ["admin", "staff"];
+          if (!roles.includes(actor.role)) throw new Response("Forbidden", { status: 403 });
           return jsonResponse(
             await createSponsorshipFinanceRepository(client).command(actor.authUserId, id, input),
           );
