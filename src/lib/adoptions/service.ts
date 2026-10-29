@@ -182,8 +182,23 @@ function timestamp(now: () => Date) {
   return now().toISOString();
 }
 
+const COORDINATOR_EXPORT_PAGE_SIZE = 1000;
+
 function coordinatorExportPage(): CoordinatorExportPage {
-  return { page: 1, pageSize: 1000 };
+  return { page: 1, pageSize: COORDINATOR_EXPORT_PAGE_SIZE };
+}
+
+/**
+ * Every row a paged export read can return. PostgREST serves at most max_rows (1,000) per
+ * request, so a single read silently cut the CSV at the newest 1,000 rows (BUG-21).
+ */
+async function readAllExportPages<Row>(readPage: (page: number) => Promise<Row[]>): Promise<Row[]> {
+  const rows: Row[] = [];
+  for (let page = 1; ; page += 1) {
+    const batch = await readPage(page);
+    rows.push(...batch);
+    if (batch.length < COORDINATOR_EXPORT_PAGE_SIZE) return rows;
+  }
 }
 
 function requireCoordinatorOpsMethod<K extends keyof CoordinatorOpsRepositoryMethods>(
@@ -233,32 +248,42 @@ export function createAdoptionCoordinatorService({
     if (kind === "cases") {
       const parsed = caseSearchSchema.parse(args.rawSearch);
       filters = { ...parsed, ...coordinatorExportPage() };
-      const rows = await repo.listCaseExportRows(filters as CaseSearch);
+      const rows = await readAllExportPages((page) =>
+        repo.listCaseExportRows({ ...(filters as CaseSearch), page }),
+      );
       csv = buildCoordinatorCaseCsv(rows);
       rowCount = rows.length;
     } else if (kind === "adopters") {
       const parsed = adopterSearchSchema.parse(args.rawSearch);
       filters = { ...parsed, ...coordinatorExportPage() };
-      const rows = await repo.listAdopterExportRows(filters as AdopterSearch);
+      const rows = await readAllExportPages((page) =>
+        repo.listAdopterExportRows({ ...(filters as AdopterSearch), page }),
+      );
       csv = buildCoordinatorAdopterCsv(rows);
       rowCount = rows.length;
     } else if (kind === "successful-adoptions") {
       const page = coordinatorExportPage();
       filters = page;
-      const rows = await repo.listSuccessfulAdoptionExportRows(page);
+      const rows = await readAllExportPages((pageNumber) =>
+        repo.listSuccessfulAdoptionExportRows({ ...page, page: pageNumber }),
+      );
       csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
       rowCount = rows.length;
     } else if (kind === "animals") {
       const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
       const page = { ...parsed, ...coordinatorExportPage() };
       filters = page;
-      const rows = await repo.listAnimalExportRows(page);
+      const rows = await readAllExportPages((pageNumber) =>
+        repo.listAnimalExportRows({ ...page, page: pageNumber }),
+      );
       csv = buildCoordinatorAnimalCsv(rows);
       rowCount = rows.length;
     } else {
       const parsed = taskListSearchSchema.parse(args.rawSearch);
       filters = { ...parsed, ...coordinatorExportPage() };
-      const rows = await repo.listTaskExportRows(filters as TaskListSearch);
+      const rows = await readAllExportPages((page) =>
+        repo.listTaskExportRows({ ...(filters as TaskListSearch), page }),
+      );
       csv = buildCoordinatorTaskCsv(rows);
       rowCount = rows.length;
     }
