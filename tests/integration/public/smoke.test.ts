@@ -22,16 +22,31 @@ const savedEnv: Record<string, string | undefined> = {};
 let originalFetch: typeof fetch;
 
 beforeAll(() => {
-  const env = {
+  const env: Record<string, string | undefined> = {
+    NODE_ENV: "test",
+    VERCEL_ENV: "preview",
     SUPABASE_URL: FAKE_SUPABASE,
     VITE_SUPABASE_URL: FAKE_SUPABASE,
     SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     VITE_SUPABASE_ANON_KEY: "test-anon-key",
     CRON_SECRET: "test-cron-secret",
+    VITE_TURNSTILE_SITE_KEY: undefined,
+    TURNSTILE_SECRET_KEY: undefined,
+    UPSTASH_REDIS_REST_URL: undefined,
+    UPSTASH_REDIS_REST_TOKEN: undefined,
+    STRIPE_SECRET_KEY: undefined,
+    STRIPE_WEBHOOK_SECRET: undefined,
+    PAYPAL_CLIENT_SECRET: undefined,
+    PAYPAL_WEBHOOK_ID: undefined,
+    COD_AES_SECRET_BASE64: undefined,
+    COD_PRIVATE_KEY_BASE64: undefined,
+    RESEND_API_KEY: undefined,
+    RESEND_WEBHOOK_SECRET: undefined,
   };
   for (const [key, value] of Object.entries(env)) {
     savedEnv[key] = process.env[key];
-    process.env[key] = value;
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
   }
   originalFetch = globalThis.fetch;
   // Reads come back empty; nothing reaches a real network.

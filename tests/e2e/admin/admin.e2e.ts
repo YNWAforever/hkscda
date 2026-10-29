@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from "bun:test";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
+import { createServer } from "node:net";
 
 import { E2E_PASSWORD, startFakeSupabase, type FakeSupabase } from "./fakeSupabase";
 
@@ -25,10 +26,25 @@ let consoleErrors: string[] = [];
 /** Errors a test provokes on purpose (a refused login, a forced 500) are not page faults. */
 const EXPECTED_CONSOLE = [/Failed to load resource/];
 
+// Binding catches stale listeners before a run and proves shutdown closed both ports.
+async function requireFreePort(port: number) {
+  const probe = createServer();
+  await new Promise<void>((resolve, reject) => {
+    probe.once("error", reject);
+    probe.listen(port, "127.0.0.1", () => {
+      probe.close((error) => (error ? reject(error) : resolve()));
+    });
+  });
+}
+
 beforeAll(async () => {
+  await requireFreePort(APP_PORT);
+  await requireFreePort(APP_PORT + 1);
   fake = startFakeSupabase(E2E_SUPABASE_PORT);
   const root = new URL("../../../", import.meta.url).pathname;
-  preview = Bun.spawn(["bun", "run", "preview"], {
+  // Own the actual preview process so SIGTERM reaches its server/child cleanup.
+  // Killing a package-script wrapper can leave an old build listening for the next run.
+  preview = Bun.spawn(["node", "scripts/nitro-preview-fast.mjs"], {
     cwd: root,
     env: {
       ...process.env,
@@ -36,6 +52,8 @@ beforeAll(async () => {
       PORT: String(APP_PORT),
       NITRO_HOST: "127.0.0.1",
       NITRO_PORT: String(APP_PORT),
+      NITRO_PREVIEW_UPSTREAM_PORT: String(APP_PORT + 1),
+      BUN_EXECUTABLE: process.execPath,
       SUPABASE_URL: fake.url,
       SUPABASE_SERVICE_ROLE_KEY: "e2e-service-role-key",
       VITE_SUPABASE_URL: fake.url,
@@ -44,13 +62,17 @@ beforeAll(async () => {
     stdout: "ignore",
     stderr: "ignore",
   });
+  let ready = false;
   for (let attempt = 0; attempt < 120; attempt++) {
-    const ready = await fetch(`${APP}/admin/login`)
+    if (preview.exitCode !== null)
+      throw new Error(`Admin E2E preview exited before readiness (${preview.exitCode})`);
+    ready = await fetch(`${APP}/admin/login`)
       .then((response) => response.status < 500)
       .catch(() => false);
     if (ready) break;
     await Bun.sleep(500);
   }
+  if (!ready) throw new Error("Admin E2E preview did not become ready");
   // Same browser as the repo's other browser tests: installed Google Chrome, or an override.
   browser = await chromium.launch(
     process.env.E2E_CHROMIUM_PATH
@@ -60,9 +82,15 @@ beforeAll(async () => {
 }, 90_000);
 
 afterAll(async () => {
-  await browser?.close();
-  preview?.kill();
-  fake?.stop();
+  try {
+    await browser?.close();
+    if (preview?.exitCode === null) preview.kill();
+    await preview?.exited;
+    await requireFreePort(APP_PORT);
+    await requireFreePort(APP_PORT + 1);
+  } finally {
+    fake?.stop();
+  }
 });
 
 beforeEach(async () => {
@@ -312,16 +340,27 @@ describe("errors and loading", () => {
   test(
     "a slow response shows a loading state before the data arrives",
     async () => {
+      let releaseResponse = () => {};
+      const responseGate = new Promise<void>((resolve) => {
+        releaseResponse = resolve;
+      });
       fake.respond("GET /rest/v1/animals", async () => {
-        await Bun.sleep(2_500);
+        await responseGate;
         return Response.json([animalRow({ name: "慢慢" })], {
           headers: { "content-range": "0-0/1" },
         });
       });
-      await signInAsAdminAndOpenDashboard();
-      expect(await page.getByText("慢慢").count()).toBe(0);
-      await page.getByText("載入中...").waitFor();
-      await page.getByText("慢慢").first().waitFor({ timeout: 10_000 });
+      try {
+        await signInAsAdminAndOpenDashboard();
+        expect(await page.getByText("慢慢").count()).toBe(0);
+        await page.getByText("載入中...").waitFor();
+        // Release only after observing loading: machine speed must not decide
+        // whether the response arrives before this assertion.
+        releaseResponse();
+        await page.getByText("慢慢").first().waitFor();
+      } finally {
+        releaseResponse();
+      }
     },
     TEST_TIMEOUT,
   );
