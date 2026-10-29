@@ -5,7 +5,7 @@ import {
   type AdoptionCoordinatorRepository,
   type CoordinatorOpsRepositoryMethods,
 } from "./service";
-import type { CoordinatorStatus, CoordinatorTask } from "./types";
+import type { CoordinatorStatus, CoordinatorTask, CoordinatorTaskExportRow } from "./types";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
 const caseId = "22222222-3333-4333-8444-555555555555";
@@ -411,6 +411,41 @@ describe("createAdoptionCoordinatorService", () => {
         }),
       }),
     );
+  });
+
+  test("BUG-21: an export of exactly 1,000 rows ends cleanly when the next page is out of range", async () => {
+    // listTaskExportRows and listAdopterExportRows read with count: "exact", so PostgREST
+    // answers a page that starts past the last row with 416 / PGRST103 rather than [].
+    const taskRow = (index: number): CoordinatorTaskExportRow => ({
+      taskId: `task-${index}`,
+      title: "Follow up",
+      status: "open",
+      priority: "normal",
+      dueAt: null,
+      completedAt: null,
+      adoptionCaseId: null,
+      adopterProfileId: null,
+      animalId: null,
+      assignedTo: null,
+      volunteer: null,
+      contactChannel: null,
+      outcome: null,
+      remarks: null,
+    });
+    const { service } = setup({
+      async listTaskExportRows(input) {
+        if (input.page === 1) return Array.from({ length: 1000 }, (_, index) => taskRow(index));
+        throw { code: "PGRST103", message: "Requested range not satisfiable" };
+      },
+    });
+
+    const result = await service.exportCoordinatorCsv({
+      actorUserId: adminId,
+      kind: "tasks",
+      rawSearch: {},
+    });
+
+    expect(result.rowCount).toBe(1000);
   });
 
   test("BUG-20: one regenerate writes exactly one audit row", async () => {

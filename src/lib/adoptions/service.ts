@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRangeNotSatisfiable } from "../postgrestRange";
 
 import { requiredReasonSchema } from "../admin/requiredReason";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
@@ -195,7 +196,16 @@ function coordinatorExportPage(): CoordinatorExportPage {
 async function readAllExportPages<Row>(readPage: (page: number) => Promise<Row[]>): Promise<Row[]> {
   const rows: Row[] = [];
   for (let page = 1; ; page += 1) {
-    const batch = await readPage(page);
+    let batch: Row[];
+    try {
+      batch = await readPage(page);
+    } catch (error) {
+      // Reads with count: "exact" answer a page that starts past the last row with
+      // PGRST103 instead of an empty list. After a full page that just means the rows
+      // ran out at an exact multiple of the page size.
+      if (page > 1 && isRangeNotSatisfiable(error)) return rows;
+      throw error;
+    }
     rows.push(...batch);
     if (batch.length < COORDINATOR_EXPORT_PAGE_SIZE) return rows;
   }
