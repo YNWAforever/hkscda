@@ -105,9 +105,10 @@ export const upsertFaqEntrySchema = z.object({
   keywordsZh: z.array(z.string().trim().min(1)).default([]),
   keywordsEn: z.array(z.string().trim().min(1)).default([]),
   ctaKey: z.enum(FAQ_CTA_KEYS).nullable(),
-  sensitive: z.coerce.boolean().default(false),
+  // Strict booleans: z.coerce turned the string "false" into true (BUG-07).
+  sensitive: z.boolean().default(false),
   sortOrder: z.coerce.number().int().min(0).default(0),
-  isActive: z.coerce.boolean().default(true),
+  isActive: z.boolean().default(true),
 });
 
 export const deactivateFaqEntrySchema = z.object({

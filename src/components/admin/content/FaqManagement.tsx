@@ -397,14 +397,17 @@ export function FaqEntryForm({
         />
         {copy.sensitive}
       </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={draft.isActive}
-          onChange={(event) => onDraftChange({ ...draft, isActive: event.target.checked })}
-        />
-        {copy.isActive}
-      </label>
+      {/* An existing entry is hidden through the reasoned deactivate action, not this form. */}
+      {draft.id ? null : (
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={draft.isActive}
+            onChange={(event) => onDraftChange({ ...draft, isActive: event.target.checked })}
+          />
+          {copy.isActive}
+        </label>
+      )}
       <label className="block">
         {copy.sortOrder}
         <input
