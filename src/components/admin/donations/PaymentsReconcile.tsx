@@ -429,10 +429,13 @@ export function PaymentsReconcile() {
           </SelectContent>
         </Select>
         <div className="ml-auto flex flex-col items-end gap-1">
-          <Button type="button" variant="outline" onClick={() => void handleExport()}>
-            <Download className="h-4 w-4" />
-            {pageCopy.common.exportCsv}
-          </Button>
+          {/* The export route is treasurer/admin only; staff always got 403 (BUG-28). */}
+          {(adminRole === "treasurer" || adminRole === "admin") && (
+            <Button type="button" variant="outline" onClick={() => void handleExport()}>
+              <Download className="h-4 w-4" />
+              {pageCopy.common.exportCsv}
+            </Button>
+          )}
           {exportFailure && (
             <p role="alert" className="text-xs text-[var(--color-error)]">
               {adminErrorMessage(exportFailure.cause, language) ?? copy.exportFailed}

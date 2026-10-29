@@ -16,7 +16,8 @@ test("each role receives only its own actionable 3-5 task destinations", () => {
     label: "已過期內容",
     href: "/admin/content?quality=expired",
   });
-  expect(staff.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
+  // Proof review is a treasurer/admin action; staff no longer get this card (BUG-28).
+  expect(treasurer.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
     "/admin/sponsorships?proof=pending",
   );
   expect(treasurer.find((card) => card.key === "delivery_attention")?.href).toBe(
@@ -37,7 +38,8 @@ test("failed source is unavailable, never zero, while other task counts remain",
   expect(cards.find((card) => card.key === "volunteer_pending")?.metric).toEqual({
     state: "unavailable",
   });
-  expect(cards.filter((card) => card.metric.state === "ready")).toHaveLength(4);
+  // Staff have four cards (BUG-28 removed proof review); one source failed.
+  expect(cards.filter((card) => card.metric.state === "ready")).toHaveLength(3);
 });
 
 test("role guidance names the action and keeps proof separate from confirmed payment", () => {
