@@ -9,6 +9,11 @@ import { sendDonationAcknowledgement } from "./notifications.server";
 import type { OnlinePaymentProvider } from "./contracts";
 import type { DeliveryRunResult, DeliveryJobStatus } from "./deliveryJobs.server";
 
+const HONG_KONG_YEAR = new Intl.DateTimeFormat("en", {
+  timeZone: "Asia/Hong_Kong",
+  year: "numeric",
+});
+
 export type ReconcileProviderArgs = {
   client: SupabaseClient;
   provider: OnlinePaymentProvider;
@@ -253,7 +258,10 @@ export async function issueReceiptIfNeeded(
   const generatePdf = deps.generatePdf ?? generateReceiptPdf;
 
   const issuedAt = now().toISOString();
-  const taxYear = new Date(issuedAt).getFullYear();
+  // The receipt number, tax year and storage folder follow the Hong Kong calendar the PDF
+  // prints; the server runs in UTC, so getFullYear() was a year behind for 00:00–07:59 HKT
+  // on 1 January (BUG-04).
+  const taxYear = Number(HONG_KONG_YEAR.format(new Date(issuedAt)));
 
   const receiptParams = {
     p_donation_id: donation.id,
