@@ -330,6 +330,10 @@ describe("errors and loading", () => {
     "BUG-32: going offline shows a retryable failure, not a misleading empty list",
     async () => {
       await signInAsAdminAndOpenDashboard();
+      // Let the first list read and the search-param navigation settle first; going offline
+      // mid-navigation stalls the navigation itself rather than the read under test.
+      await page.getByText("此分類尚未有動物記錄。").first().waitFor();
+      await page.waitForLoadState("networkidle");
       await context.setOffline(true);
       await page.getByRole("link", { name: "狗狗" }).click();
       await page.getByRole("button", { name: "重試" }).waitFor({ timeout: 20_000 });
