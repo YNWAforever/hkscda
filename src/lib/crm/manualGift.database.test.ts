@@ -141,6 +141,30 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
       await database()`select count(*)::int total from public.consent where supporter_id=${supporter}::uuid`;
     expect(after.total).toBe(before.total);
   });
+  test("BUG-23: an inline supporter on an existing email reuses that supporter unchanged", async () => {
+    // No supporterId: the gift names its supporter inline, as an API caller can.
+    const result = await gift(requestId(), {
+      amountCents: input.amountCents,
+      currency: input.currency,
+      purpose: input.purpose,
+      method: input.method,
+      paymentStatus: input.paymentStatus,
+      receiptRequested: input.receiptRequested,
+      supporter: {
+        name: "Typed over the existing name",
+        email: (supporter + "@example.invalid").toUpperCase(),
+        language: "zh-HK",
+        tags: [],
+      },
+      bankReference: `LOCAL-CRM-FIXTURE-INLINE-${supporter}`,
+    });
+    const [row] =
+      await database()`select name,language from public.supporter where id=${supporter}::uuid`;
+    expect(row).toEqual({ name: "Local CRM fixture", language: "en" });
+    const [donation] =
+      await database()`select supporter_id::text,contact_name from public.donation where id=${result.donationId}::uuid`;
+    expect(donation).toEqual({ supporter_id: supporter, contact_name: "Local CRM fixture" });
+  });
   test("changed payload conflicts without a second financial write", async () => {
     const key = requestId();
     await gift(key);
