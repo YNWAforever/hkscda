@@ -6,9 +6,9 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 
 **Outcome.**
 
-- **Findings:** 32 in total. 29 are fixed with one commit each, including BUG-01 (the
-  only High), BUG-02, BUG-03 and BUG-06, whose migrations were approved after Phase 4.
-  3 are deferred: 2 need a migration, and 1 needs a product decision.
+- **Findings:** 32 in total. 30 are fixed with one commit each, including BUG-01 (the
+  only High), BUG-02, BUG-03, BUG-06 and BUG-22, whose migrations were approved after
+  Phase 4. 2 are deferred: 1 needs a migration, and 1 needs a product decision.
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
@@ -29,7 +29,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Test runner:** the repo already has `bun:test` and Playwright browser tests, so Vitest
   was not added. Bug regressions sit beside their source as CLAUDE.md requires;
   cross-cutting suites are under `tests/`.
-- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's, BUG-03's and BUG-06's were later approved and added), dependency changes within existing ranges
+- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's, BUG-03's, BUG-06's and BUG-22's were later approved and added), dependency changes within existing ranges
   only, and the minimal fix for invites.
 
 ## Bugs fixed
@@ -59,6 +59,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 | BUG-19 | Low      | Audit the payments CSV export and mark it no-store                                                                                                                              |
 | BUG-20 | Low      | Record a regenerated coordinator export once                                                                                                                                    |
 | BUG-21 | Low      | Export every coordinator row, not the newest 1,000                                                                                                                              |
+| BUG-22 | Low      | Audit animal draft saves and version restores in the same transaction; fence restores on the draft revision (migration `20261029190000`; verified on Postgres 16)               |
 | BUG-24 | Low      | Stop the supporter edit form restoring deleted supporters                                                                                                                       |
 | BUG-26 | Low      | Authenticate before reading admin request bodies                                                                                                                                |
 | BUG-27 | Low      | Keep 403 and 500 distinct from 401 on photo upload URLs                                                                                                                         |
@@ -84,7 +85,6 @@ explained in its commit and in a code comment.
 
 | ID     | Sev | Why deferred     | What closes it                                                                                                                                                     |
 | ------ | --- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BUG-22 | Low | Migration        | Audit animal draft save/restore inside the RPC; require `expected_revision` for restore.                                                                           |
 | BUG-23 | Low | Migration        | The manual-gift inline supporter must not overwrite an existing supporter.                                                                                         |
 | BUG-25 | Low | Product decision | Invite links have no `redirectTo` or set-password page. BUG-11 now returns a clear 409 instead of a 500; letting existing accounts be invited is a choice for you. |
 
@@ -110,7 +110,7 @@ migration.
 
 | Suite                     | Where                                                                | Tests                                                       | Runs in                             |
 | ------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (2 `test.failing` for deferred migrations)              | `bun run test` / CI `verify`        |
+| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (1 `test.failing` for the deferred migration)           | `bun run test` / CI `verify`        |
 | Admin authorization sweep | `tests/integration/admin/authorization.test.ts`                      | 4 (212 endpoints × 8 callers, role matrix vs `ROLE_ACCESS`) | `bun run test` / CI `verify`        |
 | Public API smoke          | `tests/integration/public/smoke.test.ts`                             | 33                                                          | `bun run test` / CI `verify`        |
 | Client bundle scanner     | `scripts/verify-client-bundle.test.ts` (+ CI step on the real build) | 5                                                           | `bun run test` / CI `verify`        |
@@ -178,13 +178,16 @@ nothing about database behaviour.
 
 ## Remaining risks
 
-1. **Four migrations must be applied with the release** (BUG-01, BUG-02, BUG-03,
-   BUG-06). Until `20261029150000_sync_animal_draft_status.sql`,
+1. **Five migrations must be applied with the release** (BUG-01, BUG-02, BUG-03,
+   BUG-06, BUG-22). Until `20261029150000_sync_animal_draft_status.sql`,
    `20261029160000_finalize_adoption_once_per_animal.sql`,
-   `20261029170000_crm_create_refuses_existing_email.sql` and
-   `20261029180000_update_social_copy_with_audit.sql` run on the production database
-   the old behaviour remains (for BUG-06, text edits fail with a missing-function error
-   until its migration runs, so apply it before or with the code). After they run: a preview made before a pipeline status
+   `20261029170000_crm_create_refuses_existing_email.sql`,
+   `20261029180000_update_social_copy_with_audit.sql` and
+   `20261029190000_audit_and_fence_animal_draft_restore.sql` run on the production
+   database the old behaviour remains. Apply them together with the code deploy: BUG-06's
+   text edits fail with a missing-function error until its migration runs, and BUG-22's
+   migration refuses a version restore from an old admin page that does not send the
+   draft revision (a reload fixes it). After they run: a preview made before a pipeline status
    change answers publish with a conflict, and staff preview again; finalising an
    adoption now also sets the animal to adopted (it leaves the public listing at once);
    and a second finalisation for the same animal or case, or one on a rejected,
@@ -245,3 +248,7 @@ nothing about database behaviour.
 - [ ] **BUG-06 (after the migration runs):** edit a social copy's text and hashtags,
       then change its status. Both save, and each change appears once in the audit
       log.
+- [ ] **BUG-22 (after the migration runs):** open an animal in two tabs, save in one,
+      then restore a published version in the other: it says someone else updated the
+      draft. Reload and restore again: it works, and the save and the restore each appear
+      once in the audit log.

@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 29 fixed (BUG-01's, BUG-02's, BUG-03's and BUG-06's migrations were approved and added after Phase 4), 3 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 30 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's and BUG-22's migrations were approved and added after Phase 4), 2 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -318,6 +318,12 @@ deleted_at = null`, then the roles are replaced). Callers: `src/lib/crm/service.
   another editor's newer draft. `AnimalForm.tsx:204`: the restore button isn't disabled
   while its request is pending.
 - **Fix:** audit rows inside the RPC; require `expected_revision` for `copy`; disable the button.
+- **Fixed** by `20261029190000_audit_and_fence_animal_draft_restore.sql` (approved): `save`
+  writes `animal.draft.save` and `copy` writes `animal.draft.copy`, each in the same
+  transaction; `copy` requires a non-negative integer `expected_revision` (422 otherwise)
+  and answers a stale one with conflict (409). The route enforces the same revision rule
+  before calling the RPC, and the form sends it and disables the restore buttons while
+  one is pending. Verified on Postgres 16.
 
 ### BUG-23 — Low — Manual gift inline supporter overwrites an existing one
 
