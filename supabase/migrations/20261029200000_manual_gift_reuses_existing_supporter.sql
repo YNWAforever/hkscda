@@ -56,8 +56,10 @@ begin
     returning * into v_supporter;
     if not found then
       -- BUG-23: an existing supporter is reused as it is; the gift never edits its details.
+      -- Lowercase both sides: citext = text resolves to a case-sensitive text comparison,
+      -- and stored emails may be mixed case even though the unique index ignores case.
       select * into v_supporter from public.supporter
-      where email=lower(p_input#>>'{supporter,email}') and deleted_at is null for update;
+      where lower(email::text)=lower(p_input#>>'{supporter,email}') and deleted_at is null for update;
       if not found then raise exception 'manual_gift_supporter_unavailable' using errcode='22023'; end if;
       v_reused := true;
     end if;
