@@ -74,6 +74,14 @@ async function withCrmErrors(operation: () => Promise<Response>) {
       );
     }
 
+    // Raised by mutate_crm_supporter_with_audit; these were 500s (BUG-13).
+    if (error && typeof error === "object" && "code" in error && error.code === "P4040") {
+      return jsonResponse({ error: "Supporter not found" }, { status: 404 });
+    }
+    if (error && typeof error === "object" && "code" in error && error.code === "22023") {
+      return jsonResponse({ error: "Invalid CRM request" }, { status: 400 });
+    }
+
     console.error(error);
     return jsonResponse({ error: "Could not process CRM request" }, { status: 500 });
   }

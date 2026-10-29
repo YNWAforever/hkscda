@@ -107,12 +107,16 @@ describe("createAdminAccessHandlers", () => {
     });
 
     const response = await handlers.updateUser({
-      request: new Request("https://example.test/api/admin/access/users/target-row", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ role: "staff" }),
-      }),
-      params: { id: "target-row" },
+      request: new Request(
+        "https://example.test/api/admin/access/users/44444444-4444-4444-8444-444444444444",
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ role: "staff" }),
+        },
+      ),
+      // Admin user ids are UUIDs; the handler now rejects anything else with 400 (BUG-13).
+      params: { id: "44444444-4444-4444-8444-444444444444" },
     });
 
     expect(response.status).toBe(422);

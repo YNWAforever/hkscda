@@ -50,6 +50,10 @@ function requiredId(params: HandlerContext["params"]) {
   if (!id) {
     throw jsonResponse({ error: "Missing admin user id" }, { status: 400 });
   }
+  // A malformed id reached Postgres as 22P02 and came back as a 500 (BUG-13).
+  if (!z.string().uuid().safeParse(id).success) {
+    throw jsonResponse({ error: "Invalid admin user id" }, { status: 400 });
+  }
   return id;
 }
 
