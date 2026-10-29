@@ -153,6 +153,14 @@ export async function withErrors(operation: () => Promise<Response>) {
     if (error && typeof error === "object" && "code" in error && error.code === "P0002") {
       return jsonResponse({ error: "Coordinator item not found" }, { status: 404 });
     }
+    // successful_adoption.case_number is unique; a reused number (or a retry after a lost
+    // response) was a generic 500 with no hint (BUG-15).
+    if (error && typeof error === "object" && "code" in error && error.code === "23505") {
+      return jsonResponse(
+        { error: "This case number is already in use. Use another number or reload." },
+        { status: 409 },
+      );
+    }
     if (error instanceof Error) {
       const response = domainError(error);
       if (response) return response;
