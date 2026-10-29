@@ -47,7 +47,8 @@ const roleKeys: Record<AdminRole, TaskKey[]> = {
     "followup_overdue",
     "volunteer_pending",
     "animal_missing_photo",
-    "sponsorship_proof_pending",
+    // No sponsorship_proof_pending: reviewing proof is treasurer/admin, and the drawer hides
+    // its controls from staff, so the card led nowhere (BUG-28).
   ],
   treasurer: [
     "payment_pending",

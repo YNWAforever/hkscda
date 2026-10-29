@@ -239,3 +239,22 @@ describe("faq schemas", () => {
     expect(() => upsertFaqEntrySchema.parse({ ...base, answerZh: "x".repeat(4001) })).toThrow();
   });
 });
+
+describe("faq schemas — regression", () => {
+  test('BUG-07: upsert schema rejects the string "false" for isActive instead of coercing it to true', () => {
+    const result = upsertFaqEntrySchema.safeParse({
+      category: "sponsorship",
+      questionZh: "q",
+      questionEn: "q",
+      answerZh: "a",
+      answerEn: "a",
+      keywordsZh: [],
+      keywordsEn: [],
+      ctaKey: null,
+      sensitive: false,
+      sortOrder: 0,
+      isActive: "false",
+    });
+    expect(result.success).toBe(false);
+  });
+});

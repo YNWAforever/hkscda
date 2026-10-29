@@ -20,6 +20,7 @@ export const animalFormCopy = defineAdminCopy({
       duplicate: (revision: number) => `版本 ${revision} · 複製為草稿`,
       copied: "已複製版本為新草稿，請檢查及重新預覽。",
       copyFailed: "未能複製版本。",
+      copyConflict: "草稿已被其他人更新，請重新載入後再複製版本。",
     },
     profileRejected: (...labels: string[]) =>
       `以下欄位不符合公開資料規則（不可包含網址、電郵、電話或 < > 符號）：${labels.join("、")}`,
@@ -114,6 +115,8 @@ export const animalFormCopy = defineAdminCopy({
       duplicate: (revision: number) => `Version ${revision} · Duplicate as draft`,
       copied: "The version was duplicated as a new draft. Check it and preview it again.",
       copyFailed: "Could not duplicate the version. Try again.",
+      copyConflict:
+        "Someone else updated the draft. Reload the page, then duplicate the version again.",
     },
     profileRejected: (...labels: string[]) =>
       `These fields break the public information rules (no web addresses, email addresses, phone numbers or < > symbols): ${labels.join(", ")}. Remove the rejected text and save again.`,

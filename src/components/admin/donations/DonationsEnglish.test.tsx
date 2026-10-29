@@ -264,6 +264,14 @@ describe("payments reconcile in English", () => {
     expect(staff).not.toContain("Issue receipt");
   });
 
+  test("BUG-28: Export CSV is offered to a treasurer but not to staff, whose export always 403s", () => {
+    loadPayments();
+    expect(renderAdminInEnglish(<PaymentsReconcile />)).toContain("Export CSV");
+    loadPayments("staff");
+    const staff = renderAdminInEnglish(<PaymentsReconcile />);
+    expect(staff.includes("Export CSV"), "staff markup offers Export CSV").toBe(false);
+  });
+
   test("shows the loading failure and the empty states in English", () => {
     queries = {
       "admin-me": { data: { admin: { authUserId: "x", status: "active", role: "staff" } } },

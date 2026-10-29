@@ -159,7 +159,8 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           tags: splitTags(draft.tags),
           roles: draft.roles,
           expectedVersion: editVersion,
-          deleted: false,
+          // No `deleted` here: this form has no delete or restore control, and always sending
+          // false silently restored a soft-deleted supporter on any edit (BUG-24).
         }),
       });
     },
@@ -190,7 +191,14 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
     setOpen(false);
   }
 
+  // An existing email is a 409 too, but reloading this form cannot help with it (BUG-03).
+  const emailExists =
+    mutation.error &&
+    typeof mutation.error === "object" &&
+    "code" in mutation.error &&
+    mutation.error.code === "supporter_exists";
   const conflict =
+    !emailExists &&
     mutation.error &&
     typeof mutation.error === "object" &&
     "status" in mutation.error &&
@@ -310,7 +318,13 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
             </fieldset>
             {mutation.error && (
               <div role="alert" className="space-y-2 text-sm text-[var(--color-destructive)]">
-                <p>{conflict ? formCopy.conflict : adminErrorMessage(mutation.error, language)}</p>
+                <p>
+                  {emailExists
+                    ? formCopy.emailExists
+                    : conflict
+                      ? formCopy.conflict
+                      : adminErrorMessage(mutation.error, language)}
+                </p>
                 {conflict && (
                   <Button
                     type="button"

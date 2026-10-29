@@ -69,6 +69,16 @@ export async function handleQualificationCommand(request: Request) {
       return Response.json({ error: "請檢查資格資料及核實理由" }, { status: 400, headers });
     if (error && typeof error === "object" && "code" in error && error.code === "42501")
       return Response.json({ error: "沒有核實資格權限" }, { status: 403, headers });
+    // volunteer_profile_command refuses bad input with 22023 (a future joined-on date, an
+    // invalid credential, a missing reason) and the credential table checks
+    // valid_until > valid_from (23514). Both were 500 "refresh and retry" (BUG-17).
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error.code === "22023" || error.code === "23514")
+    )
+      return Response.json({ error: "請檢查資格資料及核實理由" }, { status: 422, headers });
     logVolunteerFailure("qualification", error);
     return Response.json({ error: "未能更新資格，請重新整理後重試" }, { status: 500, headers });
   }

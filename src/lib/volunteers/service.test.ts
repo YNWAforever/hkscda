@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
+import { createVolunteerHandlers } from "./http.server";
 import { createVolunteerService } from "./service";
 import type { VolunteerRepository } from "./service";
 import type { VolunteerActivityDetail, VolunteerRegistrationDetail } from "./types";
@@ -425,4 +426,50 @@ test("clone activity delegates mutation and audit as one repository command", as
       startsAt: "2026-09-01T02:00:00.000Z",
     },
   ]);
+});
+
+describe("volunteer activity input validation — regression", () => {
+  test("BUG-17: creating an activity whose endsAt is before startsAt returns 400 before the repository", async () => {
+    let createCalled = false;
+    const { repo } = createRepo({
+      createActivity: async () => {
+        createCalled = true;
+        // What the DB check constraint does today.
+        throw { code: "23514", message: "violates check constraint", details: null, hint: null };
+      },
+    });
+    const handlers = createVolunteerHandlers({
+      requireVolunteerAdmin: async () => ({
+        id: "admin-row",
+        authUserId: "11111111-2222-4333-8444-555555555555",
+        email: "staff@example.com",
+        role: "staff",
+        status: "active",
+      }),
+      service: createVolunteerService({ repo }),
+    });
+    const original = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.createActivity({
+        request: new Request("https://example.test/api/admin/volunteers/activities", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            type: "cleaning_day",
+            title: "清潔日",
+            startsAt: "2026-11-01T02:00:00.000Z",
+            endsAt: "2026-11-01T01:00:00.000Z",
+            location: "荃灣",
+            capacity: 5,
+            registrationModes: ["individual"],
+          }),
+        }),
+      });
+      expect(response.status).toBe(400);
+      expect(createCalled).toBe(false);
+    } finally {
+      console.error = original;
+    }
+  });
 });

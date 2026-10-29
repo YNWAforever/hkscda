@@ -151,6 +151,34 @@ describe("issueReceiptIfNeeded", () => {
     ]);
   });
 
+  test("BUG-04: receipt tax year uses the Hong Kong year at 01:30 HKT on 1 January", async () => {
+    // Vercel runs in UTC; pin it so the result does not depend on the machine's zone.
+    const previousTz = process.env.TZ;
+    process.env.TZ = "UTC";
+    try {
+      const { client, state } = createReceiptFake({
+        receipt_no: "HKSCDA-2027-000001",
+        receipt_id: "receipt-1",
+        pdf_url: null,
+        tax_year: 2027,
+        issued_at: "2026-12-31T17:30:00.000Z",
+      });
+
+      await issueReceiptIfNeeded(client as never, basePayment, {
+        // 2027-01-01 01:30 in Hong Kong (UTC+8).
+        now: () => new Date("2026-12-31T17:30:00.000Z"),
+        async generatePdf() {
+          return new Uint8Array([1]);
+        },
+      });
+
+      expect(state.rpc?.params.p_tax_year).toBe(2027);
+    } finally {
+      if (previousTz === undefined) delete process.env.TZ;
+      else process.env.TZ = previousTz;
+    }
+  });
+
   test("is idempotent: an already-issued receipt with a PDF is returned without re-allocating or re-uploading", async () => {
     const { client, state } = createReceiptFake({
       receipt_no: "HKSCDA-2026-000007",

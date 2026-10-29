@@ -107,12 +107,16 @@ describe("createAdminAccessHandlers", () => {
     });
 
     const response = await handlers.updateUser({
-      request: new Request("https://example.test/api/admin/access/users/target-row", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ role: "staff" }),
-      }),
-      params: { id: "target-row" },
+      request: new Request(
+        "https://example.test/api/admin/access/users/44444444-4444-4444-8444-444444444444",
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ role: "staff" }),
+        },
+      ),
+      // Admin user ids are UUIDs; the handler now rejects anything else with 400 (BUG-13).
+      params: { id: "44444444-4444-4444-8444-444444444444" },
     });
 
     expect(response.status).toBe(422);
@@ -164,5 +168,44 @@ describe("createAdminAccessHandlers", () => {
     expect(await response.json()).toMatchObject({
       user: { email: "new@example.com", role: "staff", status: "pending" },
     });
+  });
+
+  test("BUG-13: a PATCH on a non-UUID admin user id is a 400, not a 500", async () => {
+    let serviceCalls = 0;
+    const handlers = createAdminAccessHandlers({
+      requireAccessAdmin: async () => actor,
+      service: {
+        listUsers: async () => ({ users: [], summary: { active: 0, pending: 0, disabled: 0 } }),
+        inviteUser: async () => {
+          throw new Error("unused");
+        },
+        resendInvite: async () => {
+          throw new Error("unused");
+        },
+        updateUser: async () => {
+          serviceCalls += 1;
+          // What Postgres answers when "abc" reaches a uuid column.
+          throw { code: "22P02", message: 'invalid input syntax for type uuid: "abc"' };
+        },
+        listAudit: async () => ({ audit: [] }),
+      },
+    });
+
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.updateUser({
+        request: new Request("https://example.test/api/admin/access/users/abc", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ role: "staff" }),
+        }),
+        params: { id: "abc" },
+      });
+      expect(response.status).toBe(400);
+      expect(serviceCalls).toBe(0);
+    } finally {
+      console.error = originalError;
+    }
   });
 });

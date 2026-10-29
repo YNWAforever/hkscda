@@ -1,7 +1,8 @@
 import { describe, expect, mock, spyOn, test } from "bun:test";
 
 import { createAdminFaqHandlers, createAdminFaqSearchGapHandler } from "./http";
-import type { createFaqService } from "./service";
+import { createFaqService } from "./service";
+import type { FaqEntry, FaqRepository } from "./types";
 import type { SearchGapReport } from "./searchGaps";
 
 const adminUserId = "11111111-1111-4111-8111-111111111111";
@@ -229,6 +230,149 @@ describe("createAdminFaqSearchGapHandler", () => {
       expect(response.status).toBe(500);
       expect(response.headers.get("cache-control")).toBe("no-store");
       expect(await response.json()).toEqual({ error: "Could not process FAQ request" });
+    } finally {
+      logged.mockRestore();
+    }
+  });
+});
+
+describe("createAdminFaqHandlers with the real service — regression", () => {
+  const existingId = "33333333-3333-4333-8333-333333333333";
+  const unknownId = "44444444-4444-4444-8444-444444444444";
+
+  function existingEntry(overrides: Partial<FaqEntry> = {}): FaqEntry {
+    return {
+      id: existingId,
+      category: "sponsorship",
+      question: { "zh-HK": "問題", en: "Question" },
+      answer: { "zh-HK": "答案", en: "Answer" },
+      keywords: { "zh-HK": [], en: [] },
+      ctaKey: null,
+      sensitive: false,
+      sortOrder: 0,
+      isActive: true,
+      createdAt: "2026-08-30T00:00:00.000Z",
+      updatedAt: "2026-08-30T00:00:00.000Z",
+      ...overrides,
+    };
+  }
+
+  // supabase-js returns a plain PostgrestError-shaped object, not an Error instance.
+  const notFound = { code: "P0002", message: "FAQ entry not found", details: null, hint: null };
+
+  function createRepo(overrides: Partial<FaqRepository> = {}): FaqRepository {
+    return {
+      listPublic: mock(async () => []),
+      listAdmin: mock(async () => [existingEntry()]),
+      upsert: mock(async () => existingEntry()),
+      deactivate: mock(async () => undefined),
+      ...overrides,
+    };
+  }
+
+  const body = (overrides: Record<string, unknown> = {}) => ({
+    category: "sponsorship",
+    questionZh: "問題",
+    questionEn: "Question",
+    answerZh: "答案",
+    answerEn: "Answer",
+    keywordsZh: [],
+    keywordsEn: [],
+    ctaKey: null,
+    sensitive: false,
+    sortOrder: 0,
+    ...overrides,
+  });
+
+  test("BUG-07: upsert cannot deactivate an existing FAQ entry without a reason", async () => {
+    const repo = createRepo();
+    const handlers = createAdminFaqHandlers({
+      requireFaqAdmin: mock(async () => admin),
+      service: createFaqService({ repo }),
+    });
+
+    const response = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify(body({ id: existingId, isActive: false })),
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    expect(repo.upsert).not.toHaveBeenCalled();
+  });
+
+  test.each(["ABCDEFAB-1234-4ABC-8DEF-ABCDEFABCDEF", "AbCdEfAb-1234-4aBc-8dEf-AbCdEfAbCdEf"])(
+    "BUG-07: differently cased UUID %s still requires a reason to deactivate",
+    async (id) => {
+      const repo = createRepo({
+        listAdmin: mock(async () => [
+          existingEntry({ id: "abcdefab-1234-4abc-8def-abcdefabcdef" }),
+        ]),
+      });
+      const handlers = createAdminFaqHandlers({
+        requireFaqAdmin: mock(async () => admin),
+        service: createFaqService({ repo }),
+      });
+
+      const response = await handlers.upsert({
+        request: request("http://localhost/x", {
+          method: "POST",
+          body: JSON.stringify(body({ id, isActive: false })),
+        }),
+      });
+
+      expect(response.status).toBe(400);
+      expect(repo.upsert).not.toHaveBeenCalled();
+    },
+  );
+
+  test("BUG-16: upsert of an unknown FAQ id (P0002) returns 404, not 500", async () => {
+    const repo = createRepo({
+      listAdmin: mock(async () => []),
+      upsert: mock(async (): Promise<FaqEntry> => {
+        throw notFound;
+      }),
+    });
+    const handlers = createAdminFaqHandlers({
+      requireFaqAdmin: mock(async () => admin),
+      service: createFaqService({ repo }),
+    });
+    const logged = spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await handlers.upsert({
+        request: request("http://localhost/x", {
+          method: "POST",
+          body: JSON.stringify(body({ id: unknownId, isActive: true })),
+        }),
+      });
+      expect(response.status).toBe(404);
+    } finally {
+      logged.mockRestore();
+    }
+  });
+
+  test("BUG-16: deactivating an unknown FAQ id (P0002) returns 404, not 500", async () => {
+    const repo = createRepo({
+      deactivate: mock(async (): Promise<void> => {
+        throw notFound;
+      }),
+    });
+    const handlers = createAdminFaqHandlers({
+      requireFaqAdmin: mock(async () => admin),
+      service: createFaqService({ repo }),
+    });
+    const logged = spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await handlers.deactivate({
+        request: request("http://localhost/x", {
+          method: "DELETE",
+          body: JSON.stringify({ id: unknownId, reason: "duplicate" }),
+        }),
+      });
+      expect(response.status).toBe(404);
     } finally {
       logged.mockRestore();
     }

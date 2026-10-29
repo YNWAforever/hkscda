@@ -1,5 +1,6 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, spyOn, test } from "bun:test";
 
+import { createDocumentHandlers } from "./http.server";
 import { createDocumentService, DocumentConflictError, type DocumentRepository } from "./service";
 import type { AnnualReport, DocumentAsset } from "./types";
 
@@ -416,4 +417,91 @@ test("delegates production mutation audits to the atomic repository boundary", a
 
   expect(repo.updateAsset).toHaveBeenCalledWith(assetId, { title: "Updated atomically" }, assetId);
   expect(repo.insertAuditLog).not.toHaveBeenCalled();
+});
+
+describe("published document identity is immutable — regression", () => {
+  const termsAsset: DocumentAsset = {
+    ...asset,
+    kind: "sponsorship_terms",
+    language: "zh-HK",
+    title: "助養條款",
+    objectPath: "sponsorship_terms/terms.pdf",
+    checksumSha256: "a".repeat(64),
+    isPublished: true,
+  };
+
+  test("BUG-08: a published asset rejects a checksumSha256 change with DocumentConflictError", async () => {
+    const { repo } = createRepo({
+      getAssetById: mock(async () => termsAsset),
+      hasPublishedSlotReference: mock(async () => true),
+    });
+    const service = createDocumentService({ repo });
+
+    await expect(
+      service.updateAsset({
+        actorUserId: "admin",
+        assetId,
+        input: { checksumSha256: "b".repeat(64) },
+      }),
+    ).rejects.toBeInstanceOf(DocumentConflictError);
+    expect(repo.updateAsset).not.toHaveBeenCalled();
+  });
+
+  test("BUG-08: an asset referenced by a published slot rejects a kind change with DocumentConflictError", async () => {
+    const { repo } = createRepo({
+      getAssetById: mock(async () => termsAsset),
+      hasPublishedSlotReference: mock(async () => true),
+    });
+    const service = createDocumentService({ repo });
+
+    await expect(
+      service.updateAsset({ actorUserId: "admin", assetId, input: { kind: "wedding_form" } }),
+    ).rejects.toBeInstanceOf(DocumentConflictError);
+    expect(repo.updateAsset).not.toHaveBeenCalled();
+  });
+
+  test("BUG-08: PATCH changing the checksum of a published asset returns 409", async () => {
+    const { repo } = createRepo({
+      getAssetById: mock(async () => termsAsset),
+      hasPublishedSlotReference: mock(async () => true),
+    });
+    const handlers = createDocumentHandlers({
+      requireDocumentAdmin: async () => ({ authUserId: "admin" }),
+      service: createDocumentService({ repo }),
+    });
+
+    const response = await handlers.updateAsset({
+      request: new Request("http://localhost/x", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ checksumSha256: "c".repeat(64) }),
+      }),
+      params: { id: assetId },
+    });
+
+    expect(response.status).toBe(409);
+    expect(repo.updateAsset).not.toHaveBeenCalled();
+  });
+});
+
+describe("document not-found mapping — regression", () => {
+  test("BUG-16: publishing an unknown document asset returns 404, not 500", async () => {
+    const { repo } = createRepo({ getAssetById: mock(async () => null) });
+    const handlers = createDocumentHandlers({
+      requireDocumentAdmin: async () => ({ authUserId: "admin" }),
+      service: createDocumentService({ repo }),
+    });
+    const logged = spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      const response = await handlers.publishAsset({
+        request: new Request("http://localhost/x", { method: "POST" }),
+        params: { id: assetId },
+      });
+      expect(response.status).toBe(404);
+      expect(repo.setAssetPublished).not.toHaveBeenCalled();
+    } finally {
+      logged.mockRestore();
+    }
+  });
 });

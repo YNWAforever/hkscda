@@ -9,6 +9,11 @@ import { sendDonationAcknowledgement } from "./notifications.server";
 import type { OnlinePaymentProvider } from "./contracts";
 import type { DeliveryRunResult, DeliveryJobStatus } from "./deliveryJobs.server";
 
+const HONG_KONG_YEAR = new Intl.DateTimeFormat("en", {
+  timeZone: "Asia/Hong_Kong",
+  year: "numeric",
+});
+
 export type ReconcileProviderArgs = {
   client: SupabaseClient;
   provider: OnlinePaymentProvider;
@@ -253,7 +258,10 @@ export async function issueReceiptIfNeeded(
   const generatePdf = deps.generatePdf ?? generateReceiptPdf;
 
   const issuedAt = now().toISOString();
-  const taxYear = new Date(issuedAt).getFullYear();
+  // The receipt number, tax year and storage folder follow the Hong Kong calendar the PDF
+  // prints; the server runs in UTC, so getFullYear() was a year behind for 00:00–07:59 HKT
+  // on 1 January (BUG-04).
+  const taxYear = Number(HONG_KONG_YEAR.format(new Date(issuedAt)));
 
   const receiptParams = {
     p_donation_id: donation.id,
@@ -982,6 +990,28 @@ async function voidIssuedReceiptsForDonation(
   }
 }
 
+/**
+ * void_receipt_with_audit refuses a receipt that is no longer issued (a second tab, or
+ * another treasurer, voided it first) or that belongs to another supporter. Those are
+ * conflicts the treasurer can act on by reloading, not server faults (BUG-14).
+ */
+function voidReceiptError(error: { code?: unknown; message?: unknown }) {
+  if (error.code === "22023" && error.message === "receipt_not_issued") {
+    return Response.json(
+      { error: "This receipt is no longer issued. Reload to see its current state." },
+      { status: 409 },
+    );
+  }
+  if (error.code === "22023" && error.message === "receipt_supporter_mismatch") {
+    return Response.json(
+      { error: "This receipt does not belong to the selected supporter" },
+      { status: 422 },
+    );
+  }
+  if (error.code === "42501") return Response.json({ error: "Forbidden" }, { status: 403 });
+  return error;
+}
+
 export async function voidReceipt(
   client: SupabaseClient,
   receiptId: string,
@@ -994,7 +1024,7 @@ export async function voidReceipt(
     p_supporter_id: options.supporterId ?? null,
     p_reason: options.reason,
   });
-  if (error) throw error;
+  if (error) throw voidReceiptError(error);
   const row = (data as Array<{ receipt_id: string; pdf_url: string | null }> | null)?.[0];
   if (!row) throw new Error("Receipt not found or already voided");
 

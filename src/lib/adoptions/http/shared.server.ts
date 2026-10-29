@@ -90,6 +90,10 @@ export const conflictDomainErrors = new Set([
   "Adoption case is missing adopter profile",
   "Adoption case is missing supporter",
   "Approved match has no animal",
+  // finalize_successful_adoption refusals (BUG-02, migration 20261029160000).
+  "Animal already has a successful adoption",
+  "Adoption case already finalized",
+  "Adoption case is closed",
 ]);
 
 export async function responseError(error: Response) {
@@ -117,7 +121,7 @@ export async function responseError(error: Response) {
   return jsonResponse({ error: message || error.statusText || "Request failed" }, { status });
 }
 
-export function domainError(error: Error) {
+export function domainError(error: { message: string }) {
   const normalizedMessage = error.message.toLowerCase();
 
   if (notFoundDomainErrors.has(error.message)) {
@@ -125,7 +129,8 @@ export function domainError(error: Error) {
   }
   if (
     conflictDomainErrors.has(error.message) ||
-    (normalizedMessage.includes("protected") &&
+    (error instanceof Error &&
+      normalizedMessage.includes("protected") &&
       (normalizedMessage.includes("status") ||
         normalizedMessage.includes("delete") ||
         normalizedMessage.includes("mutation")))
@@ -153,8 +158,28 @@ export async function withErrors(operation: () => Promise<Response>) {
     if (error && typeof error === "object" && "code" in error && error.code === "P0002") {
       return jsonResponse({ error: "Coordinator item not found" }, { status: 404 });
     }
+    // successful_adoption.case_number is unique; a reused number (or a retry after a lost
+    // response) was a generic 500 with no hint (BUG-15).
+    if (error && typeof error === "object" && "code" in error && error.code === "23505") {
+      return jsonResponse(
+        { error: "This case number is already in use. Use another number or reload." },
+        { status: 409 },
+      );
+    }
     if (error instanceof Error) {
       const response = domainError(error);
+      if (response) return response;
+    } else if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P0001" &&
+      "message" in error &&
+      typeof error.message === "string"
+    ) {
+      // RPC exceptions are plain PostgREST objects. Only exact, known domain
+      // messages are public; arbitrary database text and details stay private.
+      const response = domainError({ message: error.message });
       if (response) return response;
     }
 

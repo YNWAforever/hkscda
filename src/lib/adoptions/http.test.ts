@@ -1286,6 +1286,31 @@ describe("createAdoptionCoordinatorHandlers", () => {
     }
   });
 
+  test("BUG-02: finalize refusals for an adopted animal, a finalized case or a closed case are 409", async () => {
+    for (const message of [
+      "Animal already has a successful adoption",
+      "Adoption case already finalized",
+      "Adoption case is closed",
+    ]) {
+      const { service } = createFakeService({
+        async finalizeAdoption() {
+          // supabase-js returns RAISE EXCEPTION as a plain PostgREST object.
+          throw { code: "P0001", message, details: "Private database context", hint: null };
+        },
+      });
+      const response = await createHandlers({ service }).finalizeAdoption({
+        request: jsonRequest(
+          `https://example.test/api/admin/adoptions/cases/${caseId}/finalize`,
+          finalizeRequestBody,
+        ),
+        params: { id: caseId },
+      });
+
+      expect(response.status).toBe(409);
+      expect(await response.json()).toEqual({ error: message });
+    }
+  });
+
   test("repository conflict domain errors return 409 JSON", async () => {
     const conflictCases = [
       {

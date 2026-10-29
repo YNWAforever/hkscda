@@ -303,11 +303,21 @@ function unique(values: Array<string | null | undefined>) {
   return [...new Set(values.filter(Boolean) as string[])];
 }
 
+const HONG_KONG_UTC_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+/** Midnight-to-midnight bounds of a Hong Kong calendar month (UTC+8, no daylight saving). */
 function monthBounds(month: string) {
   const [year, monthNumber] = month.split("-").map(Number);
-  const start = new Date(Date.UTC(year, monthNumber - 1, 1));
-  const end = new Date(Date.UTC(year, monthNumber, 1));
-  return { start: start.toISOString(), end: end.toISOString() };
+  const startDate = Date.UTC(year, monthNumber - 1, 1);
+  const endDate = Date.UTC(year, monthNumber, 1);
+  // Date.UTC alone counted 00:00-07:59 HKT on the 1st in the previous month (BUG-09).
+  return {
+    start: new Date(startDate - HONG_KONG_UTC_OFFSET_MS).toISOString(),
+    end: new Date(endDate - HONG_KONG_UTC_OFFSET_MS).toISOString(),
+    // Date-only columns already store calendar dates, without a UTC offset.
+    startDate: new Date(startDate).toISOString().slice(0, 10),
+    endDate: new Date(endDate).toISOString().slice(0, 10),
+  };
 }
 
 function isCoordinatorExportKind(value: unknown): value is CoordinatorExportKind {
@@ -2268,9 +2278,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
     },
 
     async getCoordinatorMonthlySummary(input): Promise<CoordinatorMonthlySummary> {
-      const { start, end } = monthBounds(input.month);
-      const startDate = start.slice(0, 10);
-      const endDate = end.slice(0, 10);
+      const { start, end, startDate, endDate } = monthBounds(input.month);
       const now = new Date().toISOString();
       const overdueEnd = now < end ? now : end;
       const [

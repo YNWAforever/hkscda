@@ -57,10 +57,25 @@ mock.module("../i18n/copy", () => ({
 
 const realQuery = await import("@tanstack/react-query");
 let mutationError: unknown = null;
+// The save request the dialog would send, read from the mutation it builds.
+let mutationFn: (() => Promise<unknown>) | null = null;
 mock.module("@tanstack/react-query", () => ({
   ...realQuery,
   useQueryClient: () => ({ invalidateQueries: async () => {} }),
-  useMutation: () => ({ mutate() {}, reset() {}, isPending: false, error: mutationError }),
+  useMutation: (options: { mutationFn?: () => Promise<unknown> }) => {
+    mutationFn = options.mutationFn ?? null;
+    return { mutate() {}, reset() {}, isPending: false, error: mutationError };
+  },
+}));
+
+const sentRequests: Array<{ path: string; init?: RequestInit }> = [];
+const realApi = await import("./api");
+mock.module("./api", () => ({
+  ...realApi,
+  fetchAdminJson: async (path: string, init?: RequestInit) => {
+    sentRequests.push({ path, init });
+    return {};
+  },
 }));
 
 const { SupporterFormDialog } = await import("./SupporterFormDialog");
@@ -192,6 +207,19 @@ describe("supporter form dialog in English", () => {
     }
   });
 
+  test("BUG-03: an existing email gets its own message, not the stale-version reload", () => {
+    mutationError = Object.assign(new Error("A supporter with this email already exists"), {
+      status: 409,
+      code: "supporter_exists",
+    });
+    const texts = show({ mode: "create" }, createLoaded);
+    expectNoChineseText(texts.join("\n"));
+    expect(texts).toContain(
+      "A supporter with this email already exists. Search for that email and open the existing record instead.",
+    );
+    expect(texts).not.toContain("Discard my edits and reload");
+  });
+
   test("shows any other save error as it came, and a missing session in English", () => {
     mutationError = new Error("Email already in use");
     const failed = show({ mode: "create" }, createLoaded);
@@ -244,5 +272,22 @@ describe("supporter form dialog in Chinese", () => {
     ]) {
       expect(texts, text).toContain(text);
     }
+  });
+});
+
+describe("supporter form dialog save payload", () => {
+  test("BUG-24: an ordinary edit does not send deleted:false, so a soft-deleted supporter stays deleted", async () => {
+    show(
+      { mode: "edit", supporter: { ...supporter, deletedAt: "2026-10-01T00:00:00.000Z" } },
+      editLoaded,
+    );
+    sentRequests.length = 0;
+    if (!mutationFn) throw new Error("The dialog built no save mutation");
+    await mutationFn();
+    const patch = sentRequests.find((request) => request.init?.method === "PATCH");
+    if (!patch) throw new Error("The edit sent no PATCH");
+    const body = JSON.parse(String(patch.init?.body)) as Record<string, unknown>;
+    expect(body.expectedVersion).toBe(4);
+    expect("deleted" in body, "the edit PATCH carries a deleted flag").toBe(false);
   });
 });

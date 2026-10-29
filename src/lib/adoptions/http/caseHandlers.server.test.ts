@@ -132,4 +132,33 @@ describe("createCaseHandlers", () => {
   test("validates a finalization case ID before authorization", async () => {
     await expectInvalidIdBeforeAuthorization("finalizeAdoption");
   });
+  test("BUG-15: finalising with a duplicate case number (23505) returns 409, not 500", async () => {
+    const caseId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async finalizeAdoption() {
+          // PostgREST hands the RPC error back as a plain object.
+          throw {
+            code: "23505",
+            message:
+              'duplicate key value violates unique constraint "successful_adoption_case_number_key"',
+            details: "Key (case_number)=(AC-2026-001) already exists.",
+            hint: null,
+          };
+        },
+      }),
+    });
+
+    const response = await handlers.finalizeAdoption({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/cases/${caseId}/finalize`, {
+        caseNumber: "AC-2026-001",
+      }),
+      params: { id: caseId },
+    });
+
+    expect(response.status).toBe(409);
+    const body = (await response.json()) as { error?: unknown };
+    expect(typeof body.error).toBe("string");
+  });
 });

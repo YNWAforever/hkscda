@@ -82,9 +82,32 @@ test.skipIf(!enabled)(
           db`update public.animal_publication_version set reason='changed' where id=${published.version_id}::uuid`,
       );
       expect(
-        (await command({ kind: "copy", animal_id: animal, version_id: published.version_id }))
-          .revision,
+        (
+          await command({
+            kind: "copy",
+            animal_id: animal,
+            version_id: published.version_id,
+            expected_revision: 0,
+          })
+        ).kind,
+      ).toBe("conflict");
+      expect(
+        (
+          await command({
+            kind: "copy",
+            animal_id: animal,
+            version_id: published.version_id,
+            expected_revision: 1,
+          })
+        ).revision,
       ).toBe(2);
+      expect(
+        (
+          await db`select action,detail->>'revision' as revision from public.audit_log
+            where entity='animal' and entity_id=${animal} and action like 'animal.draft.%'
+            order by "timestamp",action`
+        ).map((row: { action: string; revision: string }) => `${row.action}@${row.revision}`),
+      ).toEqual(["animal.draft.save@1", "animal.draft.copy@2"]);
     } finally {
       await db.close({ timeout: 1 });
     }

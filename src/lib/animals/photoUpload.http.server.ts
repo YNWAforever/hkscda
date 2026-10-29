@@ -43,10 +43,18 @@ export function createAnimalPhotoUploadHandlers(deps: AnimalPhotoUploadDeps) {
     async createUploadUrl({ request }: { request: Request }): Promise<Response> {
       try {
         await deps.requireAnimalAdmin(request);
-      } catch {
-        // Deliberately opaque: an unauthenticated caller learns only that it
-        // was refused, not whether the animal exists.
-        return jsonNoStore({ error: "Unauthorized" }, { status: 401 });
+      } catch (error) {
+        // Deliberately opaque: a refused caller learns only that it was refused, not
+        // whether the animal exists. But a wrong role is 403, not "sign in again", and a
+        // failure to *check* (a database outage) is a 500, not a refusal (BUG-27).
+        if (error instanceof Response && (error.status === 401 || error.status === 403)) {
+          return jsonNoStore(
+            { error: error.status === 401 ? "Unauthorized" : "Forbidden" },
+            { status: error.status },
+          );
+        }
+        console.error(error);
+        return jsonNoStore({ error: "Could not verify admin access" }, { status: 500 });
       }
 
       let body: unknown;

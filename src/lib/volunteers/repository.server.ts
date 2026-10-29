@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isRangeNotSatisfiable } from "../postgrestRange";
+import { volunteerCodeMessage } from "./apiResult";
 
 import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
 import type {
@@ -245,9 +247,21 @@ async function hydrateRegistrations(client: SupabaseClient, rows: RegistrationRo
   });
 }
 
-function requireUpdated(result: { kind: string }) {
+function requireUpdated(result: { kind: string; reason?: unknown }) {
   if (result.kind === "updated") return;
   const status = result.kind === "not_found" ? 404 : 409;
+  // An "invalid" result names why (for example target_date_preview_required); reporting it
+  // as the generic "data was updated" conflict sent staff to reload for nothing (BUG-29).
+  const reasonMessage =
+    result.kind === "invalid" && typeof result.reason === "string"
+      ? volunteerCodeMessage(result.reason)
+      : null;
+  if (reasonMessage && typeof result.reason === "string") {
+    throw Response.json(
+      { error: { code: result.reason, message: reasonMessage } },
+      { status, headers: { "cache-control": "no-store" } },
+    );
+  }
   const messages: Record<string, string> = {
     capacity_full: "活動名額不足，請重新檢查剩餘名額。",
     future_attendance: "活動尚未開始或完成，不能記錄此出席狀態。",
@@ -304,17 +318,24 @@ export function createSupabaseVolunteerRepository(
 
     async listActivities(input) {
       const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("volunteer_activity")
-        .select("*", { count: "exact" })
-        .order("starts_at", { ascending: false })
-        .order("id", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-      if (input.status) query = query.eq("status", input.status);
-      if (input.type) query = query.eq("type", input.type);
-      if (input.q) query = query.ilike("title", `%${escapeLike(input.q)}%`);
+      const filtered = () => {
+        let query = client
+          .from("volunteer_activity")
+          .select("*", { count: "exact" })
+          .order("starts_at", { ascending: false })
+          .order("id", { ascending: false });
+        if (input.status) query = query.eq("status", input.status);
+        if (input.type) query = query.eq("type", input.type);
+        if (input.q) query = query.ilike("title", `%${escapeLike(input.q)}%`);
+        return query;
+      };
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await filtered().range(from, from + input.pageSize - 1);
+      if (isRangeNotSatisfiable(error)) {
+        const first = await filtered().range(0, 0);
+        if (first.error) throw first.error;
+        return { activities: [], total: first.count ?? 0 };
+      }
       if (error) throw error;
       return {
         activities: await hydrateActivities(client, (data ?? []) as ActivityRow[]),
@@ -411,22 +432,29 @@ export function createSupabaseVolunteerRepository(
 
     async listRegistrations(input) {
       const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("volunteer_registration")
-        .select("*", { count: "exact" })
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-      if (input.status) query = query.eq("status", input.status);
-      if (input.attendanceStatus) query = query.eq("attendance_status", input.attendanceStatus);
-      if (input.activityId) query = query.eq("activity_id", input.activityId);
-      if (input.q) {
-        const like = postgrestLikeOperand(input.q);
-        query = query.or(
-          `contact_name.ilike.${like},contact_email.ilike.${like},organization_name.ilike.${like}`,
-        );
+      const filtered = () => {
+        let query = client
+          .from("volunteer_registration")
+          .select("*", { count: "exact" })
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: false });
+        if (input.status) query = query.eq("status", input.status);
+        if (input.attendanceStatus) query = query.eq("attendance_status", input.attendanceStatus);
+        if (input.activityId) query = query.eq("activity_id", input.activityId);
+        if (input.q) {
+          const like = postgrestLikeOperand(input.q);
+          query = query.or(
+            `contact_name.ilike.${like},contact_email.ilike.${like},organization_name.ilike.${like}`,
+          );
+        }
+        return query;
+      };
+      const { data, error, count } = await filtered().range(from, from + input.pageSize - 1);
+      if (isRangeNotSatisfiable(error)) {
+        const first = await filtered().range(0, 0);
+        if (first.error) throw first.error;
+        return { registrations: [], total: first.count ?? 0 };
       }
-      const { data, error, count } = await query;
       if (error) throw error;
       return {
         registrations: (await hydrateRegistrations(

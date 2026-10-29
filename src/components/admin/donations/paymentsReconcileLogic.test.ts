@@ -196,6 +196,27 @@ describe("action predicates", () => {
     expect(canIssueReceipt(payment({ status: "pending" }), [])).toBe(false);
   });
 
+  test("BUG-05: canIssueReceipt hides Issue receipt below the HK$100 eligibility threshold", () => {
+    const succeeded = payment().donation;
+    // A HK$50 gift that asked for a receipt: the server answers 422, so no button.
+    const small = payment({
+      status: "succeeded",
+      amount_cents: 5000,
+      refunded_cents: 0,
+      donation: { ...succeeded, status: "succeeded", receipt_requested: true },
+    });
+    // A HK$200 gift partly refunded down to HK$50 net.
+    const refundedBelow = payment({
+      id: "pay-2",
+      status: "succeeded",
+      amount_cents: 20000,
+      refunded_cents: 15000,
+      donation: { ...succeeded, id: "don-2", status: "succeeded", receipt_requested: true },
+    });
+    expect(canIssueReceipt(small, [], "treasurer")).toBe(false);
+    expect(canIssueReceipt(refundedBelow, [], "treasurer")).toBe(false);
+  });
+
   test("canVoidReceipt requires an issued receipt", () => {
     expect(canVoidReceipt(payment(), [issuedReceipt])).toBe(true);
     expect(canVoidReceipt(payment(), [{ ...issuedReceipt, status: "void" }])).toBe(false);
@@ -271,6 +292,31 @@ describe("summarizePayments", () => {
       awaitingReceipt: 1,
       confirmedAmountCents: 50000,
     });
+  });
+
+  test("BUG-05: gifts below HK$100 net are not counted as awaiting a receipt", () => {
+    const rows = [
+      payment({
+        id: "small",
+        status: "succeeded",
+        amount_cents: 5000,
+        donation: { ...payment().donation, id: "don-small", status: "succeeded" },
+      }),
+      payment({
+        id: "refunded-below",
+        status: "succeeded",
+        amount_cents: 20000,
+        refunded_cents: 15000,
+        donation: { ...payment().donation, id: "don-refunded", status: "succeeded" },
+      }),
+      payment({
+        id: "eligible",
+        status: "succeeded",
+        amount_cents: 10000,
+        donation: { ...payment().donation, id: "don-eligible", status: "succeeded" },
+      }),
+    ];
+    expect(summarizePayments(rows, []).awaitingReceipt).toBe(1);
   });
 });
 

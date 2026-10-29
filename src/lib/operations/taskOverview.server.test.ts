@@ -16,7 +16,8 @@ test("each role receives only its own actionable 3-5 task destinations", () => {
     label: "已過期內容",
     href: "/admin/content?quality=expired",
   });
-  expect(staff.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
+  // Proof review is a treasurer/admin action; staff no longer get this card (BUG-28).
+  expect(treasurer.find((card) => card.key === "sponsorship_proof_pending")?.href).toBe(
     "/admin/sponsorships?proof=pending",
   );
   expect(treasurer.find((card) => card.key === "delivery_attention")?.href).toBe(
@@ -37,7 +38,8 @@ test("failed source is unavailable, never zero, while other task counts remain",
   expect(cards.find((card) => card.key === "volunteer_pending")?.metric).toEqual({
     state: "unavailable",
   });
-  expect(cards.filter((card) => card.metric.state === "ready")).toHaveLength(4);
+  // Staff have four cards (BUG-28 removed proof review); one source failed.
+  expect(cards.filter((card) => card.metric.state === "ready")).toHaveLength(3);
 });
 
 test("role guidance names the action and keeps proof separate from confirmed payment", () => {
@@ -60,4 +62,20 @@ test("treasurer sponsorship guidance stays within financial review and hands ass
   expect(card.guidance).toContain("核對付款");
   expect(card.guidance).toContain("職員／管理員");
   expect(card.guidance).not.toContain("指派負責人");
+});
+
+test("BUG-28: staff do not receive the sponsorship_proof_pending card they cannot act on", async () => {
+  const counted: string[] = [];
+  const cards = await readTaskOverview("staff", {
+    count: async (key) => {
+      counted.push(key);
+      return { count: 1, oldestAt: "2026-10-01T01:00:00Z" };
+    },
+  });
+
+  expect(cards.map((card) => card.key)).not.toContain("sponsorship_proof_pending");
+  expect(counted).not.toContain("sponsorship_proof_pending");
+  expect(selectTaskDefinitions("treasurer").map((card) => card.key)).toContain(
+    "sponsorship_proof_pending",
+  );
 });

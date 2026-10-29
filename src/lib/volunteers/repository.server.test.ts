@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { volunteerCodeMessage } from "./apiResult";
 import { createSupabaseVolunteerRepository } from "./repository.server";
 
 test("admin volunteer lists use stable id tie-breakers across pages", async () => {
@@ -390,4 +391,87 @@ test("clone activity invokes one audited RPC without client-side writes", async 
       },
     },
   ]);
+});
+
+// PostgREST answers 416 / PGRST103 when a ranged read starts past the last row.
+function pastLastPageClient(total: number) {
+  return {
+    from() {
+      let offset: number | null = null;
+      const result = () =>
+        offset !== null && offset >= total
+          ? {
+              data: null,
+              error: {
+                code: "PGRST103",
+                message: "Requested range not satisfiable",
+                details: `An offset of ${offset} was requested, but there are only ${total} rows.`,
+                hint: null,
+              },
+              count: null,
+            }
+          : { data: [], error: null, count: total };
+      const query = {
+        select: () => query,
+        order: () => query,
+        eq: () => query,
+        ilike: () => query,
+        or: () => query,
+        in: () => query,
+        range(from: number) {
+          offset = from;
+          return query;
+        },
+        then(resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) {
+          return Promise.resolve(result()).then(resolve, reject);
+        },
+      };
+      return query;
+    },
+    rpc: async () => ({ data: [], error: null }),
+  };
+}
+
+test("BUG-18: an activity page past the last row (PGRST103) is an empty page, not an error", async () => {
+  const repo = createSupabaseVolunteerRepository(pastLastPageClient(3) as never);
+  await expect(
+    repo.listActivities({
+      status: undefined,
+      type: undefined,
+      q: undefined,
+      page: 3,
+      pageSize: 25,
+    }),
+  ).resolves.toEqual({ activities: [], total: 3 });
+});
+
+test("BUG-18: a registration page past the last row (PGRST103) is an empty page, not an error", async () => {
+  const repo = createSupabaseVolunteerRepository(pastLastPageClient(3) as never);
+  await expect(repo.listRegistrations({ page: 3, pageSize: 25 })).resolves.toEqual({
+    registrations: [],
+    total: 3,
+  });
+});
+
+test("BUG-29: an unbound legacy draft update reports target_date_preview_required, not the generic stale-data conflict", async () => {
+  const repo = createSupabaseVolunteerRepository({
+    rpc: async () => ({
+      data: { kind: "invalid", reason: "target_date_preview_required" },
+      error: null,
+    }),
+  } as never);
+  const thrown = await repo
+    .updateActivity(
+      "f43d0f00-aa4f-4bb9-856d-6fe2f9f13bd0",
+      { title: "清潔日" },
+      "actor-1",
+      "2026-09-05T00:00:00Z",
+    )
+    .then(
+      () => null,
+      (error: unknown) => error,
+    );
+  expect(thrown).toBeInstanceOf(Response);
+  const body = (await (thrown as Response).json()) as { error: { message: string } };
+  expect(body.error.message).toBe(volunteerCodeMessage("target_date_preview_required") ?? "");
 });

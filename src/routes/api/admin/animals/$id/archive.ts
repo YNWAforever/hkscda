@@ -20,6 +20,11 @@ export const Route = createFileRoute("/api/admin/animals/$id/archive")({
     handlers: {
       POST: async ({ request, params }) => {
         try {
+          // Authenticate before reading the body: an anonymous caller used to get the
+          // body's 400 (and have up to 8 MB parsed) instead of 401 (BUG-26).
+          const client = createSupabaseServiceClient();
+          const admin = await requireAdmin(request, ["staff", "admin"], client);
+
           const parsedId = z.string().uuid().safeParse(params.id);
           if (!parsedId.success) return jsonResponse({ error: "Invalid animal id" }, 400);
 
@@ -33,8 +38,6 @@ export const Route = createFileRoute("/api/admin/animals/$id/archive")({
           )
             return jsonResponse({ error: "Invalid archive state" }, 400);
 
-          const client = createSupabaseServiceClient();
-          const admin = await requireAdmin(request, ["staff", "admin"], client);
           const { data, error } = await client.rpc("set_animal_archived_with_audit", {
             p_actor_user_id: admin.authUserId,
             p_animal_id: parsedId.data,

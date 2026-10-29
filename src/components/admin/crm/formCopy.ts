@@ -12,6 +12,7 @@ export const supporterFormCopy = defineAdminCopy({
     loadingLatest: "正在載入最新支持者資料…",
     retry: "重試",
     conflict: "資料已由其他職員更新。你的修改尚未儲存；請重新載入最新版本再編輯。",
+    emailExists: "此電郵已屬於一位現有支持者。請搜尋該電郵並開啟現有記錄。",
     discardAndReload: "放棄本次修改並重新載入",
     discardPrompt: "尚有未儲存更改，確定要放棄？",
     keepEditing: "繼續編輯",
@@ -23,6 +24,8 @@ export const supporterFormCopy = defineAdminCopy({
     retry: "Retry",
     conflict:
       "Another staff member changed this supporter, so your edits were not saved. Reload the latest version, then edit again.",
+    emailExists:
+      "A supporter with this email already exists. Search for that email and open the existing record instead.",
     discardAndReload: "Discard my edits and reload",
     discardPrompt: "Discard your unsaved changes?",
     keepEditing: "Keep editing",

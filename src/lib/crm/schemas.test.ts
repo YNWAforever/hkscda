@@ -196,4 +196,35 @@ describe("crm schemas", () => {
     expect(parsed.purpose).toBe("sponsor");
     expect(parsed.includeDeleted).toBe(false);
   });
+
+  describe("BUG-12: supporter phone and tags are bounded", () => {
+    const longPhone = "9".repeat(41);
+    const longTag = "t".repeat(41);
+    const manyTags = Array.from({ length: 51 }, (_, i) => `tag-${i}`);
+    const base = { name: "Ada", email: "ada@example.com", language: "en" };
+
+    test("BUG-12: the update schema rejects a phone over 40 characters", () => {
+      expect(
+        supporterUpdateSchema.safeParse({ expectedVersion: 1, phone: longPhone }).success,
+      ).toBe(false);
+    });
+
+    test("BUG-12: the update schema rejects a tag over 40 characters", () => {
+      expect(supporterUpdateSchema.safeParse({ expectedVersion: 1, tags: [longTag] }).success).toBe(
+        false,
+      );
+    });
+
+    test("BUG-12: the update schema rejects more than 50 tags", () => {
+      expect(supporterUpdateSchema.safeParse({ expectedVersion: 1, tags: manyTags }).success).toBe(
+        false,
+      );
+    });
+
+    test("BUG-12: the create schema rejects an oversized phone, tag or tag list", () => {
+      expect(supporterInputSchema.safeParse({ ...base, phone: longPhone }).success).toBe(false);
+      expect(supporterInputSchema.safeParse({ ...base, tags: [longTag] }).success).toBe(false);
+      expect(supporterInputSchema.safeParse({ ...base, tags: manyTags }).success).toBe(false);
+    });
+  });
 });

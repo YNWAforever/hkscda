@@ -44,6 +44,8 @@ export type FaqDraft = {
   sensitive: boolean;
   sortOrder: number;
   isActive: boolean;
+  /** Whether the entry was active when the form opened; undefined for a new entry. */
+  initiallyActive?: boolean;
 };
 
 function draftFromEntry(entry?: FaqEntry): FaqDraft {
@@ -60,6 +62,7 @@ function draftFromEntry(entry?: FaqEntry): FaqDraft {
     sensitive: entry?.sensitive ?? false,
     sortOrder: entry?.sortOrder ?? 0,
     isActive: entry?.isActive ?? true,
+    initiallyActive: entry?.isActive,
   };
 }
 
@@ -397,14 +400,19 @@ export function FaqEntryForm({
         />
         {copy.sensitive}
       </label>
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={draft.isActive}
-          onChange={(event) => onDraftChange({ ...draft, isActive: event.target.checked })}
-        />
-        {copy.isActive}
-      </label>
+      {/* An active entry is hidden through the reasoned deactivate action, not this form
+          (BUG-07). New entries and hidden ones keep the checkbox: it is the only way to put a
+          hidden entry back on /help. */}
+      {draft.id && draft.initiallyActive !== false ? null : (
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={draft.isActive}
+            onChange={(event) => onDraftChange({ ...draft, isActive: event.target.checked })}
+          />
+          {copy.isActive}
+        </label>
+      )}
       <label className="block">
         {copy.sortOrder}
         <input

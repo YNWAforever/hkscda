@@ -257,3 +257,45 @@ describe("Supabase group enquiry repository", () => {
     expect(calls).toEqual(["update_group_enquiry_with_audit"]);
   });
 });
+
+describe("Supabase group enquiry repository — regression", () => {
+  test("BUG-18: a page past the last row (PGRST103) is an empty page, not an error", async () => {
+    const total = 3;
+    function from() {
+      let offset: number | null = null;
+      const result = () =>
+        offset !== null && offset >= total
+          ? {
+              data: null,
+              error: {
+                code: "PGRST103",
+                message: "Requested range not satisfiable",
+                details: `An offset of ${offset} was requested, but there are only ${total} rows.`,
+                hint: null,
+              },
+              count: null,
+            }
+          : { data: [], error: null, count: total };
+      const query = {
+        select: () => query,
+        order: () => query,
+        eq: () => query,
+        or: () => query,
+        range(start: number) {
+          offset = start;
+          return query;
+        },
+        then(resolve: (value: unknown) => unknown, reject?: (reason: unknown) => unknown) {
+          return Promise.resolve(result()).then(resolve, reject);
+        },
+      };
+      return query;
+    }
+    const repo = createSupabaseGroupEnquiryRepository({ from } as never);
+
+    await expect(repo.list({ page: 3, pageSize: 25 })).resolves.toEqual({
+      enquiries: [],
+      total: 3,
+    });
+  });
+});

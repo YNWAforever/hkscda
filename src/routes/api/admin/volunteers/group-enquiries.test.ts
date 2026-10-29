@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
+import {
+  createGroupEnquiryService,
+  type GroupEnquiryRepository,
+} from "../../../../lib/groupEnquiries/service";
 import type { GroupEnquiry } from "../../../../lib/groupEnquiries/types";
 import { createAdminGroupEnquiryHandlers } from "./group-enquiries";
 
@@ -10,8 +14,10 @@ const admin = {
   role: "staff" as const,
   status: "active" as const,
 };
+// Group enquiry ids are UUIDs; the handler rejects anything else with 400 (BUG-17).
+const ENQUIRY_ID = "66666666-6666-4666-8666-666666666666";
 const enquiry: GroupEnquiry = {
-  id: "enquiry-1",
+  id: ENQUIRY_ID,
   organisationName: "Happy School",
   contactPerson: "Ms Chan",
   email: "lead@example.com",
@@ -108,7 +114,7 @@ describe("admin group enquiry handlers", () => {
       (
         await handlers.listOrGet({
           request: request(
-            "https://example.test/api/admin/volunteers/group-enquiries?id=enquiry-1",
+            `https://example.test/api/admin/volunteers/group-enquiries?id=${ENQUIRY_ID}`,
           ),
         })
       ).status,
@@ -118,7 +124,7 @@ describe("admin group enquiry handlers", () => {
         await handlers.update({
           request: request(undefined, {
             method: "PATCH",
-            body: JSON.stringify({ id: "enquiry-1", status: "resolved", adminNotes: "done" }),
+            body: JSON.stringify({ id: ENQUIRY_ID, status: "resolved", adminNotes: "done" }),
           }),
         })
       ).status,
@@ -128,12 +134,97 @@ describe("admin group enquiry handlers", () => {
         await handlers.update({
           request: request(undefined, {
             method: "PATCH",
-            body: JSON.stringify({ id: "enquiry-1", action: "retryNotification" }),
+            body: JSON.stringify({ id: ENQUIRY_ID, action: "retryNotification" }),
           }),
         })
       ).status,
     ).toBe(200);
 
     expect(service.calls.map((call) => call.name)).toEqual(["list", "get", "update", "retry"]);
+  });
+});
+
+describe("admin group enquiry handlers with the real service — regression", () => {
+  // supabase-js returns a plain PostgrestError-shaped object, not an Error instance.
+  const pg = (code: string, message: string) => ({ code, message, details: null, hint: null });
+
+  function createRepo() {
+    const calls: string[] = [];
+    const repo: GroupEnquiryRepository = {
+      async createOrGet() {
+        calls.push("createOrGet");
+        return { enquiry, created: false };
+      },
+      async markNotificationSent() {
+        calls.push("markNotificationSent");
+      },
+      async markNotificationFailed() {
+        calls.push("markNotificationFailed");
+      },
+      async list() {
+        calls.push("list");
+        return { enquiries: [], total: 0 };
+      },
+      async getById(id) {
+        calls.push("getById");
+        // What Postgres does with a non-uuid id.
+        if (!/^[0-9a-f-]{36}$/.test(id))
+          throw pg("22P02", `invalid input syntax for type uuid: "${id}"`);
+        return null;
+      },
+      async updateWithAudit() {
+        calls.push("updateWithAudit");
+        // What the RPC does with an empty patch.
+        throw pg("22023", "invalid_group_enquiry_patch");
+      },
+      async insertAuditLog() {
+        calls.push("insertAuditLog");
+      },
+    };
+    return { repo, calls };
+  }
+
+  function handlersFor(repo: GroupEnquiryRepository) {
+    return createAdminGroupEnquiryHandlers({
+      requireVolunteerAdmin: async () => admin,
+      service: createGroupEnquiryService({ repo, logger: { error() {} } }),
+    });
+  }
+
+  async function quietly<T>(run: () => Promise<T>) {
+    const original = console.error;
+    console.error = () => {};
+    try {
+      return await run();
+    } finally {
+      console.error = original;
+    }
+  }
+
+  test("BUG-17: GET ?id=abc (not a uuid) returns 400, not 500", async () => {
+    const { repo } = createRepo();
+    const response = await quietly(() =>
+      handlersFor(repo).listOrGet({
+        request: request("https://example.test/api/admin/volunteers/group-enquiries?id=abc"),
+      }),
+    );
+    expect(response.status).toBe(400);
+  });
+
+  test("BUG-17: PATCH with only id and expectedUpdatedAt (no fields) returns 400 before the repository", async () => {
+    const { repo, calls } = createRepo();
+    const response = await quietly(() =>
+      handlersFor(repo).update({
+        request: request(undefined, {
+          method: "PATCH",
+          body: JSON.stringify({
+            id: "33333333-3333-4333-8333-333333333333",
+            expectedUpdatedAt: "2026-10-29T00:00:00Z",
+          }),
+        }),
+      }),
+    );
+    expect(response.status).toBe(400);
+    expect(calls).not.toContain("updateWithAudit");
   });
 });

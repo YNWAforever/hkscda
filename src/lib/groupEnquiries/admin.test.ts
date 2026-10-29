@@ -3,8 +3,10 @@ import { describe, expect, test } from "bun:test";
 import { createGroupEnquiryService, type GroupEnquiryRepository } from "./service";
 import type { GroupEnquiry } from "./types";
 
+// Group enquiry ids are UUIDs; the patch schema rejects anything else (BUG-17).
+const ENQUIRY_ID = "66666666-6666-4666-8666-666666666666";
 const enquiry: GroupEnquiry = {
-  id: "enquiry-1",
+  id: ENQUIRY_ID,
   organisationName: "Happy School",
   contactPerson: "Ms Chan",
   email: "lead@example.com",
@@ -67,7 +69,7 @@ describe("group enquiry admin service", () => {
     ).resolves.toMatchObject({ total: 1 });
     await expect(
       service.updateGroupEnquiry({
-        id: "enquiry-1",
+        id: ENQUIRY_ID,
         input: { status: "resolved", adminNotes: " done ", expectedUpdatedAt: enquiry.updatedAt },
         actorUserId,
       }),
@@ -88,7 +90,7 @@ describe("group enquiry admin service", () => {
     });
 
     await service.updateGroupEnquiry({
-      id: "enquiry-1",
+      id: ENQUIRY_ID,
       input: {
         status: "closed",
         adminNotes: "handled offline",
@@ -99,7 +101,7 @@ describe("group enquiry admin service", () => {
 
     expect(calls.map((call) => call.name)).toEqual(["updateWithAudit"]);
     expect(calls[0].input).toEqual({
-      id: "enquiry-1",
+      id: ENQUIRY_ID,
       input: { status: "closed", adminNotes: "handled offline" },
       actorUserId,
       expectedUpdatedAt: enquiry.updatedAt,
@@ -120,7 +122,7 @@ describe("group enquiry admin service", () => {
     });
 
     await expect(
-      service.retryGroupEnquiryNotification({ id: "enquiry-1", actorUserId }),
+      service.retryGroupEnquiryNotification({ id: ENQUIRY_ID, actorUserId }),
     ).rejects.toThrow("audit unavailable");
     expect(calls.map((call) => call.name)).toEqual(["get"]);
   });
@@ -135,7 +137,7 @@ describe("group enquiry admin service", () => {
       },
     });
     await expect(
-      service.retryGroupEnquiryNotification({ id: "enquiry-1", actorUserId }),
+      service.retryGroupEnquiryNotification({ id: ENQUIRY_ID, actorUserId }),
     ).resolves.toEqual({ ok: true });
     expect(calls.map((call) => call.name)).toEqual(["get", "audit", "notify", "markSent"]);
   });

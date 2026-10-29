@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRangeNotSatisfiable } from "../postgrestRange";
 
 import { requiredReasonSchema } from "../admin/requiredReason";
 import { buildCaseFromPublicApplication, type PublicApplicationInput } from "./caseFactory";
@@ -182,8 +183,32 @@ function timestamp(now: () => Date) {
   return now().toISOString();
 }
 
+const COORDINATOR_EXPORT_PAGE_SIZE = 1000;
+
 function coordinatorExportPage(): CoordinatorExportPage {
-  return { page: 1, pageSize: 1000 };
+  return { page: 1, pageSize: COORDINATOR_EXPORT_PAGE_SIZE };
+}
+
+/**
+ * Every row a paged export read can return. PostgREST serves at most max_rows (1,000) per
+ * request, so a single read silently cut the CSV at the newest 1,000 rows (BUG-21).
+ */
+async function readAllExportPages<Row>(readPage: (page: number) => Promise<Row[]>): Promise<Row[]> {
+  const rows: Row[] = [];
+  for (let page = 1; ; page += 1) {
+    let batch: Row[];
+    try {
+      batch = await readPage(page);
+    } catch (error) {
+      // Reads with count: "exact" answer a page that starts past the last row with
+      // PGRST103 instead of an empty list. After a full page that just means the rows
+      // ran out at an exact multiple of the page size.
+      if (page > 1 && isRangeNotSatisfiable(error)) return rows;
+      throw error;
+    }
+    rows.push(...batch);
+    if (batch.length < COORDINATOR_EXPORT_PAGE_SIZE) return rows;
+  }
 }
 
 function requireCoordinatorOpsMethod<K extends keyof CoordinatorOpsRepositoryMethods>(
@@ -219,6 +244,63 @@ export function createAdoptionCoordinatorService({
   repo,
   now = () => new Date(),
 }: CreateAdoptionCoordinatorServiceArgs) {
+  /**
+   * The CSV for one export, without auditing it. exportCoordinatorCsv and
+   * regenerateCoordinatorExport each write their own single audit row; regenerate used to
+   * call exportCoordinatorCsv and so was recorded, and counted, twice (BUG-20).
+   */
+  async function buildCoordinatorExport(args: { kind: unknown; rawSearch: unknown }) {
+    const kind = coordinatorExportKindSchema.parse(args.kind);
+    let csv = "";
+    let rowCount = 0;
+    let filters: Record<string, unknown> = {};
+
+    if (kind === "cases") {
+      const parsed = caseSearchSchema.parse(args.rawSearch);
+      filters = { ...parsed, ...coordinatorExportPage() };
+      const rows = await readAllExportPages((page) =>
+        repo.listCaseExportRows({ ...(filters as CaseSearch), page }),
+      );
+      csv = buildCoordinatorCaseCsv(rows);
+      rowCount = rows.length;
+    } else if (kind === "adopters") {
+      const parsed = adopterSearchSchema.parse(args.rawSearch);
+      filters = { ...parsed, ...coordinatorExportPage() };
+      const rows = await readAllExportPages((page) =>
+        repo.listAdopterExportRows({ ...(filters as AdopterSearch), page }),
+      );
+      csv = buildCoordinatorAdopterCsv(rows);
+      rowCount = rows.length;
+    } else if (kind === "successful-adoptions") {
+      const page = coordinatorExportPage();
+      filters = page;
+      const rows = await readAllExportPages((pageNumber) =>
+        repo.listSuccessfulAdoptionExportRows({ ...page, page: pageNumber }),
+      );
+      csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
+      rowCount = rows.length;
+    } else if (kind === "animals") {
+      const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
+      const page = { ...parsed, ...coordinatorExportPage() };
+      filters = page;
+      const rows = await readAllExportPages((pageNumber) =>
+        repo.listAnimalExportRows({ ...page, page: pageNumber }),
+      );
+      csv = buildCoordinatorAnimalCsv(rows);
+      rowCount = rows.length;
+    } else {
+      const parsed = taskListSearchSchema.parse(args.rawSearch);
+      filters = { ...parsed, ...coordinatorExportPage() };
+      const rows = await readAllExportPages((page) =>
+        repo.listTaskExportRows({ ...(filters as TaskListSearch), page }),
+      );
+      csv = buildCoordinatorTaskCsv(rows);
+      rowCount = rows.length;
+    }
+
+    return { kind, csv, rowCount, filters };
+  }
+
   const service = {
     listStatuses(category?: string) {
       return repo.listStatuses(category);
@@ -410,43 +492,7 @@ export function createAdoptionCoordinatorService({
       kind: unknown;
       rawSearch: unknown;
     }): Promise<CoordinatorExportResult> {
-      const kind = coordinatorExportKindSchema.parse(args.kind);
-      let csv = "";
-      let rowCount = 0;
-      let filters: Record<string, unknown> = {};
-
-      if (kind === "cases") {
-        const parsed = caseSearchSchema.parse(args.rawSearch);
-        filters = { ...parsed, ...coordinatorExportPage() };
-        const rows = await repo.listCaseExportRows(filters as CaseSearch);
-        csv = buildCoordinatorCaseCsv(rows);
-        rowCount = rows.length;
-      } else if (kind === "adopters") {
-        const parsed = adopterSearchSchema.parse(args.rawSearch);
-        filters = { ...parsed, ...coordinatorExportPage() };
-        const rows = await repo.listAdopterExportRows(filters as AdopterSearch);
-        csv = buildCoordinatorAdopterCsv(rows);
-        rowCount = rows.length;
-      } else if (kind === "successful-adoptions") {
-        const page = coordinatorExportPage();
-        filters = page;
-        const rows = await repo.listSuccessfulAdoptionExportRows(page);
-        csv = buildCoordinatorSuccessfulAdoptionCsv(rows);
-        rowCount = rows.length;
-      } else if (kind === "animals") {
-        const parsed = animalPipelineSearchSchema.parse(args.rawSearch);
-        const page = { ...parsed, ...coordinatorExportPage() };
-        filters = page;
-        const rows = await repo.listAnimalExportRows(page);
-        csv = buildCoordinatorAnimalCsv(rows);
-        rowCount = rows.length;
-      } else {
-        const parsed = taskListSearchSchema.parse(args.rawSearch);
-        filters = { ...parsed, ...coordinatorExportPage() };
-        const rows = await repo.listTaskExportRows(filters as TaskListSearch);
-        csv = buildCoordinatorTaskCsv(rows);
-        rowCount = rows.length;
-      }
+      const { kind, csv, rowCount, filters } = await buildCoordinatorExport(args);
 
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,
@@ -471,11 +517,12 @@ export function createAdoptionCoordinatorService({
       const audit = await getCoordinatorExportAuditRow(args.auditLogId);
       if (!audit) throw new Error("Export audit not found");
 
-      const result = await service.exportCoordinatorCsv({
-        actorUserId: args.actorUserId,
-        kind: audit.kind,
-        rawSearch: audit.filters,
-      });
+      const built = await buildCoordinatorExport({ kind: audit.kind, rawSearch: audit.filters });
+      const result: CoordinatorExportResult = {
+        csv: built.csv,
+        rowCount: built.rowCount,
+        filename: `coordinator-${built.kind}.csv`,
+      };
 
       await repo.insertAuditLog({
         actor_user_id: args.actorUserId,

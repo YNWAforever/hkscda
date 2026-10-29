@@ -66,6 +66,10 @@ async function withInternalProfileErrors(operation: () => Promise<Response>) {
         return jsonResponse({ error: error.message }, { status: 400 });
       }
     }
+    // The profile's animal_id foreign key: the animal does not exist (BUG-15).
+    if (error && typeof error === "object" && "code" in error && error.code === "23503") {
+      return jsonResponse({ error: "Animal not found" }, { status: 404 });
+    }
 
     console.error(error);
     return jsonResponse({ error: "Could not save internal profile" }, { status: 500 });

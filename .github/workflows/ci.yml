@@ -59,6 +59,11 @@ jobs:
       - name: Route tree is current
         run: git diff --exit-code -- src/routeTree.gen.ts
 
+      # *.server.ts must never reach the browser. Fails on server-only variable names,
+      # well-known secret formats, or (on a build with real secrets) their values.
+      - name: Client bundle contains no server secrets
+        run: bun run verify:client-bundle
+
   # Separate job so the fast gate stays fast, and a browser sweep can never block
   # a typecheck fix while it's non-blocking. Was green on main 5+ runs in a row
   # (2026-08-30 through 2026-09-01), well past the "twice" bar, so it is now a
@@ -394,6 +399,32 @@ jobs:
         if: always()
         run: bunx supabase stop
 
+  # Admin panel browser flows (tests/e2e/admin) against a production build served by
+  # the real preview server, with Supabase replaced by an in-process fake: sign-in and
+  # sign-out, role gates, load failures, offline, mobile layout. Non-blocking until it
+  # has proven green repeatedly, then promote via branch protection as for brand-verify.
+  # It uses the runner's installed Google Chrome, like the browser tests in `verify`.
+  admin-e2e:
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - run: bun install --frozen-lockfile
+
+      - name: Admin E2E
+        run: bun run test:e2e
+
   # Separate job so brand-verify (required) never fails on a Lighthouse score.
   # Non-blocking until proven consistently green (Lighthouse's own CI-noise
   # profile means "consistently green" may take longer to establish than it
@@ -409,6 +440,7 @@ jobs:
       - brand-verify
       - a11y-verify
       - rls-matrix
+      - admin-e2e
     if: ${{ always() && needs.verify.result == 'success' }}
     timeout-minutes: 20
     continue-on-error: true

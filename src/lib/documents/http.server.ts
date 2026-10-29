@@ -3,7 +3,7 @@ import { readAdminJson } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import { documentDeleteSchema } from "./schemas";
-import { DocumentConflictError } from "./service";
+import { DocumentConflictError, DocumentNotFoundError, DocumentPreconditionError } from "./service";
 
 type DocumentAdmin = { authUserId: string };
 type HandlerContext = {
@@ -101,6 +101,12 @@ async function withDocumentErrors(operation: () => Promise<Response>) {
     }
     if (error instanceof DocumentConflictError) {
       return jsonResponse({ error: error.message }, { status: 409 });
+    }
+    if (error instanceof DocumentNotFoundError) {
+      return jsonResponse({ error: error.message }, { status: 404 });
+    }
+    if (error instanceof DocumentPreconditionError) {
+      return jsonResponse({ error: error.message }, { status: 422 });
     }
 
     console.error(error);

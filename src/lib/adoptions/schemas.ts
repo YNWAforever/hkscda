@@ -23,7 +23,7 @@ const nullableOptionalTrimmed = optionalTrimmed.nullable().optional();
 const monthSchema = z
   .string()
   .trim()
-  .regex(/^\d{4}-\d{2}$/);
+  .regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 
 const booleanSearch = z.preprocess((value) => {
   if (value === true || value === 1) return true;

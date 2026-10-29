@@ -325,3 +325,48 @@ test("public registration explains the required stable submission token", async 
     error: expect.stringContaining("submissionToken"),
   });
 });
+
+describe("volunteer registration trigger refusals — regression", () => {
+  async function patchStatusWhenRepoThrows(thrown: unknown) {
+    const service = createService();
+    service.updateRegistrationStatus = async () => {
+      throw thrown;
+    };
+    const handlers = createVolunteerHandlers({ requireVolunteerAdmin: async () => admin, service });
+    const original = console.error;
+    console.error = () => {};
+    try {
+      return await handlers.updateRegistrationStatus({
+        request: new Request("https://example.invalid/status", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ status: "approved", expectedUpdatedAt: "2026-09-05T00:00:00Z" }),
+        }),
+        params: { id: "11111111-2222-4333-8444-555555555555" },
+      });
+    } finally {
+      console.error = original;
+    }
+  }
+
+  test("BUG-10: a waitlist_priority trigger refusal (22023) returns 409, not 500", async () => {
+    const response = await patchStatusWhenRepoThrows({
+      code: "22023",
+      message: "waitlist_priority",
+      details: null,
+      hint: null,
+    });
+    expect(response.status).toBe(409);
+    expect((await response.json()).code).toBe("waitlist_priority");
+  });
+
+  test("BUG-10: an immutable_booking_identity trigger refusal (42501) returns 403, not 500", async () => {
+    const response = await patchStatusWhenRepoThrows({
+      code: "42501",
+      message: "immutable_booking_identity",
+      details: null,
+      hint: null,
+    });
+    expect(response.status).toBe(403);
+  });
+});

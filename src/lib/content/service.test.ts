@@ -1,4 +1,5 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, spyOn, test } from "bun:test";
+import { createContentHandlers } from "./http.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
@@ -1250,5 +1251,107 @@ describe("createContentService searchLinks", () => {
     const result = await service.searchLinks({ linkedType: "animal", q: "mi", limit: 5 });
     expect(searchLinks).toHaveBeenCalledWith({ linkedType: "animal", q: "mi", limit: 5 });
     expect(result).toHaveLength(1);
+  });
+});
+
+describe("social-copy PATCH audit atomicity — regression", () => {
+  // BUG-06: fixed by 20261029180000_update_social_copy_with_audit.sql and the service routing
+  // status-only changes through social_status and text/hashtag edits through the new RPC.
+  test("BUG-06: PATCH social copy goes through an atomic *WithAudit write, never a bare updateSocialCopy", async () => {
+    const updateSocialCopy = mock(async () => undefined);
+    const updateSocialCopyStatusWithAudit = mock(async () => undefined);
+    const { repo } = createRepo({
+      updateSocialCopy,
+      updateSocialCopyStatusWithAudit,
+      insertAuditLog: async () => {
+        throw new Error("audit insert failed");
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => ({
+        id: "admin-row",
+        authUserId: "11111111-2222-4333-8444-555555555555",
+        email: "staff@example.com",
+        role: "staff",
+        status: "active",
+      }),
+      service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+    });
+    const logged = spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      await handlers.updateSocialCopyStatus({
+        request: new Request("http://localhost/x", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ status: "archived" }),
+        }),
+        params: { id: "55555555-5555-4555-8555-555555555555" },
+      });
+    } finally {
+      logged.mockRestore();
+    }
+
+    // A non-atomic update followed by a failing audit insert leaves the change
+    // applied but unaudited.
+    expect(updateSocialCopy).not.toHaveBeenCalled();
+  });
+
+  const staff = {
+    id: "admin-row",
+    authUserId: "11111111-2222-4333-8444-555555555555",
+    email: "staff@example.com",
+    role: "staff" as const,
+    status: "active" as const,
+  };
+  const patch = (body: unknown) =>
+    new Request("http://localhost/x", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+  test("BUG-06: editing social copy text goes through the atomic update_social_copy_with_audit path", async () => {
+    const updateSocialCopy = mock(async () => undefined);
+    const updateSocialCopyWithAudit = mock(async () => undefined);
+    const insertAuditLog = mock(async () => undefined);
+    const { repo } = createRepo({ updateSocialCopy, updateSocialCopyWithAudit, insertAuditLog });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => staff,
+      service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+    });
+
+    const response = await handlers.updateSocialCopyStatus({
+      request: patch({ copyText: "新文案 🐾", hashtags: ["領養"] }),
+      params: { id: "55555555-5555-4555-8555-555555555555" },
+    });
+
+    expect(response.status).toBe(200);
+    expect(updateSocialCopyWithAudit).toHaveBeenCalledWith(
+      "55555555-5555-4555-8555-555555555555",
+      { copyText: "新文案 🐾", hashtags: ["領養"] },
+      staff.authUserId,
+    );
+    expect(updateSocialCopy).not.toHaveBeenCalled();
+    expect(insertAuditLog).not.toHaveBeenCalled();
+  });
+
+  test("BUG-06: an unknown social copy id is a 404, not a 500", async () => {
+    const { repo } = createRepo({
+      updateSocialCopyWithAudit: async () => {
+        throw { code: "P0002", message: "social copy not found", details: null, hint: null };
+      },
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => staff,
+      service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+    });
+
+    const response = await handlers.updateSocialCopyStatus({
+      request: patch({ copyText: "x" }),
+      params: { id: "55555555-5555-4555-8555-555555555555" },
+    });
+
+    expect(response.status).toBe(404);
   });
 });
