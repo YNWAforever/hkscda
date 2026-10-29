@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 28 fixed (BUG-01's, BUG-02's and BUG-03's migrations were approved and added after Phase 4), 4 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 29 fixed (BUG-01's, BUG-02's, BUG-03's and BUG-06's migrations were approved and added after Phase 4), 3 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 

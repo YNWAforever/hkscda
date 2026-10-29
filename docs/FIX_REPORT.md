@@ -6,9 +6,9 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 
 **Outcome.**
 
-- **Findings:** 32 in total. 28 are fixed with one commit each, including BUG-01 (the
-  only High), BUG-02 and BUG-03, whose migrations were approved after Phase 4. 4 are
-  deferred: 3 need a migration, and 1 needs a product decision.
+- **Findings:** 32 in total. 29 are fixed with one commit each, including BUG-01 (the
+  only High), BUG-02, BUG-03 and BUG-06, whose migrations were approved after Phase 4.
+  3 are deferred: 2 need a migration, and 1 needs a product decision.
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
@@ -29,7 +29,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Test runner:** the repo already has `bun:test` and Playwright browser tests, so Vitest
   was not added. Bug regressions sit beside their source as CLAUDE.md requires;
   cross-cutting suites are under `tests/`.
-- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's and BUG-03's were later approved and added), dependency changes within existing ranges
+- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's, BUG-03's and BUG-06's were later approved and added), dependency changes within existing ranges
   only, and the minimal fix for invites.
 
 ## Bugs fixed
@@ -39,6 +39,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 | BUG-01 | **High** | Sync the draft when the pipeline changes an animal's status (migration `20261029150000`; verified on Postgres 16)                                                               |
 | BUG-02 | Med      | Finalise an adoption once per animal and never over a closed case; set the animal adopted (migration `20261029160000`; verified on Postgres 16, incl. a concurrent race)        |
 | BUG-03 | Med      | New supporter on an existing email returns 409 instead of overwriting it; an exact retry still returns the same supporter (migration `20261029170000`; verified on Postgres 16) |
+| BUG-06 | Med      | Social-copy edits and their audit row are written in one transaction (migration `20261029180000`; verified on Postgres 16 with a forced audit failure)                          |
 | BUG-31 | Med      | Send a server-rejected session back to sign-in                                                                                                                                  |
 | BUG-04 | Med      | Compute the receipt tax year in Hong Kong time                                                                                                                                  |
 | BUG-05 | Med      | Apply the HK$100 receipt rule to the receipt action and count                                                                                                                   |
@@ -83,7 +84,6 @@ explained in its commit and in a code comment.
 
 | ID     | Sev | Why deferred     | What closes it                                                                                                                                                     |
 | ------ | --- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BUG-06 | Med | Migration        | Add an `update_social_copy_with_audit` RPC so the social-copy PATCH and its audit row are atomic.                                                                  |
 | BUG-22 | Low | Migration        | Audit animal draft save/restore inside the RPC; require `expected_revision` for restore.                                                                           |
 | BUG-23 | Low | Migration        | The manual-gift inline supporter must not overwrite an existing supporter.                                                                                         |
 | BUG-25 | Low | Product decision | Invite links have no `redirectTo` or set-password page. BUG-11 now returns a clear 409 instead of a 500; letting existing accounts be invited is a choice for you. |
@@ -110,7 +110,7 @@ migration.
 
 | Suite                     | Where                                                                | Tests                                                       | Runs in                             |
 | ------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (3 `test.failing` for deferred migrations)              | `bun run test` / CI `verify`        |
+| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (2 `test.failing` for deferred migrations)              | `bun run test` / CI `verify`        |
 | Admin authorization sweep | `tests/integration/admin/authorization.test.ts`                      | 4 (212 endpoints × 8 callers, role matrix vs `ROLE_ACCESS`) | `bun run test` / CI `verify`        |
 | Public API smoke          | `tests/integration/public/smoke.test.ts`                             | 33                                                          | `bun run test` / CI `verify`        |
 | Client bundle scanner     | `scripts/verify-client-bundle.test.ts` (+ CI step on the real build) | 5                                                           | `bun run test` / CI `verify`        |
@@ -178,11 +178,13 @@ nothing about database behaviour.
 
 ## Remaining risks
 
-1. **Three migrations must be applied with the release** (BUG-01, BUG-02, BUG-03).
-   Until `20261029150000_sync_animal_draft_status.sql`,
-   `20261029160000_finalize_adoption_once_per_animal.sql` and
-   `20261029170000_crm_create_refuses_existing_email.sql` run on the production
-   database the old behaviour remains. After they run: a preview made before a pipeline status
+1. **Four migrations must be applied with the release** (BUG-01, BUG-02, BUG-03,
+   BUG-06). Until `20261029150000_sync_animal_draft_status.sql`,
+   `20261029160000_finalize_adoption_once_per_animal.sql`,
+   `20261029170000_crm_create_refuses_existing_email.sql` and
+   `20261029180000_update_social_copy_with_audit.sql` run on the production database
+   the old behaviour remains (for BUG-06, text edits fail with a missing-function error
+   until its migration runs, so apply it before or with the code). After they run: a preview made before a pipeline status
    change answers publish with a conflict, and staff preview again; finalising an
    adoption now also sets the animal to adopted (it leaves the public listing at once);
    and a second finalisation for the same animal or case, or one on a rejected,
@@ -240,3 +242,6 @@ nothing about database behaviour.
       supporter's email (try different letter case). The form says the email already
       exists and nothing about the existing supporter changes, including its roles and,
       if it was deleted, its deleted state.
+- [ ] **BUG-06 (after the migration runs):** edit a social copy's text and hashtags,
+      then change its status. Both save, and each change appears once in the audit
+      log.
