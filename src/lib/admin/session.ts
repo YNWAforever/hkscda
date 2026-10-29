@@ -228,7 +228,24 @@ export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
   }
   // ensureQueryData is what makes AdminLayout's later useQuery a cache hit
   // instead of a second GET /api/admin/me.
-  return queryClient.ensureQueryData(adminIdentityQueryOptions());
+  try {
+    return await queryClient.ensureQueryData(adminIdentityQueryOptions());
+  } catch (error) {
+    // The browser still holds a session the server no longer accepts: revoked, signed out
+    // elsewhere, or tampered with. Without this the route rendered a full-page load failure
+    // whose retry could never succeed and which offered no way to sign out (BUG-31).
+    if (!isLapsedSessionError(error)) throw error;
+    queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
+    await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+    throw redirect({ to: "/admin/login" });
+  }
+}
+
+function isLapsedSessionError(error: unknown) {
+  return (
+    error instanceof AdminSessionError ||
+    (error instanceof Error && (error as { status?: unknown }).status === 401)
+  );
 }
 
 export async function requireAdminPageAccess(area: AdminAccessArea, queryClient: QueryClient) {

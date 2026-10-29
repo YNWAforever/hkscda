@@ -9,10 +9,13 @@ const getSession = mock(
   }),
 );
 
+const signOut = mock(async (_options?: { scope?: string }) => ({ error: null }));
+
 mock.module("../supabase", () => ({
   supabase: {
     auth: {
       getSession,
+      signOut,
     },
   },
 }));
@@ -387,6 +390,32 @@ describe("requireSignedInAdminIdentity", () => {
     const { admin } = await requireSignedInAdminIdentity(queryClient);
     expect(admin.role).toBe("admin");
     expect(calls).toBe(1);
+  });
+
+  test("BUG-31: a session the server rejects is cleared and sent to sign-in", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "Invalid authorization token" }, { status: 401 }),
+    ) as unknown as typeof fetch;
+    signOut.mockClear();
+    const queryClient = new QueryClient();
+
+    const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
+
+    expect(thrown).toMatchObject({ options: { to: "/admin/login" } });
+    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
+  });
+
+  test("a server failure that is not a lapsed session is not treated as sign-out", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "unavailable" }, { status: 503 }),
+    ) as unknown as typeof fetch;
+    signOut.mockClear();
+
+    await expect(requireSignedInAdminIdentity(new QueryClient())).rejects.toMatchObject({
+      status: 503,
+    });
+    expect(signOut).not.toHaveBeenCalled();
   });
 
   test("a second call on the same client issues no second request", async () => {
