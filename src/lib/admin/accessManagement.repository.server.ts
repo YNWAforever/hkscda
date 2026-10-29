@@ -240,6 +240,23 @@ async function sendAdminInviteEmail({ to, actionLink }: InviteEmail) {
   if (result.error) throw result.error;
 }
 
+/**
+ * Supabase Auth will not issue an invite link for an email that already has a confirmed
+ * account (a volunteer or supporter who signed in by OTP, or a former admin). That is a
+ * conflict the inviter can act on, not a server fault, so it is a 409 rather than the
+ * generic 500 it used to fall through to (BUG-11).
+ */
+function inviteLinkError(error: { code?: unknown }) {
+  if (error.code === "email_exists") {
+    return new AdminAccessError(
+      "auth_user_exists",
+      "This email already has a sign-in account and cannot receive an invite link",
+      409,
+    );
+  }
+  return error;
+}
+
 export function createSupabaseInviteAuthProvider(
   client: SupabaseClient,
   options: { sendInviteEmail?: InviteEmailSender } = {},
@@ -250,7 +267,7 @@ export function createSupabaseInviteAuthProvider(
         type: "invite",
         email,
       });
-      if (error) throw error;
+      if (error) throw inviteLinkError(error);
       if (!data.user?.id) {
         throw new Error("Supabase invite link generation did not return a user id");
       }
@@ -270,7 +287,7 @@ export function createSupabaseInviteAuthProvider(
         type: "invite",
         email,
       });
-      if (error) throw error;
+      if (error) throw inviteLinkError(error);
 
       const actionLink = data?.properties?.action_link;
       if (!actionLink) {
