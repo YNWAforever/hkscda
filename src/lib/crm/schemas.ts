@@ -30,7 +30,10 @@ const booleanSearch = z
   )
   .transform((value) => (value === undefined ? undefined : value === "true"));
 
-const pageNumber = z.coerce.number().int().min(1).catch(1);
+// Junk falls back to page 1 as before, but a huge page is refused: page × pageSize is an
+// int4 offset in crm_read_supporters, and 50,000,000 overflowed it into a 500 (BUG-18).
+const CRM_MAX_PAGE = 100_000;
+const pageNumber = z.coerce.number().int().min(1).catch(1).pipe(z.number().max(CRM_MAX_PAGE));
 const pageSize = z.coerce.number().int().min(1).max(100).catch(25);
 
 // Same limits as tag-bulk and public_supporter_identity_claims. Without them a single

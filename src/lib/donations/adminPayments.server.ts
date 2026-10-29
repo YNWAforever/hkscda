@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isRangeNotSatisfiable } from "../postgrestRange";
 
 import type { PaymentExportRow } from "../crm/csv";
 import {
@@ -58,6 +59,12 @@ async function readCountedRange<Row>(
       nextFrom,
       requestedTo,
     );
+    if (isRangeNotSatisfiable(error) && nextFrom === from) {
+      // A page past the end: report it empty, with the real total for the pager.
+      const first = await (buildQuery() as CountedRangeQuery<Row>).range(0, 0);
+      if (first.error) throw first.error;
+      return { rows, count: first.count ?? 0 };
+    }
     if (error) throw error;
 
     const batch = data ?? [];

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isRangeNotSatisfiable } from "../postgrestRange";
 
 import type {
   GroupEnquiry,
@@ -168,25 +169,32 @@ export function createSupabaseGroupEnquiryRepository(
 
     async list(input: GroupEnquirySearch) {
       const from = (input.page - 1) * input.pageSize;
-      let query = client
-        .from("group_enquiries")
-        .select(
-          "id,organisation,contact_name,activity_type,participant_count,status,notification_status,assigned_to,created_at",
-          { count: "exact" },
-        )
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false })
-        .range(from, from + input.pageSize - 1);
-      if (input.status) query = query.eq("status", input.status);
-      if (input.notificationStatus)
-        query = query.eq("notification_status", input.notificationStatus);
-      if (input.q) {
-        const like = postgrestLikeOperand(input.q);
-        query = query.or(
-          `organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`,
-        );
+      const filtered = () => {
+        let query = client
+          .from("group_enquiries")
+          .select(
+            "id,organisation,contact_name,activity_type,participant_count,status,notification_status,assigned_to,created_at",
+            { count: "exact" },
+          )
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: false });
+        if (input.status) query = query.eq("status", input.status);
+        if (input.notificationStatus)
+          query = query.eq("notification_status", input.notificationStatus);
+        if (input.q) {
+          const like = postgrestLikeOperand(input.q);
+          query = query.or(
+            `organisation.ilike.${like},contact_name.ilike.${like},contact_email.ilike.${like}`,
+          );
+        }
+        return query;
+      };
+      const { data, error, count } = await filtered().range(from, from + input.pageSize - 1);
+      if (isRangeNotSatisfiable(error)) {
+        const first = await filtered().range(0, 0);
+        if (first.error) throw first.error;
+        return { enquiries: [], total: first.count ?? 0 };
       }
-      const { data, error, count } = await query;
       if (error) throw error;
       return { enquiries: ((data ?? []) as GroupEnquiryRow[]).map(toSummary), total: count ?? 0 };
     },
