@@ -129,6 +129,11 @@ export type ContentRepository = {
     status: SocialCopyVariant["status"],
     actorUserId: string | null,
   ): Promise<void>;
+  updateSocialCopyWithAudit?(
+    id: string,
+    patch: SocialCopyUpdateInput,
+    actorUserId: string | null,
+  ): Promise<void>;
   updateNotificationDraftStatusWithAudit?(
     id: string,
     status: RecipientNotificationDraft["status"],
@@ -672,6 +677,22 @@ export function createContentService({
 
     async updateSocialCopy({ actorUserId, copyId, input }: UpdateSocialCopyArgs) {
       const parsed: SocialCopyUpdateInput = socialCopyUpdateSchema.parse(input);
+      // The change and its audit row are written in one transaction (BUG-06). A status-only
+      // change uses the existing social_status command; text and hashtags use
+      // update_social_copy_with_audit. The two-call path below is only for repositories
+      // without either RPC (test doubles).
+      const statusOnly =
+        parsed.status !== undefined &&
+        parsed.copyText === undefined &&
+        parsed.hashtags === undefined;
+      if (statusOnly && parsed.status !== undefined && repo.updateSocialCopyStatusWithAudit) {
+        await repo.updateSocialCopyStatusWithAudit(copyId, parsed.status, actorUserId);
+        return { ok: true };
+      }
+      if (repo.updateSocialCopyWithAudit) {
+        await repo.updateSocialCopyWithAudit(copyId, parsed, actorUserId);
+        return { ok: true };
+      }
       await repo.updateSocialCopy(copyId, parsed);
       await audit({
         actor_user_id: actorUserId,

@@ -1214,6 +1214,15 @@ export function createSupabaseContentRepository(client: SupabaseClient): Content
       if (error) throw error;
     },
 
+    async updateSocialCopyWithAudit(id, patch, actorUserId) {
+      const { error } = await client.rpc("update_social_copy_with_audit", {
+        p_actor: actorUserId,
+        p_id: id,
+        p_patch: patch,
+      });
+      if (error) throw error;
+    },
+
     async updateNotificationDraftStatusWithAudit(id, status, actorUserId) {
       const { error } = await client.rpc("cms_promotion_command", {
         p_actor: actorUserId,

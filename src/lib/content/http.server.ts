@@ -117,7 +117,11 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
       if (error && typeof error === "object" && "code" in error && error.code === "42501")
         return jsonResponse({ error: "Forbidden" }, { status: 403 });
       const message = getErrorMessage(error);
-      if (message === "Content item not found" || message === "Story update not found") {
+      if (
+        message === "Content item not found" ||
+        message === "Story update not found" ||
+        message === "social copy not found"
+      ) {
         return jsonResponse({ error: message }, { status: 404 });
       }
       if (message === "Story update does not belong to this content item") {
