@@ -90,6 +90,10 @@ export const conflictDomainErrors = new Set([
   "Adoption case is missing adopter profile",
   "Adoption case is missing supporter",
   "Approved match has no animal",
+  // finalize_successful_adoption refusals (BUG-02, migration 20261029160000).
+  "Animal already has a successful adoption",
+  "Adoption case already finalized",
+  "Adoption case is closed",
 ]);
 
 export async function responseError(error: Response) {

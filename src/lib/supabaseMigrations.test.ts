@@ -1236,19 +1236,17 @@ describe("admin animal and adoption RPC regressions", () => {
     }).toMatchObject({ pipelineStatusSurvivesPublish: true });
   });
 
-  // BUG-02: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
-  test.failing(
-    "BUG-02: finalize_successful_adoption refuses an animal that already has a successful adoption",
-    () => {
-      const finalize = latestFunctionBody("finalize_successful_adoption");
-      const refusesExistingAdoption = /from\s+public\.successful_adoption[\s\S]*?animal_id/i.test(
-        finalize.body,
-      );
-      expect({ file: finalize.file, refusesExistingAdoption }).toMatchObject({
-        refusesExistingAdoption: true,
-      });
-    },
-  );
+  // BUG-02: fixed by 20261029160000_finalize_adoption_once_per_animal.sql. Verified against
+  // Postgres 16, including two concurrent finalisations of the same animal.
+  test("BUG-02: finalize_successful_adoption refuses an animal that already has a successful adoption", () => {
+    const finalize = latestFunctionBody("finalize_successful_adoption");
+    const refusesExistingAdoption = /from\s+public\.successful_adoption[\s\S]*?animal_id/i.test(
+      finalize.body,
+    );
+    expect({ file: finalize.file, refusesExistingAdoption }).toMatchObject({
+      refusesExistingAdoption: true,
+    });
+  });
 
   // BUG-22: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
   test.failing(
