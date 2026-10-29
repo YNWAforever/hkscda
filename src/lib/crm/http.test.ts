@@ -230,6 +230,28 @@ describe("createCrmHandlers", () => {
     expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
+  test("BUG-03: creating a supporter on an existing email is a 409 naming that supporter", async () => {
+    const existingId = "8bda8e40-cf39-4659-8be8-f2d74f9d2046";
+    const service = createService({
+      async createSupporter() {
+        throw { code: "P4091", message: "supporter_exists", details: existingId, hint: null };
+      },
+    });
+    const handlers = createCrmHandlers({ requireTreasurer: async () => admin, service });
+    const response = await handlers.createSupporter({
+      request: new Request("https://example.com/api/admin/supporters", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: "Ada", email: "ada@example.com", language: "en" }),
+      }),
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({
+      error: { code: "supporter_exists", supporterId: existingId },
+    });
+  });
+
   for (const [label, error, status] of [
     [
       "an unknown supporter (P4040) is a 404",

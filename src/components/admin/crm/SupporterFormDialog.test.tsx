@@ -207,6 +207,19 @@ describe("supporter form dialog in English", () => {
     }
   });
 
+  test("BUG-03: an existing email gets its own message, not the stale-version reload", () => {
+    mutationError = Object.assign(new Error("A supporter with this email already exists"), {
+      status: 409,
+      code: "supporter_exists",
+    });
+    const texts = show({ mode: "create" }, createLoaded);
+    expectNoChineseText(texts.join("\n"));
+    expect(texts).toContain(
+      "A supporter with this email already exists. Search for that email and open the existing record instead.",
+    );
+    expect(texts).not.toContain("Discard my edits and reload");
+  });
+
   test("shows any other save error as it came, and a missing session in English", () => {
     mutationError = new Error("Email already in use");
     const failed = show({ mode: "create" }, createLoaded);

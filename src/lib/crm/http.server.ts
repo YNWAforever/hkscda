@@ -74,6 +74,24 @@ async function withCrmErrors(operation: () => Promise<Response>) {
       );
     }
 
+    // Create on an email that already belongs to a supporter (BUG-03, migration
+    // 20261029170000). The existing id comes back in DETAIL so the caller can open it.
+    if (error && typeof error === "object" && "code" in error && error.code === "P4091") {
+      const details = (error as { details?: unknown }).details;
+      return jsonResponse(
+        {
+          error: {
+            code: "supporter_exists",
+            message: "A supporter with this email already exists",
+            supporterId:
+              typeof details === "string" && z.string().uuid().safeParse(details).success
+                ? details
+                : null,
+          },
+        },
+        { status: 409 },
+      );
+    }
     // Raised by mutate_crm_supporter_with_audit; these were 500s (BUG-13).
     if (error && typeof error === "object" && "code" in error && error.code === "P4040") {
       return jsonResponse({ error: "Supporter not found" }, { status: 404 });

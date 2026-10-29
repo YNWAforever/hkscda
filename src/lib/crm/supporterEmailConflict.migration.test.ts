@@ -28,21 +28,19 @@ function latestBody(qualifiedName: string): string {
 const EMAIL_UPSERT = /on conflict\s*\(\s*email\s*\)\s*do update/;
 
 describe("supporter creation on an existing email", () => {
-  // BUG-03: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
-  test.failing(
-    "BUG-03: the create branch of mutate_crm_supporter_with_audit refuses an existing email instead of overwriting it",
-    () => {
-      const body = latestBody("public.mutate_crm_supporter_with_audit");
-      const start = body.indexOf("if p_operation = 'create' then");
-      const end = body.indexOf("elsif p_operation = 'update' then", start);
-      expect(start).toBeGreaterThan(-1);
-      expect(end).toBeGreaterThan(start);
-      const createBranch = body.slice(start, end);
-      expect(createBranch).not.toMatch(EMAIL_UPSERT);
-      expect(createBranch).not.toContain("deleted_at = null");
-      expect(body).toContain("supporter_exists");
-    },
-  );
+  // BUG-03: fixed by 20261029170000_crm_create_refuses_existing_email.sql. Verified against
+  // Postgres 16 with the real CRM functions; an exact retry still returns the same supporter.
+  test("BUG-03: the create branch of mutate_crm_supporter_with_audit refuses an existing email instead of overwriting it", () => {
+    const body = latestBody("public.mutate_crm_supporter_with_audit");
+    const start = body.indexOf("if p_operation = 'create' then");
+    const end = body.indexOf("elsif p_operation = 'update' then", start);
+    expect(start).toBeGreaterThan(-1);
+    expect(end).toBeGreaterThan(start);
+    const createBranch = body.slice(start, end);
+    expect(createBranch).not.toMatch(EMAIL_UPSERT);
+    expect(createBranch).not.toContain("deleted_at = null");
+    expect(body).toContain("supporter_exists");
+  });
 
   // BUG-23: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
   test.failing(
