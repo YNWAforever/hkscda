@@ -33,7 +33,9 @@ export function createFaqService({ repo }: { repo: FaqRepository }) {
 
     async upsert({ actorUserId, input }: { actorUserId: string; input: unknown }) {
       const parsed = upsertFaqEntrySchema.parse(input);
-      const { id, ...rest } = parsed;
+      const { id: submittedId, ...rest } = parsed;
+      // UUID validation preserves casing; Postgres returns canonical lowercase ids.
+      const id = submittedId?.toLowerCase();
       if (id && !parsed.isActive) {
         const current = (await repo.listAdmin()).find((entry) => entry.id === id);
         if (current?.isActive) throw new FaqDeactivationRequiresReasonError();

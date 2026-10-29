@@ -302,6 +302,31 @@ describe("createAdminFaqHandlers with the real service — regression", () => {
     expect(repo.upsert).not.toHaveBeenCalled();
   });
 
+  test.each(["ABCDEFAB-1234-4ABC-8DEF-ABCDEFABCDEF", "AbCdEfAb-1234-4aBc-8dEf-AbCdEfAbCdEf"])(
+    "BUG-07: differently cased UUID %s still requires a reason to deactivate",
+    async (id) => {
+      const repo = createRepo({
+        listAdmin: mock(async () => [
+          existingEntry({ id: "abcdefab-1234-4abc-8def-abcdefabcdef" }),
+        ]),
+      });
+      const handlers = createAdminFaqHandlers({
+        requireFaqAdmin: mock(async () => admin),
+        service: createFaqService({ repo }),
+      });
+
+      const response = await handlers.upsert({
+        request: request("http://localhost/x", {
+          method: "POST",
+          body: JSON.stringify(body({ id, isActive: false })),
+        }),
+      });
+
+      expect(response.status).toBe(400);
+      expect(repo.upsert).not.toHaveBeenCalled();
+    },
+  );
+
   test("BUG-16: upsert of an unknown FAQ id (P0002) returns 404, not 500", async () => {
     const repo = createRepo({
       listAdmin: mock(async () => []),
