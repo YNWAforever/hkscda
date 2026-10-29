@@ -159,7 +159,8 @@ export function SupporterFormDialog(props: SupporterFormDialogProps) {
           tags: splitTags(draft.tags),
           roles: draft.roles,
           expectedVersion: editVersion,
-          deleted: false,
+          // No `deleted` here: this form has no delete or restore control, and always sending
+          // false silently restored a soft-deleted supporter on any edit (BUG-24).
         }),
       });
     },
