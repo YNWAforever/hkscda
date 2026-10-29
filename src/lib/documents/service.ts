@@ -292,9 +292,30 @@ export function createDocumentService({
     async updateAsset({ actorUserId, assetId, input }: AssetActionArgs & { input: unknown }) {
       const parsedAssetId = documentIdSchema.parse(assetId);
       const parsed = updateAssetInputSchema.parse(input);
-      if (parsed.objectPath !== undefined || parsed.kind !== undefined) {
+      if (
+        parsed.objectPath !== undefined ||
+        parsed.kind !== undefined ||
+        parsed.language !== undefined ||
+        parsed.checksumSha256 !== undefined
+      ) {
         const current = await repo.getAssetById(parsedAssetId);
         if (!current) throw new Error("Document asset not found");
+        // What a served document *is* stays fixed while anything serves it. The checksum is
+        // the sponsorship-terms version recorded as pledge consent evidence, and kind and
+        // language decide which slot finds the asset; changing any of them in place rewrote
+        // that evidence or left /api/sponsorships/pledges without terms (BUG-08).
+        const identityChanged =
+          (parsed.kind !== undefined && parsed.kind !== current.kind) ||
+          (parsed.language !== undefined && parsed.language !== current.language) ||
+          (parsed.checksumSha256 !== undefined && parsed.checksumSha256 !== current.checksumSha256);
+        if (
+          identityChanged &&
+          (current.isPublished || (await repo.hasPublishedSlotReference(parsedAssetId)))
+        ) {
+          throw new DocumentConflictError(
+            "Unpublish the document before changing its kind, language or checksum",
+          );
+        }
         if (
           current.isPublished &&
           parsed.objectPath !== undefined &&
