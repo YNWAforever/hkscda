@@ -58,6 +58,20 @@ function searchParams(request: Request) {
 
 const notFoundDomainErrors = new Set(["Group enquiry not found"]);
 
+// A malformed id reached Postgres as 22P02, and a PATCH carrying no field to change was
+// refused by the RPC as 22023; both were 500s (BUG-17).
+function groupEnquiryId(value: string) {
+  if (!z.string().uuid().safeParse(value).success)
+    throw jsonNoStore({ error: "Invalid group enquiry id" }, { status: 400 });
+  return value;
+}
+
+function requireSomePatchField<T extends Record<string, unknown>>(body: T) {
+  if (!["status", "assignedTo", "adminNotes"].some((field) => field in body))
+    throw jsonNoStore({ error: "Nothing to update" }, { status: 400 });
+  return body;
+}
+
 async function withAdminGroupEnquiryErrors(operation: () => Promise<Response>) {
   try {
     return await operation();
@@ -93,7 +107,7 @@ export function createAdminGroupEnquiryHandlers({
         await requireVolunteerAdmin(request);
         const params = searchParams(request);
         if (typeof params.id === "string" && params.id) {
-          return jsonNoStore(await service.getGroupEnquiry(params.id));
+          return jsonNoStore(await service.getGroupEnquiry(groupEnquiryId(params.id)));
         }
         return jsonNoStore(await service.listGroupEnquiries(params));
       });
@@ -107,18 +121,19 @@ export function createAdminGroupEnquiryHandlers({
         const admin = await requireVolunteerAdmin(request);
         const body = (await jsonBody(request)) as { id?: string; action?: string };
         if (!body.id) return jsonNoStore({ error: "Missing group enquiry id" }, { status: 400 });
+        const id = groupEnquiryId(body.id);
         if (body.action === "retryNotification") {
           return jsonNoStore(
             await service.retryGroupEnquiryNotification({
-              id: body.id,
+              id,
               actorUserId: admin.authUserId,
             }),
           );
         }
         return jsonNoStore(
           await service.updateGroupEnquiry({
-            id: body.id,
-            input: body,
+            id,
+            input: requireSomePatchField(body),
             actorUserId: admin.authUserId,
           }),
         );

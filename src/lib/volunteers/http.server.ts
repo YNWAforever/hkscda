@@ -99,6 +99,17 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
         },
         { status: triggerRefusal.status },
       );
+    // A table check constraint (for example an update moving endsAt before the stored
+    // startsAt) is invalid input, not a server fault (BUG-17).
+    if (error && typeof error === "object" && "code" in error && error.code === "23514")
+      return jsonResponse(
+        {
+          error: publicRequest
+            ? "Invalid volunteer registration request"
+            : "Invalid volunteer management request",
+        },
+        { status: 400 },
+      );
     const failure = volunteerPolicyFailure(error);
     if (failure)
       return jsonResponse(

@@ -58,7 +58,7 @@ export const volunteerRegistrationSearchSchema = z.object({
   pageSize: boundedPageSize.default(25),
 });
 
-export const adminActivityInputSchema = z.object({
+const adminActivityFieldsSchema = z.object({
   idempotencyKey: z.string().uuid().optional(),
   type: z.enum(volunteerActivityTypes),
   title: trimmed.min(1).max(160),
@@ -75,9 +75,31 @@ export const adminActivityInputSchema = z.object({
   registrationModes: z.array(z.enum(volunteerRegistrationTypes)).min(1),
 });
 
-export const adminActivityUpdateSchema = adminActivityInputSchema
+/**
+ * The table checks ends_at >= starts_at, but the schema did not, so an end before the
+ * start reached Postgres as 23514 and came back as a 500 (BUG-17). An update that sends
+ * only one of the two is checked against the stored value by that constraint.
+ */
+function endsAtOrAfterStart(
+  input: { startsAt?: string; endsAt?: string | null },
+  ctx: z.RefinementCtx,
+) {
+  if (!input.startsAt || !input.endsAt) return;
+  if (Date.parse(input.endsAt) < Date.parse(input.startsAt)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["endsAt"],
+      message: "endsAt must not be before startsAt",
+    });
+  }
+}
+
+export const adminActivityInputSchema = adminActivityFieldsSchema.superRefine(endsAtOrAfterStart);
+
+export const adminActivityUpdateSchema = adminActivityFieldsSchema
   .partial()
-  .extend({ expectedUpdatedAt: z.string().datetime({ offset: true }) });
+  .extend({ expectedUpdatedAt: z.string().datetime({ offset: true }) })
+  .superRefine(endsAtOrAfterStart);
 
 /**
  * A status change. Rejecting needs a reason (trimmed, 1-500 characters; SP-5b-2); every other

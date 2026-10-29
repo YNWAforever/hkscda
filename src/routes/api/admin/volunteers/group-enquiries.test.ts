@@ -14,8 +14,10 @@ const admin = {
   role: "staff" as const,
   status: "active" as const,
 };
+// Group enquiry ids are UUIDs; the handler rejects anything else with 400 (BUG-17).
+const ENQUIRY_ID = "66666666-6666-4666-8666-666666666666";
 const enquiry: GroupEnquiry = {
-  id: "enquiry-1",
+  id: ENQUIRY_ID,
   organisationName: "Happy School",
   contactPerson: "Ms Chan",
   email: "lead@example.com",
@@ -112,7 +114,7 @@ describe("admin group enquiry handlers", () => {
       (
         await handlers.listOrGet({
           request: request(
-            "https://example.test/api/admin/volunteers/group-enquiries?id=enquiry-1",
+            `https://example.test/api/admin/volunteers/group-enquiries?id=${ENQUIRY_ID}`,
           ),
         })
       ).status,
@@ -122,7 +124,7 @@ describe("admin group enquiry handlers", () => {
         await handlers.update({
           request: request(undefined, {
             method: "PATCH",
-            body: JSON.stringify({ id: "enquiry-1", status: "resolved", adminNotes: "done" }),
+            body: JSON.stringify({ id: ENQUIRY_ID, status: "resolved", adminNotes: "done" }),
           }),
         })
       ).status,
@@ -132,7 +134,7 @@ describe("admin group enquiry handlers", () => {
         await handlers.update({
           request: request(undefined, {
             method: "PATCH",
-            body: JSON.stringify({ id: "enquiry-1", action: "retryNotification" }),
+            body: JSON.stringify({ id: ENQUIRY_ID, action: "retryNotification" }),
           }),
         })
       ).status,
