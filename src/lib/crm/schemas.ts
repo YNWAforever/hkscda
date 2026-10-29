@@ -33,8 +33,16 @@ const booleanSearch = z
 const pageNumber = z.coerce.number().int().min(1).catch(1);
 const pageSize = z.coerce.number().int().min(1).max(100).catch(25);
 
+// Same limits as tag-bulk and public_supporter_identity_claims. Without them a single
+// PATCH could store a 100k-character phone or 20,000 tags, then copy them into
+// audit_log.detail and every export (BUG-12).
+const SUPPORTER_PHONE_MAX = 40;
+const SUPPORTER_TAG_MAX = 40;
+const SUPPORTER_TAGS_MAX = 50;
+
 const normalizedTags = z
-  .array(z.string())
+  .array(z.string().trim().max(SUPPORTER_TAG_MAX))
+  .max(SUPPORTER_TAGS_MAX)
   .optional()
   .default([])
   .transform((tags) => [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))]);
@@ -115,7 +123,10 @@ export const supporterInputSchema = z.object({
     .email()
     .max(254)
     .transform((email) => email.toLowerCase()),
-  phone: optionalTrimmed,
+  phone: optionalTrimmed.refine(
+    (value) => value === undefined || value.length <= SUPPORTER_PHONE_MAX,
+    { message: `Phone must be at most ${SUPPORTER_PHONE_MAX} characters` },
+  ),
   language: z.enum(crmLanguages),
   tags: normalizedTags,
   roles: normalizedRoles,
@@ -125,7 +136,9 @@ export const supporterInputSchema = z.object({
 export const supporterUpdateSchema = z.object({
   expectedVersion: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
   name: z.string().trim().min(1).max(120).optional(),
-  phone: nullableTrimmed,
+  phone: nullableTrimmed.refine((value) => value == null || value.length <= SUPPORTER_PHONE_MAX, {
+    message: `Phone must be at most ${SUPPORTER_PHONE_MAX} characters`,
+  }),
   language: z.enum(crmLanguages).optional(),
   tags: normalizedTags.optional(),
   roles: optionalNormalizedRoles,
