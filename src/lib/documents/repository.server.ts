@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { annualReportInputSchema, documentAssetInputSchema, documentIdSchema } from "./schemas";
 import type { AnnualReportInput, DocumentAssetInput, DocumentListSearch } from "./schemas";
-import { DocumentConflictError, type DocumentAuditLogInsert } from "./service";
+import {
+  DocumentConflictError,
+  DocumentNotFoundError,
+  type DocumentAuditLogInsert,
+} from "./service";
 import type { AnnualReport, DocumentAsset, DocumentSlot } from "./types";
 
 const SITE_DOCUMENTS_BUCKET = "site-documents";
@@ -28,6 +32,12 @@ function throwRepositoryError(error: unknown): never {
   ) {
     throw new DocumentConflictError("Document record conflicts with existing data");
   }
+  const code = error && typeof error === "object" ? (error as { code?: unknown }).code : null;
+  // BUG-16: these were 500s. 23503 is a delete blocked by something still referencing the
+  // asset (a knowledge post or adoption-guide release, which countAssetReferences does not see).
+  if (code === "P0002") throw new DocumentNotFoundError("Document record not found");
+  if (code === "23503")
+    throw new DocumentConflictError("This document is still used elsewhere; remove that use first");
   throw error;
 }
 

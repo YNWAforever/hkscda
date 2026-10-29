@@ -45,6 +45,10 @@ async function withFaqErrors(operation: () => Promise<Response>) {
       return jsonNoStore({ error: "Invalid FAQ request" }, { status: 400 });
     if (error instanceof FaqDeactivationRequiresReasonError)
       return jsonNoStore({ error: error.message }, { status: 400 });
+    // The upsert/deactivate RPCs raise P0002 for an unknown id, as knowledge and governance
+    // already map (BUG-16).
+    if (error && typeof error === "object" && "code" in error && error.code === "P0002")
+      return jsonNoStore({ error: "FAQ entry not found" }, { status: 404 });
     console.error(error);
     return jsonNoStore({ error: "Could not process FAQ request" }, { status: 500 });
   }
