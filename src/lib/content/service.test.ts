@@ -1,4 +1,5 @@
-import { describe, expect, mock, test } from "bun:test";
+import { describe, expect, mock, spyOn, test } from "bun:test";
+import { createContentHandlers } from "./http.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
@@ -1251,4 +1252,50 @@ describe("createContentService searchLinks", () => {
     expect(searchLinks).toHaveBeenCalledWith({ linkedType: "animal", q: "mi", limit: 5 });
     expect(result).toHaveLength(1);
   });
+});
+
+describe("social-copy PATCH audit atomicity — regression", () => {
+  // BUG-06: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
+  test.failing(
+    "BUG-06: PATCH social copy goes through an atomic *WithAudit write, never a bare updateSocialCopy",
+    async () => {
+      const updateSocialCopy = mock(async () => undefined);
+      const updateSocialCopyStatusWithAudit = mock(async () => undefined);
+      const { repo } = createRepo({
+        updateSocialCopy,
+        updateSocialCopyStatusWithAudit,
+        insertAuditLog: async () => {
+          throw new Error("audit insert failed");
+        },
+      });
+      const handlers = createContentHandlers({
+        requireContentAdmin: async () => ({
+          id: "admin-row",
+          authUserId: "11111111-2222-4333-8444-555555555555",
+          email: "staff@example.com",
+          role: "staff",
+          status: "active",
+        }),
+        service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+      });
+      const logged = spyOn(console, "error").mockImplementation(() => {});
+
+      try {
+        await handlers.updateSocialCopyStatus({
+          request: new Request("http://localhost/x", {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ status: "archived" }),
+          }),
+          params: { id: "55555555-5555-4555-8555-555555555555" },
+        });
+      } finally {
+        logged.mockRestore();
+      }
+
+      // A non-atomic update followed by a failing audit insert leaves the change
+      // applied but unaudited.
+      expect(updateSocialCopy).not.toHaveBeenCalled();
+    },
+  );
 });

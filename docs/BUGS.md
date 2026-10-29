@@ -16,38 +16,40 @@ Proof scripts (throwaway, not committed) are under the session scratchpad
 
 ## Summary
 
-| ID     | Sev  | Area          | Title                                                                                                   | Status           | Fix             |
-| ------ | ---- | ------------- | ------------------------------------------------------------------------------------------------------- | ---------------- | --------------- |
-| BUG-01 | High | Animals       | Publishing an animal draft reverts a status set in the coordinator pipeline                             | Traced           | migration       |
-| BUG-02 | Med  | Adoptions     | Same animal can be finalised as adopted in two cases; closed case silently reopened                     | Traced           | migration       |
-| BUG-03 | Med  | CRM           | "New supporter" with an existing email overwrites it, un-deletes it and wipes its roles                 | Traced           | migration       |
-| BUG-04 | Med  | Finance       | Receipt tax year and number use the UTC year, not HKT                                                   | Proven           | code            |
-| BUG-05 | Med  | Finance       | "Issue receipt" and "awaiting receipt" count ignore the HK$100 eligibility rule                         | Proven           | code            |
-| BUG-06 | Med  | Content       | Social-copy PATCH writes its audit row in a separate call (not atomic)                                  | Proven           | migration       |
-| BUG-07 | Med  | FAQ           | FAQ entry can be deactivated without the required reason; `"false"` parses as `true`                    | Proven           | code            |
-| BUG-08 | Med  | Documents     | A published document's checksum/kind can be edited (changes sponsorship-terms version, can 503 pledges) | Proven           | code            |
-| BUG-09 | Med  | Coordinator   | Monthly report/export history uses UTC months; month `13` accepted                                      | Proven           | code            |
-| BUG-10 | Med  | Volunteers    | Waitlist policy refusals return 500 "try again" instead of 409 with the reason                          | Proven           | code            |
-| BUG-11 | Med  | Access        | Inviting an email that already has a confirmed Auth account returns 500                                 | Plausible        | code            |
-| BUG-12 | Med  | CRM           | Supporter phone and tags have no length or count limits                                                 | Proven           | code            |
-| BUG-13 | Low  | CRM / Access  | Not-found / bad-payload / non-UUID id return 500 instead of 404/400                                     | Proven           | code            |
-| BUG-14 | Low  | Finance       | Reconcile with non-UUID id → 500; voiding an already-void receipt → 500                                 | Proven           | code            |
-| BUG-15 | Low  | Adoptions     | Duplicate case number on finalise, unknown animal on internal profile, bad list section → 500           | Proven           | code            |
-| BUG-16 | Low  | Docs / FAQ    | Unknown id, missing upload, wrong asset kind → 500 instead of 404/409/422                               | Proven           | code            |
-| BUG-17 | Low  | Volunteers    | End before start, bad qualification dates, non-UUID / empty group-enquiry patch → 500                   | Proven           | code            |
-| BUG-18 | Low  | Lists         | Page numbers past the end or very large page numbers → 500                                              | Proven/Plausible | code            |
-| BUG-19 | Low  | Finance       | Payments CSV export: no audit row, no row cap, no `no-store`                                            | Traced           | code            |
-| BUG-20 | Low  | Coordinator   | Regenerating an export writes two audit rows and is counted twice                                       | Proven           | code            |
-| BUG-21 | Low  | Coordinator   | Coordinator CSV exports silently stop at 1,000 rows                                                     | Traced           | code            |
-| BUG-22 | Low  | Animals       | Draft save/restore write no audit row; restore has no revision fence                                    | Traced           | migration       |
-| BUG-23 | Low  | Finance / CRM | Manual gift with inline supporter overwrites an existing supporter (API only)                           | Traced           | migration       |
-| BUG-24 | Low  | CRM UI        | Saving an edit on a soft-deleted supporter always restores it                                           | Traced           | code            |
-| BUG-25 | Low  | Access        | Invite links have no `redirectTo`; invitee has no set-password step                                     | Traced           | code + decision |
-| BUG-26 | Low  | AuthZ         | Two admin routes read and validate the body before `requireAdmin`                                       | Proven           | code            |
-| BUG-27 | Low  | Animals       | Photo-upload URL maps every auth failure (incl. DB errors) to 401                                       | Proven           | code            |
-| BUG-28 | Low  | Admin UI      | Staff see actions they cannot use; stale rows after a 409 on reconcile                                  | Traced           | code            |
-| BUG-29 | Low  | Volunteers    | Publishing an unbound legacy draft shows "data was updated" instead of the real reason                  | Traced           | code            |
-| BUG-30 | Med  | Dependencies  | seroval (SSR serialiser) and Vite have in-range security patches available                              | Verified         | lockfile        |
+| ID     | Sev  | Area           | Title                                                                                                   | Status           | Fix             |
+| ------ | ---- | -------------- | ------------------------------------------------------------------------------------------------------- | ---------------- | --------------- |
+| BUG-01 | High | Animals        | Publishing an animal draft reverts a status set in the coordinator pipeline                             | Traced           | migration       |
+| BUG-02 | Med  | Adoptions      | Same animal can be finalised as adopted in two cases; closed case silently reopened                     | Traced           | migration       |
+| BUG-03 | Med  | CRM            | "New supporter" with an existing email overwrites it, un-deletes it and wipes its roles                 | Traced           | migration       |
+| BUG-04 | Med  | Finance        | Receipt tax year and number use the UTC year, not HKT                                                   | Proven           | code            |
+| BUG-05 | Med  | Finance        | "Issue receipt" and "awaiting receipt" count ignore the HK$100 eligibility rule                         | Proven           | code            |
+| BUG-06 | Med  | Content        | Social-copy PATCH writes its audit row in a separate call (not atomic)                                  | Proven           | migration       |
+| BUG-07 | Med  | FAQ            | FAQ entry can be deactivated without the required reason; `"false"` parses as `true`                    | Proven           | code            |
+| BUG-08 | Med  | Documents      | A published document's checksum/kind can be edited (changes sponsorship-terms version, can 503 pledges) | Proven           | code            |
+| BUG-09 | Med  | Coordinator    | Monthly report/export history uses UTC months; month `13` accepted                                      | Proven           | code            |
+| BUG-10 | Med  | Volunteers     | Waitlist policy refusals return 500 "try again" instead of 409 with the reason                          | Proven           | code            |
+| BUG-11 | Med  | Access         | Inviting an email that already has a confirmed Auth account returns 500                                 | Plausible        | code            |
+| BUG-12 | Med  | CRM            | Supporter phone and tags have no length or count limits                                                 | Proven           | code            |
+| BUG-13 | Low  | CRM / Access   | Not-found / bad-payload / non-UUID id return 500 instead of 404/400                                     | Proven           | code            |
+| BUG-14 | Low  | Finance        | Reconcile with non-UUID id → 500; voiding an already-void receipt → 500                                 | Proven           | code            |
+| BUG-15 | Low  | Adoptions      | Duplicate case number on finalise, unknown animal on internal profile, bad list section → 500           | Proven           | code            |
+| BUG-16 | Low  | Docs / FAQ     | Unknown id, missing upload, wrong asset kind → 500 instead of 404/409/422                               | Proven           | code            |
+| BUG-17 | Low  | Volunteers     | End before start, bad qualification dates, non-UUID / empty group-enquiry patch → 500                   | Proven           | code            |
+| BUG-18 | Low  | Lists          | Page numbers past the end or very large page numbers → 500                                              | Proven/Plausible | code            |
+| BUG-19 | Low  | Finance        | Payments CSV export: no audit row, no row cap, no `no-store`                                            | Traced           | code            |
+| BUG-20 | Low  | Coordinator    | Regenerating an export writes two audit rows and is counted twice                                       | Proven           | code            |
+| BUG-21 | Low  | Coordinator    | Coordinator CSV exports silently stop at 1,000 rows                                                     | Traced           | code            |
+| BUG-22 | Low  | Animals        | Draft save/restore write no audit row; restore has no revision fence                                    | Traced           | migration       |
+| BUG-23 | Low  | Finance / CRM  | Manual gift with inline supporter overwrites an existing supporter (API only)                           | Traced           | migration       |
+| BUG-24 | Low  | CRM UI         | Saving an edit on a soft-deleted supporter always restores it                                           | Traced           | code            |
+| BUG-25 | Low  | Access         | Invite links have no `redirectTo`; invitee has no set-password step                                     | Traced           | code + decision |
+| BUG-26 | Low  | AuthZ          | Two admin routes read and validate the body before `requireAdmin`                                       | Proven           | code            |
+| BUG-27 | Low  | Animals        | Photo-upload URL maps every auth failure (incl. DB errors) to 401                                       | Proven           | code            |
+| BUG-28 | Low  | Admin UI       | Staff see actions they cannot use; stale rows after a 409 on reconcile                                  | Traced           | code            |
+| BUG-29 | Low  | Volunteers     | Publishing an unbound legacy draft shows "data was updated" instead of the real reason                  | Traced           | code            |
+| BUG-30 | Med  | Dependencies   | seroval (SSR serialiser) and Vite have in-range security patches available                              | Verified         | lockfile        |
+| BUG-31 | Med  | Auth / session | A revoked or expired server session strands the admin on a generic error with no way out                | Proven (E2E)     | code            |
+| BUG-32 | Low  | Admin UI       | Offline navigation shows the previous list's empty state instead of an offline/failure notice           | Proven (E2E)     | code            |
 
 Severity rubric: **Critical** = unauthenticated data access or money loss. **High** =
 public data integrity or authorization defect with normal use. **Med** = wrong
@@ -349,6 +351,7 @@ deleted_at = null`, then the roles are replaced). Callers: `src/lib/crm/service.
 - `src/lib/animals/photoUpload.http.server.ts:43-50` catches _any_ error from
   `requireAnimalAdmin` and returns 401. A wrong role should be 403, and a database
   outage should be 500, not "sign in again".
+- The runtime sweep shows `animals/draft-photo-upload-url` has the same mapping.
 - **Fix:** rethrow `Response` as-is (keep 401/403 opaque); let other errors → 500.
 
 ### BUG-28 — Low — Admin UI shows unusable actions / stale rows
@@ -376,6 +379,31 @@ deleted_at = null`, then the roles are replaced). Callers: `src/lib/crm/service.
   then re-run all gates. **`zod` 3 → 4 (GHSA-mrhx-c7xc-m3w5) is a major upgrade and is
   deferred pending approval.** Exposure is limited because admin bodies are capped at
   8 MB and public bodies at 1 MB.
+
+### BUG-31 — Med — Revoked or expired server session strands the admin
+
+- **Where:** `src/lib/admin/session.ts` `requireSignedInAdminIdentity` redirects to login
+  only when the browser has _no_ session. When the browser still holds a token the server
+  rejects (token revoked, password changed, signed out elsewhere, or a tampered token),
+  `ensureQueryData(adminIdentityQueryOptions())` throws `AdminHttpError` 401 from
+  `/api/admin/me`. Nothing handles it, so the route renders the generic "無法載入 / 重試" screen.
+- **Repro (E2E `tests/e2e/admin/admin.e2e.ts`):** sign in, revoke the session on the
+  auth server, reload `/admin`. **Expected:** the stored session is cleared and the user
+  lands on `/admin/login?redirect=…`. **Actual:** a full-page error with only a retry
+  button that fails again. There is no logout button, so the only way out is clearing
+  site data.
+- **Fix:** in `requireSignedInAdminIdentity`, on a 401 (`AdminHttpError`/`AdminSessionError`),
+  sign out locally, clear the identity query and redirect to login.
+
+### BUG-32 — Low — Offline navigation shows a misleading empty state
+
+- **Where:** `src/queryClient.ts` (React Query's default `networkMode: "online"` pauses
+  queries while offline) and the animal list, which keeps the previous result as placeholder data.
+- **Repro (E2E):** sign in, go offline, open the "狗狗" tab. **Expected:** an
+  offline/failed-load notice with retry. **Actual:** "此分類尚未有動物記錄。" (no records
+  in this category). The request never runs, and staff are told the category is empty.
+- **Fix:** when a list query's `fetchStatus` is `paused` with no data for the current
+  key, render the shared `LoadFailure` (or an offline notice) instead of the placeholder.
 
 ## Not filed as bugs (recorded for the report)
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
 import { createCrmHandlers } from "./http.server";
+import { createCrmService, type CrmRepository } from "./service";
 
 const admin: AdminUser = {
   id: "treasurer-row",
@@ -227,5 +228,71 @@ describe("createCrmHandlers", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  for (const [label, error, status] of [
+    [
+      "an unknown supporter (P4040) is a 404",
+      { code: "P4040", message: "supporter_not_found" },
+      404,
+    ],
+    [
+      "an invalid supporter payload (22023) is a 400",
+      { code: "22023", message: "invalid_supporter_payload" },
+      400,
+    ],
+  ] as const) {
+    test(`BUG-13: a supporter PATCH where ${label}, not a 500`, async () => {
+      const service = createService({
+        async updateSupporter() {
+          throw error;
+        },
+      });
+      const handlers = createCrmHandlers({ requireTreasurer: async () => admin, service });
+      const originalError = console.error;
+      console.error = () => {};
+      try {
+        const response = await handlers.updateSupporter({
+          request: new Request(
+            "https://example.com/api/admin/supporters/8bda8e40-cf39-4659-8be8-f2d74f9d2046",
+            {
+              method: "PATCH",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ name: "Ada New", expectedVersion: 4 }),
+            },
+          ),
+          params: { id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046" },
+        });
+        expect(response.status).toBe(status);
+      } finally {
+        console.error = originalError;
+      }
+    });
+  }
+
+  test("BUG-18: a supporter list page past a sane cap is a 400 that never reaches the repository", async () => {
+    let repositoryCalls = 0;
+    const repo = {
+      async listSupporters() {
+        repositoryCalls += 1;
+        // Postgres would overflow int4 p_offset here and answer 22003.
+        throw { code: "22003", message: "integer out of range" };
+      },
+    } as unknown as CrmRepository;
+    const handlers = createCrmHandlers({
+      requireTreasurer: async () => admin,
+      service: createCrmService({ repo }),
+    });
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.listSupporters({
+        request: new Request("https://example.com/api/admin/supporters?page=50000000"),
+      });
+      expect(response.status).toBe(400);
+      expect(repositoryCalls).toBe(0);
+    } finally {
+      console.error = originalError;
+    }
   });
 });

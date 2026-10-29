@@ -206,6 +206,18 @@ describe("adoption coordinator schemas", () => {
     });
   });
 
+  test("BUG-09: coordinator report months reject month 13 and month 00", () => {
+    for (const month of ["2026-13", "2026-00"]) {
+      expect(coordinatorMonthlySummarySearchSchema.safeParse({ month }).success).toBe(false);
+      expect(
+        coordinatorReportHistorySearchSchema.safeParse({ month, page: 1, pageSize: 25 }).success,
+      ).toBe(false);
+    }
+    expect(coordinatorMonthlySummarySearchSchema.safeParse({ month: "2026-12" }).success).toBe(
+      true,
+    );
+  });
+
   test("rejects invalid status keys", () => {
     expect(() =>
       statusInputSchema.parse({

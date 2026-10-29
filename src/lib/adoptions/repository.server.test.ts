@@ -5,7 +5,7 @@ import {
   createSupabaseAdoptionCoordinatorRepository,
   hongKongDayBounds,
 } from "./repository.server";
-import type { CaseFromPublicApplicationInput } from "./service";
+import { createAdoptionCoordinatorService, type CaseFromPublicApplicationInput } from "./service";
 import type { AnimalPipelineRow } from "./types";
 
 const statusId = "33333333-4444-4333-8444-555555555555";
@@ -3088,6 +3088,93 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         revokedAt: null,
         lastViewedAt: "2026-06-28T08:00:00.000Z",
       },
+    });
+  });
+});
+
+describe("coordinator reporting regressions", () => {
+  test("BUG-09: monthly summary counts a case created 03:00 HKT on 1 Oct in October", async () => {
+    const { repo, calls } = setupRepository({
+      caseRows: [
+        caseRow({
+          id: "case-hkt-october",
+          source: "public_form",
+          // 2026-10-01 03:00 in Hong Kong (UTC+8).
+          created_at: "2026-09-30T19:00:00.000Z",
+        }),
+      ],
+    });
+
+    const summary = await withFixedDate("2026-10-29T00:00:00.000Z", () =>
+      repo.getCoordinatorMonthlySummary({ month: "2026-10" }),
+    );
+
+    expect(summary.publicIntakeCases).toBe(1);
+    expect(calls).toContainEqual({
+      table: "adoption_case",
+      method: "gte",
+      payload: { column: "created_at", value: "2026-09-30T16:00:00.000Z" },
+    });
+    expect(calls).toContainEqual({
+      table: "adoption_case",
+      method: "lt",
+      payload: { column: "created_at", value: "2026-10-31T16:00:00.000Z" },
+    });
+  });
+
+  test("BUG-09: export history for October includes an export run 04:00 HKT on 1 Oct", async () => {
+    const { repo } = setupRepository({
+      auditRows: [
+        {
+          id: "aaaaaaaa-bbbb-4333-8444-555555555555",
+          actor_user_id: createdSupporterId,
+          action: "coordinator_export.cases",
+          entity: "coordinator_export",
+          entity_id: "cases",
+          // 2026-10-01 04:00 in Hong Kong (UTC+8).
+          timestamp: "2026-09-30T20:00:00.000Z",
+          detail: { kind: "cases", filters: {}, rowCount: 3 },
+        },
+      ],
+    });
+
+    const history = await repo.listCoordinatorExportHistory({
+      month: "2026-10",
+      page: 1,
+      pageSize: 25,
+    });
+
+    expect(history.total).toBe(1);
+    expect(history.exports.map((row) => row.id)).toEqual(["aaaaaaaa-bbbb-4333-8444-555555555555"]);
+  });
+
+  test("BUG-21: coordinator case CSV export includes every row past PostgREST's 1,000-row cap", async () => {
+    const caseRows = Array.from({ length: 1500 }, (_, index) =>
+      caseRow({
+        id: `case-${String(index).padStart(4, "0")}`,
+        created_at: new Date(Date.UTC(2026, 5, 1) + index * 60_000).toISOString(),
+      }),
+    );
+    const { repo, calls } = setupRepository({ caseRows, serverRowCap: 1000 });
+    const service = createAdoptionCoordinatorService({
+      repo,
+      now: () => new Date("2026-10-29T00:00:00.000Z"),
+    });
+
+    const result = await service.exportCoordinatorCsv({
+      actorUserId: createdSupporterId,
+      kind: "cases",
+      rawSearch: {},
+    });
+
+    expect(result.rowCount).toBe(1500);
+    expect(result.csv.trimEnd().split("\n")).toHaveLength(1501);
+    const auditInsert = calls.find(
+      (call) => call.table === "audit_log" && call.method === "insert",
+    );
+    expect(auditInsert?.payload).toMatchObject({
+      action: "coordinator_export.cases",
+      detail: { rowCount: 1500 },
     });
   });
 });

@@ -1170,3 +1170,101 @@ describe("supabase migration safety", () => {
     expect(sql).toContain("update public.sponsorship_pledge");
   });
 });
+
+const migrationsDirectory = join(process.cwd(), "supabase", "migrations");
+
+function migrationFileNames() {
+  return readdirSync(migrationsDirectory)
+    .filter((file) => /^\d+_.+\.sql$/.test(file))
+    .sort();
+}
+
+/**
+ * The body of the LAST `create or replace function public.<name>(` in filename
+ * order: the definition Postgres actually runs after a fresh reset.
+ */
+function latestFunctionBody(name: string) {
+  const header = new RegExp(
+    `create\\s+(?:or\\s+replace\\s+)?function\\s+public\\.${name}\\s*\\(`,
+    "gi",
+  );
+  let latest: { file: string; body: string } | null = null;
+  for (const file of migrationFileNames()) {
+    const sql = readMigration(file);
+    for (const match of sql.matchAll(header)) {
+      const rest = sql.slice(match.index ?? 0);
+      const open = /\$([A-Za-z_]*)\$/.exec(rest);
+      if (!open) continue;
+      const bodyStart = open.index + open[0].length;
+      const bodyEnd = rest.indexOf(open[0], bodyStart);
+      if (bodyEnd < 0) continue;
+      latest = { file, body: rest.slice(bodyStart, bodyEnd) };
+    }
+  }
+  if (!latest) throw new Error(`Function definition not found: public.${name}`);
+  return latest;
+}
+
+/** Text of one `if k='<kind>' then` branch of animal_publication_command. */
+function publicationCommandBranch(body: string, kind: string, nextKind: string | null) {
+  const start = body.search(new RegExp(`if\\s+k\\s*=\\s*'${kind}'\\s+then`, "i"));
+  if (start < 0) throw new Error(`animal_publication_command has no '${kind}' branch`);
+  const rest = body.slice(start);
+  if (!nextKind) return rest;
+  const end = rest.search(new RegExp(`if\\s+k\\s*=\\s*'${nextKind}'\\s+then`, "i"));
+  return end < 0 ? rest : rest.slice(0, end);
+}
+
+describe("admin animal and adoption RPC regressions", () => {
+  // BUG-01: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
+  test.failing(
+    "BUG-01: a pipeline status change survives a later draft publish (draft synced or publish leaves status alone)",
+    () => {
+      const statusRpc = latestFunctionBody("update_animal_status_with_audit");
+      const publication = latestFunctionBody("animal_publication_command");
+      const publishBranch = publicationCommandBranch(publication.body, "publish", null);
+
+      const statusRpcSyncsDraft = /update\s+public\.animal_draft/i.test(statusRpc.body);
+      const publishWritesDraftStatus = /[,\s]status\s*=\s*b\s*->>\s*'status'/i.test(publishBranch);
+
+      expect({
+        statusRpc: statusRpc.file,
+        publication: publication.file,
+        statusRpcSyncsDraft,
+        publishWritesDraftStatus,
+        pipelineStatusSurvivesPublish: statusRpcSyncsDraft || !publishWritesDraftStatus,
+      }).toMatchObject({ pipelineStatusSurvivesPublish: true });
+    },
+  );
+
+  // BUG-02: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
+  test.failing(
+    "BUG-02: finalize_successful_adoption refuses an animal that already has a successful adoption",
+    () => {
+      const finalize = latestFunctionBody("finalize_successful_adoption");
+      const refusesExistingAdoption = /from\s+public\.successful_adoption[\s\S]*?animal_id/i.test(
+        finalize.body,
+      );
+      expect({ file: finalize.file, refusesExistingAdoption }).toMatchObject({
+        refusesExistingAdoption: true,
+      });
+    },
+  );
+
+  // BUG-22: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
+  test.failing(
+    "BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision",
+    () => {
+      const publication = latestFunctionBody("animal_publication_command");
+      const saveBranch = publicationCommandBranch(publication.body, "save", "preview");
+      const copyBranch = publicationCommandBranch(publication.body, "copy", "publish");
+
+      expect({
+        file: publication.file,
+        saveAudited: /insert\s+into\s+public\.audit_log/i.test(saveBranch),
+        copyAudited: /insert\s+into\s+public\.audit_log/i.test(copyBranch),
+        copyFenced: copyBranch.includes("expected_revision"),
+      }).toMatchObject({ saveAudited: true, copyAudited: true, copyFenced: true });
+    },
+  );
+});

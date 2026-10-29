@@ -7,6 +7,7 @@ import {
   type AdminAccessUser,
 } from "./accessManagement.server";
 import { createSupabaseInviteAuthProvider } from "./accessManagement.repository.server";
+import { createAdminAccessHandlers } from "./accessManagement.http.server";
 
 const actor = {
   id: "actor-row",
@@ -607,5 +608,46 @@ describe("createAdminAccessService", () => {
   test("exposes typed access errors for handlers", () => {
     const error = new AdminAccessError("invalid_role", "Invalid role", 422);
     expect(error).toMatchObject({ code: "invalid_role", status: 422 });
+  });
+
+  test("BUG-11: inviting an email that already has a confirmed Auth account is a 409, not a 500", async () => {
+    // GoTrue refuses an invite link for a confirmed user; supabase-js hands back an AuthApiError.
+    const emailExists = Object.assign(
+      new Error("A user with this email address has already been registered"),
+      { name: "AuthApiError", status: 422, code: "email_exists" },
+    );
+    const client = {
+      auth: {
+        admin: {
+          async generateLink() {
+            return { data: { user: null, properties: null }, error: emailExists };
+          },
+        },
+      },
+    };
+    const { repo, calls } = makeRepo();
+    const auth = createSupabaseInviteAuthProvider(client as never, {
+      sendInviteEmail: async () => {},
+    });
+    const handlers = createAdminAccessHandlers({
+      requireAccessAdmin: async () => actor,
+      service: createAdminAccessService({ repo, auth, now }),
+    });
+
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.inviteUser({
+        request: new Request("https://example.test/api/admin/access/invites", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email: "volunteer@example.com", role: "staff" }),
+        }),
+      });
+      expect(response.status).toBe(409);
+      expect(calls.inviteUserWithAudit).toHaveLength(0);
+    } finally {
+      console.error = originalError;
+    }
   });
 });

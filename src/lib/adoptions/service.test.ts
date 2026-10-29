@@ -413,6 +413,37 @@ describe("createAdoptionCoordinatorService", () => {
     );
   });
 
+  test("BUG-20: one regenerate writes exactly one audit row", async () => {
+    const auditLogId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+    const { service, calls } = setup({
+      async getCoordinatorExportAuditRow(id) {
+        return {
+          id,
+          actorUserId: adminId,
+          actorLabel: null,
+          action: "coordinator_export.cases",
+          kind: "cases",
+          rowCount: 0,
+          filters: { openOnly: true },
+          sourceRoute: "/api/admin/adoptions/exports/cases.csv",
+          timestamp: "2026-06-28T00:00:00.000Z",
+        };
+      },
+      async listCaseExportRows() {
+        return [];
+      },
+    });
+
+    await service.regenerateCoordinatorExport({
+      actorUserId: "99999999-aaaa-4333-8444-555555555555",
+      auditLogId,
+    });
+
+    const audits = calls.filter((call) => call.name === "insertAuditLog");
+    expect(audits).toHaveLength(1);
+    expect(audits[0]?.payload).toMatchObject({ action: "coordinator_export.regenerate" });
+  });
+
   test("reports missing coordinator ops repository methods clearly", async () => {
     const { searchManualCaseIdentity, ...repoWithoutOps } = createRepo();
 

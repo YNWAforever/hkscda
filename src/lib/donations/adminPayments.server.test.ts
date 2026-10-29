@@ -417,3 +417,62 @@ test("COD filter selects only AlipayHK payments in finance list and export", asy
   const exported = await listAdminPaymentExportRows(client, { provider: "cod" });
   expect(exported.map((row) => row.paymentId)).toEqual(["cod-paid"]);
 });
+
+/** PostgREST answers 416 / PGRST103 when a range starts past the counted rows. */
+class RangeCheckedQuery extends FakeQuery {
+  private requestedFrom = 0;
+
+  override range(from: number, to: number) {
+    this.requestedFrom = from;
+    return super.range(from, to);
+  }
+
+  override then<TResult1 = unknown, TResult2 = never>(
+    onfulfilled?: ((value: unknown) => TResult1 | PromiseLike<TResult1>) | null,
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null,
+  ) {
+    const from = this.requestedFrom;
+    return super
+      .then((value) => {
+        const result = value as { data: unknown[]; count: number | null };
+        if (from > 0 && result.count !== null && from >= result.count) {
+          return {
+            data: null,
+            count: null,
+            error: {
+              code: "PGRST103",
+              message: "Requested range not satisfiable",
+              details: `An offset of ${from} was requested, but there are only ${result.count} rows.`,
+              hint: null,
+            },
+          };
+        }
+        return value;
+      })
+      .then(onfulfilled, onrejected);
+  }
+}
+
+describe("listAdminPaymentPage past the last page", () => {
+  test("BUG-18: a page past the end (PGRST103) is an empty page with the real total, not an error", async () => {
+    const rows = [paymentRow("a"), paymentRow("bb")];
+    const client = {
+      from(table: string) {
+        const tableRows = table === "payment" ? rows : [];
+        return new RangeCheckedQuery(table, tableRows, [], Number.POSITIVE_INFINITY);
+      },
+    } as unknown as SupabaseClient;
+
+    let result: Awaited<ReturnType<typeof listAdminPaymentPage>> | null = null;
+    let failure: unknown = null;
+    try {
+      result = await listAdminPaymentPage(client, { page: "3", pageSize: "25" });
+    } catch (error) {
+      failure = error;
+    }
+
+    expect(failure).toBeNull();
+    expect(result?.payments).toEqual([]);
+    expect(result?.total).toBe(2);
+  });
+});

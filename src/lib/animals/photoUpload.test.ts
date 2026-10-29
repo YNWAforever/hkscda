@@ -193,4 +193,41 @@ describe("POST /api/admin/animals/photo-upload-url", () => {
     expect(issuedBuckets).toEqual(["animal-draft-images"]);
     await expect(response.json()).resolves.toMatchObject({ bucket: "animal-draft-images" });
   });
+  test("BUG-27: a requireAnimalAdmin refusal Response (403, wrong role) is returned as 403", async () => {
+    const h = handlers({
+      requireAnimalAdmin: async () => {
+        throw new Response("Forbidden", { status: 403 });
+      },
+    });
+
+    const response = await h.createUploadUrl({
+      request: request({
+        animalId,
+        photo: { fileName: "a.jpg", mimeType: "image/jpeg", sizeBytes: 10 },
+      }),
+    });
+
+    expect(response.status).toBe(403);
+    expect(h.issued).toEqual([]);
+  });
+
+  test("BUG-27: a non-Response failure in requireAnimalAdmin (database outage) is a 500", async () => {
+    const h = handlers({
+      requireAnimalAdmin: async () => {
+        throw new Error("connection terminated unexpectedly");
+      },
+    });
+
+    const response = await h
+      .createUploadUrl({
+        request: request({
+          animalId,
+          photo: { fileName: "a.jpg", mimeType: "image/jpeg", sizeBytes: 10 },
+        }),
+      })
+      .catch(() => new Response(null, { status: 500 }));
+
+    expect(response.status).toBe(500);
+    expect(h.issued).toEqual([]);
+  });
 });
