@@ -97,8 +97,10 @@ describe("POST /api/admin/animals/photo-upload-url", () => {
   });
   test("refuses an unauthenticated caller before issuing anything", async () => {
     const h = handlers({
+      // requireAdmin refuses a missing or invalid session by throwing a 401 Response.
+      // (A plain Error now means the check itself failed, which is a 500 - BUG-27.)
       requireAnimalAdmin: async () => {
-        throw new Error("no admin session");
+        throw new Response("Missing authorization token", { status: 401 });
       },
     });
 
