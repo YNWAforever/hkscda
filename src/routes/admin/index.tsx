@@ -14,6 +14,7 @@ import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AnimalsTable } from "../../components/admin/AnimalsTable";
 import { MediaRepairQueue } from "../../components/admin/MediaRepairQueue";
 import { fetchAdminJson } from "../../lib/admin/http";
+import { AdminHttpError } from "../../lib/admin/session";
 import type { Animal } from "../../types/animal";
 import { useAdminLanguage } from "../../components/admin/adminI18n";
 import { useAdminCopy } from "../../components/admin/i18n/copy";
@@ -102,6 +103,12 @@ export function AdminDashboardContent({
   // when in fact nothing was read.
   const animals = animalsQuery.data?.animals ?? [];
   const isLoading = identity == null || animalsQuery.isLoading;
+  // Offline, React Query pauses a new read instead of failing it: it is neither loading nor
+  // in error and has no data, so the table used to show the "no records" empty state for a
+  // section it never read (BUG-32). Show the network failure instead; the read resumes on
+  // its own when the connection returns.
+  const pausedWithoutData =
+    animalsQuery.fetchStatus === "paused" && animalsQuery.data === undefined;
 
   return (
     <div className="min-w-0 space-y-4 p-4 sm:p-6">
@@ -238,7 +245,14 @@ export function AdminDashboardContent({
                       onRetry: () => void animalsQuery.refetch(),
                       retrying: animalsQuery.isFetching,
                     }
-                  : { kind: "ready" }
+                  : pausedWithoutData
+                    ? {
+                        kind: "error",
+                        error: new AdminHttpError("Offline", null),
+                        onRetry: () => void animalsQuery.refetch(),
+                        retrying: false,
+                      }
+                    : { kind: "ready" }
             }
             onDeleted={() =>
               queryClient.invalidateQueries({ queryKey: ["admin-animals", section] })
