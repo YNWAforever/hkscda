@@ -1216,26 +1216,25 @@ function publicationCommandBranch(body: string, kind: string, nextKind: string |
 }
 
 describe("admin animal and adoption RPC regressions", () => {
-  // BUG-01: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
-  test.failing(
-    "BUG-01: a pipeline status change survives a later draft publish (draft synced or publish leaves status alone)",
-    () => {
-      const statusRpc = latestFunctionBody("update_animal_status_with_audit");
-      const publication = latestFunctionBody("animal_publication_command");
-      const publishBranch = publicationCommandBranch(publication.body, "publish", null);
+  // BUG-01: fixed by 20261029150000_sync_animal_draft_status.sql, which writes the pipeline
+  // status into the draft and bumps its revision. Verified against Postgres 16 with the real
+  // publish function: a stale preview now answers conflict and a fresh one keeps the status.
+  test("BUG-01: a pipeline status change survives a later draft publish (draft synced or publish leaves status alone)", () => {
+    const statusRpc = latestFunctionBody("update_animal_status_with_audit");
+    const publication = latestFunctionBody("animal_publication_command");
+    const publishBranch = publicationCommandBranch(publication.body, "publish", null);
 
-      const statusRpcSyncsDraft = /update\s+public\.animal_draft/i.test(statusRpc.body);
-      const publishWritesDraftStatus = /[,\s]status\s*=\s*b\s*->>\s*'status'/i.test(publishBranch);
+    const statusRpcSyncsDraft = /update\s+public\.animal_draft/i.test(statusRpc.body);
+    const publishWritesDraftStatus = /[,\s]status\s*=\s*b\s*->>\s*'status'/i.test(publishBranch);
 
-      expect({
-        statusRpc: statusRpc.file,
-        publication: publication.file,
-        statusRpcSyncsDraft,
-        publishWritesDraftStatus,
-        pipelineStatusSurvivesPublish: statusRpcSyncsDraft || !publishWritesDraftStatus,
-      }).toMatchObject({ pipelineStatusSurvivesPublish: true });
-    },
-  );
+    expect({
+      statusRpc: statusRpc.file,
+      publication: publication.file,
+      statusRpcSyncsDraft,
+      publishWritesDraftStatus,
+      pipelineStatusSurvivesPublish: statusRpcSyncsDraft || !publishWritesDraftStatus,
+    }).toMatchObject({ pipelineStatusSurvivesPublish: true });
+  });
 
   // BUG-02: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
   test.failing(
