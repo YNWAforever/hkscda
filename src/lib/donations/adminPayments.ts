@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { AdminRole } from "../admin/access";
+import { isReceiptEligible } from "./domain";
 
 export const PAYMENT_RECONCILE_PAGE_SIZE = 25;
 
@@ -161,9 +162,25 @@ export function canIssueReceipt(
   return (
     canManageTreasurerActions(role) &&
     payment.donation.status === "succeeded" &&
-    payment.donation.receipt_requested &&
+    isPaymentReceiptEligible(payment) &&
     !findIssuedReceipt(payment.donation.id, receipts)
   );
+}
+
+/**
+ * The server refuses a receipt below HK$100 retained (422), so the button and the
+ * "awaiting receipt" count must apply the same rule or they offer an action that always
+ * fails and a count that never clears (BUG-05).
+ */
+function isPaymentReceiptEligible(payment: {
+  amount_cents: number;
+  refunded_cents?: number;
+  donation: { receipt_requested: boolean };
+}) {
+  return isReceiptEligible({
+    amountCents: payment.amount_cents - (payment.refunded_cents ?? 0),
+    receiptRequested: payment.donation.receipt_requested,
+  });
 }
 
 export function canVoidReceipt(
@@ -194,7 +211,7 @@ export function summarizePayments(
     }
     if (
       payment.donation.status === "succeeded" &&
-      payment.donation.receipt_requested &&
+      isPaymentReceiptEligible(payment) &&
       !issuedReceiptDonationIds.has(payment.donation.id)
     ) {
       awaitingReceiptDonationIds.add(payment.donation.id);
