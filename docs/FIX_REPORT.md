@@ -6,8 +6,9 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 
 **Outcome.**
 
-- **Findings:** 32 in total. 25 are fixed with one commit each. 7 are deferred: 6 need
-  a migration, and 1 needs a product decision.
+- **Findings:** 32 in total. 26 are fixed with one commit each, including BUG-01, the
+  only High, whose migration was approved after Phase 4. 6 are deferred: 5 need a
+  migration, and 1 needs a product decision.
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
@@ -28,38 +29,39 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Test runner:** the repo already has `bun:test` and Playwright browser tests, so Vitest
   was not added. Bug regressions sit beside their source as CLAUDE.md requires;
   cross-cutting suites are under `tests/`.
-- **Defaults chosen:** migrations deferred, dependency changes within existing ranges
+- **Defaults chosen:** migrations deferred (BUG-01's was later approved and added), dependency changes within existing ranges
   only, and the minimal fix for invites.
 
 ## Bugs fixed
 
-| ID     | Sev | Fix (commit subject)                                                          |
-| ------ | --- | ----------------------------------------------------------------------------- |
-| BUG-31 | Med | Send a server-rejected session back to sign-in                                |
-| BUG-04 | Med | Compute the receipt tax year in Hong Kong time                                |
-| BUG-05 | Med | Apply the HK$100 receipt rule to the receipt action and count                 |
-| BUG-07 | Med | Require the reasoned action to hide a FAQ entry                               |
-| BUG-08 | Med | Lock a served document's kind, language and checksum                          |
-| BUG-09 | Med | Count coordinator reports by Hong Kong month                                  |
-| BUG-10 | Med | Explain volunteer waitlist refusals instead of a 500                          |
-| BUG-11 | Med | Answer an invite for an existing account with 409                             |
-| BUG-12 | Med | Bound supporter phone and tags                                                |
-| BUG-30 | Med | In-range security patches for seroval and Vite (`bun audit` 41 → 32)          |
-| BUG-13 | Low | 404/400 for unknown supporters and bad admin ids                              |
-| BUG-14 | Low | 409 for a repeat receipt void, 400 for a bad payment id                       |
-| BUG-15 | Low | Map duplicate case numbers, unknown animals and bad list input                |
-| BUG-16 | Low | 404/409/422 instead of 500 for documents and FAQ                              |
-| BUG-17 | Low | Reject bad volunteer input with 4xx instead of 500                            |
-| BUG-18 | Low | Treat a page past the end as empty; refuse huge CRM pages                     |
-| BUG-19 | Low | Audit the payments CSV export and mark it no-store                            |
-| BUG-20 | Low | Record a regenerated coordinator export once                                  |
-| BUG-21 | Low | Export every coordinator row, not the newest 1,000                            |
-| BUG-24 | Low | Stop the supporter edit form restoring deleted supporters                     |
-| BUG-26 | Low | Authenticate before reading admin request bodies                              |
-| BUG-27 | Low | Keep 403 and 500 distinct from 401 on photo upload URLs                       |
-| BUG-28 | Low | Stop offering staff actions they cannot take (export button, proof task card) |
-| BUG-29 | Low | Report why a volunteer activity update was refused                            |
-| BUG-32 | Low | Show a network failure, not an empty list, when offline                       |
+| ID     | Sev      | Fix (commit subject)                                                                                              |
+| ------ | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| BUG-01 | **High** | Sync the draft when the pipeline changes an animal's status (migration `20261029150000`; verified on Postgres 16) |
+| BUG-31 | Med      | Send a server-rejected session back to sign-in                                                                    |
+| BUG-04 | Med      | Compute the receipt tax year in Hong Kong time                                                                    |
+| BUG-05 | Med      | Apply the HK$100 receipt rule to the receipt action and count                                                     |
+| BUG-07 | Med      | Require the reasoned action to hide a FAQ entry                                                                   |
+| BUG-08 | Med      | Lock a served document's kind, language and checksum                                                              |
+| BUG-09 | Med      | Count coordinator reports by Hong Kong month                                                                      |
+| BUG-10 | Med      | Explain volunteer waitlist refusals instead of a 500                                                              |
+| BUG-11 | Med      | Answer an invite for an existing account with 409                                                                 |
+| BUG-12 | Med      | Bound supporter phone and tags                                                                                    |
+| BUG-30 | Med      | In-range security patches for seroval and Vite (`bun audit` 41 → 32)                                              |
+| BUG-13 | Low      | 404/400 for unknown supporters and bad admin ids                                                                  |
+| BUG-14 | Low      | 409 for a repeat receipt void, 400 for a bad payment id                                                           |
+| BUG-15 | Low      | Map duplicate case numbers, unknown animals and bad list input                                                    |
+| BUG-16 | Low      | 404/409/422 instead of 500 for documents and FAQ                                                                  |
+| BUG-17 | Low      | Reject bad volunteer input with 4xx instead of 500                                                                |
+| BUG-18 | Low      | Treat a page past the end as empty; refuse huge CRM pages                                                         |
+| BUG-19 | Low      | Audit the payments CSV export and mark it no-store                                                                |
+| BUG-20 | Low      | Record a regenerated coordinator export once                                                                      |
+| BUG-21 | Low      | Export every coordinator row, not the newest 1,000                                                                |
+| BUG-24 | Low      | Stop the supporter edit form restoring deleted supporters                                                         |
+| BUG-26 | Low      | Authenticate before reading admin request bodies                                                                  |
+| BUG-27 | Low      | Keep 403 and 500 distinct from 401 on photo upload URLs                                                           |
+| BUG-28 | Low      | Stop offering staff actions they cannot take (export button, proof task card)                                     |
+| BUG-29 | Low      | Report why a volunteer activity update was refused                                                                |
+| BUG-32 | Low      | Show a network failure, not an empty list, when offline                                                           |
 
 **Existing tests that changed, and why.** No test was deleted or weakened. Five existing
 tests encoded the old behaviour or used ids no real record can have; each change is
@@ -77,15 +79,14 @@ explained in its commit and in a code comment.
 
 ## Bugs deferred
 
-| ID     | Sev      | Why deferred                          | What closes it                                                                                                                                                                                                                                   |
-| ------ | -------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BUG-01 | **High** | Needs a migration (approval required) | `update_animal_status_with_audit` must also update the draft body's status and bump its revision, or publish must stop writing status. Until then, **publishing an animal's draft can put an adopted animal back on the public adoptable list.** |
-| BUG-02 | Med      | Migration                             | `finalize_successful_adoption` must refuse a second adoption of the same animal and a closed case, and set `animals.status='adopted'`.                                                                                                           |
-| BUG-03 | Med      | Migration                             | The CRM create branch must not `on conflict (email) do update`; return 409 `supporter_exists` instead.                                                                                                                                           |
-| BUG-06 | Med      | Migration                             | Add an `update_social_copy_with_audit` RPC so the social-copy PATCH and its audit row are atomic.                                                                                                                                                |
-| BUG-22 | Low      | Migration                             | Audit animal draft save/restore inside the RPC; require `expected_revision` for restore.                                                                                                                                                         |
-| BUG-23 | Low      | Migration                             | The manual-gift inline supporter must not overwrite an existing supporter.                                                                                                                                                                       |
-| BUG-25 | Low      | Product decision                      | Invite links have no `redirectTo` or set-password page. BUG-11 now returns a clear 409 instead of a 500; letting existing accounts be invited is a choice for you.                                                                               |
+| ID     | Sev | Why deferred     | What closes it                                                                                                                                                     |
+| ------ | --- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BUG-02 | Med | Migration        | `finalize_successful_adoption` must refuse a second adoption of the same animal and a closed case, and set `animals.status='adopted'`.                             |
+| BUG-03 | Med | Migration        | The CRM create branch must not `on conflict (email) do update`; return 409 `supporter_exists` instead.                                                             |
+| BUG-06 | Med | Migration        | Add an `update_social_copy_with_audit` RPC so the social-copy PATCH and its audit row are atomic.                                                                  |
+| BUG-22 | Low | Migration        | Audit animal draft save/restore inside the RPC; require `expected_revision` for restore.                                                                           |
+| BUG-23 | Low | Migration        | The manual-gift inline supporter must not overwrite an existing supporter.                                                                                         |
+| BUG-25 | Low | Product decision | Invite links have no `redirectTo` or set-password page. BUG-11 now returns a clear 409 instead of a 500; letting existing accounts be invited is a choice for you. |
 
 Each migration bug already has its regression test, written with `test.failing` and
 asserting on the latest migration's SQL. Bun reports these as passing while the defect
@@ -109,7 +110,7 @@ migration.
 
 | Suite                     | Where                                                                | Tests                                                       | Runs in                             |
 | ------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (6 `test.failing` for deferred migrations)              | `bun run test` / CI `verify`        |
+| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (5 `test.failing` for deferred migrations)              | `bun run test` / CI `verify`        |
 | Admin authorization sweep | `tests/integration/admin/authorization.test.ts`                      | 4 (212 endpoints × 8 callers, role matrix vs `ROLE_ACCESS`) | `bun run test` / CI `verify`        |
 | Public API smoke          | `tests/integration/public/smoke.test.ts`                             | 33                                                          | `bun run test` / CI `verify`        |
 | Client bundle scanner     | `scripts/verify-client-bundle.test.ts` (+ CI step on the real build) | 5                                                           | `bun run test` / CI `verify`        |
@@ -177,10 +178,10 @@ nothing about database behaviour.
 
 ## Remaining risks
 
-1. **BUG-01 is High and still open.** Until its migration lands, an animal marked
-   adopted in the coordinator pipeline can reappear as adoptable after any draft
-   publish. Staff can avoid it by re-setting the status after publishing, or by setting
-   status in the editor rather than the pipeline.
+1. **BUG-01's migration must be applied with the release.** The code needs no change
+   for it, but until `20261029150000_sync_animal_draft_status.sql` runs on the
+   production database the old behaviour remains. After it runs, a preview made before a
+   pipeline status change answers publish with a conflict, and staff preview again.
 2. **AUD-02 (prior audit).** RLS still lets staff read and update supporter rows the
    API reserves for treasurer/admin. This needs a product decision and a migration.
 3. **No revision fence on the simple editors.** About, FAQ, governance and knowledge
@@ -218,6 +219,7 @@ nothing about database behaviour.
 - [ ] Phone width (390px): dashboard, supporters, volunteers. No horizontal scroll;
       every action reachable.
 - [ ] Keyboard only: sign in, move through the nav, open and cancel a confirm dialog.
-- [ ] **BUG-01 (open):** set an animal to adopted in the pipeline, then publish a
-      description edit. Confirm the status is reverted, and note it as a known issue
-      until the migration is approved.
+- [ ] **BUG-01 (after the migration runs):** set an animal to adopted in the pipeline,
+      then edit its description, preview and publish. It stays adopted and off the
+      public adoptable list. A preview made _before_ the status change is refused on
+      publish; previewing again works.
