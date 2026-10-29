@@ -990,6 +990,28 @@ async function voidIssuedReceiptsForDonation(
   }
 }
 
+/**
+ * void_receipt_with_audit refuses a receipt that is no longer issued (a second tab, or
+ * another treasurer, voided it first) or that belongs to another supporter. Those are
+ * conflicts the treasurer can act on by reloading, not server faults (BUG-14).
+ */
+function voidReceiptError(error: { code?: unknown; message?: unknown }) {
+  if (error.code === "22023" && error.message === "receipt_not_issued") {
+    return Response.json(
+      { error: "This receipt is no longer issued. Reload to see its current state." },
+      { status: 409 },
+    );
+  }
+  if (error.code === "22023" && error.message === "receipt_supporter_mismatch") {
+    return Response.json(
+      { error: "This receipt does not belong to the selected supporter" },
+      { status: 422 },
+    );
+  }
+  if (error.code === "42501") return Response.json({ error: "Forbidden" }, { status: 403 });
+  return error;
+}
+
 export async function voidReceipt(
   client: SupabaseClient,
   receiptId: string,
@@ -1002,7 +1024,7 @@ export async function voidReceipt(
     p_supporter_id: options.supporterId ?? null,
     p_reason: options.reason,
   });
-  if (error) throw error;
+  if (error) throw voidReceiptError(error);
   const row = (data as Array<{ receipt_id: string; pdf_url: string | null }> | null)?.[0];
   if (!row) throw new Error("Receipt not found or already voided");
 

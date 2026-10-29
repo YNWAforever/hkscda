@@ -28,6 +28,8 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
         try {
           const client = createSupabaseServiceClient();
           const admin = await requireAdmin(request, ["treasurer", "admin"], client);
+          // A malformed id reached Postgres as 22P02 and came back as a 500 (BUG-14).
+          const paymentId = z.string().uuid().parse(params.id);
           const body = reconcileSchema.parse(await readAdminJson(request));
           const deliveryRepository = createSupabaseDeliveryJobRepository(client);
           const deliveryWorker = createDonationDeliveryWorker({
@@ -36,7 +38,7 @@ export const Route = createFileRoute("/api/admin/payments/$id/reconcile")({
           });
           const result = await reconcileManualPayment({
             client,
-            paymentId: params.id,
+            paymentId,
             actorUserId: admin.authUserId,
             bankReference: body.bankReference,
             runDeliveryJob: deliveryWorker.run,
