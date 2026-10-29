@@ -43,6 +43,9 @@ test("local database fixture rejects routing overrides and requires explicit con
 });
 const actor = randomUUID();
 const supporter = randomUUID();
+// Stored with mixed case: citext's unique index ignores case, but the lookup must too (BUG-23).
+const mixedCaseSupporter = randomUUID();
+const mixedCaseEmail = `Mixed.${mixedCaseSupporter}@Example.invalid`;
 const requests: string[] = [];
 const volunteerActivities: string[] = [];
 const staffActor = randomUUID();
@@ -103,6 +106,7 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     await database()`insert into public.admin_user(auth_user_id,email,role,status) values(${staffActor}::uuid,${staffActor + "@example.invalid"},'staff','active')`;
     await database()`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${actor + "@example.invalid"},'treasurer','active')`;
     await database()`insert into public.supporter(id,name,email,language) values(${supporter}::uuid,'Local CRM fixture',${supporter + "@example.invalid"},'en')`;
+    await database()`insert into public.supporter(id,name,email,language) values(${mixedCaseSupporter}::uuid,'Mixed case fixture',${mixedCaseEmail},'en')`;
   });
   afterAll(async () => {
     if (!sql) return;
@@ -115,6 +119,9 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     await sql`delete from auth.users where id=${staffActor}::uuid`;
     await sql`delete from public.donation where supporter_id=${supporter}::uuid`;
     await sql`delete from public.supporter where id=${supporter}::uuid`;
+    await sql`delete from public.donation where supporter_id=${mixedCaseSupporter}::uuid`;
+    await sql`delete from public.supporter_role where supporter_id=${mixedCaseSupporter}::uuid`;
+    await sql`delete from public.supporter where id=${mixedCaseSupporter}::uuid`;
     await sql`delete from public.admin_user where auth_user_id=${actor}::uuid`;
     await sql.close();
   });
@@ -140,6 +147,32 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
     const [after] =
       await database()`select count(*)::int total from public.consent where supporter_id=${supporter}::uuid`;
     expect(after.total).toBe(before.total);
+  });
+  test("BUG-23: an inline supporter on an existing email reuses that supporter unchanged", async () => {
+    // No supporterId: the gift names its supporter inline, as an API caller can.
+    const inlineGift = (email: string, reference: string) =>
+      gift(requestId(), {
+        amountCents: input.amountCents,
+        currency: input.currency,
+        purpose: input.purpose,
+        method: input.method,
+        paymentStatus: input.paymentStatus,
+        receiptRequested: input.receiptRequested,
+        supporter: { name: "Typed over the existing name", email, language: "zh-HK", tags: [] },
+        bankReference: `LOCAL-CRM-FIXTURE-INLINE-${reference}`,
+      });
+    for (const [id, name, email] of [
+      [supporter, "Local CRM fixture", (supporter + "@example.invalid").toUpperCase()],
+      [mixedCaseSupporter, "Mixed case fixture", mixedCaseEmail.toLowerCase()],
+    ] as const) {
+      const result = await inlineGift(email, id);
+      const [row] =
+        await database()`select name,language from public.supporter where id=${id}::uuid`;
+      expect(row).toEqual({ name, language: "en" });
+      const [donation] =
+        await database()`select supporter_id::text,contact_name from public.donation where id=${result.donationId}::uuid`;
+      expect(donation).toEqual({ supporter_id: id, contact_name: name });
+    }
   });
   test("changed payload conflicts without a second financial write", async () => {
     const key = requestId();

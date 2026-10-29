@@ -42,16 +42,14 @@ describe("supporter creation on an existing email", () => {
     expect(body).toContain("supporter_exists");
   });
 
-  // BUG-23: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
-  test.failing(
-    "BUG-23: record_manual_gift_with_audit reuses an existing supporter unchanged on an email conflict",
-    () => {
-      const body = latestBody("public.record_manual_gift_with_audit");
-      const start = body.indexOf("insert into public.supporter(");
-      expect(start).toBeGreaterThan(-1);
-      const end = body.indexOf("insert into public.supporter_role", start);
-      expect(end).toBeGreaterThan(start);
-      expect(body.slice(start, end)).not.toMatch(EMAIL_UPSERT);
-    },
-  );
+  // BUG-23: fixed by 20261029200000_manual_gift_reuses_existing_supporter.sql. Verified against
+  // Postgres 16 with the original function: the existing supporter is now reused unchanged.
+  test("BUG-23: record_manual_gift_with_audit reuses an existing supporter unchanged on an email conflict", () => {
+    const body = latestBody("public.record_manual_gift_with_audit");
+    const start = body.indexOf("insert into public.supporter(");
+    expect(start).toBeGreaterThan(-1);
+    const end = body.indexOf("insert into public.supporter_role", start);
+    expect(end).toBeGreaterThan(start);
+    expect(body.slice(start, end)).not.toMatch(EMAIL_UPSERT);
+  });
 });
