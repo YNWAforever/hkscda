@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isRangeNotSatisfiable } from "../postgrestRange";
+import { volunteerCodeMessage } from "./apiResult";
 
 import { createPublicIdentityRepository } from "../supporters/publicIdentity.server";
 import type {
@@ -246,9 +247,21 @@ async function hydrateRegistrations(client: SupabaseClient, rows: RegistrationRo
   });
 }
 
-function requireUpdated(result: { kind: string }) {
+function requireUpdated(result: { kind: string; reason?: unknown }) {
   if (result.kind === "updated") return;
   const status = result.kind === "not_found" ? 404 : 409;
+  // An "invalid" result names why (for example target_date_preview_required); reporting it
+  // as the generic "data was updated" conflict sent staff to reload for nothing (BUG-29).
+  const reasonMessage =
+    result.kind === "invalid" && typeof result.reason === "string"
+      ? volunteerCodeMessage(result.reason)
+      : null;
+  if (reasonMessage && typeof result.reason === "string") {
+    throw Response.json(
+      { error: { code: result.reason, message: reasonMessage } },
+      { status, headers: { "cache-control": "no-store" } },
+    );
+  }
   const messages: Record<string, string> = {
     capacity_full: "活動名額不足，請重新檢查剩餘名額。",
     future_attendance: "活動尚未開始或完成，不能記錄此出席狀態。",
