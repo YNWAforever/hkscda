@@ -6,9 +6,9 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 
 **Outcome.**
 
-- **Findings:** 32 in total. 30 are fixed with one commit each, including BUG-01 (the
-  only High), BUG-02, BUG-03, BUG-06 and BUG-22, whose migrations were approved after
-  Phase 4. 2 are deferred: 1 needs a migration, and 1 needs a product decision.
+- **Findings:** 32 in total. 31 are fixed with one commit each, including BUG-01 (the
+  only High), BUG-02, BUG-03, BUG-06, BUG-22 and BUG-23, whose migrations were approved
+  after Phase 4 (BUG-23 after PR #226 merged). 1 is deferred: it needs a product decision.
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
@@ -29,7 +29,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Test runner:** the repo already has `bun:test` and Playwright browser tests, so Vitest
   was not added. Bug regressions sit beside their source as CLAUDE.md requires;
   cross-cutting suites are under `tests/`.
-- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's, BUG-03's, BUG-06's and BUG-22's were later approved and added), dependency changes within existing ranges
+- **Defaults chosen:** migrations deferred (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's were later approved and added), dependency changes within existing ranges
   only, and the minimal fix for invites.
 
 ## Bugs fixed
@@ -60,6 +60,7 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 | BUG-20 | Low      | Record a regenerated coordinator export once                                                                                                                                    |
 | BUG-21 | Low      | Export every coordinator row, not the newest 1,000                                                                                                                              |
 | BUG-22 | Low      | Audit animal draft saves and version restores in the same transaction; fence restores on the draft revision (migration `20261029190000`; verified on Postgres 16)               |
+| BUG-23 | Low      | A manual gift with an inline supporter reuses an existing supporter unchanged instead of overwriting it (migration `20261029200000`; verified on Postgres 16)                   |
 | BUG-24 | Low      | Stop the supporter edit form restoring deleted supporters                                                                                                                       |
 | BUG-26 | Low      | Authenticate before reading admin request bodies                                                                                                                                |
 | BUG-27 | Low      | Keep 403 and 500 distinct from 401 on photo upload URLs                                                                                                                         |
@@ -85,13 +86,11 @@ explained in its commit and in a code comment.
 
 | ID     | Sev | Why deferred     | What closes it                                                                                                                                                     |
 | ------ | --- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BUG-23 | Low | Migration        | The manual-gift inline supporter must not overwrite an existing supporter.                                                                                         |
 | BUG-25 | Low | Product decision | Invite links have no `redirectTo` or set-password page. BUG-11 now returns a clear 409 instead of a 500; letting existing accounts be invited is a choice for you. |
 
-Each migration bug already has its regression test, written with `test.failing` and
-asserting on the latest migration's SQL. Bun reports these as passing while the defect
-remains and as failing once it is fixed, so remove `.failing` in the same commit as the
-migration.
+Every migration bug's regression test was written with `test.failing`, asserting on the
+latest migration's SQL, and had `.failing` removed in the same commit as its migration.
+None remain.
 
 **Partially fixed, by choice:**
 
@@ -110,7 +109,7 @@ migration.
 
 | Suite                     | Where                                                                | Tests                                                       | Runs in                             |
 | ------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (1 `test.failing` for the deferred migration)           | `bun run test` / CI `verify`        |
+| Bug regressions           | beside the code (`*.test.ts`), named `BUG-xx: …`                     | 55+ (no `test.failing` left)                                | `bun run test` / CI `verify`        |
 | Admin authorization sweep | `tests/integration/admin/authorization.test.ts`                      | 4 (212 endpoints × 8 callers, role matrix vs `ROLE_ACCESS`) | `bun run test` / CI `verify`        |
 | Public API smoke          | `tests/integration/public/smoke.test.ts`                             | 33                                                          | `bun run test` / CI `verify`        |
 | Client bundle scanner     | `scripts/verify-client-bundle.test.ts` (+ CI step on the real build) | 5                                                           | `bun run test` / CI `verify`        |
@@ -187,7 +186,10 @@ nothing about database behaviour.
    database the old behaviour remains. Apply them together with the code deploy: BUG-06's
    text edits fail with a missing-function error until its migration runs, and BUG-22's
    migration refuses a version restore from an old admin page that does not send the
-   draft revision (a reload fixes it). After they run: a preview made before a pipeline status
+   draft revision (a reload fixes it). BUG-23's
+   `20261029200000_manual_gift_reuses_existing_supporter.sql` came after the merge and
+   ships separately; it redefines an existing function and needs no code change, so it
+   can run at any time. After they run: a preview made before a pipeline status
    change answers publish with a conflict, and staff preview again; finalising an
    adoption now also sets the animal to adopted (it leaves the public listing at once);
    and a second finalisation for the same animal or case, or one on a rejected,
@@ -252,3 +254,7 @@ nothing about database behaviour.
       then restore a published version in the other: it says someone else updated the
       draft. Reload and restore again: it works, and the save and the restore each appear
       once in the audit log.
+- [ ] **BUG-23 (after the migration runs):** through the API, record a manual gift with an
+      inline supporter whose email (in any letter case) belongs to an existing supporter.
+      The gift is linked to that supporter, and its name, phone, language and tags are
+      unchanged.

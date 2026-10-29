@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 30 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's and BUG-22's migrations were approved and added after Phase 4), 2 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -331,6 +331,13 @@ deleted_at = null`, then the roles are replaced). Callers: `src/lib/crm/service.
   upserts the supporter by email: tags wiped, phone nulled, name replaced, with no
   `supporter.update` audit. API only; the dialog always sends `supporterId`.
 - **Fix:** reuse the existing row unchanged on an email conflict.
+- **Fixed** by `20261029200000_manual_gift_reuses_existing_supporter.sql` (approved, after
+  PR #226 merged): on an email conflict the existing, non-deleted supporter is locked and
+  used unchanged, and the donation's contact snapshot comes from that record. A
+  soft-deleted supporter is still refused (`manual_gift_supporter_unavailable`). The
+  `donation.manual_create` audit detail records the supporter id and whether it was
+  reused. Verified on Postgres 16: the original function renamed the supporter, nulled
+  its phone and emptied its tags; the new one leaves them as they were.
 
 ### BUG-24 — Low — Edit dialog always un-deletes
 
