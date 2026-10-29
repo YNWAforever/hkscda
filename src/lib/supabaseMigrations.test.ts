@@ -1248,20 +1248,17 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
-  // BUG-22: known defect, fix deferred (needs a migration; see docs/BUGS.md). Remove .failing when fixed.
-  test.failing(
-    "BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision",
-    () => {
-      const publication = latestFunctionBody("animal_publication_command");
-      const saveBranch = publicationCommandBranch(publication.body, "save", "preview");
-      const copyBranch = publicationCommandBranch(publication.body, "copy", "publish");
+  // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
+  test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
+    const publication = latestFunctionBody("animal_publication_command");
+    const saveBranch = publicationCommandBranch(publication.body, "save", "preview");
+    const copyBranch = publicationCommandBranch(publication.body, "copy", "publish");
 
-      expect({
-        file: publication.file,
-        saveAudited: /insert\s+into\s+public\.audit_log/i.test(saveBranch),
-        copyAudited: /insert\s+into\s+public\.audit_log/i.test(copyBranch),
-        copyFenced: copyBranch.includes("expected_revision"),
-      }).toMatchObject({ saveAudited: true, copyAudited: true, copyFenced: true });
-    },
-  );
+    expect({
+      file: publication.file,
+      saveAudited: /insert\s+into\s+public\.audit_log/i.test(saveBranch),
+      copyAudited: /insert\s+into\s+public\.audit_log/i.test(copyBranch),
+      copyFenced: copyBranch.includes("expected_revision"),
+    }).toMatchObject({ saveAudited: true, copyAudited: true, copyFenced: true });
+  });
 });

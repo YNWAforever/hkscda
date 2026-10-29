@@ -72,6 +72,43 @@ test("valid draft revisions retain saved and stale-write responses", async () =>
   }
 });
 
+test("BUG-22: version restores require an explicit revision and answer a stale one with 409", async () => {
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const restore = (revision: unknown) =>
+    handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({
+          kind: "copy",
+          animal_id: "11111111-1111-4111-8111-111111111111",
+          version_id: "22222222-2222-4222-8222-222222222222",
+          expected_revision: revision,
+        }),
+      }),
+    } as never);
+
+  const rpc = mock(async () => ({ data: { kind: "copied", revision: 3 }, error: null }));
+  activeClient = { rpc };
+  for (const revision of [undefined, null, "2", -1, 1.5]) {
+    const response = await restore(revision);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(422);
+  }
+  expect(rpc).not.toHaveBeenCalled();
+
+  for (const [data, status] of [
+    [{ kind: "copied", revision: 3 }, 200],
+    [{ kind: "conflict" }, 409],
+  ] as const) {
+    activeClient = { rpc: async () => ({ data, error: null }) };
+    const response = await restore(2);
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(status);
+  }
+});
+
 test("does not expose a preview owned by another staff member before the publish RPC rejects it", async () => {
   const download = mock(async () => ({ data: new Blob(["private image"]), error: null }));
   const upload = mock(async () => ({ error: null }));

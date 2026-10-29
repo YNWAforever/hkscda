@@ -35,9 +35,10 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           throw error;
         }
         // A missing revision becomes SQL NULL and bypasses the draft RPC's
-        // stale-write comparison. Enforce the fence before any mutation.
+        // stale-write comparison. Enforce the fence before any mutation; a
+        // version restore replaces the whole draft, so it is fenced too (BUG-22).
         if (
-          command.kind === "save" &&
+          (command.kind === "save" || command.kind === "copy") &&
           (typeof command.expected_revision !== "number" ||
             !Number.isSafeInteger(command.expected_revision) ||
             command.expected_revision < 0)

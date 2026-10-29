@@ -66,6 +66,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
   const [draftRevision, setDraftRevision] = useState(0);
+  const [copyingVersion, setCopyingVersion] = useState(false);
   const [dirty, setDirty] = useState(false);
   const editVersion = useRef(0);
   const [previewBody, setPreviewBody] = useState<Record<string, unknown> | null>(null);
@@ -202,17 +203,30 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   }, [animalId, hasExisting, reset, setError]);
 
   async function copyVersion(versionId: string) {
+    if (copyingVersion) return;
+    setCopyingVersion(true);
     try {
       const result = await fetchAdminJson<{ revision: number }>("/api/admin/animals/publication/", {
         method: "POST",
-        body: JSON.stringify({ kind: "copy", animal_id: animalId, version_id: versionId }),
+        // The restore replaces the whole draft, so it names the revision it replaces (BUG-22).
+        body: JSON.stringify({
+          kind: "copy",
+          animal_id: animalId,
+          version_id: versionId,
+          expected_revision: draftRevision,
+        }),
       });
       setDraftRevision(result.revision);
       setPreviewId(null);
       setNotice(formCopy.versions.copied);
       window.location.reload();
-    } catch {
-      setError(formCopy.versions.copyFailed);
+    } catch (error) {
+      setError(
+        error instanceof AdminApiError && error.status === 409
+          ? formCopy.versions.copyConflict
+          : formCopy.versions.copyFailed,
+      );
+      setCopyingVersion(false);
     }
   }
   function optionalText(value?: string) {
@@ -857,7 +871,8 @@ export function AnimalForm({ existing }: AnimalFormProps) {
               <button
                 key={version.id}
                 type="button"
-                className="mr-2 mt-2 rounded border px-3 py-2 text-sm"
+                className="mr-2 mt-2 rounded border px-3 py-2 text-sm disabled:opacity-60"
+                disabled={copyingVersion}
                 onClick={() => copyVersion(version.id)}
               >
                 {formCopy.versions.duplicate(version.revision)}
