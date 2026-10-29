@@ -32,6 +32,13 @@ declare
   v_row public.animals;
   v_draft_revision bigint;
 begin
+  -- Publication locks the draft before updating animals. Match that order even
+  -- when the draft already holds p_status, or a concurrent publish can deadlock.
+  perform 1
+  from public.animal_draft
+  where id = p_animal_id
+  for update;
+
   select status into v_old_status
   from public.animals
   where id = p_animal_id

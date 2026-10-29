@@ -1294,7 +1294,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
     ]) {
       const { service } = createFakeService({
         async finalizeAdoption() {
-          throw new Error(message);
+          // supabase-js returns RAISE EXCEPTION as a plain PostgREST object.
+          throw { code: "P0001", message, details: "Private database context", hint: null };
         },
       });
       const response = await createHandlers({ service }).finalizeAdoption({

@@ -116,6 +116,13 @@ begin
   end if;
 
   -- BUG-02: one adoption per animal and per case, and never over a closed outcome.
+  -- Publication and the status RPC lock draft, then animal. Taking animals first
+  -- here would deadlock when the status RPC waits for a concurrently publishing draft.
+  perform 1
+  from public.animal_draft
+  where id = v_match.animal_id
+  for update;
+
   select status
   into v_animal_status
   from public.animals

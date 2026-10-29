@@ -1216,6 +1216,32 @@ function publicationCommandBranch(body: string, kind: string, nextKind: string |
 }
 
 describe("admin animal and adoption RPC regressions", () => {
+  for (const name of ["update_animal_status_with_audit", "finalize_successful_adoption"]) {
+    test(`${name} locks the draft before the animal, matching publication`, () => {
+      const publication = latestFunctionBody("animal_publication_command");
+      const publishStart = publication.body.indexOf("if k='publish' then");
+      expect(publishStart).toBeGreaterThan(-1);
+      expect(publication.body.slice(0, publishStart)).toMatch(
+        /from public\.animal_draft where id=aid for update/i,
+      );
+      expect(publication.body.slice(publishStart)).toMatch(/update public\.animals/i);
+
+      // Inspect the actual SQL lock order: animals first permits a cycle with publish,
+      // which holds the draft while waiting to update animals.
+      const rpc = latestFunctionBody(name);
+      const statements = rpc.body.replace(/--[^\n]*/g, "").split(";");
+      const draftLock = statements.findIndex(
+        (statement) =>
+          /from\s+public\.animal_draft\b/i.test(statement) && /for update/i.test(statement),
+      );
+      const animalLock = statements.findIndex(
+        (statement) => /from\s+public\.animals\b/i.test(statement) && /for update/i.test(statement),
+      );
+      expect(draftLock).toBeGreaterThanOrEqual(0);
+      expect(animalLock).toBeGreaterThan(draftLock);
+    });
+  }
+
   // BUG-01: fixed by 20261029150000_sync_animal_draft_status.sql, which writes the pipeline
   // status into the draft and bumps its revision. Verified against Postgres 16 with the real
   // publish function: a stale preview now answers conflict and a fresh one keeps the status.

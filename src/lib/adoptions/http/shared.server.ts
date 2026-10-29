@@ -121,7 +121,7 @@ export async function responseError(error: Response) {
   return jsonResponse({ error: message || error.statusText || "Request failed" }, { status });
 }
 
-export function domainError(error: Error) {
+export function domainError(error: { message: string }) {
   const normalizedMessage = error.message.toLowerCase();
 
   if (notFoundDomainErrors.has(error.message)) {
@@ -129,7 +129,8 @@ export function domainError(error: Error) {
   }
   if (
     conflictDomainErrors.has(error.message) ||
-    (normalizedMessage.includes("protected") &&
+    (error instanceof Error &&
+      normalizedMessage.includes("protected") &&
       (normalizedMessage.includes("status") ||
         normalizedMessage.includes("delete") ||
         normalizedMessage.includes("mutation")))
@@ -167,6 +168,18 @@ export async function withErrors(operation: () => Promise<Response>) {
     }
     if (error instanceof Error) {
       const response = domainError(error);
+      if (response) return response;
+    } else if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P0001" &&
+      "message" in error &&
+      typeof error.message === "string"
+    ) {
+      // RPC exceptions are plain PostgREST objects. Only exact, known domain
+      // messages are public; arbitrary database text and details stay private.
+      const response = domainError({ message: error.message });
       if (response) return response;
     }
 

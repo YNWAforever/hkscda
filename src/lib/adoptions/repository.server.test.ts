@@ -3093,6 +3093,24 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
 });
 
 describe("coordinator reporting regressions", () => {
+  test.each([
+    { approvalDate: "2026-09-30", expected: 0 },
+    { approvalDate: "2026-10-01", expected: 1 },
+    { approvalDate: "2026-10-31", expected: 1 },
+    { approvalDate: "2026-11-01", expected: 0 },
+  ])(
+    "monthly summary counts approval date $approvalDate in October as $expected",
+    async ({ approvalDate, expected }) => {
+      const { repo } = setupRepository({
+        successRows: [successfulAdoptionRow({ approval_date: approvalDate })],
+      });
+
+      const summary = await repo.getCoordinatorMonthlySummary({ month: "2026-10" });
+
+      expect(summary.successfulAdoptions).toBe(expected);
+    },
+  );
+
   test("BUG-09: monthly summary counts a case created 03:00 HKT on 1 Oct in October", async () => {
     const { repo, calls } = setupRepository({
       caseRows: [
