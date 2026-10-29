@@ -1,4 +1,5 @@
 import { volunteerPolicyFailure } from "./policy/errors";
+import { volunteerCodeMessage } from "./apiResult";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
@@ -38,6 +39,32 @@ function jsonResponse(body: unknown, init?: ResponseInit) {
   return Response.json(body, { ...init, headers });
 }
 
+/**
+ * Refusals raised by the `volunteer_enforce_registration_policy` trigger as bare codes.
+ * They are business answers ("an earlier waitlisted volunteer comes first"), not faults,
+ * but were not in the policy-code map and so surfaced as 500 "try again" (BUG-10).
+ */
+const REGISTRATION_TRIGGER_REFUSALS: Record<string, { pgCode: string; status: number }> = {
+  waitlist_priority: { pgCode: "22023", status: 409 },
+  waitlist_disabled: { pgCode: "22023", status: 409 },
+  waitlist_full: { pgCode: "22023", status: 409 },
+  immutable_booking_identity: { pgCode: "42501", status: 403 },
+};
+
+function registrationTriggerRefusal(error: unknown) {
+  if (!error || typeof error !== "object") return null;
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  if (typeof code !== "string" || typeof message !== "string") return null;
+  const refusal = REGISTRATION_TRIGGER_REFUSALS[message];
+  if (!refusal || refusal.pgCode !== code) return null;
+  return {
+    code: message,
+    status: refusal.status,
+    // Every code above has an entry in the apiResult message table.
+    message: volunteerCodeMessage(message) ?? message,
+  };
+}
+
 async function withVolunteerErrors(operation: () => Promise<Response>, publicRequest = false) {
   try {
     return await operation();
@@ -63,6 +90,15 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
         { status: 400 },
       );
     }
+    const triggerRefusal = registrationTriggerRefusal(error);
+    if (triggerRefusal)
+      return jsonResponse(
+        {
+          error: publicRequest ? "未能完成報名：" + triggerRefusal.message : triggerRefusal.message,
+          code: triggerRefusal.code,
+        },
+        { status: triggerRefusal.status },
+      );
     const failure = volunteerPolicyFailure(error);
     if (failure)
       return jsonResponse(

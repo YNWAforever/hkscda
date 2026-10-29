@@ -148,6 +148,10 @@ const messages: Record<string, Record<AdminLanguage, string>> = {
     zh: "這筆報名尚未獲批准，請先檢查報名狀態。",
     en: "This registration is not approved yet. Check its status first.",
   },
+  immutable_booking_identity: {
+    zh: "已確認報名的義工身份不能更改，請取消後重新報名。",
+    en: "The volunteer on a confirmed booking cannot be changed. Cancel it and register again.",
+  },
   waitlist_priority: {
     zh: "有較早登記且符合資格的候補者，請先處理該候補記錄。",
     en: "An earlier eligible volunteer is on the waitlist. Handle that waitlist record first.",
