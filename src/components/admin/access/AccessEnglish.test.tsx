@@ -205,6 +205,19 @@ describe("access management in Chinese", () => {
   });
 });
 
+describe("access row actions", () => {
+  test("BUG-56: the role menu on the signed-in admin's own row is disabled, others are not", () => {
+    users = loadedUsers;
+    audit = loadedAudit;
+    const markup = renderAdminInEnglish(<AccessManagement />);
+    const trigger = (email: string) =>
+      markup.match(new RegExp(`<button[^>]*aria-label="Role: ${email}"[^>]*>`))?.[0] ?? "";
+    expect(trigger("u1@example.org")).toMatch(/\sdisabled=""/);
+    expect(trigger("u3@example.org")).not.toBe("");
+    expect(trigger("u3@example.org")).not.toMatch(/\sdisabled=""/);
+  });
+});
+
 /** The text of every status pill (`StatusPill` / `StatusBadge`): the span after its dot. */
 function pillLabels(markup: string): string[] {
   return [...markup.matchAll(/aria-hidden="true"><\/span><span>([^<]*)<\/span>/g)].map((m) => m[1]);

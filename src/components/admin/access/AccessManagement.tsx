@@ -17,11 +17,19 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { LoadFailure, StatFigure } from "../LoadFailure";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
+import {
+  accessConfirmationRequest,
+  accessConfirmationText,
+  accessMutationSuccess,
+  isOwnAccessRow,
+  type AccessConfirmation,
+} from "./accessActions";
 import { accessCopy } from "./copy";
 
 type AdminAccessUser = {
@@ -77,6 +85,8 @@ export function AccessManagement() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<AdminRole>("staff");
   const [error, setError] = useState<string | null>(null);
+  // A role change or disable waits here until it is confirmed (BUG-56).
+  const [confirmation, setConfirmation] = useState<AccessConfirmation | null>(null);
 
   const usersQuery = useQuery({
     queryKey: ["admin-access-users"],
@@ -96,6 +106,10 @@ export function AccessManagement() {
       queryClient.invalidateQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY }),
     ]);
   };
+  // Any successful action clears an earlier error banner, not only an invite (BUG-56).
+  const onActionSuccess = accessMutationSuccess({ setError, invalidate });
+  const showActionError = (mutationError: Error) =>
+    setError(adminErrorMessage(mutationError, language) ?? t.genericError);
 
   const inviteMutation = useMutation({
     mutationFn: () =>
@@ -107,11 +121,9 @@ export function AccessManagement() {
       setInviteEmail("");
       setInviteRole("staff");
       setInviteOpen(false);
-      setError(null);
-      await invalidate();
+      await onActionSuccess();
     },
-    onError: (mutationError) =>
-      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
+    onError: showActionError,
   });
 
   const updateMutation = useMutation({
@@ -126,9 +138,9 @@ export function AccessManagement() {
         method: "PATCH",
         body: JSON.stringify(input),
       }),
-    onSuccess: invalidate,
-    onError: (mutationError) =>
-      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
+    onSuccess: onActionSuccess,
+    // A confirmed action shows its failure in the dialog, which stays open; only the
+    // unconfirmed reactivate reports through the banner (passed per call below).
   });
 
   const resendMutation = useMutation({
@@ -136,14 +148,14 @@ export function AccessManagement() {
       fetchAdminJson(`/api/admin/access/invites/${encodeURIComponent(id)}/resend`, {
         method: "POST",
       }),
-    onSuccess: invalidate,
-    onError: (mutationError) =>
-      setError(adminErrorMessage(mutationError, language) ?? t.genericError),
+    onSuccess: onActionSuccess,
+    onError: showActionError,
   });
 
   const users = usersQuery.data?.users ?? [];
   const summary = usersQuery.data?.summary ?? { active: 0, pending: 0, disabled: 0 };
   const currentAuthUserId = meQuery.data?.admin.authUserId;
+  const confirmationText = confirmation ? accessConfirmationText(confirmation, t) : null;
 
   const columns: DataTableColumn<AdminAccessUser>[] = [
     {
@@ -164,9 +176,9 @@ export function AccessManagement() {
       cell: (user) => (
         <Select
           value={user.role}
-          onValueChange={(role) =>
-            updateMutation.mutate({ id: user.id, input: { role: role as AdminRole } })
-          }
+          // The server always refuses a change to your own role (self_demote).
+          disabled={isOwnAccessRow(user, currentAuthUserId)}
+          onValueChange={(role) => setConfirmation({ kind: "role", user, role: role as AdminRole })}
         >
           <SelectTrigger className="w-36" aria-label={`${t.role}: ${user.email}`}>
             <SelectValue />
@@ -221,7 +233,12 @@ export function AccessManagement() {
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => updateMutation.mutate({ id: user.id, input: { status: "active" } })}
+              onClick={() =>
+                updateMutation.mutate(
+                  { id: user.id, input: { status: "active" } },
+                  { onError: showActionError },
+                )
+              }
             >
               {t.reactivate}
             </Button>
@@ -231,7 +248,7 @@ export function AccessManagement() {
               size="sm"
               variant="outline"
               disabled={user.authUserId === currentAuthUserId}
-              onClick={() => updateMutation.mutate({ id: user.id, input: { status: "disabled" } })}
+              onClick={() => setConfirmation({ kind: "disable", user })}
             >
               {t.disable}
             </Button>
@@ -305,6 +322,22 @@ export function AccessManagement() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <ConfirmActionDialog
+        open={confirmation !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmation(null);
+        }}
+        title={confirmationText?.title ?? ""}
+        consequence={confirmationText?.consequence ?? ""}
+        confirmLabel={confirmationText?.confirmLabel ?? ""}
+        destructive={confirmationText?.destructive}
+        reason="none"
+        onConfirm={async () => {
+          if (confirmation)
+            await updateMutation.mutateAsync(accessConfirmationRequest(confirmation));
+        }}
+      />
 
       {error && (
         <div
