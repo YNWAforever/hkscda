@@ -63,7 +63,7 @@ mock.module("../adoptions/api", () => ({
     return {};
   },
 }));
-const { AdminSessionError } = await import("../../../lib/admin/session");
+const { AdminApiError, AdminSessionError } = await import("../../../lib/admin/session");
 const { FinancePanel } = await import("./FinancePanel");
 
 type Props = { children?: ReactNode; role?: string; onClick?: () => Promise<void> };
@@ -121,6 +121,18 @@ test("retrying the notifications that fails is written in the language it is sho
   expect(alertText()).toBe("通知重試失敗");
   language = "en";
   expect(alertText()).toBe("Could not retry the notifications. Try again in a moment.");
+});
+
+test("BUG-47: a coded finance refusal is written in the language it is shown in", async () => {
+  failWith = new AdminApiError({
+    status: 409,
+    code: "not_ongoing",
+    message: "Only ongoing commitments have follow-up months.",
+  });
+  await button("建立截至本月的跟進月份")!.props.onClick!();
+  expect(alertText()).toBe("只有進行中的承諾才有跟進月份。");
+  language = "en";
+  expect(alertText()).toBe("Only ongoing commitments have follow-up months.");
 });
 
 test("a signed-out session says to sign in again, in the language it is shown in", async () => {

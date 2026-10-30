@@ -2,7 +2,8 @@ import { deliveryLabel } from "../../../lib/notifications/deliveryLabel";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCoordinatorJson } from "../adoptions/api";
-import { adminErrorMessage } from "../../../lib/admin/session";
+import { AdminApiError, adminErrorMessage } from "../../../lib/admin/session";
+import { isSponsorshipFinanceErrorCode } from "../../../lib/sponsorshipAdmin/financeErrors";
 import type { PledgeDetail } from "../../../lib/sponsorshipAdmin/types";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
@@ -94,9 +95,12 @@ export function FinancePanel({
       setBusy(false);
     }
   }
-  // A reason the caught error gave is shown as it came; otherwise the message for the code.
+  // A finance refusal the server coded is written in the admin's language; any other reason
+  // the caught error gave is shown as it came; otherwise the message for the code.
   const errorMessage = error
-    ? (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
+    ? error.cause instanceof AdminApiError && isSponsorshipFinanceErrorCode(error.cause.code)
+      ? copy.serverErrors[error.cause.code]
+      : (adminErrorMessage(error.cause, language) ?? copy.errors[error.code])
     : null;
   return (
     <section className="space-y-3 rounded-lg border p-4">

@@ -1,5 +1,6 @@
 import { defineAdminCopy } from "../i18n/copy";
 import { pluralCount } from "../i18n/format";
+import type { SponsorshipFinanceErrorCode } from "../../../lib/sponsorshipAdmin/financeErrors";
 
 /**
  * Copy for the finance panel in the pledge detail drawer: the verified payments, their
@@ -88,6 +89,19 @@ export const financeCopy = defineAdminCopy({
       command_failed: "未能完成操作",
       retry_failed: "通知重試失敗",
     },
+    /** The message for each finance refusal the server sends as a code (financeErrors.ts). */
+    serverErrors: {
+      payment_already_linked: "這筆付款已連結到另一份付款證明。",
+      payment_does_not_match: "這筆付款與已批核的付款證明不相符。",
+      reconcile_first: "請先對帳已收款項。",
+      ledger_changed: "付款紀錄已更新，請重新載入後再試。",
+      amount_too_large: "金額超過仍可使用的款項。",
+      retry_key_reused: "這項操作已用不同資料送出，請重新載入後再試。",
+      already_reversed: "這項月份分配已撥回。",
+      not_found: "找不到這項財務紀錄。",
+      contact_not_verifiable: "無法在此核實這些聯絡資料。",
+      not_ongoing: "只有進行中的承諾才有跟進月份。",
+    } satisfies Record<SponsorshipFinanceErrorCode, string>,
   },
   en: {
     heading: "Payments, months and notifications",
@@ -144,5 +158,18 @@ export const financeCopy = defineAdminCopy({
       command_failed: "Could not complete the action. Refresh the page and try again.",
       retry_failed: "Could not retry the notifications. Try again in a moment.",
     },
+    serverErrors: {
+      payment_already_linked: "This payment is already linked to another payment proof.",
+      payment_does_not_match: "This payment does not match the approved proof.",
+      reconcile_first: "Reconcile the received payment first.",
+      ledger_changed: "The payment record changed. Reload and try again.",
+      amount_too_large: "The amount is more than the money still available.",
+      retry_key_reused:
+        "This action was already sent with different details. Reload and try again.",
+      already_reversed: "This allocation has already been reversed.",
+      not_found: "The finance record was not found.",
+      contact_not_verifiable: "These contact details cannot be verified here.",
+      not_ongoing: "Only ongoing commitments have follow-up months.",
+    } satisfies Record<SponsorshipFinanceErrorCode, string>,
   },
 });
