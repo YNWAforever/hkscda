@@ -1,4 +1,4 @@
-import type { AdminRole } from "../../../lib/admin/access";
+import { hasUnacceptedInvite, type AdminRole } from "../../../lib/admin/access";
 import type { accessCopy } from "./copy";
 
 type AccessCopy = (typeof accessCopy)["en"];
@@ -59,4 +59,16 @@ export function accessMutationSuccess({
     setError(null);
     await invalidate();
   };
+}
+
+/**
+ * What a disabled row offers. A user who never accepted their invite is re-invited through
+ * the invite endpoint (which re-opens a disabled row as pending), because the server refuses
+ * to reactivate them (`invite_not_accepted`, BUG-55).
+ */
+export function disabledRowAction(user: {
+  invitedAt: string | null;
+  inviteAcceptedAt: string | null;
+}): "reinvite" | "reactivate" {
+  return hasUnacceptedInvite(user) ? "reinvite" : "reactivate";
 }

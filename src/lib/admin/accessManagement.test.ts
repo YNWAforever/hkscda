@@ -605,6 +605,89 @@ describe("createAdminAccessService", () => {
     ]);
   });
 
+  test("BUG-55: a disabled user who never accepted their invite is not reactivated; re-invite instead", async () => {
+    const { repo, calls } = makeRepo({
+      async findUserById() {
+        // Invited, then disabled while still pending: the invite was never accepted.
+        return adminUser({
+          status: "disabled",
+          invitedAt: "2026-06-30T10:00:00.000Z",
+          inviteSentAt: "2026-06-30T10:00:00.000Z",
+          inviteAcceptedAt: null,
+        });
+      },
+    });
+    const service = createAdminAccessService({
+      repo,
+      auth: {
+        inviteByEmail: async () => ({
+          authUserId: "unused",
+          email: "a@example.com",
+          actionLink: "https://example.test/invite",
+        }),
+        sendInviteEmail: async () => {},
+        resendInvite: async () => ({ actionLink: "https://example.test/invite" }),
+      },
+      now,
+    });
+
+    await expect(
+      service.updateUser({ actor, userId: "target-row", input: { status: "active" } }),
+    ).rejects.toMatchObject({ status: 422, code: "invite_not_accepted" });
+    expect(calls.updateUserWithAudit).toEqual([]);
+  });
+
+  test("BUG-55: a disabled user who accepted their invite can still be reactivated", async () => {
+    const { repo, calls } = makeRepo({
+      async findUserById() {
+        return adminUser({
+          status: "disabled",
+          invitedAt: "2026-06-30T10:00:00.000Z",
+          inviteAcceptedAt: "2026-06-30T11:00:00.000Z",
+        });
+      },
+    });
+    const service = createAdminAccessService({
+      repo,
+      auth: {
+        inviteByEmail: async () => ({
+          authUserId: "unused",
+          email: "a@example.com",
+          actionLink: "https://example.test/invite",
+        }),
+        sendInviteEmail: async () => {},
+        resendInvite: async () => ({ actionLink: "https://example.test/invite" }),
+      },
+      now,
+    });
+
+    await service.updateUser({ actor, userId: "target-row", input: { status: "active" } });
+    expect(calls.updateUserWithAudit).toHaveLength(1);
+  });
+
+  test("BUG-55: the access route answers 422 invite_not_accepted for that reactivation", async () => {
+    const response = await createAdminAccessHandlers({
+      requireAccessAdmin: async () => actor,
+      service: {
+        listUsers: async () => ({}),
+        inviteUser: async () => ({}),
+        resendInvite: async () => ({}),
+        updateUser: async () => {
+          throw new AdminAccessError("invite_not_accepted", "x", 422);
+        },
+        listAudit: async () => ({}),
+      },
+    }).updateUser({
+      request: new Request(
+        "https://example.test/api/admin/access/users/11111111-1111-4111-8111-111111111111",
+        { method: "PATCH", body: JSON.stringify({ status: "active" }) },
+      ),
+      params: { id: "11111111-1111-4111-8111-111111111111" },
+    });
+    expect(response.status).toBe(422);
+    expect(await response.json()).toMatchObject({ code: "invite_not_accepted" });
+  });
+
   test("exposes typed access errors for handlers", () => {
     const error = new AdminAccessError("invalid_role", "Invalid role", 422);
     expect(error).toMatchObject({ code: "invalid_role", status: 422 });

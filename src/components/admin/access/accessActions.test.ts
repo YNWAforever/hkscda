@@ -5,6 +5,7 @@ import {
   accessConfirmationRequest,
   accessConfirmationText,
   accessMutationSuccess,
+  disabledRowAction,
   isOwnAccessRow,
 } from "./accessActions";
 import { accessCopy } from "./copy";
@@ -64,5 +65,22 @@ describe("access page actions", () => {
     });
     await accessMutationSuccess({ setError, invalidate })();
     expect(order).toEqual(["error:null", "invalidate"]);
+  });
+});
+
+describe("disabled access rows", () => {
+  const row = {
+    status: "disabled" as const,
+    invitedAt: "2026-10-01T02:30:00Z",
+    inviteAcceptedAt: null as string | null,
+  };
+
+  test("BUG-55: a disabled user who never accepted the invite is re-invited, not reactivated", () => {
+    expect(disabledRowAction(row)).toBe("reinvite");
+    expect(disabledRowAction({ ...row, inviteAcceptedAt: "2026-10-02T02:30:00Z" })).toBe(
+      "reactivate",
+    );
+    // An admin created before invites were tracked has neither date and is reactivated.
+    expect(disabledRowAction({ ...row, invitedAt: null })).toBe("reactivate");
   });
 });

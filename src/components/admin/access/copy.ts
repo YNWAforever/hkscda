@@ -28,6 +28,7 @@ export const accessCopy = defineAdminCopy({
     resend: "重發",
     disable: "停用",
     reactivate: "重新啟用",
+    reinvite: "重新邀請",
     confirmRoleTitle: "更改角色？",
     confirmRole: (email: string, from: string, to: string) =>
       `${email} 的角色會由「${from}」改為「${to}」，可使用的管理範圍亦會隨之改變。`,
@@ -85,6 +86,7 @@ export const accessCopy = defineAdminCopy({
     resend: "Resend",
     disable: "Disable",
     reactivate: "Reactivate",
+    reinvite: "Re-invite",
     confirmRoleTitle: "Change role?",
     confirmRole: (email: string, from: string, to: string) =>
       `${email} will change from ${from} to ${to}, and the admin areas they can use will change with it.`,

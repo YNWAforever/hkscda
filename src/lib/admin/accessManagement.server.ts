@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { AdminRole, AdminStatus } from "./access";
+import { hasUnacceptedInvite, type AdminRole, type AdminStatus } from "./access";
 
 export type AdminAccessUser = {
   id: string;
@@ -223,6 +223,16 @@ export function createAdminAccessService({
       }
 
       if (input.status) assertPatchStatusTransition(user.status, input.status);
+      // pending -> disabled -> active would skip accepting the invite. The
+      // update_admin_user_with_audit RPC still allows it until a migration adds
+      // the same check there (BUG-55).
+      if (user.status === "disabled" && input.status === "active" && hasUnacceptedInvite(user)) {
+        throw new AdminAccessError(
+          "invite_not_accepted",
+          "This user never accepted their invite. Send a new invite instead",
+          422,
+        );
+      }
       if (removesActiveAdmin(user, nextRole, nextStatus)) {
         const otherActiveAdmins = await repo.countOtherActiveAdmins(user.id);
         if (otherActiveAdmins < 1) {

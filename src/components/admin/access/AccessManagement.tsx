@@ -27,6 +27,7 @@ import {
   accessConfirmationRequest,
   accessConfirmationText,
   accessMutationSuccess,
+  disabledRowAction,
   isOwnAccessRow,
   type AccessConfirmation,
 } from "./accessActions";
@@ -152,6 +153,18 @@ export function AccessManagement() {
     onError: showActionError,
   });
 
+  // Re-inviting a disabled user goes through the invite endpoint, which re-opens the row as
+  // pending with a fresh invite (the resend endpoint accepts only pending rows).
+  const reinviteMutation = useMutation({
+    mutationFn: (user: Pick<AdminAccessUser, "email" | "role">) =>
+      fetchAdminJson("/api/admin/access/invites", {
+        method: "POST",
+        body: JSON.stringify({ email: user.email, role: user.role }),
+      }),
+    onSuccess: onActionSuccess,
+    onError: showActionError,
+  });
+
   const users = usersQuery.data?.users ?? [];
   const summary = usersQuery.data?.summary ?? { active: 0, pending: 0, disabled: 0 };
   const currentAuthUserId = meQuery.data?.admin.authUserId;
@@ -228,7 +241,18 @@ export function AccessManagement() {
               {t.resend}
             </Button>
           )}
-          {user.status === "disabled" ? (
+          {user.status === "disabled" && disabledRowAction(user) === "reinvite" ? (
+            // Never accepted the invite: the server refuses a reactivation (BUG-55).
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => reinviteMutation.mutate(user)}
+            >
+              <MailPlus aria-hidden />
+              {t.reinvite}
+            </Button>
+          ) : user.status === "disabled" ? (
             <Button
               type="button"
               size="sm"
