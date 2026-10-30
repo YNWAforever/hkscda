@@ -117,6 +117,24 @@ describe("createCaseHandlers", () => {
     });
   });
 
+  test("BUG-41: a closing initial status at manual intake is a 400", async () => {
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async createManualCase() {
+          throw new Error("Closing case status not allowed at intake");
+        },
+      }),
+    });
+
+    const response = await handlers.createManualCase({
+      request: jsonRequest("https://example.test/api/admin/adoptions/cases/manual", {}),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Closing case status not allowed at intake" });
+  });
+
   test("validates a status-change case ID before authorization", async () => {
     await expectInvalidIdBeforeAuthorization("changeCaseStatus");
   });

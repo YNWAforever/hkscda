@@ -1,4 +1,5 @@
 import type {
+  CoordinatorStatus,
   CoordinatorTaskContactChannel,
   CoordinatorTaskPriority,
 } from "../../../lib/adoptions/types";
@@ -226,6 +227,11 @@ function buildInitialTaskPayload(
   if (remarks) payload.remarks = remarks;
 
   return payload;
+}
+
+// A case cannot start closed: the service refuses closing statuses at intake (BUG-41).
+export function intakeCaseStatuses(statuses: CoordinatorStatus[] | undefined) {
+  return (statuses ?? []).filter((status) => status.isActive && !status.isClosing);
 }
 
 export function buildIdentitySearchParams(filters: IdentitySearchFilters) {

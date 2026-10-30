@@ -345,6 +345,24 @@ describe("createAdoptionCoordinatorService", () => {
     expect(inactiveRepo.calls.map((call) => call.name)).toEqual(["getStatus"]);
   });
 
+  test("BUG-41: manual intake refuses a closing initial status before creating the case", async () => {
+    const repo = createRepo({
+      async getStatus(id) {
+        repo.calls.push({ name: "getStatus", payload: id });
+        return status({ id, key: "rejected", isClosing: true, isFinal: true });
+      },
+    });
+
+    await expect(
+      createAdoptionCoordinatorService({ repo }).createManualCase({
+        actorUserId: adminId,
+        input: manualCaseInput(),
+      }),
+    ).rejects.toThrow("Closing case status not allowed at intake");
+
+    expect(repo.calls.map((call) => call.name)).toEqual(["getStatus"]);
+  });
+
   test("lists coordinator export history with normalized filters", async () => {
     const { service, calls } = setup();
 

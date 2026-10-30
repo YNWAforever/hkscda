@@ -456,6 +456,9 @@ export function createAdoptionCoordinatorService({
       const status = await repo.getStatus(input.case.initialStatusId);
       if (!status || status.category !== "adoption_case") throw new Error("Invalid case status");
       if (!status.isActive) throw new Error("Inactive case status");
+      // A case created closed would count as open with no closed_at or reason (BUG-41);
+      // closing a case goes through changeCaseStatus, which requires the reason.
+      if (status.isClosing) throw new Error("Closing case status not allowed at intake");
 
       if (input.initialTask) {
         const taskStatus = await repo.getStatus(input.initialTask.statusId);
