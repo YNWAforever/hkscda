@@ -77,6 +77,25 @@ describe("crm schemas", () => {
     ).toThrow("bankReference");
   });
 
+  test("BUG-51: bounds the manual donation bank reference to 120 characters, as reconcile does", () => {
+    const gift = (bankReference: string) => ({
+      requestId: "22222222-3333-4444-8555-666666666666",
+      supporterId: "8ddfd279-4ba7-4c2b-9e3c-1dbf17bb5ead",
+      amountCents: 10000,
+      currency: "HKD",
+      purpose: "general",
+      method: "fps",
+      paymentStatus: "succeeded",
+      bankReference,
+      receiptRequested: false,
+      consents: { email: false, whatsapp: false },
+    });
+    expect(manualDonationSchema.parse(gift(`  ${"R".repeat(120)}  `)).bankReference).toBe(
+      "R".repeat(120),
+    );
+    expect(() => manualDonationSchema.parse(gift("R".repeat(121)))).toThrow();
+  });
+
   test("requires exactly one manual donation supporter identity", () => {
     expect(() =>
       manualDonationSchema.parse({

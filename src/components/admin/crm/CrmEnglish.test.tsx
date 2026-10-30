@@ -649,6 +649,12 @@ describe("supporter dialogs in English", () => {
     }
   });
 
+  test("BUG-51: the bank reference input stops at 120 characters, as the schema does", () => {
+    const markup = renderAdminInEnglish(<ManualDonationDialog supporterId="sup-1" />);
+    const input = markup.match(/<input[^>]*id="manual-donation-reference"[^>]*>/)?.[0] ?? "";
+    expect(input).toMatch(/maxLength="120"/i);
+  });
+
   test("keeps the Chinese manual donation form as it was", () => {
     const markup = renderAdminInChinese(<ManualDonationDialog supporterId="sup-1" />);
     for (const text of [
