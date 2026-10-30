@@ -1,7 +1,11 @@
 import { describe, expect, mock, spyOn, test } from "bun:test";
 
 import { RequestBodyTooLargeError, InvalidRequestJsonError } from "../http/publicJson.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createSponsorshipAdminHandlers, withErrors } from "./http.server";
+import { createSupabaseSponsorshipAdminRepository } from "./repository.server";
+import { createSponsorshipAdminService } from "./service";
 
 const pledgeId = "11111111-2222-4333-8444-555555555555";
 const assignmentId = "66666666-7777-4888-8999-aaaaaaaaaaaa";
@@ -511,4 +515,121 @@ test("proof review maps a SQL role recheck refusal to 403 without exposing DB de
   expect(response.status).toBe(403);
   expect(await response.json()).toEqual({ error: "Access denied" });
   expect(response.headers.get("cache-control")).toBe("no-store");
+});
+
+describe("BUG-43: plain-object PostgREST RPC errors keep their domain status", () => {
+  // supabase-js returns an RPC failure as a plain `{ code, message, details, hint }`
+  // object, not an Error. These drive that object through the real repository,
+  // the real service and the real handlers, with only the Supabase client faked.
+  type RpcError = { code: string; message: string; details: string | null; hint: null };
+
+  function rpcError(code: string, message: string): RpcError {
+    return { code, message, details: null, hint: null };
+  }
+
+  function handlersFailingRpcWith(error: RpcError) {
+    const client = {
+      rpc: async () => ({ data: null, error }),
+    } as unknown as SupabaseClient;
+    const repo = {
+      ...createSupabaseSponsorshipAdminRepository(client),
+      // The pledge exists and is open; the refusal comes from the RPC alone.
+      getPledgeDetail: async () =>
+        ({ id: pledgeId, status: "active", supporterEmail: null, assignments: [] }) as never,
+    };
+    const service = createSponsorshipAdminService({
+      repo,
+      sendPledgeStatusUpdateEmail: async () => undefined as never,
+      client,
+      logger: { error: () => {} },
+    });
+    return createSponsorshipAdminHandlers({
+      requireReader: requireCoordinator(),
+      requireFinance: requireCoordinator(),
+      requireCoordinator: requireCoordinator(),
+      service,
+    });
+  }
+
+  async function quietly(run: () => Promise<Response>) {
+    const log = spyOn(console, "error").mockImplementation(() => {});
+    try {
+      return await run();
+    } finally {
+      log.mockRestore();
+    }
+  }
+
+  function assign(error: RpcError) {
+    return quietly(() =>
+      handlersFailingRpcWith(error).assignAnimal({
+        request: request(
+          `http://localhost/api/admin/sponsorships/pledges/${pledgeId}/assignments`,
+          { method: "POST", body: JSON.stringify({ animalId }) },
+        ),
+        params: { id: pledgeId },
+      }),
+    );
+  }
+
+  test("BUG-43: an ineligible animal raised by the RPC is 409, not 500", async () => {
+    const response = await assign(rpcError("P0001", `Animal ${animalId} cannot be sponsored`));
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: `Animal ${animalId} cannot be sponsored` });
+  });
+
+  test("BUG-43: an unknown animal raised by the RPC is 404, not 500", async () => {
+    const response = await assign(rpcError("P0001", "Animal not found"));
+    expect(response.status).toBe(404);
+  });
+
+  test("BUG-43: an open-assignment unique violation (23505) is 409 without raw database text", async () => {
+    const response = await assign(
+      rpcError(
+        "23505",
+        'duplicate key value violates unique constraint "sponsorship_assignment_one_open_per_animal"',
+      ),
+    );
+    expect(response.status).toBe(409);
+    const body = (await response.json()) as { error: string };
+    expect(body.error).not.toContain("duplicate key");
+    expect(body.error).not.toContain("sponsorship_assignment");
+  });
+
+  test("BUG-43: a racing cancel raised by the RPC is 409, not 500", async () => {
+    const response = await quietly(() =>
+      handlersFailingRpcWith(
+        rpcError("P0001", "Sponsorship pledge is already cancelled"),
+      ).cancelPledge({
+        request: request(`http://localhost/api/admin/sponsorships/pledges/${pledgeId}/cancel`, {
+          method: "POST",
+          body: JSON.stringify({ note: "Supporter asked to stop" }),
+        }),
+        params: { id: pledgeId },
+      }),
+    );
+    expect(response.status).toBe(409);
+  });
+
+  test("BUG-43: a payment beyond the supported future months is 400, not 500", async () => {
+    const response = await withErrors(async () => {
+      throw rpcError("P0001", "Payment exceeds the supported 24 future months");
+    });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Payment exceeds the supported 24 future months",
+    });
+  });
+
+  test("BUG-43: an unknown plain-object database error stays a generic 500", async () => {
+    const response = await quietly(() =>
+      withErrors(async () => {
+        throw rpcError("XX000", "private database detail");
+      }),
+    );
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({
+      error: "Could not process sponsorship review request",
+    });
+  });
 });

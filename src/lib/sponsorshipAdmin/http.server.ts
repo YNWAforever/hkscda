@@ -57,6 +57,8 @@ const conflictDomainErrors = new Set([
   "Sponsorship assignment is already ended",
 ]);
 
+const badRequestDomainErrors = new Set(["Payment exceeds the supported 24 future months"]);
+
 // The database raises "Actor <uuid> is not an active staff/admin user", so an
 // exact-match set could never fire. Matched on the stable prefix instead.
 function isForbiddenDomainError(message: string) {
@@ -94,12 +96,15 @@ export async function responseError(error: Response) {
   return jsonResponse({ error: message || error.statusText || "Request failed" }, { status });
 }
 
-export function domainError(error: Error) {
+export function domainError(error: { message: string }) {
   if (notFoundDomainErrors.has(error.message)) {
     return jsonResponse({ error: error.message }, { status: 404 });
   }
   if (conflictDomainErrors.has(error.message) || isAnimalConflictError(error.message)) {
     return jsonResponse({ error: error.message }, { status: 409 });
+  }
+  if (badRequestDomainErrors.has(error.message)) {
+    return jsonResponse({ error: error.message }, { status: 400 });
   }
   if (isForbiddenDomainError(error.message)) {
     return jsonResponse({ error: error.message }, { status: 403 });
@@ -128,9 +133,24 @@ export async function withErrors(
     if (error instanceof z.ZodError) {
       return jsonResponse({ error: "Invalid sponsorship review request" }, { status: 400 });
     }
-    if (error instanceof Error) {
-      const response = domainError(error);
-      if (response) return response;
+    // A unique violation is a lost race or a duplicate (e.g. the animal already
+    // has an open assignment on this pledge). The raw text names the index, so
+    // it is replaced rather than passed through.
+    if (error && typeof error === "object" && "code" in error && error.code === "23505") {
+      return jsonResponse(
+        { error: "This change conflicts with an existing record. Reload and try again." },
+        { status: 409 },
+      );
+    }
+    // RPC exceptions arrive from supabase-js as plain `{ code, message }`
+    // objects, not Error instances (BUG-43). Only exact, known domain messages
+    // are mapped and echoed; any other text stays private behind the 500.
+    if (error && typeof error === "object" && "message" in error) {
+      const { message } = error;
+      if (typeof message === "string") {
+        const response = domainError({ message });
+        if (response) return response;
+      }
     }
 
     console.error(error);
