@@ -1274,6 +1274,32 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-34: fixed by 20261030100000_case_status_refuses_finalised_and_reopen_needs_reason.sql.
+  // Verified against Postgres 16: a finalised case is refused, a reopen needs a note.
+  test("BUG-34: change_adoption_case_status refuses a finalised case and needs a reason to reopen", () => {
+    const rpc = latestFunctionBody("change_adoption_case_status");
+    const body = rpc.body.replace(/--[^\n]*/g, "");
+    const finalisedCheck = body.search(
+      /from\s+public\.successful_adoption\s+where\s+adoption_case_id\s*=\s*p_case_id/i,
+    );
+    const update = body.search(/update\s+public\.adoption_case/i);
+    expect({
+      file: rpc.file,
+      // Both refusals run before the case row changes, under the case row lock.
+      locksCase: /from\s+public\.adoption_case\s+where\s+id\s*=\s*p_case_id\s+for\s+update/i.test(
+        body,
+      ),
+      refusesFinalised:
+        finalisedCheck >= 0 &&
+        finalisedCheck < update &&
+        body.includes("'Finalized adoption case status cannot change'"),
+      reopenNeedsReason:
+        /v_current\.is_closing[\s\S]*?not\s+v_status\.is_closing[\s\S]*?btrim\(coalesce\(p_note/i.test(
+          body,
+        ) && body.includes("'reason_required'"),
+    }).toMatchObject({ locksCase: true, refusesFinalised: true, reopenNeedsReason: true });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");

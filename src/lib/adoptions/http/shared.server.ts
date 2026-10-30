@@ -95,6 +95,9 @@ export const conflictDomainErrors = new Set([
   "Animal already has a successful adoption",
   "Adoption case already finalized",
   "Adoption case is closed",
+  // change_adoption_case_status refusal (BUG-34, migration 20261030100000). Its other new
+  // refusal, a reopen without a note, raises the existing "reason_required" (400).
+  "Finalized adoption case status cannot change",
 ]);
 
 export async function responseError(error: Response) {

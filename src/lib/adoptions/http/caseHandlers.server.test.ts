@@ -135,6 +135,37 @@ describe("createCaseHandlers", () => {
     expect(await response.json()).toEqual({ error: "Closing case status not allowed at intake" });
   });
 
+  test("BUG-34: a finalised case's status change is a 409 and a reopen without a reason is a 400", async () => {
+    const caseId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+    async function statusChangeFailingWith(message: string) {
+      const handlers = createCaseHandlers({
+        requireCoordinator: async () => staff,
+        service: createService({
+          async changeCaseStatus() {
+            // supabase-js hands RPC exceptions back as plain objects.
+            throw { code: "P0001", message, details: "Private detail" };
+          },
+        }),
+      });
+      return handlers.changeCaseStatus({
+        request: jsonRequest(`https://example.test/api/admin/adoptions/cases/${caseId}/status`, {
+          statusId: "bbbbbbbb-cccc-4333-8444-555555555555",
+        }),
+        params: { id: caseId },
+      });
+    }
+
+    const finalised = await statusChangeFailingWith("Finalized adoption case status cannot change");
+    expect(finalised.status).toBe(409);
+    expect(await finalised.json()).toEqual({
+      error: "Finalized adoption case status cannot change",
+    });
+
+    const reopen = await statusChangeFailingWith("reason_required");
+    expect(reopen.status).toBe(400);
+    expect(await reopen.json()).toEqual({ error: "reason_required" });
+  });
+
   test("validates a status-change case ID before authorization", async () => {
     await expectInvalidIdBeforeAuthorization("changeCaseStatus");
   });

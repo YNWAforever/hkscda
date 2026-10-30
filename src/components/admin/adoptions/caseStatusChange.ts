@@ -15,8 +15,25 @@ export function isClosingStatusChoice(
 }
 
 /**
- * What the case screen sends to change a case's status. A closing status needs the dialog's reason,
- * which travels as the note (null or blank builds nothing); any other status sends its optional note.
+ * Whether the chosen status reopens a case: its current status closes it and the chosen one does
+ * not. The server refuses a reopen without a note (BUG-34), so the screen asks for the reason in
+ * the same dialog as a closing change.
+ */
+export function isReopeningStatusChoice(
+  statuses: readonly Pick<CoordinatorStatus, "id" | "isClosing">[],
+  currentStatusId: string | undefined,
+  statusId: string,
+): boolean {
+  if (!currentStatusId || statusId === "") return false;
+  return (
+    isClosingStatusChoice(statuses, currentStatusId) && !isClosingStatusChoice(statuses, statusId)
+  );
+}
+
+/**
+ * What the case screen sends to change a case's status. A closing status (and a reopen, BUG-34) needs
+ * the dialog's reason, which travels as the note (null or blank builds nothing); `closing` is true
+ * for every change the reason dialog sends. Any other status sends its optional note.
  */
 export function caseStatusChangeRequest(args: {
   caseId: string;
@@ -34,17 +51,20 @@ export function caseStatusChangeRequest(args: {
 }
 
 /**
- * The error the status form's inline alert shows. A failed closing change is already shown in the
- * reason dialog, which stays open on a failure, so the inline alert shows only a failed change to a
- * status that does not close.
+ * The error the status form's inline alert shows. A failed closing change or reopen is already shown
+ * in the reason dialog, which stays open on a failure, so the inline alert shows only a failed change
+ * that did not go through the dialog.
  */
 export function inlineCaseStatusFailure(
   statuses: readonly Pick<CoordinatorStatus, "id" | "isClosing">[],
   error: Error | null,
   request: CaseStatusChangeRequest | undefined,
+  currentStatusId?: string,
 ): Error | null {
   if (!error) return null;
   if (request && isClosingStatusChoice(statuses, request.body.statusId)) return null;
+  if (request && isReopeningStatusChoice(statuses, currentStatusId, request.body.statusId))
+    return null;
   return error;
 }
 

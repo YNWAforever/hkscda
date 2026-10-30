@@ -94,6 +94,8 @@ export const caseDetailCopy = defineAdminCopy({
     optionalStatusNote: "選填狀態備註",
     saveStatus: "儲存狀態",
     closeConsequence: "",
+    reopenConsequence: "此狀態會重新開啟已結束的個案。原因會連同狀態變更記錄在個案歷史中。",
+    finalizedStatusLocked: "此個案已完成領養，狀態不能再更改。",
   },
   en: {
     backToCases: "Back to cases",
@@ -189,5 +191,8 @@ export const caseDetailCopy = defineAdminCopy({
     saveStatus: "Save status",
     closeConsequence:
       "This status closes the case. The reason is saved with the status change in the case history.",
+    reopenConsequence:
+      "This status reopens a closed case. The reason is saved with the status change in the case history.",
+    finalizedStatusLocked: "This case's adoption is finalised, so its status can no longer change.",
   },
 });

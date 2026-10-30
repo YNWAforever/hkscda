@@ -34,6 +34,7 @@ import {
   caseStatusChangeRequest,
   inlineCaseStatusFailure,
   isClosingStatusChoice,
+  isReopeningStatusChoice,
   sendCaseStatusChange,
   type CaseStatusChangeRequest,
 } from "./caseStatusChange";
@@ -516,18 +517,27 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
   });
 
   const closing = isClosingStatusChoice(statuses, selectedStatusId);
-  // A failed closing change shows in its dialog only, not a second time under the form.
+  // BUG-34: reopening a closed case needs a reason too, and a finalised case cannot change.
+  const reopening = isReopeningStatusChoice(statuses, adoptionCase?.status.id, selectedStatusId);
+  const statusLocked = Boolean(adoptionCase?.successfulAdoption);
+  // A failed closing change or reopen shows in its dialog only, not a second time under the form.
   const inlineFailure = inlineCaseStatusFailure(
     statuses,
     statusMutation.error,
     statusMutation.variables,
+    adoptionCase?.status.id,
   );
 
   function handleStatusSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedStatusId || statusMutation.isPending) return;
+    if (!selectedStatusId || statusLocked || statusMutation.isPending) return;
     // A closing status asks for its reason first; the dialog sends the change.
     if (closing) {
+      setCloseOpen(true);
+      return;
+    }
+    // So does a reopen of a closed case (BUG-34).
+    if (reopening) {
       setCloseOpen(true);
       return;
     }
@@ -695,7 +705,7 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
           open={closeOpen}
           onOpenChange={setCloseOpen}
           title={copy.saveStatus}
-          consequence={copy.closeConsequence}
+          consequence={reopening ? copy.reopenConsequence : copy.closeConsequence}
           confirmLabel={copy.saveStatus}
           destructive
           reason={requiredReasonDialog}
@@ -717,7 +727,11 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
         >
           <div className="space-y-1.5">
             <Label htmlFor="case-status">{copy.labels.caseStatus}</Label>
-            <Select value={selectedStatusId} onValueChange={setSelectedStatusId}>
+            <Select
+              value={selectedStatusId}
+              onValueChange={setSelectedStatusId}
+              disabled={statusLocked}
+            >
               <SelectTrigger id="case-status" className="h-9">
                 <SelectValue placeholder={copy.chooseStatus} />
               </SelectTrigger>
@@ -742,11 +756,19 @@ export function CaseDetail({ caseId }: CaseDetailProps) {
             />
           </div>
           <div className="flex items-end">
-            <Button type="submit" disabled={!selectedStatusId || statusMutation.isPending}>
+            <Button
+              type="submit"
+              disabled={!selectedStatusId || statusLocked || statusMutation.isPending}
+            >
               <Save className="h-4 w-4" />
               {copy.saveStatus}
             </Button>
           </div>
+          {statusLocked && (
+            <p className="text-sm text-[var(--color-text-muted)] lg:col-span-3">
+              {copy.finalizedStatusLocked}
+            </p>
+          )}
           {inlineFailure && (
             <p className="text-sm text-[var(--color-error)]" role="alert">
               {adminErrorMessage(inlineFailure, language) ?? ""}
