@@ -109,3 +109,28 @@ test("BUG-40: unique violations get a message for the constraint that was hit", 
   expect(supporterEmail).not.toContain("ada@example.com");
   expect(other).not.toContain("private value");
 });
+
+test("BUG-42: foreign-key misses are 404 and check violations are 400, details private", async () => {
+  const foreignKey = await withErrors(async () => {
+    throw {
+      code: "23503",
+      message:
+        'insert or update on table "animal_match" violates foreign key constraint "animal_match_adoption_case_id_fkey"',
+      details: 'Key (adoption_case_id)=(private-id) is not present in table "adoption_case".',
+    };
+  });
+  const check = await withErrors(async () => {
+    throw {
+      code: "23514",
+      message: 'new row for relation "adoption_followup" violates check constraint "private_check"',
+      details: "Failing row contains (private-row).",
+    };
+  });
+
+  expect(foreignKey.status).toBe(404);
+  expect(check.status).toBe(400);
+  for (const response of [foreignKey, check]) {
+    const body = JSON.stringify(await response.json());
+    expect(body).not.toContain("private");
+  }
+});

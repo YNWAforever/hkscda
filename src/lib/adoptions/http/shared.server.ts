@@ -188,6 +188,14 @@ export async function withErrors(operation: () => Promise<Response>) {
     if (error && typeof error === "object" && "code" in error && error.code === "23505") {
       return jsonResponse({ error: uniqueViolationMessage(error) }, { status: 409 });
     }
+    // A match or follow-up on an unknown case/animal id was a 500 (BUG-42). The
+    // constraint text names private columns and values, so only a fixed message goes out.
+    if (error && typeof error === "object" && "code" in error && error.code === "23503") {
+      return jsonResponse({ error: "Linked record not found" }, { status: 404 });
+    }
+    if (error && typeof error === "object" && "code" in error && error.code === "23514") {
+      return jsonResponse({ error: "Invalid coordinator request" }, { status: 400 });
+    }
     if (error instanceof Error) {
       const response = domainError(error);
       if (response) return response;
