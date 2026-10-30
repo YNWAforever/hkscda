@@ -140,7 +140,8 @@ export function SupporterDetail({ supporterId }: SupporterDetailProps) {
         </Button>
         <div className="flex flex-wrap gap-2">
           <SupporterFormDialog mode="edit" supporter={data} />
-          <ManualDonationDialog supporterId={supporterId} />
+          {/* The gift RPC refuses a soft-deleted supporter (BUG-50), so do not offer it. */}
+          {!data.deletedAt && <ManualDonationDialog supporterId={supporterId} />}
         </div>
       </div>
 
