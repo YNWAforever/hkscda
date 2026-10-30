@@ -358,7 +358,18 @@ export function createSupabaseVolunteerRepository(
         p_input: toActivityInsert(input),
       });
       if (error) throw error;
-      if (data.kind === "conflict") throw new Error("操作識別已用於其他內容，請重新開啟表格");
+      if (data.kind === "conflict") {
+        // The key was already used for a different draft (a lost response, then an edited
+        // retry). That is the caller's 409 to recover from by rotating its key, not a 500 (BUG-59).
+        const code =
+          typeof data.reason === "string" && volunteerCodeMessage(data.reason)
+            ? data.reason
+            : "idempotency_payload_changed";
+        throw Response.json(
+          { error: { code, message: volunteerCodeMessage(code) } },
+          { status: 409, headers: { "cache-control": "no-store" } },
+        );
+      }
       return data.activity_id as string;
     },
 

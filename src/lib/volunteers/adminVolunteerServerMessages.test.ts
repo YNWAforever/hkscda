@@ -582,8 +582,6 @@ describe("every Chinese string the volunteer server code holds", () => {
     "此報名識別已用於其他內容，請重新開始報名。",
     "此報名連結已過期，請重新開始報名。",
     "你已報名此活動；請使用原有的狀態連結或聯絡職員。",
-    // repository.server.ts: replaced by the English 500 before it leaves the server.
-    "操作識別已用於其他內容，請重新開啟表格",
     // http.server.ts: a prefix of the public registration form.
     "未能完成報名：",
     // policy/http.server.ts and policy/dailyHttp.server.ts: both normalise the result, so the shared

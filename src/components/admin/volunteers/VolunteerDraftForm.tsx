@@ -7,6 +7,7 @@ import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors"
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
 import { activityWorkspaceCopy } from "./activityWorkspaceCopy";
+import { shouldRotateDraftKey } from "./draftIdempotency";
 const input = "min-h-11 w-full rounded border border-[var(--color-border)] px-3 py-2";
 export function VolunteerDraftForm() {
   const { language } = useAdminLanguage();
@@ -42,6 +43,9 @@ export function VolunteerDraftForm() {
       setOpen(false);
       setTitle("");
       void refreshVolunteerQueries(cache, "activity", language);
+    },
+    onError: (error) => {
+      if (shouldRotateDraftKey(error)) setKey(crypto.randomUUID());
     },
   });
   return (
