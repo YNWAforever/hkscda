@@ -244,8 +244,13 @@ test("does not promote an unreviewed animal image before editorial approval reje
 
   if (!(response instanceof Response)) throw new Error("Expected HTTP response");
   expect(response.status).toBe(422);
+  // A missing review answered invalid_draft before BUG-54, which the editor showed
+  // as "preview again"; it now has its own code pointing to source review.
   expect(await response.json()).toEqual({
-    error: { code: "invalid_draft", message: "動物草稿資料無效" },
+    error: {
+      code: "review_required",
+      message: "此已儲存版本尚未通過來源審核，請先完成來源審核再發布。",
+    },
   });
   expect(download).not.toHaveBeenCalled();
   expect(upload).not.toHaveBeenCalled();
@@ -553,4 +558,69 @@ test("retrying a committed preview resumes its pending media copy", async () => 
     p_actor: "staff-user",
     p_command: expect.objectContaining({ preview_id: "preview-1" }),
   });
+});
+
+async function publishWith(client: unknown): Promise<Response> {
+  activeClient = client;
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "publish", preview_id: "preview-1", animal_id: "animal-1" }),
+    }),
+  } as never);
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  return response;
+}
+
+test("BUG-54: a draft revision with no approved review answers review_required, not a stale draft", async () => {
+  const rpc = mock(async () => ({ data: null, error: null }));
+  const response = await publishWith({
+    from: (table: string) => {
+      if (table === "animal_publication_preview")
+        return queryRow({ body: { publication_state: "published" }, draft_revision: 3 });
+      if (table === "animal_draft") return queryRow({ revision: 3 });
+      if (table === "editorial_content_review") return queryRow({ classification: "needs_review" });
+      throw new Error("Unexpected table: " + table);
+    },
+    rpc,
+  });
+  expect(response.status).toBe(422);
+  const body = (await response.json()) as { error: { code: string; message: string } };
+  expect(body.error.code).toBe("review_required");
+  expect(body.error.message).toContain("來源審核");
+  expect(rpc).not.toHaveBeenCalled();
+});
+
+test("BUG-54: the editorial-review trigger refusing the publish RPC answers review_required", async () => {
+  const response = await publishWith({
+    from: (table: string) => {
+      if (table === "animal_publication_preview") return queryRow(null);
+      throw new Error("Unexpected table: " + table);
+    },
+    rpc: async () => ({
+      data: null,
+      error: { code: "22023", message: "此版本尚未核實為可發布內容，請先完成內容來源審核" },
+    }),
+  });
+  expect(response.status).toBe(422);
+  const body = (await response.json()) as { error: { code: string } };
+  expect(body.error.code).toBe("review_required");
+});
+
+test("BUG-54: any other 22023 from the publish RPC stays invalid_draft, and a stale preview stays 409", async () => {
+  const invalid = await publishWith({
+    from: () => queryRow(null),
+    rpc: async () => ({ data: null, error: { code: "22023", message: "invalid animal draft" } }),
+  });
+  expect(invalid.status).toBe(422);
+  expect(((await invalid.json()) as { error: { code: string } }).error.code).toBe("invalid_draft");
+  const stale = await publishWith({
+    from: () => queryRow(null),
+    rpc: async () => ({ data: { kind: "conflict" }, error: null }),
+  });
+  expect(stale.status).toBe(409);
+  expect(((await stale.json()) as { error: { code: string } }).error.code).toBe("stale_preview");
 });

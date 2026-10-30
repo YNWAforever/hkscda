@@ -18,6 +18,7 @@ import type { Animal } from "../../types/animal";
 import { AnimalGalleryEditor, type EditableGalleryItem } from "./AnimalGalleryEditor";
 import { useAdminLanguage } from "./adminI18n";
 import { animalFormCopy } from "./animalFormCopy";
+import { animalPublishFailure } from "./animalPublishError";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
 import { useAdminCopy } from "./i18n/copy";
 import { useLeaveConfirm } from "./useLeaveConfirm";
@@ -400,14 +401,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       }
       navigate({ to: "/admin" });
     } catch (error) {
-      if (error instanceof AdminApiError && [403, 404, 409, 422].includes(error.status)) {
-        setError(formCopy.publish.conflict);
-        setPreviewId(null);
-      } else {
-        // A lost HTTP response may follow a committed publish. Keep the
-        // preview ID so the idempotent publish command can be retried.
-        setError(formCopy.publish.unconfirmed);
-      }
+      const failure = animalPublishFailure(error);
+      setError(formCopy.publish[failure.notice]);
+      if (!failure.keepPreview) setPreviewId(null);
     }
   }
   const field =
