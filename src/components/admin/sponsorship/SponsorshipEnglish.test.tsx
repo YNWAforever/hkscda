@@ -31,6 +31,7 @@ let listError: Error | null = null;
 let pledgeError: Error | null = null;
 let pledgeOverride: Partial<PledgeDetail> = {};
 let financeData: unknown;
+let candidateState: "loaded" | "empty" | "loading" | "error" = "loaded";
 
 mock.module("@tanstack/react-query", () => ({
   ...realQuery,
@@ -54,6 +55,28 @@ mock.module("@tanstack/react-query", () => ({
         data: { assignees: [{ authUserId: "u-1", email: "staff@example.org", role: "staff" }] },
       };
     if (key === "sponsorship-finance") return { ...base, data: financeData };
+    if (key === "sponsorship-assignment-candidates")
+      return candidateState === "error"
+        ? { ...base, isError: true, error: new Error("boom"), data: undefined }
+        : candidateState === "loading"
+          ? { ...base, isLoading: true, data: undefined }
+          : {
+              ...base,
+              data: {
+                animals:
+                  candidateState === "empty"
+                    ? []
+                    : [
+                        {
+                          id: "animal-c",
+                          name: "小白",
+                          name_en: "Snowy",
+                          code: "D-012",
+                          image_url: null,
+                        },
+                      ],
+              },
+            };
     return { ...base, data: undefined };
   },
 }));
@@ -393,6 +416,26 @@ describe("pledge detail drawer in English", () => {
     <PledgeDetailDrawer pledgeId={detail.id} onClose={() => {}} onChanged={() => {}} />
   );
 
+  test("BUG-44: the animal picker shows its searching, empty and failed states in English", () => {
+    role = "admin";
+    pledgeOverride = {};
+    financeData = finance;
+    try {
+      candidateState = "loading";
+      expect(renderAdminInEnglish(drawer)).toContain("Searching animals…");
+      candidateState = "empty";
+      expect(renderAdminInEnglish(drawer)).toContain(
+        "No matching animals. Only published, sponsorable animals still in our care are listed.",
+      );
+      candidateState = "error";
+      const failed = renderAdminInEnglish(drawer);
+      expect(failed).toContain("Could not load the animals you can add");
+      expect(failed).not.toContain("Animals you can add<");
+    } finally {
+      candidateState = "loaded";
+    }
+  });
+
   test("shows every section of a pledge that needs follow-up in English", () => {
     role = "admin";
     pledgeOverride = {};
@@ -440,7 +483,12 @@ describe("pledge detail drawer in English", () => {
       "Moved to Momo",
       "End sponsorship",
       "This sponsorship is still being paid but backs no animal",
-      "Animal UUID",
+      // BUG-44: the free-text "Animal UUID" box became a search over the eligible animals, so
+      // this list now names the picker and a candidate instead of that placeholder.
+      "Search animals to add",
+      'placeholder="Name or code"',
+      "Animals you can add",
+      `Snowy / ${ANIMAL} · D-012`,
       "Add animal",
       // finance panel inside the drawer
       "Payments, months and notifications",

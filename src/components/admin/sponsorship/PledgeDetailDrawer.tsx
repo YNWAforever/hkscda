@@ -47,6 +47,7 @@ import {
 } from "./pledgeReviewLogic";
 import { LoadFailure } from "../LoadFailure";
 import { createPaymentRetryKey, submitWithPaymentRetryKey } from "./paymentRetry";
+import { AnimalCandidatePicker } from "./AnimalCandidatePicker";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 type FollowupAssigneesResponse = {
@@ -817,11 +818,11 @@ export function PledgeDetailDrawer({
               {pledge.needsAnimal && (
                 <p className="text-[var(--color-text-muted)]">{copy.assignments.needsAnimal}</p>
               )}
-              <div className="flex gap-2">
-                <Input
+              <div className="space-y-2">
+                <AnimalCandidatePicker
                   value={assignAnimalId}
-                  placeholder={copy.assignments.addPlaceholder}
-                  onChange={(event) => setAssignAnimalId(event.target.value)}
+                  onChange={setAssignAnimalId}
+                  disabled={!canMatch || submitting}
                 />
                 <Button
                   type="button"
