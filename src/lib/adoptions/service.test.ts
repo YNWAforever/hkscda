@@ -1489,4 +1489,125 @@ describe("createAdoptionCoordinatorService", () => {
 
     expect(repo.calls.map((call) => call.name)).toEqual(["getTask"]);
   });
+
+  describe("BUG-35: completed_at follows the task status", () => {
+    const cancelledStatus = status({
+      id: followupStatusId,
+      category: "followup",
+      key: "cancelled",
+      isFinal: true,
+      isClosing: true,
+    });
+    const openStatus = status({ id: followupStatusId, category: "followup", key: "open" });
+    const clock = () => new Date("2026-06-27T10:00:00.000Z");
+
+    function payloadOf(repo: ReturnType<typeof createRepo>, name: string) {
+      return repo.calls.find((call) => call.name === name)?.payload as Record<string, unknown>;
+    }
+
+    test("BUG-35: cancelling an open task stamps completedAt so it leaves the open lists", async () => {
+      const repo = createRepo({
+        async getTask(id) {
+          repo.calls.push({ name: "getTask", payload: id });
+          return task({ dueAt: "2026-06-20T10:00:00.000Z" });
+        },
+        async getStatus(id) {
+          repo.calls.push({ name: "getStatus", payload: id });
+          return cancelledStatus;
+        },
+      });
+      const service = createAdoptionCoordinatorService({ repo, now: clock });
+
+      await service.updateTask({
+        actorUserId: adminId,
+        taskId: "followup-1",
+        input: { statusId: followupStatusId, outcome: "Adopter moved away" },
+      });
+
+      expect(payloadOf(repo, "updateTask").completedAt).toBe("2026-06-27T10:00:00.000Z");
+    });
+
+    test("BUG-35: reopening a completed task clears completedAt", async () => {
+      const repo = createRepo({
+        async getTask(id) {
+          repo.calls.push({ name: "getTask", payload: id });
+          return task({
+            status: status({
+              id: followupStatusId,
+              category: "followup",
+              key: "completed",
+              isFinal: true,
+              isClosing: true,
+            }),
+            completedAt: "2026-06-26T09:30:00.000Z",
+            outcome: "Visit completed",
+          });
+        },
+        async getStatus(id) {
+          repo.calls.push({ name: "getStatus", payload: id });
+          return openStatus;
+        },
+      });
+      const service = createAdoptionCoordinatorService({ repo, now: clock });
+
+      await service.updateTask({
+        actorUserId: adminId,
+        taskId: "followup-1",
+        // The task panel sends the form's old completed date back unchanged.
+        input: { statusId: followupStatusId, completedAt: "2026-06-26T09:30:00.000Z" },
+      });
+
+      expect(payloadOf(repo, "updateTask").completedAt).toBeNull();
+    });
+
+    test("BUG-35: a closing status keeps an explicit completed date", async () => {
+      const repo = createRepo({
+        async getTask(id) {
+          repo.calls.push({ name: "getTask", payload: id });
+          return task();
+        },
+        async getStatus(id) {
+          repo.calls.push({ name: "getStatus", payload: id });
+          return cancelledStatus;
+        },
+      });
+      const service = createAdoptionCoordinatorService({ repo, now: clock });
+
+      await service.updateTask({
+        actorUserId: adminId,
+        taskId: "followup-1",
+        input: {
+          statusId: followupStatusId,
+          completedAt: "2026-06-25T08:00:00.000Z",
+          remarks: "Called off",
+        },
+      });
+
+      expect(payloadOf(repo, "updateTask").completedAt).toBe("2026-06-25T08:00:00.000Z");
+    });
+
+    test("BUG-35: creating a cancelled task stamps completedAt; an open one drops it", async () => {
+      let current = cancelledStatus;
+      const repo = createRepo({
+        async getStatus(id) {
+          repo.calls.push({ name: "getStatus", payload: id });
+          return current;
+        },
+      });
+      const service = createAdoptionCoordinatorService({ repo, now: clock });
+      const base = { title: "Home visit", statusId: followupStatusId, adoptionCaseId: caseId };
+
+      await service.createTask({ actorUserId: adminId, input: { ...base, remarks: "No need" } });
+      expect(payloadOf(repo, "createTask").completedAt).toBe("2026-06-27T10:00:00.000Z");
+
+      repo.calls.length = 0;
+      current = openStatus;
+      await service.createTask({
+        actorUserId: adminId,
+        input: { ...base, completedAt: "2026-06-25T08:00:00.000Z" },
+      });
+      // Absent here; the repository inserts it as completed_at = null.
+      expect(payloadOf(repo, "createTask").completedAt).toBeUndefined();
+    });
+  });
 });
