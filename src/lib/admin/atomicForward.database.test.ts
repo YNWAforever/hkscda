@@ -196,6 +196,32 @@ describe.skipIf(!db)("Task10 role, retry, audit and validation", () => {
         "invalid_status_transition",
       );
     }));
+  // BUG-55 (20261030130000): pending -> disabled -> active must not skip accepting the invite.
+  test("BUG-55: reactivating a disabled invite that was never accepted is refused without audit", () =>
+    fixture(async (tx, f) => {
+      await tx`update public.admin_user set invited_at=now(),invite_sent_at=now(),status='disabled' where id=${f.pending}::uuid`;
+      await tx`update public.admin_user set invited_at=now(),invite_accepted_at=now(),status='disabled' where id=${f.target}::uuid`;
+      await tx`set local role service_role`;
+      await expectError(
+        tx,
+        () =>
+          tx`select public.update_admin_user_with_audit(${f.actor}::uuid,${f.pending}::uuid,null,'active')`,
+        "invite_not_accepted",
+      );
+      const [pending] =
+        await tx`select status,invite_accepted_at from public.admin_user where id=${f.pending}::uuid`;
+      expect(pending).toMatchObject({ status: "disabled", invite_accepted_at: null });
+      const refusedAudit =
+        await tx`select 1 from public.audit_log where entity='admin_user' and entity_id=${f.pending}`;
+      expect(refusedAudit.length).toBe(0);
+
+      const [accepted] =
+        await tx`select to_jsonb(public.update_admin_user_with_audit(${f.actor}::uuid,${f.target}::uuid,null,'active')) value`;
+      expect(accepted.value.status).toBe("active");
+      const [audit] =
+        await tx`select action from public.audit_log where entity='admin_user' and entity_id=${f.target}`;
+      expect(audit.action).toBe("admin_user.reactivate");
+    }));
   test("update rejects malformed/no-op/missing inputs before audit", () =>
     fixture(async (tx, f) => {
       await tx`set local role service_role`;

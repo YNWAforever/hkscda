@@ -52,6 +52,10 @@ const ADMIN_RPC_ERRORS: Record<string, { message: string; status: number }> = {
   self_demote: { message: "You cannot remove your own admin role", status: 422 },
   self_disable: { message: "You cannot disable your own admin user", status: 422 },
   last_active_admin: { message: "At least one active admin user must remain", status: 422 },
+  invite_not_accepted: {
+    message: "This user never accepted their invite. Send a new invite instead",
+    status: 422,
+  },
 };
 
 const ACCESS_AUDIT_ACTIONS = [

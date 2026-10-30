@@ -1438,3 +1438,22 @@ describe("adoption guide release regressions", () => {
     });
   });
 });
+
+describe("second-pass access and volunteer RPC regressions", () => {
+  // BUG-55: fixed by 20261030130000_admin_reactivate_requires_accepted_invite.sql. Verified
+  // against Postgres 16: invite -> disable -> reactivate now raises invite_not_accepted and
+  // writes no audit row; reactivating a user who accepted their invite still works.
+  test("BUG-55: update_admin_user_with_audit refuses disabled -> active for an invite never accepted", () => {
+    const update = latestFunctionBody("update_admin_user_with_audit");
+    const guard =
+      /current_user_row\.status\s*=\s*'disabled'\s+and\s+p_status\s*=\s*'active'\s+and\s+current_user_row\.invited_at\s+is\s+not\s+null\s+and\s+current_user_row\.invite_accepted_at\s+is\s+null\s+then\s+raise\s+exception\s+'invite_not_accepted'/i;
+    const guardIndex = update.body.search(guard);
+    const writeIndex = update.body.search(/update\s+public\.admin_user\s+set/i);
+
+    expect({
+      file: update.file,
+      refusesUnacceptedInvite: guardIndex >= 0,
+      refusesBeforeWriting: guardIndex >= 0 && guardIndex < writeIndex,
+    }).toMatchObject({ refusesUnacceptedInvite: true, refusesBeforeWriting: true });
+  });
+});
