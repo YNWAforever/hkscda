@@ -247,6 +247,26 @@ describe("authorization", () => {
   );
 
   test(
+    "BUG-57: an account refused by /api/admin/me stays on login with a reason and no session",
+    async () => {
+      await signIn("member@e2e.test");
+      const alert = page.locator("[role=alert]");
+      await alert.waitFor();
+      expect(await alert.innerText()).toBe(
+        "此帳戶沒有管理後台權限，或已被停用。如需協助，請聯絡管理員。",
+      );
+      expect(page.url()).toContain("/admin/login");
+      const storesSession = await page.evaluate(() =>
+        Object.keys(localStorage).some((key) =>
+          /access_token|refresh_token/.test(localStorage.getItem(key) ?? ""),
+        ),
+      );
+      expect(storesSession).toBe(false);
+    },
+    TEST_TIMEOUT,
+  );
+
+  test(
     "a treasurer opening access management is shown access denied",
     async () => {
       await signIn("treasurer@e2e.test");

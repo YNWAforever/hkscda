@@ -19,23 +19,44 @@ function clearPrivateSessionSearch() {
   }
 }
 
+/** Why a sign-in whose password was accepted did not continue to the admin. */
+export type SignInRefusal = "no_admin_access";
+
 /**
  * Finishes a sign-in: reads the new account's identity (never the previous account's cached
  * one), drops every cached query if the account changed, and goes to the destination.
+ *
+ * `/api/admin/me` answers 403 for an account with no admin row or a disabled one. Navigating
+ * then lands on a load failure whose retry always fails and offers no sign-out (BUG-57), so
+ * the session is signed out locally and the refusal is returned for the form to show.
  */
 export async function completeSignIn({
   queryClient,
   redirectParam,
   push,
+  signOut,
 }: {
   queryClient: QueryClient;
   redirectParam: unknown;
   push: (path: string) => void;
-}): Promise<void> {
+  signOut: () => Promise<unknown>;
+}): Promise<SignInRefusal | undefined> {
   const previousId =
     queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY)?.admin.authUserId;
   queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
-  const result = await queryClient.fetchQuery(adminIdentityQueryOptions()).catch(() => null);
+  let forbidden = false;
+  const result = await queryClient
+    .fetchQuery(adminIdentityQueryOptions())
+    .catch((error: unknown) => {
+      forbidden = error instanceof Error && (error as { status?: unknown }).status === 403;
+      return null;
+    });
+  if (forbidden) {
+    queryClient.clear();
+    clearPrivateSessionSearch();
+    await signOut().catch(() => undefined);
+    return "no_admin_access";
+  }
   if (!result || previousId !== result.admin.authUserId) {
     // Another person signed in on this tab, or we cannot tell who: nothing the last one saw
     // may stay cached.
@@ -44,6 +65,7 @@ export async function completeSignIn({
     if (result) queryClient.setQueryData(ADMIN_IDENTITY_QUERY_KEY, result);
   }
   push(postSignInDestination(redirectParam, result?.admin ?? null));
+  return undefined;
 }
 
 /**
