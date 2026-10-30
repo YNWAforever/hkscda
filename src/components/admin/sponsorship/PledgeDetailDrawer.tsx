@@ -46,6 +46,8 @@ import {
   type ProofFileProblem,
 } from "./pledgeReviewLogic";
 import { LoadFailure } from "../LoadFailure";
+import { createPaymentRetryKey, submitWithPaymentRetryKey } from "./paymentRetry";
+import { AnimalCandidatePicker } from "./AnimalCandidatePicker";
 
 type PledgeDetailResponse = { pledge: PledgeDetail };
 type FollowupAssigneesResponse = {
@@ -403,7 +405,7 @@ export function PledgeDetailDrawer({
     setProofFile(validationError ? null : file);
   }
 
-  const paymentRetry = useRef<{ fingerprint: string; key: string } | null>(null);
+  const paymentRetry = useRef(createPaymentRetryKey());
   async function submitPayment() {
     setSubmitting(true);
     setActionError(null);
@@ -417,25 +419,26 @@ export function PledgeDetailDrawer({
         paymentNote,
         file: proofFile ? [proofFile.name, proofFile.size, proofFile.lastModified] : null,
       });
-      if (paymentRetry.current?.fingerprint !== fingerprint)
-        paymentRetry.current = { fingerprint, key: crypto.randomUUID() };
-      const formData = new FormData();
-      formData.set(
-        "payload",
-        JSON.stringify({
-          idempotencyKey: paymentRetry.current.key,
-          paymentMethod,
-          reference: reference || undefined,
-          amountCents,
-          paymentDate,
-          note: paymentNote || undefined,
-        }),
-      );
-      if (proofFile) formData.set("file", proofFile);
-
-      await fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/proof`, {
-        method: "POST",
-        body: formData,
+      // The key is cleared after a success, so a second payment with the same facts is
+      // recorded as a new payment rather than replayed as the first (BUG-45).
+      await submitWithPaymentRetryKey(paymentRetry.current, fingerprint, (idempotencyKey) => {
+        const formData = new FormData();
+        formData.set(
+          "payload",
+          JSON.stringify({
+            idempotencyKey,
+            paymentMethod,
+            reference: reference || undefined,
+            amountCents,
+            paymentDate,
+            note: paymentNote || undefined,
+          }),
+        );
+        if (proofFile) formData.set("file", proofFile);
+        return fetchCoordinatorJson(`/api/admin/sponsorships/pledges/${pledgeId}/proof`, {
+          method: "POST",
+          body: formData,
+        });
       });
       setReference("");
       setAmountHkd("");
@@ -815,11 +818,11 @@ export function PledgeDetailDrawer({
               {pledge.needsAnimal && (
                 <p className="text-[var(--color-text-muted)]">{copy.assignments.needsAnimal}</p>
               )}
-              <div className="flex gap-2">
-                <Input
+              <div className="space-y-2">
+                <AnimalCandidatePicker
                   value={assignAnimalId}
-                  placeholder={copy.assignments.addPlaceholder}
-                  onChange={(event) => setAssignAnimalId(event.target.value)}
+                  onChange={setAssignAnimalId}
+                  disabled={!canMatch || submitting}
                 />
                 <Button
                   type="button"

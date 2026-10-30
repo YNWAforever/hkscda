@@ -54,6 +54,7 @@ export function requiredUuid(params: HandlerContext["params"], key: string) {
 export const badRequestDomainErrors = new Set([
   "Invalid case status",
   "Inactive case status",
+  "Closing case status not allowed at intake",
   "reason_required",
   "Invalid match status",
   "Inactive match status",
@@ -144,6 +145,31 @@ export function domainError(error: { message: string }) {
   return null;
 }
 
+// PostgREST names the constraint in the message (`… unique constraint "<name>"`);
+// the details carry the clashing values, which stay private.
+const uniqueViolationMessages = new Map([
+  [
+    "successful_adoption_case_number_key",
+    "This case number is already in use. Use another number or reload.",
+  ],
+  [
+    "coordinator_status_category_key_key",
+    "A status with this key already exists in this category. Use another key.",
+  ],
+  [
+    "supporter_email_key",
+    "A supporter with this email already exists. Choose the existing supporter instead.",
+  ],
+]);
+
+function uniqueViolationMessage(error: object) {
+  const message = "message" in error && typeof error.message === "string" ? error.message : "";
+  const constraint = /unique constraint "([^"]+)"/.exec(message)?.[1] ?? "";
+  return (
+    uniqueViolationMessages.get(constraint) ?? "This record already exists. Reload and try again."
+  );
+}
+
 export async function withErrors(operation: () => Promise<Response>) {
   try {
     return await operation();
@@ -158,13 +184,17 @@ export async function withErrors(operation: () => Promise<Response>) {
     if (error && typeof error === "object" && "code" in error && error.code === "P0002") {
       return jsonResponse({ error: "Coordinator item not found" }, { status: 404 });
     }
-    // successful_adoption.case_number is unique; a reused number (or a retry after a lost
-    // response) was a generic 500 with no hint (BUG-15).
+    // A unique violation is a 409 (BUG-15), worded for the constraint that was hit (BUG-40).
     if (error && typeof error === "object" && "code" in error && error.code === "23505") {
-      return jsonResponse(
-        { error: "This case number is already in use. Use another number or reload." },
-        { status: 409 },
-      );
+      return jsonResponse({ error: uniqueViolationMessage(error) }, { status: 409 });
+    }
+    // A match or follow-up on an unknown case/animal id was a 500 (BUG-42). The
+    // constraint text names private columns and values, so only a fixed message goes out.
+    if (error && typeof error === "object" && "code" in error && error.code === "23503") {
+      return jsonResponse({ error: "Linked record not found" }, { status: 404 });
+    }
+    if (error && typeof error === "object" && "code" in error && error.code === "23514") {
+      return jsonResponse({ error: "Invalid coordinator request" }, { status: 400 });
     }
     if (error instanceof Error) {
       const response = domainError(error);

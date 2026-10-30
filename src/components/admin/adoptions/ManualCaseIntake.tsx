@@ -22,6 +22,7 @@ import { fetchCoordinatorJson } from "./api";
 import {
   buildIdentitySearchParams,
   buildManualCasePayload,
+  intakeCaseStatuses,
   type ManualAdopterProfileForm,
   type ManualCaseForm,
   type ManualCaseIdentityForm,
@@ -304,7 +305,7 @@ export function ManualCaseIntake() {
   });
 
   const caseStatuses = useMemo(
-    () => activeStatuses(caseStatusesQuery.data?.statuses),
+    () => intakeCaseStatuses(caseStatusesQuery.data?.statuses),
     [caseStatusesQuery.data?.statuses],
   );
   const followupStatuses = useMemo(

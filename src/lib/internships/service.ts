@@ -18,6 +18,8 @@ export type InternshipServerErrorCode =
   | "invalid_request"
   | "forbidden"
   | "state_conflict"
+  | "stale_revision"
+  | "not_found"
   | "unexpected";
 export type InternshipErrorCode = IntakeIssueCode | InternshipServerErrorCode;
 
@@ -50,6 +52,14 @@ const INTERNSHIP_ERROR_TEXT: Record<InternshipErrorCode, Record<AdminLanguage, s
     zh: "操作不符合目前申請狀態或核實要求",
     en: "This action does not fit the application's current status or verification. Refresh the page and check the application.",
   },
+  stale_revision: {
+    zh: "資料已被其他人更新，請檢查最新內容後再試",
+    en: "Someone else has changed this record. Check the latest version shown and try again.",
+  },
+  not_found: {
+    zh: "找不到這筆記錄，請重新整理後再試",
+    en: "This record was not found. Refresh the page and try again.",
+  },
   unexpected: {
     zh: "未能處理，請重新整理後再試",
     en: "Could not process the request. Refresh the page and try again.",
@@ -68,8 +78,21 @@ const SERVER_ERROR_CODES: readonly InternshipServerErrorCode[] = [
   "invalid_request",
   "forbidden",
   "state_conflict",
+  "stale_revision",
+  "not_found",
   "unexpected",
 ];
+
+/**
+ * Whether a failed admin action means the screen holds a stale record: a 409 (someone changed
+ * it, so its revision moved on) or a 404 (it is gone). The screen reloads it so the next attempt
+ * uses the current revision (BUG-61).
+ */
+export function shouldReloadAfterInternshipError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+  const status = (error as { status?: unknown }).status;
+  return status === 409 || status === 404;
+}
 
 /** Which reason in a failed `intakeSchema` parse to tell staff about: the first one. */
 function intakeIssueCode(error: z.ZodError): IntakeIssueCode {

@@ -132,6 +132,18 @@ export function getFirstAllowedAdminRoute(role: AdminRole) {
   return FIRST_ALLOWED_ROUTE[role];
 }
 
+/**
+ * Whether the user was invited but never accepted the invite. Such a user, once disabled,
+ * must be re-invited rather than reactivated, or they become active without accepting
+ * (BUG-55). An admin created before invites were tracked has no invite date and is not one.
+ */
+export function hasUnacceptedInvite(user: {
+  invitedAt: string | null;
+  inviteAcceptedAt: string | null;
+}) {
+  return user.invitedAt !== null && user.inviteAcceptedAt === null;
+}
+
 export function getAdminAreaForLocation(input: {
   pathname: string;
   section?: AdminDashboardSection;

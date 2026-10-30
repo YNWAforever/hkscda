@@ -60,6 +60,7 @@ export interface AdminCopy {
     submit: string;
     loading: string;
     error: string;
+    noAdminAccess: string;
     forgotPassword: string;
     resetTitle: string;
     resetInstructions: string;
@@ -260,6 +261,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       submit: "登入",
       loading: "登入中...",
       error: "電郵或密碼錯誤",
+      noAdminAccess: "此帳戶沒有管理後台權限，或已被停用。如需協助，請聯絡管理員。",
       forgotPassword: "忘記密碼？",
       resetTitle: "重設密碼",
       resetInstructions: "輸入管理員帳戶的電郵，我們會發送重設連結。",
@@ -429,6 +431,8 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       submit: "Sign in",
       loading: "Signing in...",
       error: "Email or password is incorrect",
+      noAdminAccess:
+        "This account has no admin access or has been disabled. Contact an admin if you need help.",
       forgotPassword: "Forgot password?",
       resetTitle: "Reset password",
       resetInstructions: "Enter your admin email and we will send you a reset link.",

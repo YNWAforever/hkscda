@@ -181,7 +181,13 @@ export const manualDonationSchema = z
     purpose: z.enum(donationPurposes),
     method: z.enum(manualDonationMethods),
     paymentStatus: z.enum(paymentStatuses),
-    bankReference: optionalTrimmed,
+    // Same 1–120 bound as reconcile and the bank-statement matcher (BUG-51).
+    bankReference: z
+      .string()
+      .trim()
+      .max(120)
+      .optional()
+      .transform((value) => value || undefined),
     receiptRequested: z.boolean(),
     consents: z
       .object({

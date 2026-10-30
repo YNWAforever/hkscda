@@ -60,58 +60,97 @@ type ClaimedJob = {
   attempts: number;
 };
 const PAGE_SIZE = 500;
+/**
+ * How long one cron run keeps writing pages. The cron fires every 5 minutes, and one
+ * 500-row page per run made a 20,000-row export take ~200 minutes (BUG-52). The budget
+ * leaves headroom under the function's time limit for the page in flight.
+ */
+export const CRM_EXPORT_RUN_BUDGET_MS = 45_000;
 
-export function createCrmExportWorker(client: SupabaseClient) {
+type PageResult = {
+  state: "pending" | "ready" | "lost" | "failed";
+  jobId: string;
+  processed?: number;
+};
+
+export function createCrmExportWorker(
+  client: SupabaseClient,
+  {
+    now = () => new Date(),
+    budgetMs = CRM_EXPORT_RUN_BUDGET_MS,
+  }: { now?: () => Date; budgetMs?: number } = {},
+) {
+  /** Claims the oldest available job and writes one page of it; null when the queue is empty. */
+  async function writeOnePage(): Promise<PageResult | null> {
+    const owner = randomUUID();
+    const job = await rpc<ClaimedJob | null>(client, "claim_crm_export_job", { p_owner: owner });
+    if (!job) return null;
+    try {
+      const offset = job.processed;
+      const expected = Math.min(PAGE_SIZE, job.total - offset);
+      const page =
+        expected === 0
+          ? []
+          : await rpc<Array<SupporterSummary | DonationExportRow | null>>(
+              client,
+              "crm_export_job_page",
+              { p_job: job.id, p_owner: owner, p_offset: offset, p_limit: PAGE_SIZE },
+            );
+      if (!Array.isArray(page) || page.length !== expected || page.some((row) => row === null))
+        throw new Error("incomplete_page");
+      const csv =
+        job.kind === "supporters"
+          ? buildSupporterCsv(page as SupporterSummary[])
+          : buildDonationCsv(page as DonationExportRow[]);
+      const headerEnd = csv.indexOf("\n");
+      const chunk = offset === 0 ? csv : "\n" + csv.slice(headerEnd + 1);
+      const result = await rpc<{ status: "pending" | "ready"; processed: number } | null>(
+        client,
+        "append_crm_export_job_page",
+        { p_job: job.id, p_owner: owner, p_csv_chunk: chunk, p_count: expected },
+      );
+      return result
+        ? { state: result.status, jobId: job.id, processed: result.processed }
+        : { state: "lost", jobId: job.id };
+    } catch (error) {
+      const code =
+        error instanceof Error && error.message === "incomplete_page"
+          ? "incomplete_page"
+          : "worker_error";
+      const failed = await rpc<boolean>(client, "fail_crm_export_job", {
+        p_job: job.id,
+        p_owner: owner,
+        p_error: code,
+      });
+      return { state: failed ? "failed" : "lost", jobId: job.id };
+    }
+  }
+
   return {
+    /**
+     * Writes pages, one claim each, until the queue is empty or the time budget is
+     * used, moving on to the next job as each finishes. Every page still claims,
+     * writes and releases its job's lease exactly as a single-page run did, so a run
+     * that stops leaves no job leased. It reports the last page it wrote.
+     */
     async run(): Promise<{
       state: "idle" | "pending" | "ready" | "lost" | "failed";
       jobId?: string;
       processed?: number;
+      pages: number;
       expired: number;
     }> {
+      const startedAt = now().getTime();
       const expired = await rpc<number>(client, "cleanup_expired_crm_export_jobs", {});
-      const owner = randomUUID();
-      const job = await rpc<ClaimedJob | null>(client, "claim_crm_export_job", { p_owner: owner });
-      if (!job) return { state: "idle", expired };
-      try {
-        const offset = job.processed;
-        const expected = Math.min(PAGE_SIZE, job.total - offset);
-        const page =
-          expected === 0
-            ? []
-            : await rpc<Array<SupporterSummary | DonationExportRow | null>>(
-                client,
-                "crm_export_job_page",
-                { p_job: job.id, p_owner: owner, p_offset: offset, p_limit: PAGE_SIZE },
-              );
-        if (!Array.isArray(page) || page.length !== expected || page.some((row) => row === null))
-          throw new Error("incomplete_page");
-        const csv =
-          job.kind === "supporters"
-            ? buildSupporterCsv(page as SupporterSummary[])
-            : buildDonationCsv(page as DonationExportRow[]);
-        const headerEnd = csv.indexOf("\n");
-        const chunk = offset === 0 ? csv : "\n" + csv.slice(headerEnd + 1);
-        const result = await rpc<{ status: "pending" | "ready"; processed: number } | null>(
-          client,
-          "append_crm_export_job_page",
-          { p_job: job.id, p_owner: owner, p_csv_chunk: chunk, p_count: expected },
-        );
-        return result
-          ? { state: result.status, jobId: job.id, processed: result.processed, expired }
-          : { state: "lost", jobId: job.id, expired };
-      } catch (error) {
-        const code =
-          error instanceof Error && error.message === "incomplete_page"
-            ? "incomplete_page"
-            : "worker_error";
-        const failed = await rpc<boolean>(client, "fail_crm_export_job", {
-          p_job: job.id,
-          p_owner: owner,
-          p_error: code,
-        });
-        return { state: failed ? "failed" : "lost", jobId: job.id, expired };
+      let last: PageResult | null = null;
+      let pages = 0;
+      while (now().getTime() - startedAt < budgetMs) {
+        const result = await writeOnePage();
+        if (!result) break;
+        last = result;
+        pages += 1;
       }
+      return last ? { ...last, pages, expired } : { state: "idle", pages, expired };
     },
   };
 }

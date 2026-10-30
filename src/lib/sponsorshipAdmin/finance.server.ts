@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { sponsorshipFinanceRefusal } from "./financeErrors";
 export const financeCommandSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("verify_contact"), reason: z.string().trim().min(5) }).strict(),
   z
@@ -49,9 +50,24 @@ export const financeCommandSchema = z.discriminatedUnion("action", [
     })
     .strict(),
 ]);
-export function createSponsorshipFinanceRepository(client: SupabaseClient) {
+export function createSponsorshipFinanceRepository(
+  client: SupabaseClient,
+  logger: Pick<Console, "error"> = console,
+) {
   return {
     async read(pledgeId: string, canFinance = false) {
+      // maybeSingle, so an unknown pledge is a 404 rather than a PGRST116 500 (BUG-47).
+      const pledge = await client
+        .from("sponsorship_pledge")
+        .select("supporter_id")
+        .eq("id", pledgeId)
+        .maybeSingle();
+      if (pledge.error) throw pledge.error;
+      if (!pledge.data)
+        throw Response.json(
+          { error: "Sponsorship pledge not found" },
+          { status: 404, headers: { "cache-control": "no-store" } },
+        );
       const proof = await client
         .from("sponsorship_payment_proof")
         .select("id")
@@ -80,12 +96,6 @@ export function createSponsorshipFinanceRepository(client: SupabaseClient) {
           .order("created_at", { ascending: false }),
       ]);
       for (const result of [sources, refunds, deliveries]) if (result.error) throw result.error;
-      const pledge = await client
-        .from("sponsorship_pledge")
-        .select("supporter_id")
-        .eq("id", pledgeId)
-        .single();
-      if (pledge.error) throw pledge.error;
       const candidates = canFinance
         ? await client
             .from("payment")
@@ -96,6 +106,20 @@ export function createSponsorshipFinanceRepository(client: SupabaseClient) {
             .limit(100)
         : { data: [], error: null };
       if (candidates.error) throw candidates.error;
+      // A payment is linked to at most one proof (sponsorship_payment_source.payment_id is
+      // unique), so one already linked anywhere is not a reconcile candidate (BUG-47).
+      const candidateIds = (candidates.data ?? []).map((c) => c.id as string);
+      const linked = candidateIds.length
+        ? await client
+            .from("sponsorship_payment_source")
+            .select("payment_id")
+            .in("payment_id", candidateIds)
+        : { data: [], error: null };
+      if (linked.error) throw linked.error;
+      const linkedIds = new Set((linked.data ?? []).map((row) => row.payment_id as string));
+      const unlinkedCandidates = (candidates.data ?? []).filter(
+        (c) => !linkedIds.has(c.id as string),
+      );
       const sourceRows = (sources.data ?? []) as Array<{ proof_id: string; donation_id: string }>;
       const receiptRows = sourceRows.length
         ? await client
@@ -117,7 +141,7 @@ export function createSponsorshipFinanceRepository(client: SupabaseClient) {
         receipts,
         refunds: refunds.data,
         deliveries: deliveries.data,
-        candidates: candidates.data,
+        candidates: unlinkedCandidates,
       };
     },
     async command(actor: string, pledgeId: string, input: z.infer<typeof financeCommandSchema>) {
@@ -202,11 +226,25 @@ export function createSponsorshipFinanceRepository(client: SupabaseClient) {
           break;
       }
       const { data, error } = await call;
-      if (error)
+      if (error) {
+        const headers = { "cache-control": "no-store" };
+        if (error.code === "42501")
+          throw Response.json({ error: "Access denied" }, { status: 403, headers });
+        // Only known refusals reach the client, as a code and a fixed message (the
+        // structured shape fetchAdminJson reads into AdminApiError); raw Postgres text
+        // (constraint names, ids) stays in the server log (BUG-47).
+        const refusal = sponsorshipFinanceRefusal(error);
+        if (refusal)
+          throw Response.json(
+            { error: { code: refusal.code, message: refusal.message } },
+            { status: refusal.status, headers },
+          );
+        logger.error("Sponsorship finance command failed", error);
         throw Response.json(
-          { error: error.message },
-          { status: error.code === "42501" ? 403 : 409 },
+          { error: "Could not complete the sponsorship finance action" },
+          { status: 500, headers },
         );
+      }
       return data;
     },
   };

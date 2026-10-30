@@ -40,7 +40,8 @@ function user(id: string, status: "active" | "pending" | "disabled", role = "sta
     status,
     invitedAt: SENT,
     inviteSentAt: id === "u2" ? SENT : null,
-    inviteAcceptedAt: null,
+    // u3 accepted its invite before it was disabled, so it is reactivated, not re-invited (BUG-55).
+    inviteAcceptedAt: id === "u3" ? SENT : null,
     lastInvitedBy: null,
     createdAt: SENT,
     updatedAt: UPDATED,
@@ -202,6 +203,35 @@ describe("access management in Chinese", () => {
     expect(markup).toContain("無法載入");
     expect(markup).toContain("未能載入紀錄。");
     expect(markup).toContain(">重試<");
+  });
+});
+
+describe("access row actions", () => {
+  test("BUG-55: a disabled user who never accepted the invite is offered Re-invite, not Reactivate", () => {
+    users = {
+      data: {
+        users: [user("u4", "disabled")],
+        summary: { active: 0, pending: 0, disabled: 1 },
+      },
+    };
+    audit = loadedAudit;
+    const english = renderAdminInEnglish(<AccessManagement />);
+    expect(english).toContain(">Re-invite<");
+    expect(english).not.toContain("Reactivate<");
+    const chinese = renderAdminInChinese(<AccessManagement />);
+    expect(chinese).toContain(accessCopy.zh.reinvite);
+    expect(chinese).not.toContain(`${accessCopy.zh.reactivate}<`);
+  });
+
+  test("BUG-56: the role menu on the signed-in admin's own row is disabled, others are not", () => {
+    users = loadedUsers;
+    audit = loadedAudit;
+    const markup = renderAdminInEnglish(<AccessManagement />);
+    const trigger = (email: string) =>
+      markup.match(new RegExp(`<button[^>]*aria-label="Role: ${email}"[^>]*>`))?.[0] ?? "";
+    expect(trigger("u1@example.org")).toMatch(/\sdisabled=""/);
+    expect(trigger("u3@example.org")).not.toBe("");
+    expect(trigger("u3@example.org")).not.toMatch(/\sdisabled=""/);
   });
 });
 

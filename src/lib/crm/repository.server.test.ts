@@ -35,7 +35,12 @@ type FakeState = {
   auditRows: Record<string, unknown>[];
   /** Simulate donation_delivery_job being absent from the database. */
   deliveryEmbedFails: boolean;
+  /** The length of every `.in()` list sent, to check the request URL stays bounded. */
+  inListSizes: number[];
 };
+
+/** PostgREST's max_rows: no single response carries more rows than this. */
+const MAX_ROWS = 1000;
 
 class FakeQuery {
   private filters: Array<{ column: string; value: unknown; mode: "eq" | "in" }> = [];
@@ -63,6 +68,7 @@ class FakeQuery {
   }
 
   in(column: string, values: unknown[]) {
+    this.state.inListSizes.push(values.length);
     this.filters.push({ column, value: values, mode: "in" });
     return this;
   }
@@ -111,24 +117,29 @@ class FakeQuery {
     return { data: rows[0] ?? null, error: null };
   }
 
+  private result(from: number, to: number) {
+    // Simulates PostgREST rejecting an embed whose relation does not exist,
+    // while the same table reads fine without it.
+    return this.state.deliveryEmbedFails && this.embedsDeliveryJob()
+      ? {
+          data: null,
+          error: {
+            code: "PGRST200",
+            message: "Could not find a relationship between 'donation' and 'donation_delivery_job'",
+          },
+        }
+      : { data: this.filteredRows().slice(from, Math.min(to + 1, from + MAX_ROWS)), error: null };
+  }
+
+  async range(from: number, to: number) {
+    return this.result(from, to);
+  }
+
   then<T1 = unknown, T2 = never>(
     onfulfilled?: ((value: unknown) => T1 | PromiseLike<T1>) | null,
     onrejected?: ((reason: unknown) => T2 | PromiseLike<T2>) | null,
   ) {
-    // Simulates PostgREST rejecting an embed whose relation does not exist,
-    // while the same table reads fine without it.
-    const result =
-      this.state.deliveryEmbedFails && this.embedsDeliveryJob()
-        ? {
-            data: null,
-            error: {
-              code: "PGRST200",
-              message:
-                "Could not find a relationship between 'donation' and 'donation_delivery_job'",
-            },
-          }
-        : { data: this.filteredRows(), error: null };
-    return Promise.resolve(result).then(onfulfilled, onrejected);
+    return Promise.resolve(this.result(0, Number.MAX_SAFE_INTEGER)).then(onfulfilled, onrejected);
   }
 }
 
@@ -144,6 +155,7 @@ function createFakeClient(overrides: Partial<FakeState> = {}) {
     pledgeRows: [],
     auditRows: [],
     deliveryEmbedFails: false,
+    inListSizes: [],
     ...overrides,
   };
 
@@ -185,6 +197,53 @@ describe("getSupporterDetail", () => {
     const repo = createSupabaseCrmRepository(client);
 
     expect(await repo.getSupporterDetail(supporterId)).toBeNull();
+  });
+
+  test("BUG-58: reads donations, payments and audit history past 1,000 rows, newest first, with bounded id lists", async () => {
+    const pad = (n: number) => String(n).padStart(4, "0");
+    const donationRows = Array.from({ length: 1200 }, (_, index) => ({
+      id: `22222222-3333-4333-8444-55555555${pad(index)}`,
+      supporter_id: supporterId,
+      amount_cents: 10000,
+      currency: "HKD",
+      purpose: "general",
+      status: "succeeded",
+      method: "fps",
+      receipt_requested: false,
+      created_at: new Date(Date.UTC(2026, 0, 1) + index * 60_000).toISOString(),
+    })).reverse();
+    // Insertion order is oldest first, so a correct read has to restore newest first.
+    const paymentRows = [...donationRows].reverse().map((donation, index) => ({
+      id: `payment-${pad(index)}`,
+      donation_id: donation.id,
+      provider: "fps",
+      provider_ref: null,
+      amount_cents: 10000,
+      status: "succeeded",
+      received_at: null,
+      bank_reference: null,
+      created_at: donation.created_at,
+    }));
+    const auditRows = Array.from({ length: 2500 }, (_, index) => ({
+      id: `audit-${pad(index)}`,
+      actor_user_id: "actor-1",
+      action: "supporter.update",
+      entity: "supporter",
+      entity_id: supporterId,
+      timestamp: new Date(Date.UTC(2026, 9, 1) - index * 60_000).toISOString(),
+      detail: {},
+    }));
+    const { client, state } = createFakeClient({ donationRows, paymentRows, auditRows });
+
+    const detail = await createSupabaseCrmRepository(client).getSupporterDetail(supporterId);
+
+    expect(detail?.donations).toHaveLength(1200);
+    expect(detail?.payments).toHaveLength(1200);
+    expect(detail?.auditLogs).toHaveLength(2500);
+    expect(detail?.auditLogs.at(-1)?.id).toBe("audit-2499");
+    const paymentTimes = detail?.payments.map((row) => row.createdAt) ?? [];
+    expect(paymentTimes).toEqual([...paymentTimes].sort().reverse());
+    expect(Math.max(...state.inListSizes)).toBeLessThanOrEqual(100);
   });
 
   test("includes the current edit version from the supporter row", async () => {
@@ -428,6 +487,8 @@ describe("supporter detail resilience", () => {
           eq: () => failing,
           in: () => failing,
           order: () => failing,
+          // The donation read is paged with .range() since BUG-58.
+          range: () => failing,
           then: (onfulfilled: (value: unknown) => unknown) =>
             Promise.resolve({
               data: null,

@@ -34,6 +34,17 @@ async function guarded(operation: () => Promise<Response>) {
       return json({ error: "Invalid manual gift request" }, 400);
     if (error && typeof error === "object" && "code" in error && error.code === "42501")
       return json({ error: "Access denied" }, 403);
+    // record_manual_gift_with_audit raises these with errcode 22023; RPC errors are
+    // plain objects, so match on the message.
+    const message =
+      error && typeof error === "object" && "message" in error && typeof error.message === "string"
+        ? error.message
+        : "";
+    if (message.includes("manual_gift_supporter_unavailable"))
+      return json({ error: "Supporter is deleted or unavailable for new gifts" }, 409);
+    if (message.includes("invalid_manual_gift"))
+      return json({ error: "Invalid manual gift details" }, 400);
+    console.error("Manual gift request failed", error);
     return json({ error: "Could not process manual gift request" }, 500);
   }
 }

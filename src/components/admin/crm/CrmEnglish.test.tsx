@@ -497,6 +497,17 @@ describe("supporter detail in English", () => {
     }
   });
 
+  test("BUG-50: a soft-deleted supporter offers no manual donation action", () => {
+    load({ deletedAt: "2026-10-01T00:00:00.000Z" });
+    const markup = renderAdminInEnglish(<SupporterDetail supporterId="sup-1" />);
+    expect(markup).not.toContain("Manual donation");
+    expect(markup).not.toContain("Save manual donation");
+    load();
+    expect(renderAdminInEnglish(<SupporterDetail supporterId="sup-1" />)).toContain(
+      "Save manual donation",
+    );
+  });
+
   test("keeps the Chinese detail, dates and amounts as they were", () => {
     load();
     const markup = renderAdminInChinese(<SupporterDetail supporterId="sup-1" />);
@@ -636,6 +647,12 @@ describe("supporter dialogs in English", () => {
     ]) {
       expect(markup, text).toContain(text);
     }
+  });
+
+  test("BUG-51: the bank reference input stops at 120 characters, as the schema does", () => {
+    const markup = renderAdminInEnglish(<ManualDonationDialog supporterId="sup-1" />);
+    const input = markup.match(/<input[^>]*id="manual-donation-reference"[^>]*>/)?.[0] ?? "";
+    expect(input).toMatch(/maxLength="120"/i);
   });
 
   test("keeps the Chinese manual donation form as it was", () => {

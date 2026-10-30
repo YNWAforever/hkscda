@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isRangeNotSatisfiable } from "../postgrestRange";
 import type { InternshipRepository } from "./service";
 export function createInternshipRepository(client: SupabaseClient): InternshipRepository {
   return {
@@ -28,21 +29,36 @@ export function createInternshipRepository(client: SupabaseClient): InternshipRe
         if (input.action === "list") {
           const page = input.page ?? 1,
             pageSize = input.pageSize ?? 25;
-          let query = client
-            .from("internship_application")
-            .select(
-              "id,revision,status,shelter,created_at,contact_snapshot->name,student_snapshot->institution",
-              { count: "exact" },
-            )
-            .order("created_at", { ascending: false })
-            .order("id", { ascending: false });
-          if (input.q)
-            query = query.ilike(
-              "contact_snapshot->>name",
-              `%${input.q.replaceAll("%", "\\%").replaceAll("_", "\\_")}%`,
-            );
-          if (input.status) query = query.eq("status", input.status);
-          const result = await query.range((page - 1) * pageSize, page * pageSize - 1);
+          const filtered = () => {
+            let query = client
+              .from("internship_application")
+              .select(
+                "id,revision,status,shelter,created_at,contact_snapshot->name,student_snapshot->institution",
+                { count: "exact" },
+              )
+              .order("created_at", { ascending: false })
+              .order("id", { ascending: false });
+            if (input.q)
+              query = query.ilike(
+                "contact_snapshot->>name",
+                `%${input.q.replaceAll("%", "\\%").replaceAll("_", "\\_")}%`,
+              );
+            if (input.status) query = query.eq("status", input.status);
+            return query;
+          };
+          const result = await filtered().range((page - 1) * pageSize, page * pageSize - 1);
+          // A stale page number past the last row is an empty page, not a 500 (BUG-60, as BUG-18).
+          if (isRangeNotSatisfiable(result.error)) {
+            const first = await filtered().range(0, 0);
+            if (first.error) throw first.error;
+            return {
+              kind: "applications",
+              applications: [],
+              total: first.count ?? 0,
+              page,
+              pageSize,
+            };
+          }
           if (result.error) throw result.error;
           return {
             kind: "applications",

@@ -12,6 +12,22 @@ import {
   createSupabaseServiceClient,
   requireAdmin,
 } from "../../../../../lib/donations/supabase.server";
+
+/** What `enforce_editorial_review` (20260914162305) raises for an unreviewed version. */
+const EDITORIAL_REVIEW_TRIGGER_MESSAGE = "此版本尚未核實為可發布內容，請先完成內容來源審核";
+
+function reviewRequiredResponse() {
+  return Response.json(
+    {
+      error: {
+        code: "review_required",
+        message: "此已儲存版本尚未通過來源審核，請先完成來源審核再發布。",
+      },
+    },
+    { status: 422, headers: { "cache-control": "no-store" } },
+  );
+}
+
 export const Route = createFileRoute("/api/admin/animals/publication/")({
   server: {
     handlers: {
@@ -102,11 +118,9 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
               .eq("revision_key", String(draft.revision))
               .maybeSingle();
             if (reviewError) throw reviewError;
-            if (review?.classification !== "approved")
-              return Response.json(
-                { error: { code: "invalid_draft", message: "動物草稿資料無效" } },
-                { status: 422, headers: { "cache-control": "no-store" } },
-              );
+            // Not a stale draft: a new preview cannot help until this revision
+            // is reviewed, so answer a code the editor can act on (BUG-54).
+            if (review?.classification !== "approved") return reviewRequiredResponse();
             body = candidateBody;
           }
           if (Array.isArray(body?.gallery)) {
@@ -195,6 +209,15 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
           if (data && typeof data === "object") data.animal = canonical.data;
         }
         if (error) {
+          // enforce_editorial_review raises 22023 with this text when the
+          // version has no approved review; every other 22023 is a bad draft.
+          if (
+            command.kind === "publish" &&
+            error.code === "22023" &&
+            typeof error.message === "string" &&
+            error.message.includes(EDITORIAL_REVIEW_TRIGGER_MESSAGE)
+          )
+            return reviewRequiredResponse();
           const status = error.code === "42501" ? 403 : error.code === "22023" ? 422 : 500;
           const message = status === 422 ? "動物草稿資料無效" : "未能處理動物發布";
           return Response.json(

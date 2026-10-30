@@ -28,7 +28,7 @@ import {
   statusUpdateSchema,
   taskListSearchSchema,
 } from "./schemas";
-import { buildTaskAuditAction, validateTaskCompletion } from "./tasks";
+import { buildTaskAuditAction, isTaskFinalStatus, validateTaskCompletion } from "./tasks";
 import type {
   AdoptionCaseDetail,
   AdoptionCaseSummary,
@@ -240,6 +240,18 @@ function effectiveTaskCompletion(current: CoordinatorTask, input: CoordinatorTas
   };
 }
 
+// Every open-task read filters on `completed_at is null`, so the date must follow the
+// status (BUG-35): a closing status (completed, cancelled, …) keeps the given date or
+// stamps now; an open status clears it, whatever the form sent back.
+function derivedTaskCompletedAt(
+  status: CoordinatorStatus,
+  completedAt: string | null | undefined,
+  now: () => Date,
+) {
+  if (!isTaskFinalStatus(status)) return null;
+  return completedAt ?? timestamp(now);
+}
+
 export function createAdoptionCoordinatorService({
   repo,
   now = () => new Date(),
@@ -444,6 +456,9 @@ export function createAdoptionCoordinatorService({
       const status = await repo.getStatus(input.case.initialStatusId);
       if (!status || status.category !== "adoption_case") throw new Error("Invalid case status");
       if (!status.isActive) throw new Error("Inactive case status");
+      // A case created closed would count as open with no closed_at or reason (BUG-41);
+      // closing a case goes through changeCaseStatus, which requires the reason.
+      if (status.isClosing) throw new Error("Closing case status not allowed at intake");
 
       if (input.initialTask) {
         const taskStatus = await repo.getStatus(input.initialTask.statusId);
@@ -574,6 +589,8 @@ export function createAdoptionCoordinatorService({
 
       const task = await repo.createTask({
         ...input,
+        // The repository writes an absent date as null.
+        completedAt: derivedTaskCompletedAt(status, input.completedAt, now) ?? undefined,
         createdBy: args.actorUserId,
       });
 
@@ -617,13 +634,18 @@ export function createAdoptionCoordinatorService({
         throw new Error("Invalid coordinator task links");
       }
 
-      validateTaskCompletion({
-        status: effectiveStatus,
-        ...effectiveTaskCompletion(current, input),
-      });
+      const completion = effectiveTaskCompletion(current, input);
+      validateTaskCompletion({ status: effectiveStatus, ...completion });
+
+      // Only a status or date change re-derives the date; other edits leave it alone.
+      const completedAt =
+        input.statusId !== undefined || input.completedAt !== undefined
+          ? derivedTaskCompletedAt(effectiveStatus, completion.completedAt, now)
+          : undefined;
 
       const task = await repo.updateTask({
         ...input,
+        ...(completedAt !== undefined && { completedAt }),
         taskId: args.taskId,
         updatedBy: args.actorUserId,
       });

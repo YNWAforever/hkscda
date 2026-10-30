@@ -212,6 +212,7 @@ export function ManualDonationDialog({ supporterId }: ManualDonationDialogProps)
                 <Input
                   id="manual-donation-reference"
                   value={bankReference}
+                  maxLength={120}
                   onChange={(event) => setBankReference(event.target.value)}
                   placeholder={needsReference ? copy.required : copy.optional}
                 />

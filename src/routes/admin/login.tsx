@@ -8,7 +8,7 @@ import {
 } from "../../components/admin/adminI18n";
 import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import { safeAdminRedirect } from "../../lib/admin/loginRedirect";
-import { completeSignIn } from "../../lib/admin/signInFlow";
+import { completeSignIn, type SignInRefusal } from "../../lib/admin/signInFlow";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
 
@@ -39,6 +39,7 @@ export function AdminLoginPage() {
       queryClient,
       redirectParam: search.redirect,
       push: (path) => router.history.push(path),
+      signOut: () => supabase.auth.signOut({ scope: "local" }),
     });
   }
 
@@ -57,7 +58,7 @@ export function AdminLoginContent({
   onSignedIn,
 }: {
   passwordResetSuccess: boolean;
-  onSignedIn: () => void | Promise<void>;
+  onSignedIn: () => void | Promise<SignInRefusal | undefined | void>;
 }) {
   const { copy, language } = useAdminLanguage();
   const ready = useSyncExternalStore(subscribeToHydration, clientReady, serverNotReady);
@@ -90,7 +91,9 @@ export function AdminLoginContent({
       setError(copy.login.error);
       return;
     }
-    await onSignedIn();
+    // A refused account (no admin row, or disabled) is signed out and told why here,
+    // instead of landing on an admin page that can never load (BUG-57).
+    if ((await onSignedIn()) === "no_admin_access") setError(copy.login.noAdminAccess);
   }
 
   async function handleResetRequest(e: FormEvent) {

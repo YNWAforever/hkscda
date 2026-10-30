@@ -475,3 +475,38 @@ test("BUG-29: an unbound legacy draft update reports target_date_preview_require
   const body = (await (thrown as Response).json()) as { error: { message: string } };
   expect(body.error.message).toBe(volunteerCodeMessage("target_date_preview_required") ?? "");
 });
+
+test("BUG-59: a draft retry with a changed payload answers 409 idempotency_payload_changed, not a 500", async () => {
+  const repo = createSupabaseVolunteerRepository({
+    rpc: async () => ({
+      data: { kind: "conflict", reason: "idempotency_payload_changed" },
+      error: null,
+    }),
+  } as never);
+  const thrown = await repo
+    .createActivity(
+      {
+        type: "volunteer_shift",
+        title: "Shift",
+        startsAt: "2026-11-01T01:00:00.000Z",
+        location: "Centre",
+        capacity: 3,
+        registrationModes: ["individual"],
+      } as never,
+      "00000000-0000-4000-8000-000000000001",
+      "00000000-0000-4000-8000-000000000002",
+    )
+    .then(
+      () => null,
+      (error: unknown) => error,
+    );
+  expect(thrown).toBeInstanceOf(Response);
+  const response = thrown as Response;
+  expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({
+    error: {
+      code: "idempotency_payload_changed",
+      message: volunteerCodeMessage("idempotency_payload_changed"),
+    },
+  });
+});

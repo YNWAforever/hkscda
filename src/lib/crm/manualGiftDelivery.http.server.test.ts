@@ -124,3 +124,41 @@ test("retry role withdrawal in SQL returns forbidden without a worker call", asy
   expect((await createManualGiftDeliveryHandlers(deps).retry(request(), jobId)).status).toBe(403);
   expect(calls).toEqual(["auth"]);
 });
+
+test("BUG-50: known gift RPC refusals map to 409/400 and unmapped errors are logged", async () => {
+  const cases = [
+    { error: { code: "22023", message: "manual_gift_supporter_unavailable" }, status: 409 },
+    { error: { code: "22023", message: "invalid_manual_gift" }, status: 400 },
+  ];
+  for (const { error, status } of cases) {
+    const { deps, calls } = fixture({
+      createGift: async () => {
+        throw error;
+      },
+    });
+    const response = await createManualGiftDeliveryHandlers(deps).create(request());
+    expect(response.status).toBe(status);
+    expect(((await response.json()) as { error: string }).error).not.toBe(
+      "Could not process manual gift request",
+    );
+    expect(calls).toEqual(["auth"]);
+  }
+
+  const logged: unknown[] = [];
+  const original = console.error;
+  console.error = (...args: unknown[]) => {
+    logged.push(args);
+  };
+  try {
+    const { deps } = fixture({
+      createGift: async () => {
+        throw { code: "XX000", message: "boom" };
+      },
+    });
+    const response = await createManualGiftDeliveryHandlers(deps).create(request());
+    expect(response.status).toBe(500);
+    expect(JSON.stringify(logged)).toContain("boom");
+  } finally {
+    console.error = original;
+  }
+});

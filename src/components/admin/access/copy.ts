@@ -28,6 +28,14 @@ export const accessCopy = defineAdminCopy({
     resend: "重發",
     disable: "停用",
     reactivate: "重新啟用",
+    reinvite: "重新邀請",
+    confirmRoleTitle: "更改角色？",
+    confirmRole: (email: string, from: string, to: string) =>
+      `${email} 的角色會由「${from}」改為「${to}」，可使用的管理範圍亦會隨之改變。`,
+    confirmRoleLabel: "更改角色",
+    confirmDisableTitle: "停用使用者？",
+    confirmDisable: (email: string) =>
+      `${email} 將不能再登入管理後台，直至有管理員重新啟用此帳戶。`,
     currentUser: "你",
     genericError: "操作失敗，請稍後再試。",
     auditLoadError: "未能載入紀錄。",
@@ -78,6 +86,14 @@ export const accessCopy = defineAdminCopy({
     resend: "Resend",
     disable: "Disable",
     reactivate: "Reactivate",
+    reinvite: "Re-invite",
+    confirmRoleTitle: "Change role?",
+    confirmRole: (email: string, from: string, to: string) =>
+      `${email} will change from ${from} to ${to}, and the admin areas they can use will change with it.`,
+    confirmRoleLabel: "Change role",
+    confirmDisableTitle: "Disable user?",
+    confirmDisable: (email: string) =>
+      `${email} will no longer be able to sign in to the admin until an admin reactivates them.`,
     currentUser: "You",
     genericError: "The action failed. Try again later.",
     auditLoadError: "Could not load the history.",

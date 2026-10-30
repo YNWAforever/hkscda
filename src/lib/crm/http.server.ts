@@ -96,6 +96,16 @@ async function withCrmErrors(operation: () => Promise<Response>) {
     if (error && typeof error === "object" && "code" in error && error.code === "P4040") {
       return jsonResponse({ error: "Supporter not found" }, { status: 404 });
     }
+    // append_crm_consents_with_audit raises supporter_not_found with no errcode
+    // (BUG-48); RPC errors are plain objects, so match on the message.
+    if (
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      error.message === "supporter_not_found"
+    ) {
+      return jsonResponse({ error: "Supporter not found" }, { status: 404 });
+    }
     if (error && typeof error === "object" && "code" in error && error.code === "22023") {
       return jsonResponse({ error: "Invalid CRM request" }, { status: 400 });
     }

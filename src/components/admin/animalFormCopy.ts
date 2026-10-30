@@ -80,6 +80,7 @@ export const animalFormCopy = defineAdminCopy({
       publishVersion: "發布此版本",
       mediaPending: "動物資料已發布，圖片仍在處理中；請稍後重新整理。",
       conflict: "草稿已變更或發布失敗，請重新預覽。",
+      reviewRequired: "此已儲存版本尚未通過來源審核。請在上方「來源審核」核准此版本，然後再發布。",
       unconfirmed: "未能確認發布結果。請重試發布；不會建立重複版本。",
     },
     gallery: {
@@ -178,6 +179,8 @@ export const animalFormCopy = defineAdminCopy({
       mediaPending:
         "The animal was published but its images are still processing. Refresh in a few minutes.",
       conflict: "The draft has changed or publishing failed. Preview the draft again.",
+      reviewRequired:
+        "This saved version has not passed source review. Approve it in the source review above, then publish.",
       unconfirmed:
         "Could not confirm the publish result. Publish again; this will not create a duplicate version.",
     },
