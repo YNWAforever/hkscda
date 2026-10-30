@@ -70,3 +70,42 @@ test("unrecognized RPC messages and database details stay private", async () => 
     logged.mockRestore();
   }
 });
+
+test("BUG-40: unique violations get a message for the constraint that was hit", async () => {
+  async function conflict(constraint: string, details: string) {
+    const response = await withErrors(async () => {
+      throw {
+        code: "23505",
+        message: `duplicate key value violates unique constraint "${constraint}"`,
+        details,
+      };
+    });
+    expect(response.status).toBe(409);
+    return ((await response.json()) as { error: string }).error;
+  }
+
+  const caseNumber = await conflict(
+    "successful_adoption_case_number_key",
+    "Key (case_number)=(AC-2026-001) already exists.",
+  );
+  const statusKey = await conflict(
+    "coordinator_status_category_key_key",
+    "Key (category, key)=(followup, open) already exists.",
+  );
+  const supporterEmail = await conflict(
+    "supporter_email_key",
+    "Key (email)=(ada@example.com) already exists.",
+  );
+  const other = await conflict("some_other_key", "Key (x)=(private value) already exists.");
+
+  expect(caseNumber).toContain("case number");
+  for (const error of [statusKey, supporterEmail, other]) {
+    expect(error).not.toContain("case number");
+  }
+  expect(statusKey).toContain("status");
+  expect(supporterEmail).toContain("email");
+  expect(new Set([caseNumber, statusKey, supporterEmail, other]).size).toBe(4);
+  // Database values in the details stay private.
+  expect(supporterEmail).not.toContain("ada@example.com");
+  expect(other).not.toContain("private value");
+});
