@@ -147,6 +147,9 @@ export function IntakeSettings() {
       if (shouldReloadAfterInternshipError(e)) {
         setPreview(undefined);
         await q.refetch();
+        // Local edits belong to the old revision. Show the refreshed body before a
+        // retry can send its revision, including edits made while the refetch ran.
+        setBody(undefined);
       }
     } finally {
       setBusy(false);

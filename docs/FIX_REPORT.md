@@ -230,13 +230,13 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-41 | Low | Manual intake refuses a closing initial status (400) and no longer offers it                             |
 | BUG-42 | Low | Code part: unknown linked ids are 404 and check violations 400, not 500 (RPC part deferred)              |
 | BUG-43 | Low | Sponsorship RPC errors (plain objects) keep their domain status (404/409/400)                            |
-| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker over the candidates route                         |
+| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker; changing the search clears the old selection    |
 | BUG-45 | Low | A new idempotency key for each successfully recorded sponsorship payment                                 |
 | BUG-47 | Low | Sponsorship finance: linked payments left out of candidates, coded errors, 404 for an unknown pledge     |
 | BUG-48 | Low | Consents: unknown supporter is 404; Save stays disabled until the refetch settles                        |
 | BUG-50 | Low | No "Record gift" for deleted supporters; manual-gift refusals are 409/400 and unmapped errors are logged |
 | BUG-51 | Low | Manual-gift bank reference capped at 120 characters                                                      |
-| BUG-52 | Low | CRM export runs keep writing pages and jobs for up to 45 s (same budget as media repair)                 |
+| BUG-52 | Low | CRM exports claim more pages while a 45 s budget remains; an in-flight page can finish after it          |
 | BUG-54 | Low | A publish blocked by a missing content review says so (`review_required`)                                |
 | BUG-55 | Low | Code part: a never-accepted user is re-invited, not reactivated (RPC part deferred)                      |
 | BUG-56 | Low | Access role changes and disables are confirmed; own-row role menu disabled; errors clear on success      |
@@ -244,7 +244,7 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-58 | Low | Supporter detail reads donations, payments and audit history past 1,000 rows                             |
 | BUG-59 | Low | A changed volunteer draft retry is 409 and the form rotates its key                                      |
 | BUG-60 | Low | An internship page past the end is an empty page with the real total                                     |
-| BUG-61 | Low | Internship 409/404 show a real message and reload the stale record                                       |
+| BUG-61 | Low | Internship 409/404 show a real message and reload; settings discard the old body before a retry          |
 | BUG-62 | Low | The overview "Today" list shows published sessions and flags a partial list                              |
 
 ### Waiting for approval or a decision
@@ -281,10 +281,34 @@ a one-off data fix would close them (not done; it changes production data).
 
 ### Verification
 
-`bun run test` 7,643 pass, 0 fail (729 database suites skipped locally; CI runs them);
+`bun run test` 7,643 pass, 0 fail (729 database tests skipped locally; CI runs them);
 `bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 53 warnings); `bun run build` passes
 with the route tree unchanged; `verify:client-bundle` clean. The BUG-57 E2E test was run in its
 group: `bun run test:e2e` 18/18.
+
+### PR #228 review follow-up (2026-10-31)
+
+Review limited to `fa4f4915...0752e96a`. Two Important regressions were reproduced with
+tests that failed before their fixes:
+
+- Internship settings refetched a new revision after a 409 but retained the old local
+  body. A retry could overwrite another admin's changes using that new revision. Recovery
+  now clears local edits after the refetch, so the form shows the latest body; an uncertain
+  network failure still preserves the body and revision for a retry.
+- The sponsorship animal picker retained a selected id when a new search hid its radio.
+  Add animal could therefore assign an animal no longer shown. Editing the search now
+  clears the selection, requiring staff to choose an animal again.
+
+Validation on pinned Bun 1.3.14: typecheck passed; lint passed with 0 errors and the same
+53 warnings; focused tests 393 passed / 29 skipped; unit suite 6,408 passed / 646 skipped;
+integration suite 38 passed; build passed; client bundle scan checked 146 files; public
+brand verification passed for 26 routes across 5 viewports against the local fixture.
+The first unit run had 9 environment failures because `python` was absent; a temporary
+PATH alias to the installed Python 3 resolved them, and the full unit rerun passed.
+Postgres did not answer on `127.0.0.1:55322`, so database-backed tests were skipped.
+
+The deferred findings and database parts of BUG-42/BUG-55 above remain deferred. No migration
+or production database change is part of this review.
 
 ## Manual QA checklist (staging or local, never production data)
 

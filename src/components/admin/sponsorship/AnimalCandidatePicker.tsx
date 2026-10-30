@@ -48,7 +48,12 @@ export function AnimalCandidatePicker({
         placeholder={copy.searchPlaceholder}
         maxLength={100}
         disabled={disabled}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          // A new search can hide the selected radio. Require a visible choice
+          // before the parent enables Add animal again.
+          onChange("");
+        }}
       />
       {candidates.isError ? (
         <LoadFailure

@@ -43,15 +43,17 @@ const validDraft = {
   instructions: "Bring your student card",
 };
 let draft: Record<string, unknown> = validDraft;
+let revision = 2;
+let onRefetch = async () => {};
 const realQuery = await import("@tanstack/react-query");
 mock.module("@tanstack/react-query", () => ({
   ...realQuery,
   useQuery: () => ({
     isLoading: false,
     error: null,
-    refetch: async () => ({}),
+    refetch: () => onRefetch(),
     data: {
-      draft: { body: draft, revision: 2 },
+      draft: { body: draft, revision },
       current: { body: draft },
       history: [],
     },
@@ -60,16 +62,26 @@ mock.module("@tanstack/react-query", () => ({
 // What every request to the API does: fail with this, or answer.
 let failWith: unknown = null;
 let requests = 0;
+const requestBodies: Record<string, unknown>[] = [];
 mock.module("../../../lib/admin/http", () => ({
-  fetchAdminJson: async () => {
+  fetchAdminJson: async (_path: string, init: RequestInit) => {
     requests++;
+    requestBodies.push(JSON.parse(String(init.body)) as Record<string, unknown>);
     if (failWith !== null) throw failWith;
     return {};
   },
 }));
 const { IntakeSettings } = await import("./InternshipManagement");
+const { AdminHttpError } = await import("../../../lib/admin/session");
+const { internshipErrorText } = await import("../../../lib/internships/service");
 
-type Props = { children?: ReactNode; role?: string; onClick?: () => Promise<void> };
+type Props = {
+  children?: ReactNode;
+  role?: string;
+  value?: string;
+  onClick?: () => Promise<void>;
+  onChange?: (event: { target: { value: string } }) => void;
+};
 function walk(node: ReactNode, result: ReactElement<Props>[] = []): ReactElement<Props>[] {
   if (Array.isArray(node)) {
     for (const child of node) walk(child, result);
@@ -83,6 +95,7 @@ function render() {
   hookIndex = 0;
   return IntakeSettings();
 }
+const titleInput = () => walk(render()).find((n) => n.type === "input")!;
 async function saveDraft() {
   const label = language === "zh" ? "儲存草稿" : "Save draft";
   await walk(render()).find((n) => n.type === "button" && n.props.children === label)!.props
@@ -96,7 +109,57 @@ beforeEach(() => {
   language = "zh";
   failWith = null;
   requests = 0;
+  requestBodies.length = 0;
   draft = validDraft;
+  revision = 2;
+  onRefetch = async () => {};
+});
+
+test("a stale settings save shows the latest draft before a retry can use its revision", async () => {
+  titleInput().props.onChange!({ target: { value: "My local title" } });
+  const latest = {
+    ...validDraft,
+    name: "Another admin's title",
+    instructions: "Another admin's updated instructions",
+  };
+  onRefetch = async () => {
+    // Inputs are still editable while recovery runs. These edits also belong to
+    // the old revision and must not survive under the refreshed revision.
+    titleInput().props.onChange!({ target: { value: "Typed while refreshing" } });
+    draft = latest;
+    revision = 3;
+  };
+  failWith = new AdminHttpError(internshipErrorText("stale_revision"), 409);
+
+  await saveDraft();
+
+  expect(requestBodies[0]).toMatchObject({
+    expected_revision: 2,
+    body: { name: "My local title" },
+  });
+  expect(textOf("alert")).toBe(internshipErrorText("stale_revision"));
+  expect(titleInput().props.value).toBe(latest.name);
+
+  // Reapply an edit only after seeing the new draft. The next save must preserve the
+  // other admin's unrelated change rather than sending the stale body with revision 3.
+  titleInput().props.onChange!({ target: { value: "Reviewed title" } });
+  failWith = null;
+  await saveDraft();
+  expect(requestBodies[1]).toMatchObject({
+    expected_revision: 3,
+    body: { ...latest, name: "Reviewed title" },
+  });
+});
+
+test("an uncertain save keeps local edits and the original revision for a retry", async () => {
+  titleInput().props.onChange!({ target: { value: "My local title" } });
+  failWith = new Error("offline");
+  await saveDraft();
+  expect(titleInput().props.value).toBe("My local title");
+
+  failWith = null;
+  await saveDraft();
+  expect(requestBodies[1]).toEqual(requestBodies[0]);
 });
 
 test("a blank title is told to staff in a sentence, in the language it is shown in", async () => {
