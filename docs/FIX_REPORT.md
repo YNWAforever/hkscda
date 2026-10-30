@@ -12,6 +12,9 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
+- **Second pass (2026-10-30):** 33 more findings, BUG-33 to BUG-65 (7 Medium, 26 Low).
+  21 code-only ones are fixed, one commit each; 12 wait for a migration approval or a
+  decision, as do the database parts of BUG-42 and BUG-55. See [Second pass](#second-pass-2026-10-30).
 
 ## How this was run
 
@@ -211,6 +214,77 @@ nothing about database behaviour.
 6. **Database suites never run here.** They need a local stack (AUD-03), and the CI
    `rls-matrix` job is still non-blocking (AUD-04).
 7. **zod 3.** It has a high advisory, fixed only in zod 4.
+
+## Second pass (2026-10-30)
+
+A second review of every admin area after PR #226 and #227 merged. Findings are in
+[`BUGS.md`](BUGS.md#second-pass-bug-33bug-65). Each fix below has a `BUG-xx` test that failed
+before the fix; the fixes were made test-first in five parallel groups and then combined.
+
+### Fixed (code only)
+
+| ID     | Sev | Fix                                                                                                      |
+| ------ | --- | -------------------------------------------------------------------------------------------------------- |
+| BUG-35 | Med | A follow-up's `completed_at` follows its status: closing stamps it, reopening clears it                  |
+| BUG-40 | Low | Each unique violation in the coordinator API gets the message for its constraint                         |
+| BUG-41 | Low | Manual intake refuses a closing initial status (400) and no longer offers it                             |
+| BUG-42 | Low | Code part: unknown linked ids are 404 and check violations 400, not 500 (RPC part deferred)              |
+| BUG-43 | Low | Sponsorship RPC errors (plain objects) keep their domain status (404/409/400)                            |
+| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker over the candidates route                         |
+| BUG-45 | Low | A new idempotency key for each successfully recorded sponsorship payment                                 |
+| BUG-47 | Low | Sponsorship finance: linked payments left out of candidates, coded errors, 404 for an unknown pledge     |
+| BUG-48 | Low | Consents: unknown supporter is 404; Save stays disabled until the refetch settles                        |
+| BUG-50 | Low | No "Record gift" for deleted supporters; manual-gift refusals are 409/400 and unmapped errors are logged |
+| BUG-51 | Low | Manual-gift bank reference capped at 120 characters                                                      |
+| BUG-52 | Low | CRM export runs keep writing pages and jobs for up to 45 s (same budget as media repair)                 |
+| BUG-54 | Low | A publish blocked by a missing content review says so (`review_required`)                                |
+| BUG-55 | Low | Code part: a never-accepted user is re-invited, not reactivated (RPC part deferred)                      |
+| BUG-56 | Low | Access role changes and disables are confirmed; own-row role menu disabled; errors clear on success      |
+| BUG-57 | Low | A refused account stays on the login form with a reason and is signed out locally                        |
+| BUG-58 | Low | Supporter detail reads donations, payments and audit history past 1,000 rows                             |
+| BUG-59 | Low | A changed volunteer draft retry is 409 and the form rotates its key                                      |
+| BUG-60 | Low | An internship page past the end is an empty page with the real total                                     |
+| BUG-61 | Low | Internship 409/404 show a real message and reload the stale record                                       |
+| BUG-62 | Low | The overview "Today" list shows published sessions and flags a partial list                              |
+
+### Waiting for approval or a decision
+
+| ID     | Sev | Needs                                                                                      |
+| ------ | --- | ------------------------------------------------------------------------------------------ |
+| BUG-33 | Med | Migration, plus a decision on how a returned adoption is recorded (regression from BUG-02) |
+| BUG-34 | Med | Migration: refuse reopening a finalised case; reason to reopen a closed one                |
+| BUG-36 | Med | Migration (or an audited resolve action): resolve intake items                             |
+| BUG-37 | Med | Migration: minimum query and masking in the intake identity search                         |
+| BUG-38 | Med | Migration: refuse publish by anyone who edited the payment-method draft                    |
+| BUG-39 | Med | Migration: audit the auth user id in two content functions, repair existing rows           |
+| BUG-42 | Low | Migration (RPC part): refuse matches on adopted animals and closed cases                   |
+| BUG-46 | Low | Migration: "receipt needed" only for eligible donations without a receipt                  |
+| BUG-49 | Low | Migration: no second `receipt.issue` audit row                                             |
+| BUG-53 | Low | Migration: one published guide per species                                                 |
+| BUG-55 | Low | Migration (RPC part): refuse disabled → active for a never-accepted invite                 |
+| BUG-63 | Low | Decision: may staff retry failed volunteer notifications, or admins only?                  |
+| BUG-64 | Low | Migration: one audit row per bulk edit                                                     |
+| BUG-65 | Low | Migration: narrow the qualifications `list` read                                           |
+
+Follow-ups that were already cancelled with `completed_at` null stay open until saved again;
+a one-off data fix would close them (not done; it changes production data).
+
+### Existing tests changed (no check weakened)
+
+- Sponsorship English copy test: the "Animal UUID" placeholder became the picker's strings (BUG-44).
+- Animal publication route test: a missing review now expects `review_required` (BUG-54).
+- Access English test: one disabled row now has an accepted invite so Reactivate stays covered (BUG-55).
+- `signInFlow` tests pass the new `signOut` fake (BUG-57); supporter-repository and export-job fakes
+  now behave like the database (1,000-row cap, no job on a second claim) (BUG-58, BUG-52).
+- The volunteer server-message allowlist drops a string that no longer exists (BUG-59); the
+  internship error-code list gains the two new codes (BUG-61).
+
+### Verification
+
+`bun run test` 7,643 pass, 0 fail (729 database suites skipped locally; CI runs them);
+`bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 53 warnings); `bun run build` passes
+with the route tree unchanged; `verify:client-bundle` clean. The BUG-57 E2E test was run in its
+group: `bun run test:e2e` 18/18.
 
 ## Manual QA checklist (staging or local, never production data)
 

@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are open; see [Second pass](#second-pass-bug-33bug-65). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30): 21 are fixed in code (BUG-35, 40, 41, 42 code part, 43, 44, 45, 47, 48, 50, 51, 52, 54, 55 code part, 56–62) and 12 wait for a migration or a decision (as do the database parts of BUG-42 and BUG-55); see [Second pass](#second-pass-bug-33bug-65). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -461,7 +461,7 @@ volunteers and internships, access and cross-cutting). Each finding was traced f
 real route and input to the wrong result; the ones marked Proven were reproduced with
 the real service or handler and a fake client. One reported finding was dropped after
 checking: treasurers can claim sponsorship deliveries (`20260913080152` allows them).
-All are open. Fixes that need a migration wait for approval.
+Status: the code-only fixes are listed in [`FIX_REPORT.md`](FIX_REPORT.md#second-pass-2026-10-30); BUG-33, 34, 36–39, 46, 49, 53, 63–65 and the RPC parts of BUG-42 and BUG-55 wait for a migration approval or a decision.
 
 ### BUG-33 — Med — Returned animal can never be adopted again (regression from BUG-02)
 
