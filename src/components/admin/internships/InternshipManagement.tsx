@@ -5,7 +5,11 @@ import { adminIdentityQueryOptions } from "../../../lib/admin/pageAccess";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { REQUIRED_REASON_MAX } from "../../../lib/admin/requiredReason";
 import { adminErrorMessage } from "../../../lib/admin/session";
-import { internshipErrorCode, intakeSchema } from "../../../lib/internships/service";
+import {
+  internshipErrorCode,
+  intakeSchema,
+  shouldReloadAfterInternshipError,
+} from "../../../lib/internships/service";
 import type { InternshipApplication, IntakeBody } from "../../site/InternshipForm";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
@@ -139,6 +143,11 @@ export function IntakeSettings() {
       }
     } catch (e) {
       setError(failure(e, "settings_failed"));
+      // A 409/404 means the draft revision or preview is stale: load the current one (BUG-61).
+      if (shouldReloadAfterInternshipError(e)) {
+        setPreview(undefined);
+        await q.refetch();
+      }
     } finally {
       setBusy(false);
     }
@@ -458,6 +467,9 @@ export function InternshipManagement() {
                   await qc.invalidateQueries({ queryKey: ["internships"] });
                 } catch (e) {
                   setError(failure(e, "review_failed"));
+                  // Another reviewer moved the application on: load its current revision (BUG-61).
+                  if (shouldReloadAfterInternshipError(e))
+                    await qc.invalidateQueries({ queryKey: ["internships"] });
                 } finally {
                   setBusy(false);
                 }

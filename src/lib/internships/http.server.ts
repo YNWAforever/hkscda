@@ -1,5 +1,10 @@
 import { z } from "zod";
-import type { createInternshipService, InternshipResult } from "./service";
+import {
+  internshipErrorText,
+  type createInternshipService,
+  type InternshipErrorCode,
+  type InternshipResult,
+} from "./service";
 const MAX_JSON_BYTES = 64 * 1024;
 
 class InternshipRequestTooLargeError extends Error {}
@@ -41,18 +46,31 @@ export function createInternshipHttp(deps: {
   service: ReturnType<typeof createInternshipService>;
   authenticate(request: Request, admin: boolean): Promise<string>;
 }) {
-  const respond = (result: InternshipResult) =>
-    Response.json(result, {
-      status:
-        result.kind === "conflict"
-          ? 409
-          : result.kind === "denied"
-            ? 422
-            : result.kind === "not_found"
-              ? 404
-              : 200,
-      headers: { "cache-control": "no-store" },
-    });
+  // An admin result that failed names its message in `error`, as the thrown failures below do, so
+  // the admin screen can write it in either language instead of "API request failed" (BUG-61).
+  // The public applicant form keeps writing its own messages from `kind` and `reason`.
+  const adminErrorCodes: Partial<Record<string, InternshipErrorCode>> = {
+    conflict: "stale_revision",
+    denied: "state_conflict",
+    not_found: "not_found",
+  };
+  const respond = (result: InternshipResult, admin = false) => {
+    const errorCode = admin ? adminErrorCodes[result.kind] : undefined;
+    return Response.json(
+      errorCode ? { ...result, error: internshipErrorText(errorCode) } : result,
+      {
+        status:
+          result.kind === "conflict"
+            ? 409
+            : result.kind === "denied"
+              ? 422
+              : result.kind === "not_found"
+                ? 404
+                : 200,
+        headers: { "cache-control": "no-store" },
+      },
+    );
+  };
   const failure = (error: unknown) => {
     if (error instanceof Response) return error;
     if (error instanceof InternshipRequestTooLargeError) return new Response(null, { status: 413 });
@@ -81,6 +99,7 @@ export function createInternshipHttp(deps: {
           await (admin
             ? deps.service.adminCommand(actor, raw)
             : deps.service.publicCommand(actor, raw)),
+          admin,
         );
       } catch (error) {
         return failure(error);

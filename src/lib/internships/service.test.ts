@@ -1,6 +1,7 @@
 import { describe, expect, spyOn, test } from "bun:test";
 
 import { expectNoChineseText } from "../../components/admin/i18n/testing";
+import { AdminHttpError } from "../admin/session";
 import { createInternshipHttp } from "./http.server";
 import {
   adminCommandSchema,
@@ -8,6 +9,7 @@ import {
   intakeSchema,
   internshipErrorCode,
   internshipErrorText,
+  shouldReloadAfterInternshipError,
   type InternshipErrorCode,
 } from "./service";
 
@@ -19,6 +21,8 @@ const ALL_CODES: InternshipErrorCode[] = [
   "invalid_request",
   "forbidden",
   "state_conflict",
+  "stale_revision",
+  "not_found",
   "unexpected",
 ];
 
@@ -135,5 +139,60 @@ describe("the API keeps sending the zh-HK text", () => {
       body: { ...intake, opens_at: intake.closes_at, closes_at: intake.opens_at },
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("BUG-61: internship 409 and 404 results", () => {
+  async function resultBody(result: { kind: string; reason?: string }, admin = true) {
+    const service = createInternshipService({ command: async () => result });
+    const http = createInternshipHttp({ service, authenticate: async () => "admin-1" });
+    const response = await http.post(
+      new Request("http://localhost/api/admin/internships", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(admin ? { action: "settings" } : { action: "mine" }),
+      }),
+      admin,
+    );
+    return { status: response.status, body: (await response.json()) as Record<string, unknown> };
+  }
+
+  test("BUG-61: an admin 409/404/422 result carries an error message the screen can name", async () => {
+    const conflict = await resultBody({ kind: "conflict" });
+    expect(conflict.status).toBe(409);
+    expect(conflict.body).toEqual({
+      kind: "conflict",
+      error: internshipErrorText("stale_revision"),
+    });
+    expect(internshipErrorCode(new Error(conflict.body.error as string))).toBe("stale_revision");
+
+    const missing = await resultBody({ kind: "not_found" });
+    expect(missing.status).toBe(404);
+    expect(internshipErrorCode(new Error(missing.body.error as string))).toBe("not_found");
+
+    const denied = await resultBody({
+      kind: "denied",
+      reason: "verified_student_evidence_required",
+    });
+    expect(denied.status).toBe(422);
+    expect(denied.body.reason).toBe("verified_student_evidence_required");
+    expect(internshipErrorCode(new Error(denied.body.error as string))).toBe("state_conflict");
+  });
+
+  test("BUG-61: the public applicant form keeps its own messages for these results", async () => {
+    const conflict = await resultBody({ kind: "conflict", reason: "intake_changed" }, false);
+    expect(conflict).toEqual({
+      status: 409,
+      body: { kind: "conflict", reason: "intake_changed" },
+    });
+  });
+
+  test("BUG-61: a 409 or 404 reloads the stale record; other failures do not", () => {
+    expect(shouldReloadAfterInternshipError(new AdminHttpError("x", 409))).toBe(true);
+    expect(shouldReloadAfterInternshipError(new AdminHttpError("x", 404))).toBe(true);
+    expect(shouldReloadAfterInternshipError(new AdminHttpError("x", 422))).toBe(false);
+    expect(shouldReloadAfterInternshipError(new AdminHttpError("x", 500))).toBe(false);
+    expect(shouldReloadAfterInternshipError(new Error("x"))).toBe(false);
+    expect(shouldReloadAfterInternshipError(null)).toBe(false);
   });
 });
