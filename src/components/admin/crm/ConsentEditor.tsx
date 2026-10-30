@@ -42,9 +42,9 @@ export function ConsentEditor({ supporterId, emailConsent, whatsappConsent }: Co
           ...changes,
         }),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] });
-    },
+    // Returning the invalidation keeps the mutation pending, and Save disabled, until the
+    // refetch has settled; otherwise a second click re-sends the old diff (BUG-48).
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["crm-supporter", supporterId] }),
   });
 
   return (

@@ -292,6 +292,34 @@ describe("createCrmHandlers", () => {
     });
   }
 
+  test("BUG-48: a consent PATCH for an unknown supporter (no errcode) is a 404, not a 500", async () => {
+    const service = createService({
+      async appendConsents() {
+        // append_crm_consents_with_audit raises it without an errcode (P0001).
+        throw { code: "P0001", message: "supporter_not_found", details: null, hint: null };
+      },
+    });
+    const handlers = createCrmHandlers({ requireTreasurer: async () => admin, service });
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.appendConsents({
+        request: new Request(
+          "https://example.com/api/admin/supporters/8bda8e40-cf39-4659-8be8-f2d74f9d2046/consents",
+          {
+            method: "PATCH",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ source: "admin_manual", email: "opt_in" }),
+          },
+        ),
+        params: { id: "8bda8e40-cf39-4659-8be8-f2d74f9d2046" },
+      });
+      expect(response.status).toBe(404);
+    } finally {
+      console.error = originalError;
+    }
+  });
+
   test("BUG-18: a supporter list page past a sane cap is a 400 that never reaches the repository", async () => {
     let repositoryCalls = 0;
     const repo = {
