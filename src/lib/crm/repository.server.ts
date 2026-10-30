@@ -197,22 +197,84 @@ function mapAudit(row: AuditRow): AuditHistoryRow {
  * this is not a blanket catch.
  */
 async function loadDonationsWithOptionalDelivery(client: SupabaseClient, supporterId: string) {
-  const withDelivery = await client
-    .from("donation")
-    .select("*,donation_delivery_job(id,status)")
-    .eq("supporter_id", supporterId)
-    .order("created_at", { ascending: false });
+  const donations = (select: string) =>
+    readAllPages<DonationRow>(() =>
+      client
+        .from("donation")
+        .select(select)
+        .eq("supporter_id", supporterId)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false }),
+    );
+  const withDelivery = await donations("*,donation_delivery_job(id,status)");
   if (!withDelivery.error) return withDelivery;
 
-  const withoutDelivery = await client
-    .from("donation")
-    .select("*")
-    .eq("supporter_id", supporterId)
-    .order("created_at", { ascending: false });
+  const withoutDelivery = await donations("*");
   // Still failing without the embed -- the donation read itself is at fault, so
   // report the original error rather than masking it as a missing extension.
   if (withoutDelivery.error) return withDelivery;
   return withoutDelivery;
+}
+
+/** PostgREST's max_rows: a single response never carries more rows than this. */
+const READ_PAGE_SIZE = 1000;
+/** Ids per `.in()` filter, so the request URL stays bounded (~37 bytes per uuid). */
+const IN_LIST_CHUNK_SIZE = 100;
+
+type PagedResult<Row> = { data: Row[]; error: null } | { data: null; error: unknown };
+type RangeQuery<Row> = {
+  range(from: number, to: number): PromiseLike<{ data: Row[] | null; error: unknown }>;
+};
+
+/**
+ * Reads every row of an ordered query a page at a time with `.range()`, the way
+ * readCountedRange does for payments. An unranged read stops silently at max_rows,
+ * which dropped a long-running supporter's oldest history (BUG-58).
+ */
+async function readAllPages<Row>(buildQuery: () => unknown): Promise<PagedResult<Row>> {
+  const rows: Row[] = [];
+  for (let from = 0; ; from += READ_PAGE_SIZE) {
+    const { data, error } = await (buildQuery() as RangeQuery<Row>).range(
+      from,
+      from + READ_PAGE_SIZE - 1,
+    );
+    if (error) return { data: null, error };
+    const batch = data ?? [];
+    rows.push(...batch);
+    if (batch.length < READ_PAGE_SIZE) return { data: rows, error: null };
+  }
+}
+
+/**
+ * Pages an `.in()` read over bounded chunks of ids, then restores the newest-first
+ * order the single query had.
+ */
+async function readAllPagesIn<Row extends { id: string }>(
+  ids: string[],
+  buildQuery: (chunk: string[]) => unknown,
+  newestFirstBy: (row: Row) => string,
+): Promise<PagedResult<Row>> {
+  const chunks: string[][] = [];
+  for (let index = 0; index < ids.length; index += IN_LIST_CHUNK_SIZE) {
+    chunks.push(ids.slice(index, index + IN_LIST_CHUNK_SIZE));
+  }
+  const results = await Promise.all(
+    chunks.map((chunk) => readAllPages<Row>(() => buildQuery(chunk))),
+  );
+  const rows: Row[] = [];
+  for (const result of results) {
+    if (result.error) return result;
+    rows.push(...(result.data ?? []));
+  }
+  if (chunks.length > 1) {
+    // Same order as the query: time descending, then id descending.
+    rows.sort(
+      (a, b) =>
+        Date.parse(newestFirstBy(b)) - Date.parse(newestFirstBy(a)) ||
+        (a.id < b.id ? 1 : a.id > b.id ? -1 : 0),
+    );
+  }
+  return { data: rows, error: null };
 }
 
 function toSupporterUpdatePayload(update: SupporterUpdatePayload) {
@@ -247,21 +309,25 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       ]);
       if (donationResult.error) throw donationResult.error;
       if (pledgeResult.error) throw pledgeResult.error;
-      const donationRows = (donationResult.data ?? []) as DonationRow[];
+      const donationRows = donationResult.data ?? [];
       const donationIds = donationRows.map((row) => row.id);
       const pledgeIds = ((pledgeResult.data ?? []) as Array<{ id: string }>).map((row) => row.id);
 
       const [paymentsResult, receiptsResult, consentsResult, messagesResult, auditResult] =
         await Promise.all([
-          donationIds.length
-            ? client
+          readAllPagesIn<PaymentRow>(
+            donationIds,
+            (chunk) =>
+              client
                 .from("payment")
                 .select(
                   "id,donation_id,provider,provider_ref,amount_cents,refunded_cents,status,received_at,bank_reference,created_at",
                 )
-                .in("donation_id", donationIds)
+                .in("donation_id", chunk)
                 .order("created_at", { ascending: false })
-            : Promise.resolve({ data: [], error: null }),
+                .order("id", { ascending: false }),
+            (row) => row.created_at,
+          ),
           client
             .from("receipt")
             .select("*")
@@ -277,11 +343,17 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
             .select("id,supporter_id,channel,status,payload,sent_at,created_at")
             .eq("supporter_id", id)
             .order("created_at", { ascending: false }),
-          client
-            .from("audit_log")
-            .select("id,actor_user_id,action,entity,entity_id,timestamp,detail")
-            .in("entity_id", [id, ...donationIds, ...pledgeIds])
-            .order("timestamp", { ascending: false }),
+          readAllPagesIn<AuditRow>(
+            [id, ...donationIds, ...pledgeIds],
+            (chunk) =>
+              client
+                .from("audit_log")
+                .select("id,actor_user_id,action,entity,entity_id,timestamp,detail")
+                .in("entity_id", chunk)
+                .order("timestamp", { ascending: false })
+                .order("id", { ascending: false }),
+            (row) => row.timestamp,
+          ),
         ]);
 
       if (paymentsResult.error) throw paymentsResult.error;
@@ -291,11 +363,11 @@ export function createSupabaseCrmRepository(client: SupabaseClient): CrmReposito
       if (auditResult.error) throw auditResult.error;
 
       const donations = donationRows.map(mapDonation);
-      const payments = ((paymentsResult.data ?? []) as PaymentRow[]).map(mapPayment);
+      const payments = (paymentsResult.data ?? []).map(mapPayment);
       const receipts = ((receiptsResult.data ?? []) as ReceiptRow[]).map(mapReceipt);
       const consents = ((consentsResult.data ?? []) as ConsentRow[]).map(mapConsent);
       const messages = ((messagesResult.data ?? []) as MessageRow[]).map(mapMessage);
-      const auditLogs = ((auditResult.data ?? []) as AuditRow[]).map(mapAudit);
+      const auditLogs = (auditResult.data ?? []).map(mapAudit);
       const adoption = await loadSupporterAdoptionContext(client, id);
       const volunteer = await loadSupporterVolunteerContext(client, id);
 
