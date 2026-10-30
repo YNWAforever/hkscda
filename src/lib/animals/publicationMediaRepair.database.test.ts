@@ -177,3 +177,59 @@ test.skipIf(!enabled)(
   },
   30000,
 );
+
+// BUG-39: the audit row used to carry admin_user.id, which matches no user.
+test.skipIf(!enabled)(
+  "BUG-39: retry_failed_media_repair logs the auth user id as the audit actor",
+  async () => {
+    const db = new SQL(databaseUrl!, { max: 1, prepare: false });
+    const rollback = new Error("rollback synthetic media repair fixture");
+    const actor = crypto.randomUUID();
+    const animal = crypto.randomUUID();
+    const version = crypto.randomUUID();
+    const publicPath = `${animal}/versions/bug39.jpg`;
+    try {
+      await db.begin(async (tx) => {
+        await tx.unsafe(
+          "insert into auth.users(id,email,email_confirmed_at,created_at,updated_at) values($1::uuid,$2,now(),now(),now())",
+          [actor, actor + "@example.invalid"],
+        );
+        const [admin] = (await tx.unsafe(
+          "insert into public.admin_user(auth_user_id,email,role,status) values($1::uuid,$2,'staff','active') returning id",
+          [actor, actor + "@example.invalid"],
+        )) as { id: string }[];
+        await tx.unsafe(
+          "insert into public.animals(id,type,name,gender,age,status,publication_state,adoption_eligible,sponsorship_eligible) values($1::uuid,'cat','Synthetic repair animal','female','2','available','published',true,false)",
+          [animal],
+        );
+        await tx.unsafe(
+          "insert into public.animal_publication_version(id,animal_id,body,revision,published_by,reason) values($1::uuid,$2::uuid,jsonb_build_object('publication_state','draft'),1,$3::uuid,'synthetic repair fixture')",
+          [version, animal, actor],
+        );
+        await tx.unsafe(
+          "insert into public.animal_publication_media_copy(public_path,publication_version_id,animal_id,source_path,public_url,created_at,repair_status,repair_attempts,last_error_code,next_retry_at) values($1,$2::uuid,$3::uuid,$4,'https://example.test/bug39.jpg',now()-interval '1 hour','failed',8,'copy_failed',null)",
+          [publicPath, version, animal, `${animal}/bug39.jpg`],
+        );
+        await tx`set local role service_role`;
+        const retried = await tx.unsafe(
+          "select public.retry_failed_media_repair($1::uuid,'animal',$2,'Restored source image and verified checksum',true) as ok",
+          [actor, publicPath],
+        );
+        expect(retried[0].ok).toBe(true);
+        await tx`reset role`;
+        const audit = (await tx.unsafe(
+          "select actor_user_id from public.audit_log where action='media_repair.retry_failed' and entity_id=$1",
+          [publicPath],
+        )) as { actor_user_id: string }[];
+        expect(audit.map((row) => row.actor_user_id)).toEqual([actor]);
+        expect(admin.id).not.toBe(actor);
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
+  30000,
+);

@@ -1288,3 +1288,110 @@ describe("admin animal and adoption RPC regressions", () => {
     }).toMatchObject({ saveAudited: true, copyAudited: true, copyFenced: true });
   });
 });
+
+/**
+ * The LAST definition (in filename order) of every function the migrations create, keyed
+ * by its lower-case `schema.name`. Overloads share a key; the last one written wins, which
+ * matches how `latestFunctionBody` reads a single name.
+ */
+function latestFunctionBodies() {
+  const header = /create\s+(?:or\s+replace\s+)?function\s+((?:"?\w+"?\.)?"?\w+"?)\s*\(/gi;
+  const latest = new Map<string, { file: string; body: string }>();
+  for (const file of migrationFileNames()) {
+    const sql = readMigration(file);
+    for (const match of sql.matchAll(header)) {
+      const rest = sql.slice(match.index ?? 0);
+      const open = /\$([A-Za-z_]*)\$/.exec(rest);
+      if (!open) continue;
+      const bodyStart = open.index + open[0].length;
+      const bodyEnd = rest.indexOf(open[0], bodyStart);
+      if (bodyEnd < 0) continue;
+      latest.set(match[1].replace(/"/g, "").toLowerCase(), {
+        file,
+        body: rest.slice(bodyStart, bodyEnd),
+      });
+    }
+  }
+  return latest;
+}
+
+/** Split a SQL list on top-level commas (ignoring commas inside parentheses or strings). */
+function splitTopLevel(list: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let quoted = false;
+  let current = "";
+  for (const char of list) {
+    if (char === "'") quoted = !quoted;
+    if (!quoted && char === "(") depth++;
+    if (!quoted && char === ")") depth--;
+    if (!quoted && depth === 0 && char === ",") {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  parts.push(current.trim());
+  return parts;
+}
+
+/**
+ * The expression written into audit_log.actor_user_id by each
+ * `insert into public.audit_log(<columns>) values(<first tuple>)` in a function body.
+ */
+function auditActorExpressions(body: string) {
+  const expressions: string[] = [];
+  const insert = /insert\s+into\s+public\.audit_log\s*\(([^)]*)\)\s*values\s*\(/gi;
+  for (const match of body.matchAll(insert)) {
+    const columns = splitTopLevel(match[1]).map((column) => column.replace(/"/g, "").toLowerCase());
+    const actorIndex = columns.indexOf("actor_user_id");
+    if (actorIndex < 0) continue;
+    const tupleStart = (match.index ?? 0) + match[0].length;
+    let depth = 1;
+    let quoted = false;
+    let end = tupleStart;
+    for (; end < body.length && depth > 0; end++) {
+      const char = body[end];
+      if (char === "'") quoted = !quoted;
+      if (!quoted && char === "(") depth++;
+      if (!quoted && char === ")") depth--;
+    }
+    const values = splitTopLevel(body.slice(tupleStart, end - 1));
+    expressions.push((values[actorIndex] ?? "").toLowerCase());
+  }
+  return expressions;
+}
+
+describe("content audit actor regressions", () => {
+  // BUG-39: fixed by 20261030120000_content_audit_actor_auth_user_id.sql. Both RPCs resolve the
+  // admin_user row from the auth user id; the audit row must carry the auth user id, the same
+  // id every other audit row uses, not the admin_user row id.
+  for (const name of ["set_content_publication_metadata", "retry_failed_media_repair"]) {
+    test(`BUG-39: ${name} logs the auth user id (p_actor_user_id) as the audit actor`, () => {
+      const latest = latestFunctionBody(name);
+      expect({ file: latest.file, actors: auditActorExpressions(latest.body) }).toEqual({
+        file: latest.file,
+        actors: ["p_actor_user_id"],
+      });
+    });
+  }
+
+  // Guard for the BUG-39 class: audit_log.actor_user_id holds an auth user id. A record typed
+  // public.admin_user%rowtype (conventionally `actor`) has its own row id in `.id`, which
+  // matches no user, so no function's latest definition may write `<that record>.id` there.
+  test("BUG-39: no function's latest definition logs an admin_user row id as the audit actor", () => {
+    const offenders: string[] = [];
+    for (const [name, { file, body }] of latestFunctionBodies()) {
+      const adminRecords = new Set(["actor"]);
+      for (const declared of body.matchAll(/(\w+)\s+public\.admin_user%rowtype/gi)) {
+        adminRecords.add(declared[1].toLowerCase());
+      }
+      for (const actor of auditActorExpressions(body)) {
+        const record = /^(\w+)\.id$/.exec(actor)?.[1];
+        if (record && adminRecords.has(record)) offenders.push(`${name} (${file}): ${actor}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+});

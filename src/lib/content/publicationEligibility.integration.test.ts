@@ -106,3 +106,43 @@ test.skipIf(!enabled)(
   },
   60000,
 );
+
+// BUG-39: the audit row used to carry admin_user.id, which matches no user.
+test.skipIf(!enabled)(
+  "BUG-39: set_content_publication_metadata logs the auth user id as the audit actor",
+  async () => {
+    const db = new SQL(url!);
+    const rollback = new Error("synthetic rollback");
+    const actor = crypto.randomUUID();
+    const marker = `bug39-${crypto.randomUUID()}`;
+    try {
+      await db.begin(async (tx) => {
+        await tx`insert into auth.users(id,email) values(${actor}::uuid,${`${marker}@example.invalid`})`;
+        const [admin] =
+          await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${actor}::uuid,${`${marker}@example.test`},'staff','active') returning id`;
+        const [item] = await tx`insert into public.content_item(slug,type,title,summary,status)
+          values(${marker},'rescue_story',${marker},'Synthetic audit actor fixture','draft') returning id`;
+        await tx`set local role service_role`;
+        const metadata = {
+          contentClass: "demo",
+          sourceReference: "",
+          contentOwner: "",
+          effectiveFrom: null,
+          effectiveUntil: null,
+        };
+        await tx`select public.set_content_publication_metadata(${actor}::uuid,${item.id}::uuid,0,${metadata}::jsonb)`;
+        await tx`reset role`;
+        const rows =
+          await tx`select actor_user_id from public.audit_log where entity_id=${item.id} and action='content.set_publication_metadata'`;
+        expect(rows.map((row: { actor_user_id: string }) => row.actor_user_id)).toEqual([actor]);
+        expect(admin.id).not.toBe(actor);
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await db.close();
+    }
+  },
+  60000,
+);
