@@ -160,3 +160,7 @@ collective; avoid comparative superlatives and founder-centric organisational fr
 - Nitro preset: `vercel` (configured in `vite.config.ts`)
 - Vercel plan is Pro: the crons in vercel.json run at their declared schedules. Every /api/jobs/* route and /api/internal/readiness require CRON_SECRET; without it Vercel's cron calls get 401 and no background job runs. Environment-variable changes take effect only after a redeploy. Switch-on steps: docs/background-jobs-runbook.md.
 
+
+## UI
+
+Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
