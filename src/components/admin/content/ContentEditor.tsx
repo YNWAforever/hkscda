@@ -45,7 +45,7 @@ import {
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
 import { contentCommonCopy } from "./contentCommonCopy";
-import { ContentAdminError, contentFailure } from "./contentErrors";
+import { ContentAdminError, contentFailure, contentLifecycleErrorMessage } from "./contentErrors";
 import { editorCopy } from "./editorCopy";
 import {
   createEditorState,
@@ -927,6 +927,11 @@ export function ContentAuthoringPanels({
   );
 }
 
+function truncateSeoShareSummary(text: string, maxLength: number): string {
+  const characters = Array.from(text);
+  return characters.length > maxLength ? `${characters.slice(0, maxLength).join("")}…` : text;
+}
+
 function ContentEditorForm({
   content,
   pending,
@@ -936,7 +941,9 @@ function ContentEditorForm({
   pending: boolean;
   onSave: (form: ContentFormState) => Promise<void>;
 }) {
-  const copy = useAdminCopy(editorCopy).form;
+  const editor = useAdminCopy(editorCopy);
+  const copy = editor.form;
+  const seoCopy = editor.seoSharePreview;
   const { language } = useAdminLanguage();
   const panelState = useDirtyPanel("content");
   const initialForm = useMemo(() => formFromContent(content), [content]);
@@ -963,6 +970,12 @@ function ContentEditorForm({
     setForm((current) => ({ ...current, [key]: value }));
   };
 
+  const seoSummarySource = form.seoTitle.trim() || form.title.trim();
+  const seoSummary =
+    seoSummarySource === ""
+      ? seoCopy.emptySummary
+      : truncateSeoShareSummary(seoSummarySource, seoCopy.summaryTruncate);
+
   return (
     <form
       onChangeCapture={panelState.mark}
@@ -981,7 +994,6 @@ function ContentEditorForm({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
-          <p className="text-sm text-[var(--color-text-muted)]">{copy.intro}</p>
         </div>
         <button
           type="submit"
@@ -1067,35 +1079,47 @@ function ContentEditorForm({
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           />
         </Field>
-        <Field label={copy.seoTitle}>
-          <input
-            value={form.seoTitle}
-            onChange={(event) => updateField("seoTitle", event.target.value)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
-        <Field label={copy.seoDescription}>
-          <input
-            value={form.seoDescription}
-            onChange={(event) => updateField("seoDescription", event.target.value)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
-        <Field label={copy.ogTitle}>
-          <input
-            value={form.ogTitle}
-            onChange={(event) => updateField("ogTitle", event.target.value)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
-        <Field label={copy.ogDescription}>
-          <input
-            value={form.ogDescription}
-            onChange={(event) => updateField("ogDescription", event.target.value)}
-            className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
-          />
-        </Field>
       </div>
+
+      <details
+        key={`seo-share-preview-${content.version}`}
+        className="rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3"
+      >
+        <summary className="cursor-pointer text-sm font-semibold text-[var(--color-panel)]">
+          {seoCopy.disclosureTitle}
+          <span className="ml-2 font-normal text-[var(--color-text-muted)]">{seoSummary}</span>
+        </summary>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <Field label={copy.seoTitle}>
+            <input
+              value={form.seoTitle}
+              onChange={(event) => updateField("seoTitle", event.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label={copy.seoDescription}>
+            <input
+              value={form.seoDescription}
+              onChange={(event) => updateField("seoDescription", event.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label={copy.ogTitle}>
+            <input
+              value={form.ogTitle}
+              onChange={(event) => updateField("ogTitle", event.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+          <Field label={copy.ogDescription}>
+            <input
+              value={form.ogDescription}
+              onChange={(event) => updateField("ogDescription", event.target.value)}
+              className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
+            />
+          </Field>
+        </div>
+      </details>
     </form>
   );
 }
@@ -1739,8 +1763,9 @@ export function PublishValidationPanel({ issues }: { issues: PublishValidationIs
 }
 
 /**
- * What the editor's actions failed with. A content error is written from its code, a session
- * error is translated, and any other reason (the server's, in English) is shown as it came.
+ * What the editor's actions failed with. A content error is written from its code, a lifecycle
+ * failure from the code the server sent, a session error is translated, and any other reason
+ * (the server's, in English) is shown as it came.
  */
 export function ActionErrors({ errors }: { errors: unknown[] }) {
   const common = useAdminCopy(contentCommonCopy);
@@ -1759,7 +1784,9 @@ export function ActionErrors({ errors }: { errors: unknown[] }) {
         const failure = contentFailure(error);
         const message = failure.code
           ? common.errors[failure.code]
-          : (adminErrorMessage(failure.cause, language) ?? "");
+          : (contentLifecycleErrorMessage(failure.cause, language) ??
+            adminErrorMessage(failure.cause, language) ??
+            "");
         return <p key={error.message}>{message}</p>;
       })}
     </div>

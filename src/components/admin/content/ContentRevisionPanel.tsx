@@ -10,6 +10,7 @@ import { useAdminCopy } from "../i18n/copy";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure } from "../LoadFailure";
 import { contentCommonCopy } from "./contentCommonCopy";
+import { contentLifecycleErrorMessage } from "./contentErrors";
 import { editorCopy } from "./editorCopy";
 import { editorPanelsCopy } from "./editorPanelsCopy";
 type Revision = { id: string; version: number; snapshot: Record<string, unknown> };
@@ -47,7 +48,11 @@ export function ContentRevisionPanel({
   });
   const [error, setError] = useState<RestoreFailure>();
   const [restoreOpen, setRestoreOpen] = useState(false);
-  const errorText = error ? (adminErrorMessage(error.cause, language) ?? copy.restoreFailed) : "";
+  const errorText = error
+    ? (contentLifecycleErrorMessage(error.cause, language) ??
+      adminErrorMessage(error.cause, language) ??
+      copy.restoreFailed)
+    : "";
   const saved = detail.data?.revision.snapshot.content as Record<string, unknown> | undefined;
   return (
     <section className="space-y-3 rounded-lg border p-4" aria-label={copy.heading}>
@@ -72,7 +77,12 @@ export function ContentRevisionPanel({
             className="rounded border px-3 py-2 text-sm"
             onClick={() => setSelected(row.id)}
           >
-            {copy.version(row.version, copy.operation(row.operation), row.isPublished)}
+            {copy.version(row.version, copy.operation(row.operation))}
+            {row.isPublished ? (
+              <span className="ml-2 rounded-full border border-[var(--color-border)] px-2 py-0.5 text-xs font-semibold">
+                {copy.published}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>

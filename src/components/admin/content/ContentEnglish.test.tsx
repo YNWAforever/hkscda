@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
 
-import { AdminApiError, AdminSessionError } from "../../../lib/admin/session";
+import { AdminApiError, AdminHttpError, AdminSessionError } from "../../../lib/admin/session";
 import type {
   ContentDetail,
   ContentSummary,
@@ -947,7 +947,7 @@ describe("content editor in English", () => {
       "Save publication eligibility",
       // basic content
       "Basic content",
-      "Title, summary, SEO and CTA settings.",
+      "Search &amp; share preview",
       ">Save draft</button>",
       "Subtitle",
       ">Body<",
@@ -997,6 +997,22 @@ describe("content editor in English", () => {
     ]);
     // A stand-in label the server sends for a record without a name is written in English.
     expect(markup).not.toContain("（");
+  });
+
+  test("folds SEO and OG into a closed search and share preview", () => {
+    reset();
+    const seoTitle = "A".repeat(45);
+    state.detail = { ...detail, seoTitle };
+    const markup = renderAdminInEnglish(<ContentEditor contentId="c-1" />);
+    expectNoChineseText(markup, { allow: DATA });
+    expect(markup).toContain("Search &amp; share preview");
+    expect(markup).toContain(`${"A".repeat(40)}…`);
+    expectAll(markup, ["SEO title", "SEO description", "OG title", "OG description"]);
+    expect(markup).not.toMatch(/<details[^>]*\bopen\b/);
+
+    state.detail = { ...detail, title: "", seoTitle: null };
+    const empty = renderAdminInEnglish(<ContentEditor contentId="c-1" />);
+    expect(empty).toContain("Not set (will use title / summary)");
   });
 
   test("shows a page that is not a rescue story in English", () => {
@@ -1111,6 +1127,7 @@ describe("content editor in English", () => {
       "發布資格與來源",
       "資料來源／批准記錄",
       ">儲存草稿</button>",
+      "搜尋與分享預覽",
       "CTA 文字",
       "新增關聯紀錄",
       "動物 · 主要主角",
@@ -1157,6 +1174,66 @@ describe("what the editor says when an action fails", () => {
 
   test("shows nothing when there is no error", () => {
     expect(renderAdminInEnglish(<ActionErrors errors={[undefined, null]} />)).toBe("");
+  });
+
+  test("writes lifecycle codes in the admin's language, never the server's English default", () => {
+    const lifecycle = [
+      new AdminApiError({
+        status: 409,
+        code: "conflict",
+        message: "Content lifecycle operation failed (conflict)",
+      }),
+      new AdminApiError({
+        status: 404,
+        code: "not_found",
+        message: "Content lifecycle operation failed (not found)",
+      }),
+      new AdminApiError({
+        status: 422,
+        code: "invalid",
+        message: "Content lifecycle operation failed (invalid)",
+      }),
+      new AdminApiError({
+        status: 500,
+        code: "internal",
+        message: "Content lifecycle operation failed (internal)",
+      }),
+      new AdminApiError({
+        status: 500,
+        code: "something_new",
+        message: "Content lifecycle operation failed (unknown)",
+      }),
+    ];
+
+    const english = renderAdminInEnglish(<ActionErrors errors={lifecycle} />);
+    expectNoChineseText(english);
+    expectAll(english, [
+      "Save conflict — reload, then save again. If the URL slug is taken, pick another.",
+      "Content not found. Reload the page.",
+      "Content didn’t pass checks. Review required fields and the URL slug.",
+      "Couldn’t finish saving. Try again, or save each panel first.",
+    ]);
+    expect(english).not.toContain("Content lifecycle operation failed");
+
+    const chinese = renderAdminInChinese(<ActionErrors errors={lifecycle} />);
+    expectAll(chinese, [
+      "儲存衝突，請重新載入頁面後再儲存。若網址已被使用，請換一個。",
+      "找不到此內容，請重新載入。",
+      "內容不符合規則，請檢查必填欄位與網址格式。",
+      "儲存未完成，請稍後再試。若持續失敗，先檢查各面板是否已儲存。",
+    ]);
+    expect(chinese).not.toContain("Content lifecycle operation failed");
+  });
+
+  test("writes a request that never reached the server as the network failure", () => {
+    const english = renderAdminInEnglish(
+      <ActionErrors errors={[new AdminHttpError("Failed to fetch", null)]} />,
+    );
+    expect(english).toContain("Something went wrong on the server. Please try again.");
+    const chinese = renderAdminInChinese(
+      <ActionErrors errors={[new AdminHttpError("Failed to fetch", null)]} />,
+    );
+    expect(chinese).toContain("連線或伺服器暫時有問題，請稍後再試。");
   });
 
   test("names the field of each publish check in English, and as sent in Chinese", () => {
@@ -1598,9 +1675,10 @@ describe("version history in English", () => {
     expectAll(markup, [
       'aria-label="Version history and comparison"',
       "Current saved version 5. Restoring creates a new draft; the public version does not change.",
-      ">Version 5 · Saved content · Was published</button>",
+      ">Version 5 · Saved content",
+      "Was published",
       ">Version 4 · Created</button>",
-      ">Version 3 · Other change</button>",
+      ">Version 3 · Saved changes</button>",
       ">Show latest versions</button>",
       ">Show earlier versions</button>",
       ">Field</th>",
@@ -1615,6 +1693,22 @@ describe("version history in English", () => {
     for (const code of ["save_content", "something_new"]) {
       expect(markup, code).not.toContain(code);
     }
+  });
+
+  test("names revision operations in each language and never shows a raw event name", () => {
+    expect(editorPanelsCopy.zh.revision.operation("upsert_profile")).toBe("更新故事牆設定");
+    expect(editorPanelsCopy.en.revision.operation("upsert_profile")).toBe(
+      "Updated story wall settings",
+    );
+    expect(editorPanelsCopy.zh.revision.operation("media.finalize")).toBe("完成媒體");
+    expect(editorPanelsCopy.en.revision.operation("media.finalize")).toBe("Finalized media");
+    expect(editorPanelsCopy.zh.revision.operation("legacy_backfill")).toBe("匯入舊資料");
+    expect(editorPanelsCopy.en.revision.operation("legacy_backfill")).toBe("Imported legacy");
+    expect(editorPanelsCopy.zh.revision.operation("something_new")).toBe("儲存變更");
+    expect(editorPanelsCopy.en.revision.operation("something_new")).toBe("Saved changes");
+    expect(editorPanelsCopy.zh.revision.version(3, "更新故事牆設定")).toBe(
+      "版本 3 · 更新故事牆設定",
+    );
   });
 
   test("shows the story wall settings, updates, media and records of a version in English", () => {
@@ -1664,8 +1758,9 @@ describe("version history in English", () => {
     expectAll(markup, [
       'aria-label="版本紀錄與比較"',
       "目前已儲存版本 5；還原會建立新草稿，公開版本保持不變。",
-      "版本 5 · save_content · 曾發布",
-      "版本 3 · something_new",
+      "版本 5 · 儲存內容",
+      "曾發布",
+      "版本 3 · 儲存變更",
       ">最新版本</button>",
       ">較早版本</button>",
       "<th>欄位</th>",
