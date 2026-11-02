@@ -53,6 +53,15 @@ export const contentCommonCopy = defineAdminCopy({
     /** The sentence for a failed copy to the clipboard; `detail` is the browser's reason, if any. */
     clipboardFailed: (detail?: string) =>
       detail === undefined ? "複製失敗，請手動選取文字。" : `複製失敗：${detail}`,
+    lifecycleErrors: {
+      conflict: "儲存衝突，請重新載入頁面後再儲存。若網址已被使用，請換一個。",
+      not_found: "找不到此內容，請重新載入。",
+      invalid: "內容不符合規則，請檢查必填欄位與網址格式。",
+      internal: "儲存未完成，請稍後再試。若持續失敗，先檢查各面板是否已儲存。",
+      network: "連線或伺服器暫時有問題，請稍後再試。",
+      unverifiedPublish: "此版本未核實，不能發布。請完成來源審核後再試。",
+      detail: "詳情",
+    },
     /** The message of each error a content logic module throws, by its code. */
     errors: {
       media_type: "請選擇 JPG、PNG 或 WEBP 圖片",
@@ -101,6 +110,17 @@ export const contentCommonCopy = defineAdminCopy({
       detail === undefined
         ? "Could not copy. Select the text and copy it by hand."
         : `Could not copy: ${endWithStop(detail)} Select the text and copy it by hand.`,
+    lifecycleErrors: {
+      conflict: "Save conflict — reload, then save again. If the URL slug is taken, pick another.",
+      not_found: "Content not found. Reload the page.",
+      invalid: "Content didn’t pass checks. Review required fields and the URL slug.",
+      internal: "Couldn’t finish saving. Try again, or save each panel first.",
+      network: "Something went wrong on the server. Please try again.",
+      unverifiedPublish:
+        "This version isn’t verified yet, so it can’t be published. Finish source review, then try again.",
+      detail: "Details",
+    },
+    /** The message of each error a content logic module throws, by its code. */
     errors: {
       media_type: "Choose a JPG, PNG or WEBP image.",
       media_size: "The image must be 8 MiB or smaller. Choose a smaller image.",

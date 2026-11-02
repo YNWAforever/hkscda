@@ -12,16 +12,32 @@ import { formatAdminDate, formatAdminDateOrNull, formatAdminNumber } from "../i1
 const REVISION_OPERATION_NAMES: Record<string, string> = {
   create: "Created",
   save_content: "Saved content",
-  upsert_profile: "Saved story wall settings",
+  upsert_profile: "Updated story wall settings",
   create_update: "Added story update",
   create_media: "Added media",
-  "media.finalize": "Added media",
+  "media.finalize": "Finalized media",
   create_link: "Added linked record",
   set_publication_metadata: "Saved publication eligibility",
   archive: "Archived",
   restore: "Restored",
   publish: "Published",
-  legacy_backfill: "Imported earlier version",
+  legacy_backfill: "Imported legacy",
+};
+
+/** The zh-HK name of each operation, so a chip never shows a raw `content_revision.operation`. */
+const REVISION_OPERATION_NAMES_ZH: Record<string, string> = {
+  create: "建立內容",
+  save_content: "儲存內容",
+  upsert_profile: "更新故事牆設定",
+  create_update: "新增故事更新",
+  create_media: "新增媒體",
+  "media.finalize": "完成媒體",
+  create_link: "新增關聯紀錄",
+  set_publication_metadata: "儲存發布資格",
+  archive: "已封存",
+  restore: "已還原",
+  publish: "已發布",
+  legacy_backfill: "匯入舊資料",
 };
 
 const SOCIAL_STATUS_NAMES: Record<string, string> = {
@@ -108,10 +124,9 @@ export const editorPanelsCopy = defineAdminCopy({
       intro: (version: number | undefined) =>
         `目前已儲存版本 ${version ?? "—"}；還原會建立新草稿，公開版本保持不變。`,
       loadFailed: "無法載入版本紀錄",
-      /** The operation is a database value; Chinese shows it as stored. */
-      operation: (operation: string) => operation,
-      version: (version: number, operation: string, published: boolean) =>
-        `版本 ${version} · ${operation}${published ? " · 曾發布" : ""}`,
+      operation: (operation: string) => REVISION_OPERATION_NAMES_ZH[operation] ?? "儲存變更",
+      published: "曾發布",
+      version: (version: number, operation: string) => `版本 ${version} · ${operation}`,
       latest: "最新版本",
       earlier: "較早版本",
       columns: { field: "欄位", saved: "目前已儲存", selected: "所選版本" },
@@ -199,9 +214,10 @@ export const editorPanelsCopy = defineAdminCopy({
       intro: (version: number | undefined) =>
         `Current saved version ${version === undefined ? "—" : formatAdminNumber(version, "en")}. Restoring creates a new draft; the public version does not change.`,
       loadFailed: "Could not load the version history",
-      operation: (operation: string) => REVISION_OPERATION_NAMES[operation] ?? "Other change",
-      version: (version: number, operation: string, published: boolean) =>
-        `Version ${formatAdminNumber(version, "en")} · ${operation}${published ? " · Was published" : ""}`,
+      operation: (operation: string) => REVISION_OPERATION_NAMES[operation] ?? "Saved changes",
+      published: "Was published",
+      version: (version: number, operation: string) =>
+        `Version ${formatAdminNumber(version, "en")} · ${operation}`,
       latest: "Show latest versions",
       earlier: "Show earlier versions",
       columns: { field: "Field", saved: "Currently saved", selected: "Selected version" },

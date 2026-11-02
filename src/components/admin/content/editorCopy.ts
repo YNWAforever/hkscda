@@ -79,7 +79,6 @@ export const editorCopy = defineAdminCopy({
     },
     form: {
       heading: "基本內容",
-      intro: "標題、摘要、SEO 與 CTA 設定。",
       save: "儲存草稿",
       saving: "儲存中",
       title: "標題",
@@ -94,6 +93,11 @@ export const editorCopy = defineAdminCopy({
       seoDescription: "SEO 描述",
       ogTitle: "OG 標題",
       ogDescription: "OG 描述",
+    },
+    seoSharePreview: {
+      disclosureTitle: "搜尋與分享預覽",
+      emptySummary: "未設定（會用標題／摘要）",
+      summaryTruncate: 40,
     },
     links: {
       heading: "關聯紀錄",
@@ -231,7 +235,6 @@ export const editorCopy = defineAdminCopy({
     },
     form: {
       heading: "Basic content",
-      intro: "Title, summary, SEO and CTA settings.",
       save: "Save draft",
       saving: "Saving",
       title: "Title",
@@ -246,6 +249,11 @@ export const editorCopy = defineAdminCopy({
       seoDescription: "SEO description",
       ogTitle: "OG title",
       ogDescription: "OG description",
+    },
+    seoSharePreview: {
+      disclosureTitle: "Search & share preview",
+      emptySummary: "Not set (will use title / summary)",
+      summaryTruncate: 40,
     },
     links: {
       heading: "Linked records",
