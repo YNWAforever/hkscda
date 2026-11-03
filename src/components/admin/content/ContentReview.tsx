@@ -18,6 +18,7 @@ import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
+import { managementCopy } from "./managementCopy";
 import { reviewCopy } from "./reviewCopy";
 import { recordContentReview, type ReviewResult } from "./recordContentReview";
 import {
@@ -26,26 +27,70 @@ import {
   type SelectionError,
 } from "./reviewSelectionLogic";
 
+const AUDIT_PRESET_KEYS = ["staffOnSite", "medicalReport", "volunteerFoster", "other"] as const;
+export type AuditPreset = (typeof AUDIT_PRESET_KEYS)[number];
+
+type AuditPresetCopy = Record<AuditPreset, string>;
+
+/** The evidence text a chip records: its own label, or what the operator typed for "other". */
+export function auditPresetEvidence(
+  preset: AuditPreset,
+  presets: AuditPresetCopy,
+  otherText: string,
+): string {
+  return preset === "other" ? otherText.trim() : presets[preset];
+}
+
+/** The chip whose label is already the saved evidence, so an expanded record keeps its value. */
+export function auditPresetForEvidence(
+  evidence: string | null | undefined,
+  presets: AuditPresetCopy,
+): AuditPreset | undefined {
+  const saved = evidence?.trim();
+  if (!saved) return undefined;
+  return AUDIT_PRESET_KEYS.find((key) => presets[key] === saved);
+}
+
 export function ContentReviewPanel({
   kind,
   id,
   revision,
   disabled = false,
+  savedClassification,
+  savedEvidence,
 }: {
   kind: "animal" | "content";
   id: string;
   revision: string;
   disabled?: boolean;
+  savedClassification?: ReviewInput["classification"];
+  savedEvidence?: string | null;
 }) {
   const copy = useAdminCopy(reviewCopy);
-  const [classification, setClassification] =
-    useState<ReviewInput["classification"]>("needs_review");
-  const [evidence, setEvidence] = useState("");
+  const initialPreset = auditPresetForEvidence(savedEvidence, copy.panel.presets);
+  const [classification, setClassification] = useState<ReviewInput["classification"]>(
+    savedClassification ?? "needs_review",
+  );
+  const [preset, setPreset] = useState<AuditPreset | null>(
+    initialPreset ?? (savedEvidence?.trim() ? "other" : null),
+  );
+  const [otherText, setOtherText] = useState(initialPreset ? "" : (savedEvidence ?? ""));
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ReviewResult | null>(null);
-  return (
+  const evidence =
+    preset === null ? "" : auditPresetEvidence(preset, copy.panel.presets, otherText);
+  const recordedApproved = result === "recorded" && classification === "approved";
+  const approved = savedClassification === "approved" || recordedApproved;
+  const category = copy.classifications[savedClassification ?? classification];
+  const savedReason = savedEvidence?.trim() ?? "";
+  const reasonSnippet =
+    Array.from(savedReason).length > 40
+      ? `${Array.from(savedReason).slice(0, 40).join("")}…`
+      : savedReason;
+  const summary = reasonSnippet ? copy.panel.verifiedSummary(category, reasonSnippet) : category;
+  const panel = (
     <fieldset className="space-y-3 rounded-lg border p-4" disabled={busy || disabled}>
-      <legend>{copy.panel.legend}</legend>
+      <legend>{copy.panel.sectionTitle}</legend>
       <p>{copy.panel.intro}</p>
       <label className="block">
         {copy.panel.classification}
@@ -63,19 +108,35 @@ export function ContentReviewPanel({
           ))}
         </select>
       </label>
-      <label className="block">
-        {copy.panel.evidence}
-        <textarea
-          maxLength={2000}
-          value={evidence}
-          onChange={(event) => setEvidence(event.target.value)}
-          className="block w-full border p-2"
-        />
-      </label>
+      <div className="space-y-2">
+        <p>{copy.panel.evidence}</p>
+        <div className="flex flex-wrap gap-2" role="group" aria-label={copy.panel.evidence}>
+          {AUDIT_PRESET_KEYS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              aria-pressed={preset === key}
+              className="rounded-full border px-3 py-1.5 text-sm"
+              onClick={() => setPreset(key)}
+            >
+              {copy.panel.presets[key]}
+            </button>
+          ))}
+        </div>
+        {preset === "other" ? (
+          <input
+            value={otherText}
+            onChange={(event) => setOtherText(event.target.value)}
+            placeholder={copy.panel.otherPlaceholder}
+            maxLength={2000}
+            className="block w-full border p-2"
+          />
+        ) : null}
+      </div>
       <button
         type="button"
         className="min-h-11 rounded border px-4"
-        disabled={!evidence.trim()}
+        disabled={!evidence}
         onClick={async () => {
           setBusy(true);
           setResult(null);
@@ -91,6 +152,18 @@ export function ContentReviewPanel({
       {result && <p role="status">{copy.panel[result]}</p>}
     </fieldset>
   );
+  if (!approved) return panel;
+  return (
+    <details className="rounded-lg border p-4">
+      <summary className="cursor-pointer">
+        <span>{summary}</span>
+        <span className="ml-2 text-sm font-semibold text-[var(--color-primary)]">
+          {copy.panel.expand}
+        </span>
+      </summary>
+      <div className="mt-3">{panel}</div>
+    </details>
+  );
 }
 export function ContentReviewQueue({
   initialKind = "content",
@@ -100,6 +173,7 @@ export function ContentReviewQueue({
   initialQuality?: "all" | "demo" | "expired" | "missing_source";
 } = {}) {
   const copy = useAdminCopy(reviewCopy);
+  const pending = useAdminCopy(managementCopy).pendingReview;
   const { language } = useAdminLanguage();
   const [page, setPage] = useState(1);
   const [kind, setKind] = useState<"animal" | "content">(initialKind);
@@ -181,7 +255,9 @@ export function ContentReviewQueue({
     : "";
   return (
     <details className="m-6 space-y-3 rounded-lg border p-4">
-      <summary className="cursor-pointer font-semibold">{copy.queue.summary}</summary>
+      <summary className="cursor-pointer font-semibold">
+        {query.data ? pending.badgeCount(query.data.total) : pending.badge}
+      </summary>
       <p>{copy.queue.intro}</p>
       <label>
         {copy.queue.kindLabel}
@@ -309,6 +385,9 @@ export function ContentReviewQueue({
           </li>
         ))}
       </ul>
+      {query.data && query.data.items.length === 0 ? (
+        <p className="text-sm text-[var(--color-text-muted)]">{pending.empty}</p>
+      ) : null}
       {canBulk && kind === "animal" && (
         <AnimalReviewBulkPanel
           selectedIds={selectedIds}

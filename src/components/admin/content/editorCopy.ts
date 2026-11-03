@@ -37,6 +37,21 @@ export const editorCopy = defineAdminCopy({
     reloadConfirm: "重新載入會捨棄所有未儲存內容，確定繼續？",
     reloadFailed: "未能重新載入，未儲存內容已保留，請重試。",
     unsaved: "尚有未儲存變更，請先儲存各面板後發布。",
+    dirtyBanner: {
+      lead: "尚有未儲存變更，請先儲存以下面板：",
+      jumpHint: "點面板名稱跳到該處",
+      panels: {
+        basic: "基本內容",
+        cover: "封面",
+        storyWall: "故事牆設定",
+        sourceReview: "來源審核",
+        media: "媒體",
+        related: "關聯",
+        storyUpdates: "故事更新",
+        social: "社交",
+        notifications: "通知",
+      },
+    },
     saved: (version: number | undefined) => `已儲存草稿 · 版本 ${version ?? "—"}`,
     conflict: {
       message:
@@ -192,6 +207,21 @@ export const editorCopy = defineAdminCopy({
     reloadConfirm: "Reloading will discard all unsaved changes. Continue?",
     reloadFailed: "Could not reload. Your unsaved changes are kept. Try again.",
     unsaved: "You have unsaved changes. Save each panel, then publish.",
+    dirtyBanner: {
+      lead: "Unsaved changes — save these panels first:",
+      jumpHint: "Select a panel name to jump there",
+      panels: {
+        basic: "Basic content",
+        cover: "Cover",
+        storyWall: "Story wall settings",
+        sourceReview: "Source review",
+        media: "Media",
+        related: "Related",
+        storyUpdates: "Story updates",
+        social: "Social",
+        notifications: "Notifications",
+      },
+    },
     saved: (version: number | undefined) =>
       `Draft saved · version ${version === undefined ? "—" : formatAdminNumber(version, "en")}`,
     conflict: {

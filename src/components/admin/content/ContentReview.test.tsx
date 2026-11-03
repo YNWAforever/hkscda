@@ -1,6 +1,6 @@
 import { expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
-import { renderAdminInChinese } from "../i18n/testing";
+import { renderAdminInChinese, renderAdminInEnglish } from "../i18n/testing";
 
 const realReactQuery = await import("@tanstack/react-query");
 const realReactRouter = await import("@tanstack/react-router");
@@ -37,7 +37,9 @@ mock.module("@tanstack/react-router", () => ({
   Link: ({ children }: { children: ReactNode }) => <a href="/admin/animals">{children}</a>,
 }));
 
-const { ContentReviewQueue } = await import("./ContentReview");
+const { ContentReviewQueue, ContentReviewPanel, auditPresetEvidence, auditPresetForEvidence } =
+  await import("./ContentReview");
+const { reviewCopy } = await import("./reviewCopy");
 
 test("animal bulk controls appear only to admins while staff keep the individual review link", () => {
   role = "staff";
@@ -81,4 +83,57 @@ test("filtered CMS quality queue cannot apply the draft bulk action", () => {
   expect(html).not.toContain("批量送交 CMS 草稿來源審核");
   expect(html).not.toContain("選取本頁");
   role = "staff";
+});
+
+test("demotes the audit queue to a closed same-page disclosure", () => {
+  const markup = renderAdminInChinese(<ContentReviewQueue initialKind="content" />);
+  expect(markup).toContain("待審核");
+  expect(markup).not.toContain("內容來源審核佇列");
+  expect(markup).toContain("<details");
+  expect(markup).not.toMatch(/<details[^>]*\bopen\b/);
+  expect(renderAdminInEnglish(<ContentReviewQueue initialKind="content" />)).toContain(
+    "Pending review",
+  );
+});
+
+test("audit chips record usable evidence without a blank essay", () => {
+  const presets = reviewCopy.zh.panel.presets;
+  for (const key of ["staffOnSite", "medicalReport", "volunteerFoster"] as const) {
+    expect(auditPresetEvidence(key, presets, "")).toBe(presets[key]);
+  }
+  expect(auditPresetEvidence("other", presets, "  義工轉介  ")).toBe("義工轉介");
+  expect(auditPresetEvidence("other", presets, " ")).toBe("");
+  expect(auditPresetForEvidence("醫療報告", presets)).toBe("medicalReport");
+
+  const markup = renderAdminInChinese(<ContentReviewPanel kind="content" id="c" revision="r" />);
+  for (const label of Object.values(presets)) expect(markup).toContain(label);
+  expect(markup).toContain('aria-pressed="false"');
+  expect(markup).not.toContain("請簡述來源");
+});
+
+test("a verified review is folded to its summary until expanded", () => {
+  const markup = renderAdminInChinese(
+    <ContentReviewPanel
+      kind="content"
+      id="c"
+      revision="r"
+      savedClassification="approved"
+      savedEvidence="職員現場紀錄"
+    />,
+  );
+  expect(markup).toContain("已核實可發布 · 職員現場紀錄");
+  expect(markup).toContain("展開來源審核");
+  expect(markup).not.toMatch(/<details[^>]*\bopen\b/);
+
+  const english = renderAdminInEnglish(
+    <ContentReviewPanel
+      kind="content"
+      id="c"
+      revision="r"
+      savedClassification="approved"
+      savedEvidence="Medical report"
+    />,
+  );
+  expect(english).toContain("Verified and publishable · Medical report");
+  expect(english).toContain("Expand source review");
 });

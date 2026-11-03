@@ -55,8 +55,8 @@ export function ContentRevisionPanel({
     : "";
   const saved = detail.data?.revision.snapshot.content as Record<string, unknown> | undefined;
   return (
-    <section className="space-y-3 rounded-lg border p-4" aria-label={copy.heading}>
-      <h2 className="text-lg font-bold">{copy.heading}</h2>
+    <details className="space-y-3 rounded-lg border p-4" aria-label={copy.disclosureTitle}>
+      <summary className="cursor-pointer text-lg font-bold">{copy.disclosureTitle}</summary>
       <p className="text-sm">{copy.intro(content.version)}</p>
       {history.isError || detail.isError ? (
         <LoadFailure
@@ -159,7 +159,7 @@ export function ContentRevisionPanel({
         </>
       ) : null}
       {errorText ? <p role="alert">{errorText}</p> : null}
-    </section>
+    </details>
   );
 }
 

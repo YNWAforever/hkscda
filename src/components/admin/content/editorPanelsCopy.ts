@@ -120,7 +120,8 @@ export const editorPanelsCopy = defineAdminCopy({
       archive: "封存",
     },
     revision: {
-      heading: "版本紀錄與比較",
+      disclosureTitle: "版本紀錄",
+      techDetails: "技術詳情",
       intro: (version: number | undefined) =>
         `目前已儲存版本 ${version ?? "—"}；還原會建立新草稿，公開版本保持不變。`,
       loadFailed: "無法載入版本紀錄",
@@ -210,7 +211,8 @@ export const editorPanelsCopy = defineAdminCopy({
       archive: "Archive",
     },
     revision: {
-      heading: "Version history and comparison",
+      disclosureTitle: "Version history",
+      techDetails: "Technical details",
       intro: (version: number | undefined) =>
         `Current saved version ${version === undefined ? "—" : formatAdminNumber(version, "en")}. Restoring creates a new draft; the public version does not change.`,
       loadFailed: "Could not load the version history",

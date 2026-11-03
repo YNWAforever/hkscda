@@ -12,7 +12,7 @@ export const managementCopy = defineAdminCopy({
     title: "宣傳內容",
     intro: "管理故事、活動、市集與報告頁面。",
     actions: {
-      create: "建立內容",
+      create: "新增內容",
       adoptionInformation: "領養資訊",
       guideReleases: "領養後指南版本",
       documents: "文件",
@@ -78,6 +78,13 @@ export const managementCopy = defineAdminCopy({
       empty: "沒有宣傳內容",
       pager: "內容",
     },
+    pendingReview: {
+      badge: "待審核",
+      badgeCount: (count: number) => `待審核 ${count}`,
+      disclosureTitle: "待審核",
+      empty: "暫無待審核項目",
+      view: "查看待審核",
+    },
     /** The quick form above the list. */
     draftForm: {
       summary: "新增內容",
@@ -109,7 +116,7 @@ export const managementCopy = defineAdminCopy({
     title: "Content",
     intro: "Manage story, event, market and report pages.",
     actions: {
-      create: "Create content",
+      create: "Add content",
       adoptionInformation: "Adoption information",
       guideReleases: "Post-adoption guide releases",
       documents: "Documents",
@@ -175,6 +182,13 @@ export const managementCopy = defineAdminCopy({
       edit: "Edit",
       empty: "No content",
       pager: "Content",
+    },
+    pendingReview: {
+      badge: "Pending review",
+      badgeCount: (count: number) => `Pending review (${formatAdminNumber(count, "en")})`,
+      disclosureTitle: "Pending review",
+      empty: "Nothing pending review",
+      view: "View pending review",
     },
     draftForm: {
       summary: "Add content",
