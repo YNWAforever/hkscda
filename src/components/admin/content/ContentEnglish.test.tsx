@@ -885,6 +885,9 @@ describe("Wave 1b list and editor density", () => {
   test("falls back to the generic unsaved line when no panel is known", () => {
     expect(renderAdminInEnglish(<DirtyPanelBanner dirty={{}} />)).toBe("");
     expect(renderAdminInEnglish(<DirtyPanelBanner dirty={{ metadata: true }} />)).toBe("");
+    expect(
+      renderAdminInEnglish(<DirtyPanelBanner dirty={{ metadata: true, content: true }} />),
+    ).toBe("");
   });
 });
 

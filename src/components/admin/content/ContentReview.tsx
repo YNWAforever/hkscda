@@ -77,12 +77,12 @@ export function ContentReviewPanel({
   const [otherText, setOtherText] = useState(initialPreset ? "" : (savedEvidence ?? ""));
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ReviewResult | null>(null);
+  const [recordedEvidence, setRecordedEvidence] = useState<string | null>(null);
   const evidence =
     preset === null ? "" : auditPresetEvidence(preset, copy.panel.presets, otherText);
-  const recordedApproved = result === "recorded" && classification === "approved";
-  const approved = savedClassification === "approved" || recordedApproved;
-  const category = copy.classifications[savedClassification ?? classification];
-  const savedReason = savedEvidence?.trim() ?? "";
+  const approved = savedClassification === "approved" || recordedEvidence !== null;
+  const category = copy.panel.verifiedReady;
+  const savedReason = (recordedEvidence ?? savedEvidence)?.trim() ?? "";
   const reasonSnippet =
     Array.from(savedReason).length > 40
       ? `${Array.from(savedReason).slice(0, 40).join("")}…`
@@ -141,7 +141,17 @@ export function ContentReviewPanel({
           setBusy(true);
           setResult(null);
           try {
-            setResult(await recordContentReview({ kind, id, revision, classification, evidence }));
+            const outcome = await recordContentReview({
+              kind,
+              id,
+              revision,
+              classification,
+              evidence,
+            });
+            setResult(outcome);
+            setRecordedEvidence(
+              outcome === "recorded" && classification === "approved" ? evidence : null,
+            );
           } finally {
             setBusy(false);
           }

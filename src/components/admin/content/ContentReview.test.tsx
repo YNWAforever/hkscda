@@ -134,6 +134,6 @@ test("a verified review is folded to its summary until expanded", () => {
       savedEvidence="Medical report"
     />,
   );
-  expect(english).toContain("Verified and publishable · Medical report");
+  expect(english).toContain("Verified — ready to publish · Medical report");
   expect(english).toContain("Expand source review");
 });

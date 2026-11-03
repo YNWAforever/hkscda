@@ -31,6 +31,7 @@ export const reviewCopy = defineAdminCopy({
         other: "其他",
       },
       otherPlaceholder: "請簡述來源",
+      verifiedReady: "已核實可發布",
       verifiedSummary: (category: string, reasonSnippet: string) =>
         `${category} · ${reasonSnippet}`,
       expand: "展開來源審核",
@@ -139,6 +140,7 @@ export const reviewCopy = defineAdminCopy({
         other: "Other",
       },
       otherPlaceholder: "Briefly describe the source",
+      verifiedReady: "Verified — ready to publish",
       verifiedSummary: (category: string, reasonSnippet: string) =>
         `${category} · ${reasonSnippet}`,
       expand: "Expand source review",

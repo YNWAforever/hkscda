@@ -139,7 +139,13 @@ const DIRTY_KEY_TO_PANEL = {
 
 export type DirtyPanelName = keyof (typeof editorCopy)["zh"]["dirtyBanner"]["panels"];
 
+/**
+ * The named panels to list in the unsaved banner, or none when any dirty panel has no Hazel
+ * label (the banner then keeps the generic Wave 1a line rather than listing only some panels).
+ */
 export function dirtyPanelNames(dirty: Record<string, boolean>): DirtyPanelName[] {
+  const dirtyKeys = Object.keys(dirty).filter((key) => dirty[key]);
+  if (dirtyKeys.some((key) => !(key in DIRTY_KEY_TO_PANEL))) return [];
   return (Object.keys(DIRTY_KEY_TO_PANEL) as Array<keyof typeof DIRTY_KEY_TO_PANEL>)
     .filter((key) => dirty[key])
     .map((key) => DIRTY_KEY_TO_PANEL[key]);
@@ -655,8 +661,6 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             id={contentId}
             revision={content.revisionId}
             disabled={hasDirty}
-            savedClassification={content.contentClass === "verified" ? "approved" : undefined}
-            savedEvidence={content.sourceReference}
           />
         </div>
       )}
