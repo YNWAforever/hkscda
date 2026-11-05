@@ -435,7 +435,8 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
         const [job] =
           await tx`select public.enqueue_crm_export_job(${exporter}::uuid,'donations',${{ tag: id, receiptNeeded: true }}::jsonb) result`;
         const [items] =
-          await tx`select item_ids from public.crm_export_job where id=${job.result.id}::uuid`;
+          // to_jsonb: Bun SQL returns a uuid[] column as its Postgres text form ("{…}").
+          await tx`select to_jsonb(item_ids) item_ids from public.crm_export_job where id=${job.result.id}::uuid`;
         expect(items.item_ids).toEqual([owed.id]);
         throw rollback;
       });
