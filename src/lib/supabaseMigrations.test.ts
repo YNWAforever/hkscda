@@ -1300,6 +1300,45 @@ describe("admin animal and adoption RPC regressions", () => {
     }).toMatchObject({ locksCase: true, refusesFinalised: true, reopenNeedsReason: true });
   });
 
+  // BUG-36: fixed by 20261030101000_resolve_adoption_intake_items.sql. Verified against
+  // Postgres 16: closing or finalising a case resolves its open inbox items, and the
+  // backfill resolves items of cases that were already closed or finalised.
+  test("BUG-36: closing or finalising a case resolves its intake items, with a backfill", () => {
+    const resolvesIntake = (body: string) =>
+      /update\s+public\.adoption_intake_item\s+set\s+resolved_at\s*=[\s\S]*?where\s+resolved_at\s+is\s+null[\s\S]*?adoption_case_id\s*=\s*p_(?:adoption_)?case_id[\s\S]*?public_application_id\s*=\s*v_case\.public_application_id/i.test(
+        body.replace(/--[^\n]*/g, ""),
+      );
+    const status = latestFunctionBody("change_adoption_case_status");
+    const finalize = latestFunctionBody("finalize_successful_adoption");
+    const statusBody = status.body.replace(/--[^\n]*/g, "");
+    const closingBranch = statusBody.slice(statusBody.search(/if\s+v_status\.is_closing\s+then/i));
+    const migration = readMigrationBySuffix("_resolve_adoption_intake_items.sql");
+    const outsideFunctions = migration.replace(/\$\$[\s\S]*?\$\$/g, "");
+
+    expect({
+      statusFile: status.file,
+      finalizeFile: finalize.file,
+      statusResolvesOnClose:
+        closingBranch.length < statusBody.length && resolvesIntake(closingBranch),
+      finalizeResolves: resolvesIntake(finalize.body),
+      // finalize keeps every BUG-02 guard.
+      finalizeKeepsBug02: [
+        "'Animal already has a successful adoption'",
+        "'Adoption case already finalized'",
+        "'Adoption case is closed'",
+      ].every((refusal) => finalize.body.includes(refusal)),
+      backfill:
+        /update\s+public\.adoption_intake_item[\s\S]*?resolved_at\s+is\s+null[\s\S]*?is_closing[\s\S]*?public\.successful_adoption/i.test(
+          outsideFunctions,
+        ),
+    }).toMatchObject({
+      statusResolvesOnClose: true,
+      finalizeResolves: true,
+      finalizeKeepsBug02: true,
+      backfill: true,
+    });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");
