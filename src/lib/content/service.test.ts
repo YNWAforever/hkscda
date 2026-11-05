@@ -1,7 +1,8 @@
 import { describe, expect, mock, spyOn, test } from "bun:test";
 import { createContentHandlers } from "./http.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
-import { createContentService, type ContentRepository } from "./service";
+import { contentServerMessageText } from "./serverMessages";
+import { ContentNotPublishedError, createContentService, type ContentRepository } from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 type ContentService = ReturnType<typeof createContentService>;
@@ -37,6 +38,9 @@ const detail: ContentDetail = {
   coverImageUrl: "https://example.test/cover.jpg",
   status: "draft",
   publishedAt: "2026-07-05T10:00:00.000Z",
+  // A draft of a story already published under the same slug: social copy and adopter drafts
+  // need a published story to link to (BUG-66).
+  publishedSlug: "siu-bak-recovery",
   ctaLabel: "支持救援",
   ctaUrl: "/donate",
   seoTitle: null,
@@ -75,7 +79,8 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
   const repo: ContentRepository = {
     listPublicContent: async () => ({ items: [detail], total: 1 }),
     listPublicStoriesPage: async () => ({ items: [detail], total: 1, points: [] }),
-    getPublicContentBySlug: async () => detail,
+    // The public read only returns published snapshots (BUG-66 checks the status it gets).
+    getPublicContentBySlug: async () => ({ ...detail, status: "published" }),
     listPublicMapStories: async () => [],
     listAdminContent: async () => ({ items: [detail], total: 1 }),
     getAdminContent: async () => detail,
@@ -1353,5 +1358,146 @@ describe("social-copy PATCH audit atomicity — regression", () => {
     });
 
     expect(response.status).toBe(404);
+  });
+});
+
+describe("BUG-66: outbound copy links to the published story and uses its published wording", () => {
+  // The story was published as `lucky-rescue` with the reviewed wording; the draft row has since
+  // been edited (new slug, title and summary) but not published again. The public page answers
+  // only on the published slug and shows the published wording.
+  const published: ContentDetail = {
+    ...detail,
+    slug: "lucky-rescue",
+    status: "published",
+    title: "Lucky 獲救",
+    summary: "已審核的摘要。",
+  };
+  const editedDraft: ContentDetail = {
+    ...detail,
+    slug: "lucky-rescue-2026",
+    status: "published",
+    publishedSlug: "lucky-rescue",
+    title: "未審核的新標題",
+    summary: "未審核的新摘要。",
+  };
+  const neverPublished: ContentDetail = { ...editedDraft, status: "draft", publishedSlug: null };
+  const staff = {
+    id: "admin-1",
+    authUserId: "11111111-2222-4333-8444-555555555555",
+    email: "a@b.com",
+    role: "staff" as const,
+    status: "active" as const,
+  };
+
+  function publishedRepo(draft: ContentDetail) {
+    const lookups: string[] = [];
+    const created = createRepo({
+      getAdminContent: async () => draft,
+      getPublicContentBySlug: async (slug) => {
+        lookups.push(slug);
+        return slug === "lucky-rescue" ? published : null;
+      },
+    });
+    return { ...created, lookups };
+  }
+
+  test("BUG-66: social copy links to the published slug with the published title and summary", async () => {
+    const { repo, socialCopies, lookups } = publishedRepo(editedDraft);
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateSocialCopy({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: {},
+    });
+
+    expect(lookups).toEqual(["lucky-rescue"]);
+    const facebook = socialCopies.find((copy) => copy.platform === "facebook");
+    expect(facebook?.copyText).toContain("詳情：https://example.test/stories/lucky-rescue");
+    expect(facebook?.copyText).not.toContain("lucky-rescue-2026");
+    expect(facebook?.copyText).toContain("Lucky 獲救");
+    expect(facebook?.copyText).toContain("已審核的摘要。");
+    for (const copy of socialCopies) expect(copy.copyText).not.toContain("未審核");
+  });
+
+  test("BUG-66: adopter notification drafts link to the published slug with the published title", async () => {
+    const { repo, notificationDrafts } = publishedRepo(editedDraft);
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId });
+
+    expect(notificationDrafts.length).toBeGreaterThan(0);
+    for (const draft of notificationDrafts) {
+      expect(draft.body).toContain("詳情可查看：https://example.test/stories/lucky-rescue\n");
+      expect(draft.body).toContain("Lucky 獲救");
+      expect(`${draft.subject ?? ""}\n${draft.body}`).not.toContain("未審核");
+    }
+  });
+
+  test("BUG-66: a never-published story refuses social copy with a coded 409", async () => {
+    const { repo, socialCopies } = publishedRepo(neverPublished);
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => staff,
+      service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+    });
+
+    const response = await handlers.generateSocialCopy({
+      request: new Request(
+        "https://example.test/api/admin/content/44444444-4444-4444-8444-444444444444/social-copy",
+        { method: "POST", body: "{}" },
+      ),
+      params: { id: "44444444-4444-4444-8444-444444444444" },
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: {
+        code: "not_published",
+        message: "Publish the story before generating outbound copy",
+      },
+    });
+    expect(socialCopies).toHaveLength(0);
+  });
+
+  test("BUG-66: a never-published story refuses adopter notification drafts", async () => {
+    const { repo, notificationDrafts } = publishedRepo(neverPublished);
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.generateNotificationDrafts({ actorUserId: "admin-user", storyUpdateId }),
+    ).rejects.toBeInstanceOf(ContentNotPublishedError);
+    expect(notificationDrafts).toHaveLength(0);
+  });
+
+  test("BUG-66: a published slug the public page no longer serves (archived) is refused", async () => {
+    const archived: ContentDetail = { ...editedDraft, status: "archived", publishedSlug: "gone" };
+    const { repo, socialCopies } = publishedRepo(archived);
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.generateSocialCopy({ actorUserId: "admin-user", contentId: "content-1", input: {} }),
+    ).rejects.toBeInstanceOf(ContentNotPublishedError);
+    expect(socialCopies).toHaveLength(0);
+  });
+
+  test("BUG-66: saving an update with adopter drafts on an unpublished story says to publish first", async () => {
+    const { repo, notificationDrafts } = publishedRepo(neverPublished);
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    const result = await service.createStoryUpdate({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: {
+        kind: "care",
+        title: "近況",
+        occurredAt: "2026-09-14T00:00:00.000Z",
+        visibility: "public",
+        shouldGenerateAdopterDrafts: true,
+      },
+    });
+
+    expect(result.notificationDrafts.created).toBe(0);
+    expect(result.notificationDrafts.warning).toBe(contentServerMessageText("storyNotPublished"));
+    expect(notificationDrafts).toHaveLength(0);
   });
 });

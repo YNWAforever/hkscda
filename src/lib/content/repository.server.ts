@@ -42,6 +42,7 @@ type ContentRow = {
   content_owner?: string | null;
   version?: number;
   draft_revision_id?: string | null;
+  published_slug?: string | null;
   id: string;
   slug: string;
   type: ContentType;
@@ -581,6 +582,7 @@ async function hydrateContentDetail(
   const media = pageMedia.map((row) =>
     toContentMedia(row, signedUrls.get(`${row.storage_bucket}/${row.storage_path}`) ?? null),
   );
+  const contentRow = snapshot.content as ContentRow;
   const updates = (snapshot.updates.slice(0, 20) as StoryUpdateRow[]).map((update) => ({
     ...toStoryUpdate(
       { ...update, body: null },
@@ -590,7 +592,7 @@ async function hydrateContentDetail(
   }));
   return {
     ...buildContentDetail(
-      snapshot.content as ContentRow,
+      contentRow,
       snapshot.profile ? toRescueStoryProfile(snapshot.profile as RescueStoryProfileRow) : null,
       (snapshot.links.slice(0, 20) as ContentLinkRow[]).map(toContentLink),
       media,
@@ -600,6 +602,9 @@ async function hydrateContentDetail(
         toRecipientNotificationDraft,
       ),
     ),
+    // read_content_authoring_detail returns to_jsonb(item), so the column is there. Outbound copy
+    // links to it (BUG-66); the public read leaves it out, so only this admin read maps it.
+    publishedSlug: typeof contentRow.published_slug === "string" ? contentRow.published_slug : null,
     coverImageUrl: cover
       ? (signedUrls.get(`${cover.storage_bucket}/${cover.storage_path}`) ?? null)
       : null,

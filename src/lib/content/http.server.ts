@@ -5,7 +5,7 @@ import type { AdminUser } from "../donations/supabase.server";
 import { MAX_ADMIN_JSON_BYTES, readAdminJson } from "../http/adminJson.server";
 import { readBoundedText } from "../http/boundedBody.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
-import { ContentValidationError, createContentService } from "./service";
+import { ContentNotPublishedError, ContentValidationError, createContentService } from "./service";
 
 type ContentService = ReturnType<typeof createContentService>;
 
@@ -105,6 +105,12 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
       return jsonResponse(
         { error: "Invalid content management request", details: { fields } },
         { status: 400 },
+      );
+    }
+    if (error instanceof ContentNotPublishedError) {
+      return jsonResponse(
+        { error: { code: error.code, message: error.message } },
+        { status: error.status },
       );
     }
     if (error instanceof ContentValidationError) {

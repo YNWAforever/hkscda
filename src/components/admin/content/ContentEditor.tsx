@@ -46,6 +46,7 @@ import {
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
+import { contentApiErrorLines } from "./contentApiErrors";
 import { contentCommonCopy } from "./contentCommonCopy";
 import {
   ContentAdminError,
@@ -1837,6 +1838,11 @@ export function ActionErrors({ errors }: { errors: unknown[] }) {
       className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
     >
       {visibleErrors.map((error) => {
+        // An error with a reason of its own (an unpublished story) is explained before the
+        // generic lifecycle text, which would call it an internal failure.
+        const explained = contentApiErrorLines(error, language);
+        if (explained)
+          return explained.map((line) => <p key={`${error.message}:${line}`}>{line}</p>);
         const failure = contentFailure(error);
         const message = failure.code
           ? common.errors[failure.code]

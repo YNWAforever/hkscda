@@ -1239,6 +1239,21 @@ describe("what the editor says when an action fails", () => {
     expect(chinese).toContain("連線或伺服器暫時有問題，請稍後再試。");
   });
 
+  test("BUG-66: says to publish first when outbound copy is refused for an unpublished story", () => {
+    const refused = new AdminApiError({
+      status: 409,
+      code: "not_published",
+      message: "Publish the story before generating outbound copy",
+    });
+    const english = renderAdminInEnglish(<ActionErrors errors={[refused]} />);
+    expectNoChineseText(english);
+    expect(english).toContain("Publish the story, then generate the copy or notification drafts.");
+    expect(english).not.toContain("Couldn’t finish saving");
+    const chinese = renderAdminInChinese(<ActionErrors errors={[refused]} />);
+    expect(chinese).toContain("故事尚未發布");
+    expect(chinese).not.toContain("儲存未完成");
+  });
+
   test("names the field of each publish check in English, and as sent in Chinese", () => {
     const issues: PublishValidationIssue[] = [
       { field: "coverMediaId", message: "Cover image is required before publishing" },
