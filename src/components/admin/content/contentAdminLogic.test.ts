@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
+  canSetMediaAsCover,
   contentStatusTone,
   copyTextToClipboard,
   formatContentTypeLabel,
@@ -126,5 +127,21 @@ describe("suggestSlug", () => {
     expect(slug.startsWith("hello-world")).toBe(true);
     expect(slug.length).toBeLessThanOrEqual(180);
     expect(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)).toBe(true);
+  });
+});
+
+describe("canSetMediaAsCover", () => {
+  const updates = [
+    { id: "public-update", visibility: "public" as const },
+    { id: "internal-update", visibility: "internal" as const },
+  ];
+
+  test("BUG-69: an image on an internal update cannot be set as the cover", () => {
+    expect(canSetMediaAsCover(updates, "internal-update")).toBe(false);
+  });
+
+  test("BUG-69: an image on the whole item or a public update can be the cover", () => {
+    expect(canSetMediaAsCover(updates, "")).toBe(true);
+    expect(canSetMediaAsCover(updates, "public-update")).toBe(true);
   });
 });

@@ -88,8 +88,9 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
   } catch (error) {
     if (error instanceof Response) return error;
     if (error instanceof ContentLifecycleError)
+      // A known refusal sends its safe reason as the code (BUG-69), so the screen names the cause.
       return jsonResponse(
-        { error: { message: error.message, code: error.code } },
+        { error: { message: error.message, code: error.reason ?? error.code } },
         { status: error.status },
       );
     if (error instanceof z.ZodError) {

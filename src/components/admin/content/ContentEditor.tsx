@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -39,13 +40,20 @@ import { pickAdminCopy, useAdminCopy } from "../i18n/copy";
 import { uploadContentMediaImage } from "./contentMediaUpload";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
+  canSetMediaAsCover,
   contentStatusTone,
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
 import { contentCommonCopy } from "./contentCommonCopy";
-import { ContentAdminError, contentFailure, contentLifecycleErrorMessage } from "./contentErrors";
+import {
+  ContentAdminError,
+  contentFailure,
+  contentLifecycleErrorMessage,
+  isContentConflict,
+  isUploadSessionExpired,
+} from "./contentErrors";
 import { editorCopy } from "./editorCopy";
 import {
   createEditorState,
@@ -475,9 +483,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     createContentMedia.error,
     createContentLink.error,
     restoreContent.error,
-  ].some((error) =>
-    Boolean(error && typeof error === "object" && "status" in error && error.status === 409),
-  );
+  ].some(isContentConflict);
   const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
     return (
@@ -1640,6 +1646,8 @@ function ContentMediaPanel({
     isCover: false,
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const coverAllowed = canSetMediaAsCover(content.updates, form.storyUpdateId);
+  const coverNoteId = useId();
 
   return (
     <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -1685,9 +1693,15 @@ function ContentMediaPanel({
         <Field label={copy.update}>
           <select
             value={form.storyUpdateId}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, storyUpdateId: event.target.value }))
-            }
+            onChange={(event) => {
+              const storyUpdateId = event.target.value;
+              setForm((current) => ({
+                ...current,
+                storyUpdateId,
+                // An internal update's image cannot be the cover (BUG-69).
+                isCover: canSetMediaAsCover(content.updates, storyUpdateId) && current.isCover,
+              }));
+            }}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             <option value="">{copy.whole}</option>
@@ -1730,13 +1744,20 @@ function ContentMediaPanel({
         <label className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)] md:col-span-2">
           <input
             type="checkbox"
-            checked={form.isCover}
+            checked={coverAllowed && form.isCover}
+            disabled={!coverAllowed}
+            aria-describedby={coverAllowed ? undefined : coverNoteId}
             onChange={(event) =>
               setForm((current) => ({ ...current, isCover: event.target.checked }))
             }
           />
           {copy.cover}
         </label>
+        {coverAllowed ? null : (
+          <p id={coverNoteId} className="text-sm text-[var(--color-text-muted)] md:col-span-3">
+            {copy.coverInternal}
+          </p>
+        )}
         <button
           type="submit"
           disabled={pending || !form.file}
@@ -1950,7 +1971,16 @@ export async function createContentMediaWithUpload(
       sessions.delete(cacheKey);
       return recovered;
     } catch (error) {
-      if (!error || typeof error !== "object" || !("status" in error) || error.status !== 404)
+      if (isUploadSessionExpired(error)) {
+        // The cached session can never be finalized now (BUG-69): start a new one.
+        sessions.delete(cacheKey);
+        target = undefined;
+      } else if (
+        !error ||
+        typeof error !== "object" ||
+        !("status" in error) ||
+        error.status !== 404
+      )
         throw error;
     }
   }
@@ -1982,7 +2012,14 @@ export async function createContentMediaWithUpload(
     },
   });
   if (!target) throw new Error("Missing upload session");
-  const result = await finalize(storagePath, target.uploadSessionId);
+  let result: Awaited<ReturnType<typeof finalize>>;
+  try {
+    result = await finalize(storagePath, target.uploadSessionId);
+  } catch (error) {
+    // An expired session is never reused: the admin's retry opens a new one (BUG-69).
+    if (isUploadSessionExpired(error)) sessions.delete(cacheKey);
+    throw error;
+  }
   sessions.delete(cacheKey);
   return result;
 }

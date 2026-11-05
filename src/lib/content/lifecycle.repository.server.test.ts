@@ -100,6 +100,68 @@ describe("content lifecycle repository", () => {
     expect(mapContentLifecycleRepositoryError({ code: "23514" }).code).toBe("invalid");
   });
 
+  test("BUG-69: names the known database refusals with a safe reason code", () => {
+    const linkKey = "content_link_content_item_id_linked_type_linked_id_relationship_key";
+    const cases = [
+      [
+        { code: "23514", message: "Internal update media cannot be a cover" },
+        { code: "invalid", status: 422, reason: "media_cover_internal" },
+      ],
+      [
+        { code: "23514", message: "Media session expired" },
+        { code: "invalid", status: 422, reason: "session_expired" },
+      ],
+      [
+        { code: "23505", message: `duplicate key value violates unique constraint "${linkKey}"` },
+        { code: "invalid", status: 422, reason: "link_exists" },
+      ],
+      [
+        {
+          code: "23505",
+          message:
+            'duplicate key value violates unique constraint "content_link_one_primary_animal_idx"',
+        },
+        { code: "invalid", status: 422, reason: "primary_subject_exists" },
+      ],
+      [
+        {
+          code: "23505",
+          message: 'duplicate key value violates unique constraint "content_item_slug_key"',
+        },
+        { code: "conflict", status: 409, reason: "slug_taken" },
+      ],
+      [
+        { code: "23505", message: "Published slug already used" },
+        { code: "conflict", status: 409, reason: "slug_taken" },
+      ],
+    ] as const;
+    for (const [databaseError, expected] of cases) {
+      const error = mapContentLifecycleRepositoryError(databaseError);
+      expect(error).toMatchObject(expected);
+      // The reason is a code: the database's own text never reaches the response.
+      expect(error.message).not.toContain(databaseError.message);
+    }
+  });
+
+  test("BUG-69: a duplicate link from create_link is not a stale-version conflict", () => {
+    const error = mapContentLifecycleRepositoryError({
+      code: "23505",
+      message:
+        'duplicate key value violates unique constraint "content_link_content_item_id_linked_type_linked_id_relationship_key"',
+    });
+    expect(error.code).not.toBe("conflict");
+    expect(error.status).not.toBe(409);
+  });
+
+  test("BUG-69: an unrecognised refusal keeps its category and carries no reason", () => {
+    expect(mapContentLifecycleRepositoryError({ code: "23505", message: "other" })).toMatchObject({
+      code: "conflict",
+      reason: undefined,
+    });
+    expect(mapContentLifecycleRepositoryError({ code: "40001" }).reason).toBeUndefined();
+    expect(mapContentLifecycleRepositoryError({ code: "23514" }).reason).toBeUndefined();
+  });
+
   test("rejects malformed RPC results", async () => {
     const { client } = createClient({ data: { version: "8" }, error: null });
     const repository = createSupabaseContentLifecycleRepository(client);

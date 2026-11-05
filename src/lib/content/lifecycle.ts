@@ -9,6 +9,25 @@ const lifecycleStatuses: Record<ContentLifecycleErrorCode, number> = {
   internal: 500,
 };
 
+/**
+ * Why a lifecycle operation was refused, when the refusal is one of the known ones (BUG-69). It is
+ * a safe code, never the database's text, and it is sent to the admin screen as the error's `code`
+ * so the screen can name the real cause in the admin's language.
+ */
+export type ContentLifecycleReason =
+  /** An image on an internal story update was set as the cover. */
+  | "media_cover_internal"
+  /** The private upload session expired before the image was finalized. */
+  | "session_expired"
+  /** The uploaded bytes are not the image the session was opened for. */
+  | "media_mismatch"
+  /** The same linked record with the same relationship is already on this item. */
+  | "link_exists"
+  /** The item already has a primary-subject animal. */
+  | "primary_subject_exists"
+  /** Another item already uses the URL slug. */
+  | "slug_taken";
+
 export class ContentLifecycleError extends Error {
   name = "ContentLifecycleError";
   readonly status: number;
@@ -16,6 +35,7 @@ export class ContentLifecycleError extends Error {
   constructor(
     public readonly code: ContentLifecycleErrorCode,
     message = "Content lifecycle operation failed",
+    public readonly reason?: ContentLifecycleReason,
   ) {
     super(message);
     this.status = lifecycleStatuses[code];

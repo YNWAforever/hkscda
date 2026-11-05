@@ -416,3 +416,70 @@ test("missing object after uncertain upload retries the same private target then
     uploadToSignedUrlError = null;
   }
 });
+
+function sessionExpired() {
+  return Object.assign(new Error("Content lifecycle operation failed"), {
+    status: 422,
+    code: "session_expired",
+  });
+}
+
+test("BUG-69: a retry after an expired upload session starts a new session", async () => {
+  uploadCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = null;
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "expired.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    metadataErrorQueue.push(sessionExpired());
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toMatchObject({
+      code: "session_expired",
+    });
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    // The retry asks for a new upload target and uploads again instead of finalizing the
+    // expired session a second time.
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "target", "upload", "metadata"]);
+  } finally {
+    metadataErrorQueue.length = 0;
+  }
+});
+
+test("BUG-69: an uncertain upload whose session expired is retried in a new session", async () => {
+  uploadCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = new Error("Synthetic lost upload response");
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "expired-uncertain.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toThrow(
+      "lost upload response",
+    );
+    uploadToSignedUrlError = null;
+    metadataErrorQueue.push(sessionExpired());
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "target", "upload", "metadata"]);
+  } finally {
+    metadataErrorQueue.length = 0;
+    uploadToSignedUrlError = null;
+  }
+});

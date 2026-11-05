@@ -1207,8 +1207,11 @@ describe("what the editor says when an action fails", () => {
 
     const english = renderAdminInEnglish(<ActionErrors errors={lifecycle} />);
     expectNoChineseText(english);
+    // BUG-69: the conflict line no longer says "reload, then save again" (saving again after the
+    // banner's reload repeats the refusal, and the reload discards the typed work); it points at
+    // the banner's choices. A slug clash now has its own line (`slug_taken`).
     expectAll(english, [
-      "Save conflict — reload, then save again. If the URL slug is taken, pick another.",
+      "Save conflict — this content has a newer version. Use the options above to compare or reload the latest version.",
       "Content not found. Reload the page.",
       "Content didn’t pass checks. Review required fields and the URL slug.",
       "Couldn’t finish saving. Try again, or save each panel first.",
@@ -1217,7 +1220,7 @@ describe("what the editor says when an action fails", () => {
 
     const chinese = renderAdminInChinese(<ActionErrors errors={lifecycle} />);
     expectAll(chinese, [
-      "儲存衝突，請重新載入頁面後再儲存。若網址已被使用，請換一個。",
+      "儲存衝突：此內容已有較新版本。請用上方的選項比較或重新載入最新版本。",
       "找不到此內容，請重新載入。",
       "內容不符合規則，請檢查必填欄位與網址格式。",
       "儲存未完成，請稍後再試。若持續失敗，先檢查各面板是否已儲存。",

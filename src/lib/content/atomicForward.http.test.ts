@@ -73,3 +73,37 @@ test("CMS permission mapping preserves public request500", async () => {
   expect(response.status).toBe(500);
   expect(await response.json()).toEqual({ error: "Could not load story content" });
 });
+
+function linkHandlers(error: ContentLifecycleError) {
+  return createContentHandlers({
+    requireContentAdmin: async () =>
+      ({ authUserId: "00000000-0000-4000-8000-000000000001" }) as never,
+    service: {
+      createContentLink: async () => {
+        throw error;
+      },
+    } as never,
+  }).createContentLink({
+    request: new Request("https://example.invalid/cms", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+    params: { id: "00000000-0000-4000-8000-000000000002" },
+  });
+}
+
+test("BUG-69: a lifecycle refusal's reason is the API error code", async () => {
+  const response = await linkHandlers(
+    new ContentLifecycleError("invalid", undefined, "link_exists"),
+  );
+  expect(response.status).toBe(422);
+  expect(await response.json()).toEqual({
+    error: { message: "Content lifecycle operation failed", code: "link_exists" },
+  });
+});
+
+test("BUG-69: a lifecycle refusal without a reason keeps its category as the code", async () => {
+  const response = await linkHandlers(new ContentLifecycleError("conflict"));
+  expect(response.status).toBe(409);
+  expect(await response.json()).toMatchObject({ error: { code: "conflict" } });
+});

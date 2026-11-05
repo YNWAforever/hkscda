@@ -53,14 +53,23 @@ export const contentCommonCopy = defineAdminCopy({
     /** The sentence for a failed copy to the clipboard; `detail` is the browser's reason, if any. */
     clipboardFailed: (detail?: string) =>
       detail === undefined ? "複製失敗，請手動選取文字。" : `複製失敗：${detail}`,
+    /**
+     * The line for a lifecycle failure, by the code the server sent: a category, or the reason of
+     * a known refusal (BUG-69). A conflict points at the banner's choices instead of telling the
+     * admin to save again, which would only repeat the refusal.
+     */
     lifecycleErrors: {
-      conflict: "儲存衝突，請重新載入頁面後再儲存。若網址已被使用，請換一個。",
+      conflict: "儲存衝突：此內容已有較新版本。請用上方的選項比較或重新載入最新版本。",
       not_found: "找不到此內容，請重新載入。",
       invalid: "內容不符合規則，請檢查必填欄位與網址格式。",
       internal: "儲存未完成，請稍後再試。若持續失敗，先檢查各面板是否已儲存。",
       network: "連線或伺服器暫時有問題，請稍後再試。",
-      unverifiedPublish: "此版本未核實，不能發布。請完成來源審核後再試。",
-      detail: "詳情",
+      media_cover_internal: "內部更新的圖片不能設為封面。請取消「設為封面」，或改選公開更新。",
+      session_expired: "上載時限已過。請再按「新增媒體」，系統會重新上載圖片。",
+      media_mismatch: "上載的檔案與所選圖片不符。請重新選擇圖片，再上載一次。",
+      link_exists: "此關聯紀錄已用相同關係加入，毋須再加。",
+      primary_subject_exists: "此內容已有主要主角動物。每項內容只可有一個主要主角動物。",
+      slug_taken: "此網址已被其他內容使用，請換一個。",
     },
     /** The message of each error a content logic module throws, by its code. */
     errors: {
@@ -111,14 +120,22 @@ export const contentCommonCopy = defineAdminCopy({
         ? "Could not copy. Select the text and copy it by hand."
         : `Could not copy: ${endWithStop(detail)} Select the text and copy it by hand.`,
     lifecycleErrors: {
-      conflict: "Save conflict — reload, then save again. If the URL slug is taken, pick another.",
+      conflict:
+        "Save conflict — this content has a newer version. Use the options above to compare or reload the latest version.",
       not_found: "Content not found. Reload the page.",
       invalid: "Content didn’t pass checks. Review required fields and the URL slug.",
       internal: "Couldn’t finish saving. Try again, or save each panel first.",
       network: "Something went wrong on the server. Please try again.",
-      unverifiedPublish:
-        "This version isn’t verified yet, so it can’t be published. Finish source review, then try again.",
-      detail: "Details",
+      media_cover_internal:
+        "An image on an internal update can’t be the cover. Clear “Set as cover”, or choose a public update.",
+      session_expired:
+        "The upload session expired. Select “Add media” again to upload the image again.",
+      media_mismatch:
+        "The uploaded file doesn’t match the image you chose. Choose the image again, then upload it.",
+      link_exists: "This linked record is already added with this relationship.",
+      primary_subject_exists:
+        "This content already has a main subject animal. Each item can have only one.",
+      slug_taken: "Another item already uses this URL slug. Choose another.",
     },
     /** The message of each error a content logic module throws, by its code. */
     errors: {

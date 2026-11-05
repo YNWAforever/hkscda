@@ -3,8 +3,21 @@ import type {
   ContentStatus,
   ContentType,
   NotificationDraftStatus,
+  StoryUpdateVisibility,
 } from "../../../lib/content/types";
 import { contentCommonCopy } from "./contentCommonCopy";
+
+/**
+ * Whether an image added to `storyUpdateId` ("" for the whole item) may be set as the cover. The
+ * database refuses an internal update's image as the cover (BUG-69), so the editor does not offer it.
+ */
+export function canSetMediaAsCover(
+  updates: readonly { id: string; visibility: StoryUpdateVisibility }[],
+  storyUpdateId: string,
+): boolean {
+  if (!storyUpdateId) return true;
+  return updates.find((update) => update.id === storyUpdateId)?.visibility !== "internal";
+}
 
 export type ContentSearchInput = {
   q?: string;
