@@ -7,8 +7,10 @@ import {
   contentMediaUploadTargetSchema,
   linkSearchSchema,
   MAX_CONTENT_MEDIA_BYTES,
+  publicStorySlugInputSchema,
   socialCopyUpdateSchema,
 } from "./schemas";
+import { CONTENT_SLUG_MAX } from "./limits";
 
 const baseInput = {
   type: "event",
@@ -142,5 +144,34 @@ describe("linkSearchSchema", () => {
     expect(linkSearchSchema.parse({ linkedType: "animal", q: "  mi  " }).q).toBe("mi");
     expect(linkSearchSchema.parse({ linkedType: "animal", q: "x" }).limit).toBe(20);
     expect(linkSearchSchema.safeParse({ linkedType: "nope", q: "x" }).success).toBe(false);
+  });
+});
+
+describe("BUG-70: one story slug length limit at every layer", () => {
+  test("BUG-70: the longest slug the admin can save still loads on the public story page", () => {
+    const longest = "a".repeat(CONTENT_SLUG_MAX);
+    expect(contentInputSchema.safeParse({ ...baseInput, slug: longest }).success).toBe(true);
+    expect(publicStorySlugInputSchema.safeParse({ slug: longest }).success).toBe(true);
+    // 175 characters: the length a long English title auto-suggests in the bug report.
+    const suggested = `${"lucky-".repeat(29)}a`;
+    expect(suggested).toHaveLength(175);
+    expect(publicStorySlugInputSchema.safeParse({ slug: suggested }).success).toBe(true);
+  });
+
+  test("BUG-70: a slug over the limit is refused by the admin and the public validators alike", () => {
+    const tooLong = "a".repeat(CONTENT_SLUG_MAX + 1);
+    expect(contentInputSchema.safeParse({ ...baseInput, slug: tooLong }).success).toBe(false);
+    expect(publicStorySlugInputSchema.safeParse({ slug: tooLong }).success).toBe(false);
+    expect(publicStorySlugInputSchema.safeParse({ slug: "  " }).success).toBe(false);
+  });
+
+  test("BUG-70: the limit is the one the admin already allowed, so no saved slug stops loading", () => {
+    expect(CONTENT_SLUG_MAX).toBe(180);
+  });
+
+  test("BUG-70: getPublicStory and getRelatedStories validate with the shared slug schema", async () => {
+    const source = await Bun.file(new URL("./publicStory.functions.ts", import.meta.url)).text();
+    expect(source.match(/\.inputValidator\(publicStorySlugInputSchema\)/g)).toHaveLength(2);
+    expect(source).not.toMatch(/slug:\s*z\.string\(\)/);
   });
 });

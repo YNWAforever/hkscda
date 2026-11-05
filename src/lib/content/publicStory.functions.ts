@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+import { publicStorySlugInputSchema } from "./schemas";
 
 export const getPublicStory = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ slug: z.string().trim().min(1).max(160) }))
+  .inputValidator(publicStorySlugInputSchema)
   .handler(async ({ data }) => {
     const [
       { createSupabaseContentRepository },
@@ -23,7 +23,7 @@ export const getPublicStory = createServerFn({ method: "GET" })
   });
 
 export const getRelatedStories = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ slug: z.string().trim().min(1).max(160) }))
+  .inputValidator(publicStorySlugInputSchema)
   .handler(async ({ data }) => {
     const { loadRelatedStories } = await import("./publicStoriesPage.server");
     return loadRelatedStories(data.slug);

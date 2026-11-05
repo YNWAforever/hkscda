@@ -1,4 +1,5 @@
 import type { AdminLanguage } from "../../../lib/admin/language";
+import { CONTENT_SLUG_MAX } from "../../../lib/content/limits";
 import type {
   ContentStatus,
   ContentType,
@@ -89,7 +90,7 @@ export function suggestSlug(title: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 180)
+    .slice(0, CONTENT_SLUG_MAX)
     .replace(/-+$/g, "");
 }
 

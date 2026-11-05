@@ -1,6 +1,11 @@
 import { isSafePublicHref } from "./publicHref";
 import { z } from "zod";
-import { CONTENT_SLUG_PATTERN, CONTENT_SUMMARY_MAX, CONTENT_TITLE_MAX } from "./limits";
+import {
+  CONTENT_SLUG_MAX,
+  CONTENT_SLUG_PATTERN,
+  CONTENT_SUMMARY_MAX,
+  CONTENT_TITLE_MAX,
+} from "./limits";
 import {
   animalStoryTypes,
   contentLinkRelationships,
@@ -72,7 +77,7 @@ export const publicContentSearchSchema = contentSearchSchema.extend({
 
 export const contentInputSchema = z.object({
   type: z.enum(contentTypes),
-  slug: trimmed.min(1).max(180).regex(CONTENT_SLUG_PATTERN),
+  slug: trimmed.min(1).max(CONTENT_SLUG_MAX).regex(CONTENT_SLUG_PATTERN),
   title: trimmed.min(1).max(CONTENT_TITLE_MAX),
   subtitle: optionalTrimmed,
   summary: trimmed.min(1).max(CONTENT_SUMMARY_MAX),
@@ -86,6 +91,14 @@ export const contentInputSchema = z.object({
   seoDescription: optionalTrimmed,
   ogTitle: optionalTrimmed,
   ogDescription: optionalTrimmed,
+});
+
+/**
+ * The slug of a public story page request (`getPublicStory`, `getRelatedStories`). It allows
+ * every slug `contentInputSchema` does, so a published story's page always loads (BUG-70).
+ */
+export const publicStorySlugInputSchema = z.object({
+  slug: trimmed.min(1).max(CONTENT_SLUG_MAX),
 });
 
 export const storyProfileInputSchema = z.object({
