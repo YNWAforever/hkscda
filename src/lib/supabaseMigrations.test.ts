@@ -1371,6 +1371,37 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-42 (RPC part): fixed by 20261030103000_match_create_checks_animal_and_case.sql.
+  // Verified against Postgres 16: adopted animals, closed or finalised cases and duplicate
+  // active matches are refused; a normal match is still created and audited.
+  test("BUG-42: the animal_match create branch checks the animal, the case and duplicates", () => {
+    const rpc = latestFunctionBody("mutate_adoption_coordinator_with_audit");
+    const body = rpc.body.replace(/--[^\n]*/g, "");
+    const start = body.search(/p_entity\s*=\s*'animal_match'\s+and\s+p_operation\s*=\s*'create'/i);
+    const branch = body.slice(start, body.indexOf("insert into public.animal_match", start));
+    expect({
+      file: rpc.file,
+      locksCase: /from\s+public\.adoption_case\s+where[\s\S]*?for\s+update/i.test(branch),
+      refusesFinalised:
+        /from\s+public\.successful_adoption/i.test(branch) &&
+        branch.includes("'Adoption case already finalized'"),
+      refusesClosedCase: branch.includes("'Adoption case is closed'"),
+      checksAnimalStatus:
+        branch.includes("'available'") &&
+        branch.includes("'fostered'") &&
+        branch.includes("'Animal is not available for matching'"),
+      refusesDuplicate:
+        /from\s+public\.animal_match\s+existing/i.test(branch) &&
+        branch.includes("'Animal already has an active match for this case'"),
+    }).toMatchObject({
+      locksCase: true,
+      refusesFinalised: true,
+      refusesClosedCase: true,
+      checksAnimalStatus: true,
+      refusesDuplicate: true,
+    });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");

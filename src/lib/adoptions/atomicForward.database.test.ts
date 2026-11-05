@@ -139,6 +139,60 @@ describe.skipIf(!db)("R01 adoption atomic real owned database", () => {
         await tx`select public.search_manual_case_identity('synthetic needle',2,1) value`;
       expect(next.value.candidates[0].displayName).toBe("ZZ Synthetic Needle");
     }));
+  test("BUG-42: match creation refuses an unavailable animal, a closed case and a duplicate", () =>
+    fixture(async (tx, actor, status) => {
+      const caseId = randomUUID(),
+        closedCaseId = randomUUID(),
+        available = randomUUID(),
+        adopted = randomUUID(),
+        proposed = randomUUID(),
+        declined = randomUUID(),
+        closing = randomUUID();
+      const key = (id: string) => "synthetic_" + id.replaceAll("-", "");
+      await tx`insert into public.coordinator_status(id,category,key,label_zh,label_en,is_active,is_closing,is_final) values
+        (${proposed}::uuid,'match',${key(proposed)},'Synthetic','Synthetic',true,false,false),
+        (${declined}::uuid,'match',${key(declined)},'Synthetic','Synthetic',true,true,true),
+        (${closing}::uuid,'adoption_case',${key(closing)},'Synthetic','Synthetic',true,true,false)`;
+      await tx`insert into public.animals(id,type,name,gender,age,status,publication_state) values
+        (${available}::uuid,'cat','Synthetic available','female','adult','available','draft'),
+        (${adopted}::uuid,'cat','Synthetic adopted','female','adult','adopted','draft')`;
+      await tx`insert into public.adoption_case(id,status_id,applicant_name,applicant_phone) values
+        (${caseId}::uuid,${status}::uuid,'Synthetic','00000000'),
+        (${closedCaseId}::uuid,${closing}::uuid,'Synthetic','00000000')`;
+      await tx`set local role service_role`;
+      const match = (adoptionCaseId: string, animalId: string, statusId = proposed) =>
+        coordinator(tx, actor, "animal_match", "create", null, {
+          adoption_case_id: adoptionCaseId,
+          animal_id: animalId,
+          status_id: statusId,
+        });
+      const refusal = async (run: () => Promise<unknown>) => {
+        const sp = "bug42_" + randomUUID().replaceAll("-", "");
+        await tx.unsafe("savepoint " + sp);
+        try {
+          await run();
+          return null;
+        } catch (error) {
+          return (error as Error).message;
+        } finally {
+          await tx.unsafe("rollback to savepoint " + sp);
+          await tx.unsafe("release savepoint " + sp);
+        }
+      };
+
+      expect(await refusal(() => match(caseId, adopted))).toBe(
+        "Animal is not available for matching",
+      );
+      expect(await refusal(() => match(closedCaseId, available))).toBe("Adoption case is closed");
+      // A declined match does not block a new one; an active one does.
+      await match(caseId, available, declined);
+      const first = await match(caseId, available);
+      expect(first.animal_id).toBe(available);
+      expect(await refusal(() => match(caseId, available))).toBe(
+        "Animal already has an active match for this case",
+      );
+      expect(await count(tx, "animal_match")).toBe(2);
+    }));
   test("BUG-37: identity search needs a real query and masks non-adopter contacts", () =>
     fixture(async (tx) => {
       const donor = randomUUID();
