@@ -1402,6 +1402,62 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-33: fixed by 20261030104000_record_adoption_returns.sql. Verified against Postgres 16:
+  // finalise -> record return -> finalise the same animal on another case succeeds, and a
+  // second return of the same adoption is refused.
+  test("BUG-33: only an unreturned adoption blocks finalising, and returns are recorded with audit", () => {
+    const finalize = latestFunctionBody("finalize_successful_adoption");
+    const finalizeBody = finalize.body.replace(/--[^\n]*/g, "");
+    const ret = latestFunctionBody("record_adoption_return_with_audit");
+    const retBody = ret.body.replace(/--[^\n]*/g, "");
+    const migration = readMigrationBySuffix("_record_adoption_returns.sql");
+    expect({
+      finalizeFile: finalize.file,
+      // The per-animal refusal counts only adoptions that have not been returned.
+      finalizeChecksReturned:
+        /from\s+public\.successful_adoption\s+where\s+animal_id\s*=\s*v_match\.animal_id\s+and\s+returned_at\s+is\s+null/i.test(
+          finalizeBody,
+        ),
+      // The per-case guard and the other BUG-02 refusals are unchanged.
+      finalizeKeepsCaseGuard:
+        /from\s+public\.successful_adoption\s+where\s+adoption_case_id\s*=\s*p_adoption_case_id\s*\)/i.test(
+          finalizeBody,
+        ) &&
+        finalizeBody.includes("'Adoption case already finalized'") &&
+        finalizeBody.includes("'Adoption case is closed'"),
+      columns: ["returned_at timestamptz", "returned_by uuid", "return_reason text"].every(
+        (column) => migration.includes(column),
+      ),
+      returnedRowNeedsReason: /check\s*\([\s\S]*?btrim\(\s*return_reason\s*\)\s*<>\s*''/i.test(
+        migration,
+      ),
+      returnLocksRow: /from\s+public\.successful_adoption[\s\S]*?for\s+update/i.test(retBody),
+      returnRefusesTwice: retBody.includes("'Adoption already returned'"),
+      returnNeedsReason: retBody.includes("'reason_required'"),
+      returnFreesAnimal: /update_animal_status_with_audit\([\s\S]*?'available'/i.test(retBody),
+      returnAuditsInSameFunction:
+        /insert\s+into\s+public\.audit_log[\s\S]*?'successful_adoption\.return'/i.test(retBody),
+      serviceRoleOnly:
+        /revoke\s+all\s+on\s+function\s+public\.record_adoption_return_with_audit\(uuid,\s*uuid,\s*text,\s*timestamptz\)\s+from\s+public,\s*anon,\s*authenticated/i.test(
+          migration,
+        ) &&
+        /grant\s+execute\s+on\s+function\s+public\.record_adoption_return_with_audit\(uuid,\s*uuid,\s*text,\s*timestamptz\)\s+to\s+service_role/i.test(
+          migration,
+        ),
+    }).toMatchObject({
+      finalizeChecksReturned: true,
+      finalizeKeepsCaseGuard: true,
+      columns: true,
+      returnedRowNeedsReason: true,
+      returnLocksRow: true,
+      returnRefusesTwice: true,
+      returnNeedsReason: true,
+      returnFreesAnimal: true,
+      returnAuditsInSameFunction: true,
+      serviceRoleOnly: true,
+    });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");

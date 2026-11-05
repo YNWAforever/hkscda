@@ -18,6 +18,7 @@ import type {
 import { hongKongDayBounds } from "./tasks";
 import type {
   AdoptionCaseDetail,
+  AdoptionReturnResult,
   AdoptionCaseSummary,
   AdoptionIntakeItem,
   AdoptionIntakeLane,
@@ -223,6 +224,8 @@ type SuccessfulAdoptionRow = {
   adoption_fee_cents: number | null;
   approval_date: string;
   pickup_date: string | null;
+  returned_at?: string | null;
+  return_reason?: string | null;
 };
 
 type ConsentRow = {
@@ -597,6 +600,8 @@ function mapSuccessfulAdoption(row: SuccessfulAdoptionRow | null): SuccessfulAdo
     adoptionFeeCents: row.adoption_fee_cents,
     approvalDate: row.approval_date,
     pickupDate: row.pickup_date,
+    returnedAt: row.returned_at ?? null,
+    returnReason: row.return_reason ?? null,
   };
 }
 
@@ -2418,6 +2423,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
           adoptionFeeCents: row.adoption_fee_cents,
           approvalDate: row.approval_date,
           pickupDate: row.pickup_date,
+          returnedAt: row.returned_at ?? null,
         }),
       );
     },
@@ -2609,6 +2615,18 @@ export function createSupabaseAdoptionCoordinatorRepository(
       });
       if (error) throw error;
       return { id: (data as { id: string }).id };
+    },
+
+    async recordAdoptionReturn(input) {
+      // One transaction: the return, the animal back to available and both audit rows (BUG-33).
+      const { data, error } = await client.rpc("record_adoption_return_with_audit", {
+        p_actor: input.actorUserId,
+        p_successful_adoption_id: input.successfulAdoptionId,
+        p_reason: input.reason,
+        p_returned_at: input.returnedAt,
+      });
+      if (error) throw error;
+      return data as AdoptionReturnResult;
     },
 
     async finalizeAdoption(input) {

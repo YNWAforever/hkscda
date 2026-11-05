@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Undo2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { adminErrorMessage } from "../../../lib/admin/session";
@@ -16,7 +16,15 @@ import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { bilingualStatusName, statusDisplayName, useAdminPageCopy } from "../adminPageCopy";
 import { useAdminCopy } from "../i18n/copy";
+import { ConfirmActionDialog } from "../ConfirmActionDialog";
+import { requiredReasonDialog } from "../confirmActionState";
 import { fetchCoordinatorJson } from "./api";
+import {
+  adoptionReturnRequest,
+  canRecordAdoptionReturn,
+  sendAdoptionReturn,
+  type AdoptionReturnRequest,
+} from "./adoptionReturn";
 import {
   buildFinalizationPayload,
   filterStatusesByCategory,
@@ -73,6 +81,7 @@ export function FinalizationPanel({
   const copy = useAdminCopy(finalizationCopy);
   const format = useAdminCopy(adoptionFormatCopy);
   const [form, setForm] = useState<FinalizationFormState>(() => emptyForm());
+  const [returnOpen, setReturnOpen] = useState(false);
 
   const approvedMatches = useMemo(() => findApprovedMatches(matches), [matches]);
   const outcomeStatuses = useMemo(
@@ -127,6 +136,14 @@ export function FinalizationPanel({
     },
   });
 
+  // BUG-33: record that the adopted animal came back, so it can be adopted again.
+  const returnMutation = useMutation<unknown, Error, AdoptionReturnRequest>({
+    mutationFn: (request) => sendAdoptionReturn(request),
+    onSuccess: async () => {
+      await onChanged?.();
+    },
+  });
+
   const missingApprovedMatch = approvedMatches.length === 0;
   const missingAdoptedOutcome = !defaultOutcome;
   const invalidSelectedOutcome = Boolean(selectedOutcome && !selectedOutcomeIsAdopted);
@@ -173,15 +190,60 @@ export function FinalizationPanel({
               {format.money(successfulAdoption.adoptionFeeCents)}
             </div>
           </div>
-          <div className="md:col-span-2 xl:col-span-4">
+          {successfulAdoption.returnedAt && (
+            <>
+              <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+                <div className="text-xs text-[var(--color-text-muted)]">{copy.returnedAt}</div>
+                <div className="font-semibold text-[var(--color-panel)]">
+                  {format.date(successfulAdoption.returnedAt)}
+                </div>
+              </div>
+              <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3 md:col-span-1 xl:col-span-3">
+                <div className="text-xs text-[var(--color-text-muted)]">{copy.returnReason}</div>
+                <div className="whitespace-pre-wrap font-semibold text-[var(--color-panel)]">
+                  {successfulAdoption.returnReason}
+                </div>
+              </div>
+            </>
+          )}
+          <div className="flex flex-wrap items-center gap-3 md:col-span-2 xl:col-span-4">
             <Badge
               variant="outline"
               className="border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-panel)]"
             >
               <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
-              {copy.recorded}
+              {successfulAdoption.returnedAt ? copy.returned : copy.recorded}
             </Badge>
+            {canRecordAdoptionReturn(successfulAdoption) && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setReturnOpen(true)}
+                disabled={returnMutation.isPending}
+              >
+                <Undo2 className="h-4 w-4" />
+                {copy.recordReturn}
+              </Button>
+            )}
           </div>
+          {/* required-reason: successful_adoption.return */}
+          <ConfirmActionDialog
+            open={returnOpen}
+            onOpenChange={setReturnOpen}
+            title={copy.recordReturn}
+            consequence={copy.returnConsequence}
+            confirmLabel={copy.recordReturn}
+            destructive
+            reason={requiredReasonDialog}
+            onConfirm={async (reason) => {
+              const request = adoptionReturnRequest({
+                successfulAdoptionId: successfulAdoption.id,
+                reason,
+              });
+              if (request) await returnMutation.mutateAsync(request);
+            }}
+          />
         </div>
       ) : (
         <div className="space-y-4 p-4">

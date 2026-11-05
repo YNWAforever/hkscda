@@ -296,6 +296,12 @@ export const coordinatorTaskUpdateSchema = z
     "Task update cannot be empty",
   );
 
+/** Recording that an adopted animal came back (BUG-33). The reason is required. */
+export const adoptionReturnSchema = z.object({
+  reason: requiredReasonSchema,
+  returnedAt: z.string().datetime({ offset: true }).nullable().optional(),
+});
+
 export const finalizeAdoptionSchema = z.object({
   matchId: z.string().uuid(),
   outcomeStatusId: z.string().uuid(),

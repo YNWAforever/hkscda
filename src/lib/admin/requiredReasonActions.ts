@@ -20,7 +20,8 @@ export type RequiredReasonId =
   | "sponsorship_finance.adjust"
   | "adoption_case.close"
   | "volunteer_activity.bulk_cancel"
-  | "volunteer_runtime_job.retry";
+  | "volunteer_runtime_job.retry"
+  | "successful_adoption.return";
 
 /**
  * A request the server checks the reason on. `path` is the API path with each path parameter
@@ -147,6 +148,13 @@ export const REQUIRED_REASON_ACTIONS: readonly RequiredReasonAction[] = [
     ui: ["adoptions/CaseDetail.tsx"],
     routes: [{ method: "POST", path: "/api/admin/adoptions/cases/:id/status" }],
     helpers: ["adoptions/caseStatusChange.ts"],
+  },
+  {
+    id: "successful_adoption.return",
+    kind: "dialog",
+    ui: ["adoptions/FinalizationPanel.tsx"],
+    routes: [{ method: "POST", path: "/api/admin/adoptions/successful-adoptions/:id/return" }],
+    helpers: ["adoptions/adoptionReturn.ts"],
   },
   {
     id: "volunteer_activity.bulk_cancel",

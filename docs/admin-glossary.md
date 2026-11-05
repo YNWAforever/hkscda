@@ -60,6 +60,7 @@ other way round.
 | 修復佇列   | repair queue         | Public photos waiting to be repaired before they can be shown.                                                    |
 | 個案       | case                 | An adoption case handled by a coordinator. Not "ticket" or "file".                                                |
 | 家庭人數   | household size       | The number of people in an adopter's home. Not "family size".                                                     |
+| 退回       | return               | An adopted animal coming back. 記錄退回 is "Record return"; the adoption record stays.                            |
 | 配對       | match                | Linking an adopter to an animal. The verb is "match".                                                             |
 | 動物       | animal               | The record of a cat or dog.                                                                                       |
 | 動物流程   | animal lifecycle     | The stages an animal moves through. It is also a coordinator status category.                                     |

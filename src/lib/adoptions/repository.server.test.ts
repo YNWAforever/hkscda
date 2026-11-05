@@ -842,6 +842,34 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
     });
   });
 
+  test("BUG-33: records a return through the audited RPC", async () => {
+    const adoptionId = "abababab-cdcd-4333-8444-555555555555";
+    const { repo, calls } = setupRepository({
+      rpcResult: { id: adoptionId, returnedAt: "2026-11-01T00:00:00+00:00" },
+    });
+
+    const result = await repo.recordAdoptionReturn({
+      actorUserId: "actor-1",
+      successfulAdoptionId: adoptionId,
+      reason: "Returned",
+      returnedAt: null,
+    });
+
+    expect(result).toEqual({ id: adoptionId, returnedAt: "2026-11-01T00:00:00+00:00" });
+    expect(callsFor(calls, "rpc", "record_adoption_return_with_audit")).toEqual([
+      {
+        table: "rpc",
+        method: "record_adoption_return_with_audit",
+        payload: {
+          p_actor: "actor-1",
+          p_successful_adoption_id: adoptionId,
+          p_reason: "Returned",
+          p_returned_at: null,
+        },
+      },
+    ]);
+  });
+
   test("returns a globally paged identity result with an exact total", async () => {
     const candidate = {
       kind: "adopter" as const,

@@ -102,6 +102,9 @@ export const conflictDomainErrors = new Set([
   // case reuses "Adoption case is closed" and "Adoption case already finalized" above.
   "Animal is not available for matching",
   "Animal already has an active match for this case",
+  // record_adoption_return_with_audit refusal (BUG-33, migration 20261030104000). An unknown
+  // adoption is P0002 (404) and a blank reason is "reason_required" (400).
+  "Adoption already returned",
 ]);
 
 export async function responseError(error: Response) {

@@ -149,3 +149,21 @@ test("BUG-42: match-creation refusals from the RPC are 409s", async () => {
     expect(await response.json()).toEqual({ error: message });
   }
 });
+
+test("BUG-33: a second return is a 409 and an unknown adoption is a 404", async () => {
+  const twice = await withErrors(async () => {
+    throw { code: "P0001", message: "Adoption already returned", details: "Private detail" };
+  });
+  expect(twice.status).toBe(409);
+  expect(await twice.json()).toEqual({ error: "Adoption already returned" });
+
+  const missing = await withErrors(async () => {
+    throw { code: "P0002", message: "Successful adoption not found" };
+  });
+  expect(missing.status).toBe(404);
+
+  const noReason = await withErrors(async () => {
+    throw { code: "P0001", message: "reason_required" };
+  });
+  expect(noReason.status).toBe(400);
+});

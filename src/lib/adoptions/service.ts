@@ -22,6 +22,7 @@ import {
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
   matchInputSchema,
+  adoptionReturnSchema,
   manualCaseIdentitySearchSchema,
   manualCaseIntakeSchema,
   statusInputSchema,
@@ -32,6 +33,7 @@ import {
 import { buildTaskAuditAction, isTaskFinalStatus, validateTaskCompletion } from "./tasks";
 import type {
   AdoptionCaseDetail,
+  AdoptionReturnResult,
   AdoptionCaseSummary,
   AdoptionIntakeItem,
   AdoptionIntakeLane,
@@ -157,6 +159,12 @@ export type AdoptionCoordinatorRepository = {
 };
 
 export type CoordinatorOpsRepositoryMethods = {
+  recordAdoptionReturn(input: {
+    actorUserId: string;
+    successfulAdoptionId: string;
+    reason: string;
+    returnedAt: string | null;
+  }): Promise<AdoptionReturnResult>;
   searchManualCaseIdentity(input: {
     q: string;
     page: number;
@@ -729,6 +737,30 @@ export function createAdoptionCoordinatorService({
           ...body,
           adoptionCaseId: args.caseId,
         },
+      });
+    },
+
+    /**
+     * Records that an adopted animal came back (BUG-33). The RPC frees the animal and audits the
+     * return in one transaction; a blank or missing reason is refused here first.
+     */
+    async recordAdoptionReturn(args: {
+      actorUserId: string;
+      successfulAdoptionId: string;
+      input: unknown;
+    }): Promise<AdoptionReturnResult> {
+      const parsed = adoptionReturnSchema.safeParse(args.input);
+      if (!parsed.success) {
+        const reasonInvalid = parsed.error.issues.some((issue) => issue.path[0] === "reason");
+        if (reasonInvalid) throw new Error("reason_required");
+        throw parsed.error;
+      }
+      const recordAdoptionReturn = requireCoordinatorOpsMethod(repo, "recordAdoptionReturn");
+      return recordAdoptionReturn({
+        actorUserId: args.actorUserId,
+        successfulAdoptionId: args.successfulAdoptionId,
+        reason: parsed.data.reason,
+        returnedAt: parsed.data.returnedAt ?? null,
       });
     },
 

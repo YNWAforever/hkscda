@@ -270,6 +270,14 @@ export type SuccessfulAdoption = {
   adoptionFeeCents: number | null;
   approvalDate: string;
   pickupDate: string | null;
+  /** Set when the animal came back (BUG-33); the adoption record stays. */
+  returnedAt: string | null;
+  returnReason: string | null;
+};
+
+export type AdoptionReturnResult = {
+  id: string;
+  returnedAt: string;
 };
 
 export type AdopterCaseHistoryRow = {
@@ -380,6 +388,7 @@ export type CoordinatorSuccessfulAdoptionExportRow = {
   adoptionFeeCents: number | null;
   approvalDate: string;
   pickupDate: string | null;
+  returnedAt: string | null;
 };
 
 export type CoordinatorAnimalExportRow = {
