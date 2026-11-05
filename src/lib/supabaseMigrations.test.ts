@@ -1787,3 +1787,100 @@ describe("content publication date regressions", () => {
     );
   });
 });
+
+describe("content public image withdrawal", () => {
+  // BUG-72: fixed by 20261105101000_content_public_asset_withdrawal.sql plus the content
+  // withdrawal step of /api/jobs/public-media-repair. Public copies at
+  // content-media/published/<revision>/<media>.<ext> were never removed when a newer revision
+  // was published or the story was archived, so a withdrawn photo stayed reachable.
+  const file = "20261105101000_content_public_asset_withdrawal.sql";
+  const sqlWithoutComments = () => readMigration(file).replace(/--[^\n]*/g, "");
+
+  test("BUG-72: publication and archive record unused public copies in the same transaction", () => {
+    const sql = sqlWithoutComments();
+    const trigger = latestFunctionBodies().get("private.withdraw_unused_content_public_assets");
+    const body = (trigger?.body ?? "").replace(/--[^\n]*/g, "");
+
+    expect({
+      columns: ["withdrawn_at", "removed_at", "removal_claimed_at", "removal_lease_token"].filter(
+        (column) => new RegExp(`add column ${column} (timestamptz|uuid)`, "i").test(sql),
+      ),
+      // A row-level AFTER trigger runs inside the publishing/archiving statement's transaction.
+      trigger:
+        /create trigger \w+\s+after update of status\s*,\s*published_revision_id on public\.content_item\s+for each row[\s\S]*?execute function private\.withdraw_unused_content_public_assets\(\)/i.test(
+          sql,
+        ),
+      file: trigger?.file,
+      withdrawsOtherRevisions:
+        /set\s+withdrawn_at\s*=\s*pg_catalog\.now\(\)[\s\S]*?new\.status\s+is\s+distinct\s+from\s+'published'\s+or\s+asset\.revision_id\s+is\s+distinct\s+from\s+new\.published_revision_id/i.test(
+          body,
+        ),
+      keepsCurrentRevision:
+        /asset\.revision_id\s*=\s*new\.published_revision_id[\s\S]*?withdrawn_at\s+is\s+not\s+null/i.test(
+          body,
+        ),
+      invoker: !/security\s+definer/i.test(sql),
+      pinnedSearchPath: (sql.match(/set search_path\s*=\s*''/gi) ?? []).length,
+    }).toEqual({
+      columns: ["withdrawn_at", "removed_at", "removal_claimed_at", "removal_lease_token"],
+      trigger: true,
+      file,
+      withdrawsOtherRevisions: true,
+      keepsCurrentRevision: true,
+      invoker: true,
+      pinnedSearchPath: 3,
+    });
+  });
+
+  test("BUG-72: the removal claim never returns a copy the current published revision uses", () => {
+    const claim = latestFunctionBody("claim_withdrawn_content_public_assets");
+    const mark = latestFunctionBody("mark_content_public_asset_removed");
+    const claimBody = claim.body.replace(/\s+/g, " ");
+    const markBody = mark.body.replace(/\s+/g, " ");
+
+    expect({
+      claimFile: claim.file,
+      markFile: mark.file,
+      claimsWithdrawn: /asset\.withdrawn_at is not null and asset\.removed_at is null/i.test(
+        claimBody,
+      ),
+      excludesCurrent:
+        /not \( ?item\.status ?= ?'published' and item\.published_revision_id is not distinct from asset\.revision_id ?\)/i.test(
+          claimBody,
+        ),
+      leased: /for update of asset skip locked/i.test(claimBody),
+      markNeedsLease: /asset\.removal_lease_token ?= ?p_lease_token/i.test(markBody),
+      markRechecksCurrent:
+        /not exists \(select 1 from public\.content_item item where item\.id ?= ?asset\.content_item_id and item\.status ?= ?'published' and item\.published_revision_id ?= ?asset\.revision_id\)/i.test(
+          markBody,
+        ),
+    }).toEqual({
+      claimFile: file,
+      markFile: file,
+      claimsWithdrawn: true,
+      excludesCurrent: true,
+      leased: true,
+      markNeedsLease: true,
+      markRechecksCurrent: true,
+    });
+  });
+
+  test("BUG-72: withdrawal RPCs are granted to service_role only and rewrite no content", () => {
+    const sql = sqlWithoutComments();
+    for (const signature of [
+      "public.claim_withdrawn_content_public_assets(integer)",
+      "public.mark_content_public_asset_removed(uuid,uuid)",
+    ]) {
+      expect(sql).toContain(`revoke all on function ${signature} from public,anon,authenticated;`);
+      expect(sql).toContain(`grant execute on function ${signature} to service_role;`);
+    }
+    expect(sql).toContain(
+      "revoke all on function private.withdraw_unused_content_public_assets() from public,anon,authenticated;",
+    );
+    expect(sql).not.toMatch(/grant[^;]*\bto\s+(anon|authenticated)\b/i);
+    expect(sql).not.toMatch(/storage\.objects/i);
+    expect(sql).not.toMatch(/\bdelete\s+from\b/i);
+    // No backfill: existing rows are only marked when their item is next published or archived.
+    expect(sql.replace(/\$\$[\s\S]*?\$\$/g, "")).not.toMatch(/\bupdate\s+public\./i);
+  });
+});
