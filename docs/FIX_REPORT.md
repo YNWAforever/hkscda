@@ -253,6 +253,17 @@ Approved by the user after PR #228 merged; BUG-33 uses the "record the return" d
 BUG-63 the "admins only" decision. Each migration was reproduced and verified on a throwaway
 Postgres 16 before and after.
 
+Review fixes on PR #232 (r1 I1, M1, M2):
+
+- I1: `20261030103500` replaces the blanket `unique (adoption_case_id, animal_id)` on `animal_match`
+  with a partial unique index on active matches. A trigger maintains `is_active_match` with the
+  same predicate as the `103000` duplicate guard, and status edits re-sync it. A declined or
+  cancelled match no longer blocks a new one. This was verified on a local Postgres 17 with all
+  225 migrations applied. The BUG-42 database test fails before the fix (23505) and passes after it.
+- M2: the `104000` return check was edited in place, because the PR is unmerged and not applied
+  anywhere. It now requires `coalesce(btrim(return_reason), '') <> ''`, so a NULL reason fails.
+- M1: there is now a single deploy order (below).
+
 | ID     | Sev | Fix                                                                                                                                                                                                                       | Migration                          |
 | ------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
 | BUG-33 | Med | Adoption returns are recorded (`returned_at`, `returned_by`, `return_reason`) by an audited "Record return" action that sets the animal back to available; finalising is refused only while an unreturned adoption exists | `20261030104000`                   |
@@ -261,7 +272,7 @@ Postgres 16 before and after.
 | BUG-37 | Med | Intake identity search needs a 3+ character query (or an exact email/phone) and masks non-adopters' contacts                                                                                                              | `20261030102000`                   |
 | BUG-38 | Med | Anyone who edited a payment-method draft cannot publish it (editors tracked by trigger)                                                                                                                                   | `20261030110000`                   |
 | BUG-39 | Med | Content metadata and media-repair audits log the auth user id; a guard test covers every function                                                                                                                         | `20261030120000`                   |
-| BUG-42 | Low | Matches refuse unavailable animals, closed or finalised cases and duplicate active matches                                                                                                                                | `20261030103000`                   |
+| BUG-42 | Low | Matches refuse unavailable animals, closed or finalised cases and duplicate active matches; only an active match is unique per case and animal, so a declined one no longer blocks a new match                            | `20261030103000`, `20261030103500` |
 | BUG-46 | Low | "Receipt needed" (supporter list, filter, donation exports, export jobs) only for eligible donations with no issued receipt                                                                                               | `20261030111000`, `20261030113000` |
 | BUG-49 | Low | `receipt.issue` is audited only when the receipt is new                                                                                                                                                                   | `20261030112000`                   |
 | BUG-53 | Low | Publishing a guide archives every live release of the same species, whatever its topic; publishes per species are serialised                                                                                              | `20261030121000`                   |
@@ -270,14 +281,24 @@ Postgres 16 before and after.
 | BUG-64 | Low | A bulk edit writes one `volunteer_bulk.edit` row with before and after facts                                                                                                                                              | `20261030132000`                   |
 | BUG-65 | Low | The qualifications page loads only the chosen profile; `list` returns credential definitions only                                                                                                                         | `20261030133000`                   |
 
-**Deploy order.** Apply the 15 migrations in filename order. Within that:
+**Deploy order.** There are 16 migrations. Deploy in exactly three steps:
 
-- `20261030110000` (BUG-38) must run **before** the code deploy: the payment-methods list reads `edited_by`.
-- `20261030133000` (BUG-65) must run **after** the code deploy: the old page reads `profiles` from `list`.
-- `20261030131000` (BUG-63): code with or before it (a staff click on the old button would get a 500).
-- The adoptions migrations (`20261030100000`–`104000`) build on each other; with the code shipped
-  first or together, nothing breaks. Until both are live, the return action is unavailable.
-- The rest are migration-only and order-free. The BUG-36 backfill is one update over open intake items.
+1. Apply `20261030100000` → `20261030130000` in filename order (13 migrations, including
+   `20261030103500` for BUG-42).
+2. Deploy the code.
+3. Apply `20261030131000` → `20261030133000` in filename order (3 migrations).
+
+Why this works:
+
+- `20261030110000` (BUG-38) runs before the code, in step 1. The payment-methods list reads `edited_by`.
+- `20261030131000` (BUG-63) runs after the code, in step 3. With the migration first, a staff click on
+  the old button would get a 500.
+- `20261030133000` (BUG-65) runs after the code, in step 3. The old page reads `profiles` from `list`.
+- The adoptions migrations (`20261030100000`–`104000`, with `103500`) run before the code, in step 1.
+  Their signatures are unchanged, so the old code keeps working against them. Until step 2, a new
+  refusal (for example, reopening without a reason) may show as a generic error, and "Record
+  return" is available only once step 2 is live.
+- The others carry no code dependency. The BUG-36 backfill is one update over open intake items.
 
 **Not done, by design or pending a decision.**
 

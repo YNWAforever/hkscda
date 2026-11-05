@@ -40,7 +40,8 @@ alter table public.successful_adoption
     or (
       returned_at is not null
       and returned_by is not null
-      and btrim(return_reason) <> ''
+      -- coalesce: a NULL reason must fail the check (a CHECK that evaluates to NULL passes).
+      and coalesce(btrim(return_reason), '') <> ''
     )
   );
 

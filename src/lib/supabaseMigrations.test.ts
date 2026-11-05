@@ -1402,6 +1402,41 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-42 (schema part, r1 I1): 20261030103500_animal_match_unique_active_only.sql replaces the
+  // blanket unique (adoption_case_id, animal_id) with a partial unique index on active matches, so
+  // a declined or cancelled match no longer blocks a new one. Verified on local Postgres 17 by
+  // src/lib/adoptions/atomicForward.database.test.ts (BUG-42 test).
+  test("BUG-42: only an active match is unique per case and animal", () => {
+    const sql = readMigration("20261030103500_animal_match_unique_active_only.sql").replace(
+      /--[^\n]*/g,
+      "",
+    );
+    expect({
+      dropsBlanketUnique:
+        /drop\s+constraint\s+if\s+exists\s+animal_match_adoption_case_id_animal_id_key/i.test(sql),
+      partialUnique:
+        /create\s+unique\s+index[\s\S]*?on\s+public\.animal_match\s*\(\s*adoption_case_id\s*,\s*animal_id\s*\)\s*where\s+is_active_match/i.test(
+          sql,
+        ),
+      // Same predicate as the 20261030103000 duplicate guard.
+      matchesGuardPredicate:
+        /coalesce\(\s*p_is_approved\s*,\s*false\s*\)\s*or[\s\S]*?not\s+status\.is_closing\s+or\s+status\.key\s*=\s*'approved'/i.test(
+          sql,
+        ),
+      rowTrigger: /before\s+insert\s+or\s+update\s+on\s+public\.animal_match/i.test(sql),
+      statusResync:
+        /after\s+update\s+of\s+key\s*,\s*is_closing\s+on\s+public\.coordinator_status/i.test(sql),
+      pinnedSearchPath: (sql.match(/set\s+search_path\s*=\s*''/gi) ?? []).length === 3,
+    }).toEqual({
+      dropsBlanketUnique: true,
+      partialUnique: true,
+      matchesGuardPredicate: true,
+      rowTrigger: true,
+      statusResync: true,
+      pinnedSearchPath: true,
+    });
+  });
+
   // BUG-33: fixed by 20261030104000_record_adoption_returns.sql. Verified against Postgres 16:
   // finalise -> record return -> finalise the same animal on another case succeeds, and a
   // second return of the same adoption is refused.
@@ -1428,9 +1463,12 @@ describe("admin animal and adoption RPC regressions", () => {
       columns: ["returned_at timestamptz", "returned_by uuid", "return_reason text"].every(
         (column) => migration.includes(column),
       ),
-      returnedRowNeedsReason: /check\s*\([\s\S]*?btrim\(\s*return_reason\s*\)\s*<>\s*''/i.test(
-        migration,
-      ),
+      // NULL-safe: a bare btrim(return_reason) <> '' is NULL for a NULL reason, and a CHECK
+      // that evaluates to NULL passes, so the reason must be coalesced (r1 M2).
+      returnedRowNeedsReason:
+        /check\s*\([\s\S]*?coalesce\(\s*btrim\(\s*return_reason\s*\)\s*,\s*''\s*\)\s*<>\s*''/i.test(
+          migration,
+        ),
       returnLocksRow: /from\s+public\.successful_adoption[\s\S]*?for\s+update/i.test(retBody),
       returnRefusesTwice: retBody.includes("'Adoption already returned'"),
       returnNeedsReason: retBody.includes("'reason_required'"),
