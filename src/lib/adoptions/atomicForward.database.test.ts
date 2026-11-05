@@ -139,6 +139,33 @@ describe.skipIf(!db)("R01 adoption atomic real owned database", () => {
         await tx`select public.search_manual_case_identity('synthetic needle',2,1) value`;
       expect(next.value.candidates[0].displayName).toBe("ZZ Synthetic Needle");
     }));
+  test("BUG-37: identity search needs a real query and masks non-adopter contacts", () =>
+    fixture(async (tx) => {
+      const donor = randomUUID();
+      await tx`insert into public.supporter(id,name,email,phone) values(${donor}::uuid,'Synthetic Bug37 Donor','bug37-donor@example.invalid','9123 5678')`;
+      await tx`set local role service_role`;
+      for (const query of ["", "  ", "sy"]) {
+        const [r] = await tx`select public.search_manual_case_identity(${query},1,25) value`;
+        expect(r.value.total).toBe(0);
+      }
+      const [byName] =
+        await tx`select public.search_manual_case_identity('bug37 donor',1,25) value`;
+      expect(byName.value.candidates).toHaveLength(1);
+      expect(byName.value.candidates[0]).toMatchObject({
+        kind: "supporter",
+        contactMasked: true,
+        email: "b***@example.invalid",
+        phone: "*****5678",
+      });
+      // A substring of a non-adopter's email no longer finds them; the exact phone does.
+      const [bySubstring] =
+        await tx`select public.search_manual_case_identity('bug37-donor@',1,25) value`;
+      expect(bySubstring.value.total).toBe(0);
+      const [byPhone] = await tx`select public.search_manual_case_identity('91235678',1,25) value`;
+      expect(byPhone.value.candidates.map((c: { supporterId: string }) => c.supporterId)).toContain(
+        donor,
+      );
+    }));
   for (const target of ["coordinator", "manual"] as const)
     for (const state of ["banned", "unconfirmed"] as const)
       test(`${target} refuses ${state} actor before any rows or audit`, () =>

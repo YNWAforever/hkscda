@@ -2198,7 +2198,7 @@ export function createSupabaseAdoptionCoordinatorRepository(
 
     async searchManualCaseIdentity(input) {
       const { data, error } = await client.rpc("search_manual_case_identity", {
-        p_query: input.q ?? "",
+        p_query: input.q,
         p_page: input.page,
         p_page_size: input.pageSize,
       });

@@ -1,7 +1,9 @@
+import { MANUAL_IDENTITY_SEARCH_MIN_LENGTH } from "../../../lib/adoptions/schemas";
 import type {
   CoordinatorStatus,
   CoordinatorTaskContactChannel,
   CoordinatorTaskPriority,
+  ManualCaseIdentityCandidate,
 } from "../../../lib/adoptions/types";
 
 export type ManualAdopterProfileForm = {
@@ -232,6 +234,22 @@ function buildInitialTaskPayload(
 // A case cannot start closed: the service refuses closing statuses at intake (BUG-41).
 export function intakeCaseStatuses(statuses: CoordinatorStatus[] | undefined) {
   return (statuses ?? []).filter((status) => status.isActive && !status.isClosing);
+}
+
+/** The server refuses a shorter identity search (BUG-37), so the screen does not send one. */
+export function canSearchIdentity(text: string): boolean {
+  return text.trim().length >= MANUAL_IDENTITY_SEARCH_MIN_LENGTH;
+}
+
+/**
+ * The contact a chosen identity pre-fills into the case. A supporter who is not an adopter comes
+ * back with masked contact details (BUG-37), which must not be saved as the applicant's own.
+ */
+export function candidateContactPrefill(
+  candidate: Pick<ManualCaseIdentityCandidate, "email" | "phone" | "contactMasked">,
+): { phone: string; email: string } {
+  if (candidate.contactMasked) return { phone: "", email: "" };
+  return { phone: candidate.phone ?? "", email: candidate.email ?? "" };
 }
 
 export function buildIdentitySearchParams(filters: IdentitySearchFilters) {

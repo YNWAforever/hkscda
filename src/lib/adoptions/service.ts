@@ -22,6 +22,7 @@ import {
   coordinatorTaskUpdateSchema,
   finalizeAdoptionSchema,
   matchInputSchema,
+  manualCaseIdentitySearchSchema,
   manualCaseIntakeSchema,
   statusInputSchema,
   statusTransitionSchema,
@@ -157,7 +158,7 @@ export type AdoptionCoordinatorRepository = {
 
 export type CoordinatorOpsRepositoryMethods = {
   searchManualCaseIdentity(input: {
-    q?: string;
+    q: string;
     page: number;
     pageSize: number;
   }): Promise<{ candidates: ManualCaseIdentityCandidate[]; total: number }>;
@@ -323,13 +324,9 @@ export function createAdoptionCoordinatorService({
     },
 
     searchManualCaseIdentity(rawSearch: unknown) {
-      const input = z
-        .object({
-          q: z.string().trim().optional(),
-          page: z.coerce.number().int().min(1).catch(1),
-          pageSize: z.coerce.number().int().min(1).max(25).catch(10),
-        })
-        .parse(rawSearch);
+      // BUG-37: a query is required (at least three characters), so the search cannot list
+      // every supporter.
+      const input = manualCaseIdentitySearchSchema.parse(rawSearch);
       const searchManualCaseIdentity = requireCoordinatorOpsMethod(
         repo,
         "searchManualCaseIdentity",

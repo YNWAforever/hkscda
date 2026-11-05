@@ -1339,6 +1339,38 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-37: fixed by 20261030102000_identity_search_requires_query_and_masks_contacts.sql.
+  // Verified against Postgres 16: an empty or short query returns nothing, and a supporter
+  // who is not an adopter comes back with masked contact details.
+  test("BUG-37: search_manual_case_identity needs a real query and masks non-adopter contacts", () => {
+    const search = latestFunctionBody("search_manual_case_identity");
+    const body = search.body.replace(/--[^\n]*/g, "");
+    const migration = readMigrationBySuffix(
+      "_identity_search_requires_query_and_masks_contacts.sql",
+    );
+    expect({
+      file: search.file,
+      // The old `n.value = ''` branch matched every supporter.
+      noMatchAllBranch: !/n\.value\s*=\s*''\s*or/i.test(body),
+      minimumLength: /char_length\(n\.value\)\s*>=\s*3/i.test(body),
+      masksContacts: body.includes("'contactMasked'") && body.includes("'***@'"),
+      pinnedSearchPath: /set\s+search_path\s*=\s*''/i.test(migration),
+      serviceRoleOnly:
+        /revoke\s+all\s+on\s+function\s+public\.search_manual_case_identity\(text,\s*integer,\s*integer\)\s+from\s+public,\s*anon,\s*authenticated/i.test(
+          migration,
+        ) &&
+        /grant\s+execute\s+on\s+function\s+public\.search_manual_case_identity\(text,\s*integer,\s*integer\)\s+to\s+service_role/i.test(
+          migration,
+        ),
+    }).toMatchObject({
+      noMatchAllBranch: true,
+      minimumLength: true,
+      masksContacts: true,
+      pinnedSearchPath: true,
+      serviceRoleOnly: true,
+    });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");

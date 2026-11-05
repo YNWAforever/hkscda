@@ -68,6 +68,18 @@ export const statusUpdateSchema = statusInputSchema.partial().extend({
 /** The body of a status DELETE: the reason staff gave, trimmed, 1 to 500 characters. */
 export const statusDeleteSchema = z.object({ reason: requiredReasonSchema });
 
+/**
+ * The shortest manual-intake identity search (BUG-37). An empty or very short query listed the
+ * whole supporter directory; search_manual_case_identity applies the same minimum.
+ */
+export const MANUAL_IDENTITY_SEARCH_MIN_LENGTH = 3;
+
+export const manualCaseIdentitySearchSchema = z.object({
+  q: z.string().trim().min(MANUAL_IDENTITY_SEARCH_MIN_LENGTH),
+  page: z.coerce.number().int().min(1).catch(1),
+  pageSize: z.coerce.number().int().min(1).max(25).catch(10),
+});
+
 export const caseSearchSchema = z.object({
   q: optionalTrimmed,
   statusId: z.string().uuid().optional(),

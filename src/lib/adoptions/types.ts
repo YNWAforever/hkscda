@@ -423,6 +423,8 @@ export type ManualCaseIdentityCandidate = {
   phone: string | null;
   isBlacklisted: boolean;
   latestCaseAt: string | null;
+  /** True when email and phone are masked: a supporter who is not an adopter (BUG-37). */
+  contactMasked?: boolean;
 };
 
 export type ManualCaseIntakeResult = {

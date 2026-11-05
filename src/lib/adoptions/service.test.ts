@@ -6,6 +6,7 @@ import {
   type CoordinatorOpsRepositoryMethods,
 } from "./service";
 import type { CoordinatorStatus, CoordinatorTask, CoordinatorTaskExportRow } from "./types";
+import { createAdopterHandlers } from "./http/adopterHandlers.server";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
 const caseId = "22222222-3333-4333-8444-555555555555";
@@ -529,6 +530,45 @@ describe("createAdoptionCoordinatorService", () => {
       name: "searchManualCaseIdentityWithThis",
       payload: { q: "Ada", page: 1, pageSize: 10 },
     });
+  });
+
+  test("BUG-37: identity search needs a query of at least three characters", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+    // No query, a blank one, or one below the minimum never reaches the database.
+    for (const search of [{}, { q: "" }, { q: "   " }, { q: " ab " }, { page: "3" }]) {
+      expect(() => service.searchManualCaseIdentity(search)).toThrow();
+    }
+    expect(repo.calls.filter((call) => call.name === "searchManualCaseIdentity")).toEqual([]);
+
+    await service.searchManualCaseIdentity({ q: " abc ", page: "2" });
+    expect(repo.calls).toContainEqual({
+      name: "searchManualCaseIdentity",
+      payload: { q: "abc", page: 2, pageSize: 10 },
+    });
+  });
+
+  test("BUG-37: a short identity search is a 400 from the API", async () => {
+    const repo = createRepo();
+    const handlers = createAdopterHandlers({
+      requireCoordinator: async () => ({
+        id: "staff-row",
+        authUserId: adminId,
+        email: "staff@example.com",
+        role: "staff",
+        status: "active",
+      }),
+      service: createAdoptionCoordinatorService({ repo }),
+    });
+    for (const query of ["", "?page=2", "?q=ab"]) {
+      const response = await handlers.searchManualCaseIdentity({
+        request: new Request(
+          `https://example.test/api/admin/adoptions/intake/identity-search${query}`,
+        ),
+      });
+      expect(response.status).toBe(400);
+    }
+    expect(repo.calls.filter((call) => call.name === "searchManualCaseIdentity")).toEqual([]);
   });
 
   test("exports coordinator CSV and audits row count", async () => {
