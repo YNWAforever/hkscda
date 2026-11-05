@@ -345,7 +345,13 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
         <summary className="cursor-pointer font-semibold">
           {pickAdminCopy(legacyReconciliationCopy, language).title}
         </summary>
-        {legacyOpened && <VolunteerLegacyReconciliation profiles={profile ? [profile] : []} />}
+        {legacyOpened && (
+          // Keyed by the chosen volunteer so a choice made for an earlier one cannot survive.
+          <VolunteerLegacyReconciliation
+            key={profile?.id ?? "none"}
+            profiles={profile ? [profile] : []}
+          />
+        )}
       </details>
       {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
       {mutation.isSuccess && <p role="status">{copy.saved}</p>}
