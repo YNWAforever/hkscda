@@ -372,14 +372,29 @@ Each fix has a `BUG-xx` test that failed before it.
 | BUG-70 | Low | One story slug limit (`CONTENT_SLUG_MAX` = 180) in the schema, `suggestSlug` and the public story validators                                                                                                                                                                                                      |
 | BUG-73 | Low | Length limits for subtitle, body, CTA label and SEO/OG fields, with matching `maxLength`                                                                                                                                                                                                                          |
 
-**Waiting:** BUG-71 (keep the first publication date on republish; migration plus a decision)
-and BUG-72 (remove public image copies a story no longer uses; migration plus a cleanup step).
+**Fixed with approved migrations (user decision for BUG-71: keep the first publication date):**
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                        | Migration        |
+| ------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| BUG-71 | Low | Republishing keeps the first `published_at`; the /stories order, public date and `article:published_time` follow it. No existing rows rewritten                                                                                                                                                                                            | `20261105100000` |
+| BUG-72 | Med | A trigger marks public image copies not used by the current published revision as withdrawn on publish or archive; the daily `/api/jobs/public-media-repair` run deletes them from `content-media` (lease, idempotent, retried on storage failure, never a current copy); republishing a withdrawn or removed copy cancels or re-queues it | `20261105101000` |
+
+**Deploy:** `20261105100000` any time; `20261105101000` before or with the code (if the code ships first,
+the job's withdrawal step fails with 500 until the migration runs; repairs still run). No new cron or
+environment variable.
+
+**Not done, for a decision.** BUG-71: stories already republished keep their later date; the first date
+is recoverable from the earliest `content.publish` audit row (or the legacy backfill revision) if a
+backfill is wanted. BUG-72: copies left behind before the migration are withdrawn when their story is
+next published or archived, not all at once; removal runs daily, so a withdrawn image can stay public
+up to about a day (plus CDN caching); images stored directly in the public bucket by older code have
+no copy record and are not covered.
 
 **Behaviour to know.** Content already longer than a new BUG-73 limit still shows publicly; its
 next save is refused, naming the field, until it is shortened. A slug clash still shows the
 conflict banner (now with its own message).
 
-**Verification.** `bun run test` 7,767 pass, 0 fail; `bunx tsc --noEmit` clean; `bun run lint`
+**Verification.** `bun run test` 7,782 pass, 0 fail; `bunx tsc --noEmit` clean; `bun run lint`
 0 errors (the same 53 warnings); `bun run build` passes with the route tree unchanged;
 `verify:client-bundle` clean.
 
