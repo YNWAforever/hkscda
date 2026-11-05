@@ -148,6 +148,7 @@ const config: PaymentPublicConfig = {
   version: 2,
   createdBy: "admin-1",
   updatedBy: "admin-1",
+  editedBy: ["admin-1"],
   submittedBy: "admin-1",
   submittedAt: stamp,
   publishedBy: null,

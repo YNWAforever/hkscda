@@ -19,6 +19,11 @@ export type PaymentPublicConfig = {
   version: number;
   createdBy: string | null;
   updatedBy: string | null;
+  /**
+   * Every admin_user who changed this revision's content (the database trigger records them).
+   * None of them may publish it, as the submitter may not (BUG-38).
+   */
+  editedBy: string[];
   submittedBy: string | null;
   submittedAt: string | null;
   publishedBy: string | null;

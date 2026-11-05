@@ -18,6 +18,7 @@ const BASE_ROW = {
   version: 1,
   created_by: "22222222-2222-2222-2222-222222222222",
   updated_by: "22222222-2222-2222-2222-222222222222",
+  edited_by: ["22222222-2222-2222-2222-222222222222"],
   submitted_by: null,
   submitted_at: null,
   published_by: null,
@@ -89,6 +90,17 @@ describe("createSupabasePaymentPublicConfigRepository", () => {
       "mutate_payment_public_config_with_audit",
       expect.objectContaining({ p_operation: "create" }),
     );
+  });
+
+  test("BUG-38: maps the draft's editors, which the Publish button and the publish RPC both check", async () => {
+    const editors = [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333",
+    ];
+    const { client } = fakeClient({ getData: { ...BASE_ROW, edited_by: editors } });
+    const repository = createSupabasePaymentPublicConfigRepository(client);
+    const result = await repository.getById(BASE_ROW.id);
+    expect(result?.editedBy).toEqual(editors);
   });
 
   test("publish() maps a same-actor rejection (42501) to a forbidden error", async () => {

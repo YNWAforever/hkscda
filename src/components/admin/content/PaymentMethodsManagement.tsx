@@ -13,6 +13,7 @@ import { cmsStateCopy } from "./cmsStateCopy";
 import { paymentMethodsCopy } from "./paymentMethodsCopy";
 import {
   canPublish,
+  preparedByActor,
   createPaymentMethodPublishAttempt,
   fetchPaymentMethodConfigs,
   mutatePaymentMethodConfig,
@@ -61,7 +62,9 @@ export function PaymentMethodsManagementView({
       <ul className="divide-y divide-[var(--color-border)] rounded-md border border-[var(--color-border)]">
         {configs.map((config) => {
           const blockedBySameActor =
-            config.state === "in_review" && identity != null && config.submittedBy === identity.id;
+            config.state === "in_review" &&
+            identity != null &&
+            preparedByActor(config, identity.id);
           const publishHintId = `publish-hint-${config.id}`;
           return (
             <li key={config.id} className="flex items-center justify-between gap-4 p-3">

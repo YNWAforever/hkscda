@@ -146,15 +146,26 @@ export function createPaymentMethodPublishAttempt(
   return { idempotencyKey, payload: { expectedVersion, idempotencyKey } };
 }
 
+/**
+ * Whether `adminUserId` prepared this revision: submitted it or edited its content. Such an actor
+ * may not publish it; publish_payment_public_config refuses them with 42501 (BUG-38).
+ */
+export function preparedByActor(
+  config: Pick<PaymentPublicConfig, "submittedBy" | "editedBy">,
+  adminUserId: string,
+) {
+  if (config.submittedBy && config.submittedBy === adminUserId) return true;
+  return config.editedBy.includes(adminUserId);
+}
+
 export function canPublish(input: {
-  config: Pick<PaymentPublicConfig, "state" | "submittedBy">;
+  config: Pick<PaymentPublicConfig, "state" | "submittedBy" | "editedBy">;
   currentActorAdminUserId: string;
   currentActorRole: "staff" | "treasurer" | "admin";
 }) {
   if (input.config.state !== "in_review") return false;
   if (input.currentActorRole !== "treasurer" && input.currentActorRole !== "admin") return false;
-  if (input.config.submittedBy && input.config.submittedBy === input.currentActorAdminUserId)
-    return false;
+  if (preparedByActor(input.config, input.currentActorAdminUserId)) return false;
   return true;
 }
 
