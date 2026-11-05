@@ -1456,4 +1456,24 @@ describe("second-pass access and volunteer RPC regressions", () => {
       refusesBeforeWriting: guardIndex >= 0 && guardIndex < writeIndex,
     }).toMatchObject({ refusesUnacceptedInvite: true, refusesBeforeWriting: true });
   });
+
+  // BUG-63: fixed by 20261030131000_volunteer_notification_retry_admin_only.sql. The tasks
+  // route's retry goes volunteer_task_command -> retry_volunteer_operation_outbox, which let
+  // staff retry. Verified against Postgres 16: staff now get 42501 volunteer_forbidden through
+  // both entry points, admins still retry and write volunteer_outbox.retry.
+  test("BUG-63: retry_volunteer_operation_outbox accepts active admins only", () => {
+    const retry = latestFunctionBody("retry_volunteer_operation_outbox");
+    const command = latestFunctionBody("volunteer_task_command");
+    const roleChecks = [...retry.body.matchAll(/a\.role\s*(=|in)\s*(\([^)]*\)|'[a-z]+')/gi)].map(
+      (match) => match[0].replace(/\s+/g, ""),
+    );
+
+    expect({
+      file: retry.file,
+      roleChecks,
+      taskRetryDelegates: /'retry'[\s\S]*?public\.retry_volunteer_operation_outbox\(/i.test(
+        command.body,
+      ),
+    }).toEqual({ file: retry.file, roleChecks: ["a.role='admin'"], taskRetryDelegates: true });
+  });
 });

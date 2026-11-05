@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { StatusPill } from "../StatusBadge";
 import { fetchAdminJson } from "../../../lib/admin/http";
-import { ADMIN_IDENTITY_QUERY_KEY } from "../../../lib/admin/identity";
+import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "../../../lib/admin/identity";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy } from "../i18n/copy";
@@ -153,6 +153,9 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
     scopeKey: JSON.stringify([listState.filters.scope, listState.page, listState.query]),
     ready: Boolean(query.data) && !refreshing && !query.isError,
   });
+  // Retrying a failed notification is admin-only; the API and the RPC refuse staff (BUG-63).
+  const identity = useQuery(adminIdentityQueryOptions());
+  const canRetryNotifications = identity.data?.admin.role === "admin";
   const mutation = useMutation({
     mutationFn: (command: object) => post(command),
     onSuccess: async () => {
@@ -440,7 +443,7 @@ export function VolunteerTasks({ returnState }: { returnState?: ActivityReturnSt
               <p>{deliveryLabel(row.delivery_state, language)}</p>
             )}
             {row.last_error && <p>{copy.notifications.reason(row.last_error)}</p>}
-            {row.status === "failed" && (
+            {row.status === "failed" && canRetryNotifications && (
               <button
                 className="min-h-11 underline"
                 disabled={mutation.isPending}
