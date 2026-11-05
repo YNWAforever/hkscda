@@ -400,6 +400,49 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
       if (error !== rollback) throw error;
     }
   });
+  test("BUG-46: donation exports filtered on receiptNeeded list only donations still owed a receipt", async () => {
+    const rollback = new Error("rollback synthetic receipt-needed export fixture");
+    const id = randomUUID();
+    const exporter = randomUUID();
+    try {
+      await database().begin(async (tx) => {
+        await tx`insert into auth.users(id,email,email_confirmed_at) values(${exporter}::uuid,${exporter + "@example.invalid"},now())`;
+        await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${exporter}::uuid,${exporter + "@example.invalid"},'treasurer','active')`;
+        await tx`insert into public.supporter(id,name,email,language,tags) values(${id}::uuid,'Receipt export fixture',${id + "@example.invalid"},'en',array[${id}])`;
+        const [owed] =
+          await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values(${id}::uuid,10000,'general','succeeded','manual',true) returning id`;
+        const [receipted] =
+          await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values(${id}::uuid,20000,'general','succeeded','manual',true) returning id`;
+        await tx`insert into public.donation(supporter_id,amount_cents,refunded_cents,purpose,status,method,receipt_requested) values
+          (${id}::uuid,50000,0,'general','failed','manual',true),
+          (${id}::uuid,50000,50000,'general','refunded','manual',true),
+          (${id}::uuid,15000,6000,'general','succeeded','manual',true)`;
+        await tx`insert into public.receipt(supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,status) values(${id}::uuid,${"LOCAL-" + id},array[${receipted.id}::uuid],20000,2026,'issued')`;
+
+        const exported = async (receiptNeeded: boolean) =>
+          (
+            (
+              await tx`select public.crm_export_donations(${{ tag: id, receiptNeeded }}::jsonb) result`
+            )[0].result.donations as { donationId: string }[]
+          ).map((row) => row.donationId);
+        expect(await exported(true)).toEqual([owed.id]);
+        // receiptNeeded=false first keeps supporters owed nothing; this one is still owed one.
+        expect(await exported(false)).toEqual([]);
+        const all = (await tx`select public.crm_export_donations(${{ tag: id }}::jsonb) result`)[0]
+          .result.donations as unknown[];
+        expect(all).toHaveLength(5);
+
+        const [job] =
+          await tx`select public.enqueue_crm_export_job(${exporter}::uuid,'donations',${{ tag: id, receiptNeeded: true }}::jsonb) result`;
+        const [items] =
+          await tx`select item_ids from public.crm_export_job where id=${job.result.id}::uuid`;
+        expect(items.item_ids).toEqual([owed.id]);
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
+  });
   async function activityFixture(capacity: number) {
     const id = randomUUID();
     volunteerActivities.push(id);

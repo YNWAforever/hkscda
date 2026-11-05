@@ -64,6 +64,47 @@ describe("CRM receipt needed", () => {
     expectNeedsReceiptRule(body);
   });
 
+  // BUG-46 (exports): fixed by 20261030113000_crm_export_receipt_needed_only_unreceipted.sql.
+  // Verified against Postgres 16 with the original functions: the donation CSV and the queued
+  // donation export with receiptNeeded=true no longer list receipted, failed, refunded or
+  // below-threshold donations.
+  for (const name of ["public.crm_export_donations", "public.enqueue_crm_export_job"]) {
+    test(`BUG-46: the donation-level receiptNeeded filter in ${name} applies the same rule`, () => {
+      const body = latestBody(name);
+      expect(body).not.toMatch(
+        /d\.receipt_requested\s*=\s*\(p_filters->>'receiptneeded'\)::boolean/,
+      );
+      expectNeedsReceiptRule(body);
+      expect(body).toMatch(/\)\s*=\s*\(p_filters->>'receiptneeded'\)::boolean/);
+    });
+  }
+
+  test("BUG-46: no latest migration still filters receiptNeeded on receipt_requested alone", () => {
+    const stale = /receipt_requested\s*=\s*\(p_filters->>'receiptNeeded'\)::boolean/i;
+    const files = readdirSync(MIGRATIONS)
+      .filter((name) => name.endsWith(".sql"))
+      .sort();
+    const latestByFunction = new Map<string, string>();
+    const header = /create\s+(?:or\s+replace\s+)?function\s+((?:public|private)\.[a-z_]+)\s*\(/gi;
+    for (const file of files) {
+      const sql = readFileSync(`${MIGRATIONS}/${file}`, "utf8");
+      for (const match of sql.matchAll(header)) {
+        const name = match[1].toLowerCase();
+        // A few historical definitions are not dollar-quoted (e.g. `language sql` with a string
+        // body); none of those is a CRM read, so they are skipped.
+        try {
+          latestByFunction.set(name, extractFunctionBody(sql, name));
+        } catch {
+          continue;
+        }
+      }
+    }
+    const offenders = [...latestByFunction]
+      .filter(([, body]) => stale.test(body))
+      .map(([name]) => name);
+    expect(offenders).toEqual([]);
+  });
+
   test("BUG-46: the threshold is the one isReceiptEligible uses", () => {
     expect(receiptThresholdCents()).toBe(10000);
   });
