@@ -54,6 +54,15 @@ import {
   createEditorOperationGate,
   canAcceptEditorReload,
 } from "./editorState";
+import {
+  applyOwnSave,
+  createEditorVersions,
+  expectedVersionFor,
+  markPanelClean,
+  markPanelDirty,
+  observeServerVersion,
+  savedVersionFrom,
+} from "./editorVersions";
 import { ContentRevisionPanel } from "./ContentRevisionPanel";
 import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
@@ -140,17 +149,35 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   const [historyPage, setHistoryPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
   const runOperation = useRef(createEditorOperationGate()).current;
-  const dirtyVersions = useRef<Record<string, number | undefined>>({});
-  const currentVersion = useRef(initialContent?.version);
-  const expectedFor = (panel: string) =>
-    Object.hasOwn(dirtyVersions.current, panel)
-      ? dirtyVersions.current[panel]
-      : currentVersion.current;
+  // The version each panel saves against (BUG-67): see editorVersions.ts.
+  const versions = useRef(createEditorVersions(initialContent?.version));
+  const versionsContentId = useRef(contentId);
+  if (versionsContentId.current !== contentId) {
+    // The router keeps this editor mounted when only the id changes: another item's versions
+    // say nothing about this one.
+    versionsContentId.current = contentId;
+    versions.current = createEditorVersions(undefined);
+  }
+  const expectedFor = (panel: string) => expectedVersionFor(versions.current, panel);
+  /**
+   * Sends one panel's save against its expected version. When it succeeds, the other dirty panels
+   * that started from the same version move to the version the server returned, so their own
+   * saves are not refused as a conflict this editor caused itself.
+   */
+  const saveAgainst = async <T,>(
+    panel: string,
+    request: (expectedVersion: number | undefined) => Promise<T>,
+  ): Promise<T> => {
+    const sent = expectedFor(panel);
+    const data = await request(sent);
+    versions.current = applyOwnSave(versions.current, sent, savedVersionFrom(data, sent));
+    return data;
+  };
   const hasDirty = Object.values(editor.dirty).some(Boolean);
   const reportDirty = useCallback((panel: string, dirty: boolean) => {
-    if (dirty && !Object.hasOwn(dirtyVersions.current, panel))
-      dirtyVersions.current[panel] = currentVersion.current;
-    if (!dirty) delete dirtyVersions.current[panel];
+    versions.current = dirty
+      ? markPanelDirty(versions.current, panel)
+      : markPanelClean(versions.current, panel);
     setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
   }, []);
   const leaveDialog = useLeaveConfirm({ dirty: hasDirty, consequence: copy.leaveConfirm });
@@ -186,7 +213,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const content = contentQuery.data?.content;
   useBreadcrumbRecordName(content?.title);
-  currentVersion.current = content?.version;
+  versions.current = observeServerVersion(versions.current, content?.version);
   useEffect(() => {
     if (content)
       setEditor((current) => ({
@@ -214,7 +241,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       setEditor(
         createEditorState(data.data.content.version, data.data.content.revisionId ?? undefined),
       );
-      dirtyVersions.current = {};
+      versions.current = createEditorVersions(data.data.content.version);
       setResetKey((value) => value + 1);
       setComparison(undefined);
       setUpdateDraftNotice(null);
@@ -243,10 +270,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const updateContent = useMutation({
     mutationFn: (body: ContentFormState) =>
-      fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ ...normalizeForm(body), expectedVersion: expectedFor("content") }),
-      }),
+      saveAgainst("content", (expectedVersion) =>
+        fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ ...normalizeForm(body), expectedVersion }),
+        }),
+      ),
     onSuccess: (data) => {
       setValidationIssues([]);
       queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
@@ -257,17 +286,21 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const updatePublicationMetadata = useMutation({
     mutationFn: (body: PublicationMetadataFormState) =>
-      fetchAdminJson(`/api/admin/content/${contentId}/publication-metadata`, {
-        method: "PUT",
-        body: JSON.stringify({
-          expectedVersion: expectedFor("metadata"),
-          contentClass: body.contentClass,
-          sourceReference: emptyToNull(body.sourceReference),
-          contentOwner: emptyToNull(body.contentOwner),
-          effectiveFrom: body.effectiveFrom ? parseDatetimeLocalToIso(body.effectiveFrom) : null,
-          effectiveUntil: body.effectiveUntil ? parseDatetimeLocalToIso(body.effectiveUntil) : null,
+      saveAgainst("metadata", (expectedVersion) =>
+        fetchAdminJson(`/api/admin/content/${contentId}/publication-metadata`, {
+          method: "PUT",
+          body: JSON.stringify({
+            expectedVersion,
+            contentClass: body.contentClass,
+            sourceReference: emptyToNull(body.sourceReference),
+            contentOwner: emptyToNull(body.contentOwner),
+            effectiveFrom: body.effectiveFrom ? parseDatetimeLocalToIso(body.effectiveFrom) : null,
+            effectiveUntil: body.effectiveUntil
+              ? parseDatetimeLocalToIso(body.effectiveUntil)
+              : null,
+          }),
         }),
-      }),
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -302,13 +335,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const upsertStoryProfile = useMutation({
     mutationFn: (body: StoryProfileFormState) =>
-      fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
-        method: "PUT",
-        body: JSON.stringify({
-          ...normalizeStoryProfileForm(body),
-          expectedVersion: expectedFor("profile"),
+      saveAgainst("profile", (expectedVersion) =>
+        fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
+          method: "PUT",
+          body: JSON.stringify({ ...normalizeStoryProfileForm(body), expectedVersion }),
         }),
-      }),
+      ),
     onSuccess: (data) => {
       queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
@@ -318,15 +350,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createStoryUpdate = useMutation({
     mutationFn: (body: StoryUpdateFormState) =>
-      fetchAdminJson<{ id: string; notificationDrafts?: AdopterDraftNotice }>(
-        `/api/admin/content/${contentId}/updates`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            ...normalizeStoryUpdateForm(body),
-            expectedVersion: expectedFor("update"),
-          }),
-        },
+      saveAgainst("update", (expectedVersion) =>
+        fetchAdminJson<{ id: string; notificationDrafts?: AdopterDraftNotice }>(
+          `/api/admin/content/${contentId}/updates`,
+          {
+            method: "POST",
+            body: JSON.stringify({ ...normalizeStoryUpdateForm(body), expectedVersion }),
+          },
+        ),
       ),
     onSuccess: (result) => {
       setUpdateDraftNotice(result.notificationDrafts ?? null);
@@ -336,7 +367,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createContentMedia = useMutation({
     mutationFn: (body: ContentMediaFormState) =>
-      createContentMediaWithUpload(contentId, body, expectedFor("media")),
+      saveAgainst("media", (expectedVersion) =>
+        createContentMediaWithUpload(contentId, body, expectedVersion),
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -345,10 +378,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createContentLink = useMutation({
     mutationFn: (body: ContentLinkFormState) =>
-      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
-        method: "POST",
-        body: JSON.stringify({ ...body, expectedVersion: expectedFor("link") }),
-      }),
+      saveAgainst("link", (expectedVersion) =>
+        fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
+          method: "POST",
+          body: JSON.stringify({ ...body, expectedVersion }),
+        }),
+      ),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
