@@ -93,6 +93,7 @@ export function buildCoordinatorSuccessfulAdoptionCsv(
       "adoption_fee_hkd",
       "approval_date",
       "pickup_date",
+      "returned_at",
     ],
     rows.map((row) => [
       row.successfulAdoptionId,
@@ -105,6 +106,7 @@ export function buildCoordinatorSuccessfulAdoptionCsv(
       nullableCentsToDecimal(row.adoptionFeeCents),
       row.approvalDate,
       row.pickupDate,
+      row.returnedAt,
     ]),
   );
 }

@@ -16,7 +16,7 @@ import type {
 } from "./types";
 
 const CONFIG_COLUMNS =
-  "id,method,is_publicly_visible,display_label_zh,display_label_en,sort_order,details,state,version,created_by,updated_by,submitted_by,submitted_at,published_by,published_at,archived_by,archived_at,created_at,updated_at";
+  "id,method,is_publicly_visible,display_label_zh,display_label_en,sort_order,details,state,version,created_by,updated_by,edited_by,submitted_by,submitted_at,published_by,published_at,archived_by,archived_at,created_at,updated_at";
 
 export type PaymentPublicConfigDraftInput = z.infer<typeof paymentPublicConfigDraftInputSchema>;
 export type PaymentPublicConfigMutationInput = z.infer<typeof paymentPublicConfigMutationSchema>;
@@ -112,6 +112,7 @@ const configRowSchema = z.object({
   version: paymentPublicConfigVersionSchema,
   created_by: nullableUuid,
   updated_by: nullableUuid,
+  edited_by: z.array(z.string().uuid()),
   submitted_by: nullableUuid,
   submitted_at: nullableTimestamp,
   published_by: nullableUuid,
@@ -177,6 +178,7 @@ function mapConfig(value: unknown): PaymentPublicConfig | null {
     version: row.version,
     createdBy: row.created_by,
     updatedBy: row.updated_by,
+    editedBy: row.edited_by,
     submittedBy: row.submitted_by,
     submittedAt: row.submitted_at,
     publishedBy: row.published_by,

@@ -139,6 +139,87 @@ describe.skipIf(!db)("R01 adoption atomic real owned database", () => {
         await tx`select public.search_manual_case_identity('synthetic needle',2,1) value`;
       expect(next.value.candidates[0].displayName).toBe("ZZ Synthetic Needle");
     }));
+  test("BUG-42: match creation refuses an unavailable animal, a closed case and a duplicate", () =>
+    fixture(async (tx, actor, status) => {
+      const caseId = randomUUID(),
+        closedCaseId = randomUUID(),
+        available = randomUUID(),
+        adopted = randomUUID(),
+        proposed = randomUUID(),
+        declined = randomUUID(),
+        closing = randomUUID();
+      const key = (id: string) => "synthetic_" + id.replaceAll("-", "");
+      await tx`insert into public.coordinator_status(id,category,key,label_zh,label_en,is_active,is_closing,is_final) values
+        (${proposed}::uuid,'match',${key(proposed)},'Synthetic','Synthetic',true,false,false),
+        (${declined}::uuid,'match',${key(declined)},'Synthetic','Synthetic',true,true,true),
+        (${closing}::uuid,'adoption_case',${key(closing)},'Synthetic','Synthetic',true,true,false)`;
+      await tx`insert into public.animals(id,type,name,gender,age,status,publication_state) values
+        (${available}::uuid,'cat','Synthetic available','female','adult','available','draft'),
+        (${adopted}::uuid,'cat','Synthetic adopted','female','adult','adopted','draft')`;
+      await tx`insert into public.adoption_case(id,status_id,applicant_name,applicant_phone) values
+        (${caseId}::uuid,${status}::uuid,'Synthetic','00000000'),
+        (${closedCaseId}::uuid,${closing}::uuid,'Synthetic','00000000')`;
+      await tx`set local role service_role`;
+      const match = (adoptionCaseId: string, animalId: string, statusId = proposed) =>
+        coordinator(tx, actor, "animal_match", "create", null, {
+          adoption_case_id: adoptionCaseId,
+          animal_id: animalId,
+          status_id: statusId,
+        });
+      const refusal = async (run: () => Promise<unknown>) => {
+        const sp = "bug42_" + randomUUID().replaceAll("-", "");
+        await tx.unsafe("savepoint " + sp);
+        try {
+          await run();
+          return null;
+        } catch (error) {
+          return (error as Error).message;
+        } finally {
+          await tx.unsafe("rollback to savepoint " + sp);
+          await tx.unsafe("release savepoint " + sp);
+        }
+      };
+
+      expect(await refusal(() => match(caseId, adopted))).toBe(
+        "Animal is not available for matching",
+      );
+      expect(await refusal(() => match(closedCaseId, available))).toBe("Adoption case is closed");
+      // A declined match does not block a new one; an active one does.
+      await match(caseId, available, declined);
+      const first = await match(caseId, available);
+      expect(first.animal_id).toBe(available);
+      expect(await refusal(() => match(caseId, available))).toBe(
+        "Animal already has an active match for this case",
+      );
+      expect(await count(tx, "animal_match")).toBe(2);
+    }));
+  test("BUG-37: identity search needs a real query and masks non-adopter contacts", () =>
+    fixture(async (tx) => {
+      const donor = randomUUID();
+      await tx`insert into public.supporter(id,name,email,phone) values(${donor}::uuid,'Synthetic Bug37 Donor','bug37-donor@example.invalid','9123 5678')`;
+      await tx`set local role service_role`;
+      for (const query of ["", "  ", "sy"]) {
+        const [r] = await tx`select public.search_manual_case_identity(${query},1,25) value`;
+        expect(r.value.total).toBe(0);
+      }
+      const [byName] =
+        await tx`select public.search_manual_case_identity('bug37 donor',1,25) value`;
+      expect(byName.value.candidates).toHaveLength(1);
+      expect(byName.value.candidates[0]).toMatchObject({
+        kind: "supporter",
+        contactMasked: true,
+        email: "b***@example.invalid",
+        phone: "*****5678",
+      });
+      // A substring of a non-adopter's email no longer finds them; the exact phone does.
+      const [bySubstring] =
+        await tx`select public.search_manual_case_identity('bug37-donor@',1,25) value`;
+      expect(bySubstring.value.total).toBe(0);
+      const [byPhone] = await tx`select public.search_manual_case_identity('91235678',1,25) value`;
+      expect(byPhone.value.candidates.map((c: { supporterId: string }) => c.supporterId)).toContain(
+        donor,
+      );
+    }));
   for (const target of ["coordinator", "manual"] as const)
     for (const state of ["banned", "unconfirmed"] as const)
       test(`${target} refuses ${state} actor before any rows or audit`, () =>

@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
+  canSetMediaAsCover,
   contentStatusTone,
   copyTextToClipboard,
   formatContentTypeLabel,
@@ -10,6 +11,8 @@ import {
   suggestSlug,
   summarizeContentRows,
 } from "./contentAdminLogic";
+import { CONTENT_SLUG_MAX } from "../../../lib/content/limits";
+import { publicStorySlugInputSchema } from "../../../lib/content/schemas";
 import { contentCommonCopy } from "./contentCommonCopy";
 
 describe("contentAdminLogic", () => {
@@ -126,5 +129,27 @@ describe("suggestSlug", () => {
     expect(slug.startsWith("hello-world")).toBe(true);
     expect(slug.length).toBeLessThanOrEqual(180);
     expect(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)).toBe(true);
+  });
+  test("BUG-70: a suggested slug fits the shared limit, so its public story page loads", () => {
+    const slug = suggestSlug(`Lucky ${"the brave rescued kitten ".repeat(20)}`);
+    expect(slug.length).toBeLessThanOrEqual(CONTENT_SLUG_MAX);
+    expect(slug.length).toBeGreaterThan(160);
+    expect(publicStorySlugInputSchema.safeParse({ slug }).success).toBe(true);
+  });
+});
+
+describe("canSetMediaAsCover", () => {
+  const updates = [
+    { id: "public-update", visibility: "public" as const },
+    { id: "internal-update", visibility: "internal" as const },
+  ];
+
+  test("BUG-69: an image on an internal update cannot be set as the cover", () => {
+    expect(canSetMediaAsCover(updates, "internal-update")).toBe(false);
+  });
+
+  test("BUG-69: an image on the whole item or a public update can be the cover", () => {
+    expect(canSetMediaAsCover(updates, "")).toBe(true);
+    expect(canSetMediaAsCover(updates, "public-update")).toBe(true);
   });
 });

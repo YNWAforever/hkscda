@@ -4,19 +4,21 @@ const url = process.env.VOLUNTEER_TEST_DATABASE_URL;
 if (url && (new URL(url).hostname !== "127.0.0.1" || new URL(url).port !== "56322"))
   throw new Error("Disposable database required");
 test.skipIf(!url || process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
-  "notification expiry fencing, configured attempt cap, staff retry and immutable task completion",
+  "notification expiry fencing, configured attempt cap, admin-only retry (BUG-63) and immutable task completion",
   async () => {
     const db = new SQL(url!, { max: 1, prepare: false }),
       rollback = new Error("rollback notification fixtures"),
       id = crypto.randomUUID(),
       task = crypto.randomUUID(),
       staff = crypto.randomUUID(),
+      admin = crypto.randomUUID(),
       ordinary = crypto.randomUUID();
     try {
       await db.begin(async (tx) => {
-        for (const actor of [staff, ordinary])
+        for (const actor of [staff, admin, ordinary])
           await tx`insert into auth.users(id,email,email_confirmed_at) values(${actor}::uuid,${actor + "@example.invalid"},now())`;
         await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${staff}::uuid,${staff + "@example.invalid"},'staff','active')`;
+        await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${admin}::uuid,${admin + "@example.invalid"},'admin','active')`;
         await tx`insert into public.volunteer_operation_outbox(id,dedup_key,kind,payload,available_at) values(${id}::uuid,${id},'volunteer_policy_reminder','{"max_attempts":2}','1900-01-01')`;
         let rows =
           await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()-interval '1 second')`;
@@ -39,9 +41,23 @@ test.skipIf(!url || process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
         rows =
           await tx`select * from public.claim_volunteer_operation_outbox(1,clock_timestamp()+interval '5 minutes')`;
         expect(rows.some((row: { id: string }) => row.id === id)).toBe(false);
+        // BUG-63: only admins may retry a failed notification, through the tasks command too.
+        let staffRetryError: unknown = null;
+        try {
+          await tx.savepoint(async (sp) => {
+            await sp`select public.volunteer_task_command(${staff}::uuid,${JSON.stringify({ action: "retry", id })}::jsonb)`;
+          });
+        } catch (error) {
+          staffRetryError = error;
+        }
+        expect(staffRetryError).toMatchObject({ errno: "42501", message: "volunteer_forbidden" });
+        expect(
+          (await tx`select status from public.volunteer_operation_outbox where id=${id}::uuid`)[0]
+            .status,
+        ).toBe("failed");
         expect(
           (
-            await tx`select public.volunteer_task_command(${staff}::uuid,${JSON.stringify({ action: "retry", id })}::jsonb) result`
+            await tx`select public.volunteer_task_command(${admin}::uuid,${JSON.stringify({ action: "retry", id })}::jsonb) result`
           )[0].result.kind,
         ).toBe("retried");
         await tx`update public.volunteer_operation_outbox set available_at='1900-01-01' where id=${id}::uuid`;
@@ -95,7 +111,7 @@ test.skipIf(!url || process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
         ).toMatchObject({ status: "failed", last_error: "notification_attempts_exhausted" });
         expect(
           (
-            await tx`select public.volunteer_task_command(${staff}::uuid,${JSON.stringify({ action: "retry", id: expired })}::jsonb) result`
+            await tx`select public.volunteer_task_command(${admin}::uuid,${JSON.stringify({ action: "retry", id: expired })}::jsonb) result`
           )[0].result.kind,
         ).toBe("retried");
         await tx`insert into public.volunteer_operation_outbox(id,dedup_key,kind,payload) values(${task}::uuid,${task},'volunteer_operation_changed','{}')`;

@@ -924,7 +924,14 @@ describe("create content form in English", () => {
       "This URL is already in use. Use a different slug.",
     );
     expect(createErrorMessage(conflict)).toBe("此網址已被使用，請改用其他 slug。");
-    expect(createErrorMessage(fields, "en")).toBe("slug: Invalid\ntitle: Required");
+    // BUG-68: each field is named by the form's own label and its reason is written in the
+    // admin's language (this used to print the raw key and zod's text: "slug: Invalid").
+    expect(createErrorMessage(fields, "en")).toBe(
+      "URL slug (lowercase letters, numbers and hyphens): Use lowercase letters and numbers, separated by single hyphens.\nTitle: Required.",
+    );
+    expect(createErrorMessage(fields)).toBe(
+      "網址 slug（小寫英數字與連字號）：只可使用小寫英文字母、數字及連字號，並以連字號分隔。\n標題：必須填寫。",
+    );
     expect(createErrorMessage(null, "en")).toBe("Could not create the content. Try again.");
     expect(createErrorMessage(null)).toBe("建立失敗，請重試。");
     // A reason the server gave is shown as it came; a session error is translated.
@@ -1243,8 +1250,11 @@ describe("what the editor says when an action fails", () => {
 
     const english = renderAdminInEnglish(<ActionErrors errors={lifecycle} />);
     expectNoChineseText(english);
+    // BUG-69: the conflict line no longer says "reload, then save again" (saving again after the
+    // banner's reload repeats the refusal, and the reload discards the typed work); it points at
+    // the banner's choices. A slug clash now has its own line (`slug_taken`).
     expectAll(english, [
-      "Save conflict — reload, then save again. If the URL slug is taken, pick another.",
+      "Save conflict — this content has a newer version. Use the options above to compare or reload the latest version.",
       "Content not found. Reload the page.",
       "Content didn’t pass checks. Review required fields and the URL slug.",
       "Couldn’t finish saving. Try again, or save each panel first.",
@@ -1253,7 +1263,7 @@ describe("what the editor says when an action fails", () => {
 
     const chinese = renderAdminInChinese(<ActionErrors errors={lifecycle} />);
     expectAll(chinese, [
-      "儲存衝突，請重新載入頁面後再儲存。若網址已被使用，請換一個。",
+      "儲存衝突：此內容已有較新版本。請用上方的選項比較或重新載入最新版本。",
       "找不到此內容，請重新載入。",
       "內容不符合規則，請檢查必填欄位與網址格式。",
       "儲存未完成，請稍後再試。若持續失敗，先檢查各面板是否已儲存。",
@@ -1270,6 +1280,41 @@ describe("what the editor says when an action fails", () => {
       <ActionErrors errors={[new AdminHttpError("Failed to fetch", null)]} />,
     );
     expect(chinese).toContain("連線或伺服器暫時有問題，請稍後再試。");
+  });
+
+  test("BUG-66: says to publish first when outbound copy is refused for an unpublished story", () => {
+    const refused = new AdminApiError({
+      status: 409,
+      code: "not_published",
+      message: "Publish the story before generating outbound copy",
+    });
+    const english = renderAdminInEnglish(<ActionErrors errors={[refused]} />);
+    expectNoChineseText(english);
+    expect(english).toContain("Publish the story, then generate the copy or notification drafts.");
+    expect(english).not.toContain("Couldn’t finish saving");
+    const chinese = renderAdminInChinese(<ActionErrors errors={[refused]} />);
+    expect(chinese).toContain("故事尚未發布");
+    expect(chinese).not.toContain("儲存未完成");
+  });
+
+  test("BUG-68: names each invalid field with its editor label in the admin's language", () => {
+    const invalid = new AdminApiError({
+      status: 400,
+      code: "invalid",
+      message: "Invalid content management request",
+      fields: { slug: ["Invalid"], title: ["String must contain at most 180 character(s)"] },
+    });
+    const english = renderAdminInEnglish(<ActionErrors errors={[invalid]} />);
+    expectNoChineseText(english);
+    expectAll(english, [
+      "Fix these fields:",
+      "Slug: Use lowercase letters and numbers, separated by single hyphens.",
+      "Title: Must be 180 characters or fewer.",
+    ]);
+    expect(english).not.toContain("Invalid content management request");
+    const chinese = renderAdminInChinese(<ActionErrors errors={[invalid]} />);
+    expectAll(chinese, ["以下欄位需要修改：", "標題：不可超過 180 個字元。"]);
+    expect(chinese).not.toContain("Invalid content management request");
   });
 
   test("names the field of each publish check in English, and as sent in Chinese", () => {

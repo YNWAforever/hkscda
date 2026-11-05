@@ -453,6 +453,25 @@ describe("today's volunteer tasks in English", () => {
     });
   });
 
+  // BUG-63: only admins may retry a failed notification (the API and the RPC refuse staff).
+  test("BUG-63: shows the notification retry button to admins only", () => {
+    const previous = kit.state.role;
+    try {
+      kit.withQueries({ "volunteer-tasks": kit.ok(tasksData) }, () => {
+        kit.state.role = "admin";
+        expect(renderAdminInEnglish(<VolunteerTasks />)).toContain("Retry this notification");
+        kit.state.role = "staff";
+        const staffMarkup = renderAdminInEnglish(<VolunteerTasks />);
+        expect(staffMarkup).toContain("Monthly attendance reminder · Failed · Attempted 3 times");
+        expect(staffMarkup).not.toContain("Retry this notification");
+        kit.state.role = null;
+        expect(renderAdminInEnglish(<VolunteerTasks />)).not.toContain("Retry this notification");
+      });
+    } finally {
+      kit.state.role = previous;
+    }
+  });
+
   test("says when there is nothing to do, and when the tasks could not be read", () => {
     kit.withQueries(
       { "volunteer-tasks": kit.ok({ pending: [], tasks: [], notifications: [] }) },

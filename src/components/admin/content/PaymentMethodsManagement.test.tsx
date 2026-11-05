@@ -17,6 +17,7 @@ const BASE_CONFIG: PaymentPublicConfig = {
   version: 2,
   createdBy: "admin-1",
   updatedBy: "admin-1",
+  editedBy: ["admin-1"],
   submittedBy: "admin-1",
   submittedAt: "2026-08-31T00:00:00Z",
   publishedBy: null,
@@ -79,6 +80,23 @@ describe("PaymentMethodsManagementView", () => {
     expect(html).not.toContain('disabled=""');
     expect(html).not.toContain("aria-describedby");
     expect(html).not.toContain("需要由另一位財務或管理員核准");
+  });
+
+  test("BUG-38: disables Publish, with the hint, for a treasurer who edited a draft someone else submitted", () => {
+    const html = renderAdminInChinese(
+      <PaymentMethodsManagementView
+        identity={TREASURER_2}
+        configs={[{ ...BASE_CONFIG, editedBy: ["admin-1", "admin-2"] }]}
+        pending={false}
+        onSubmit={noop}
+        onWithdraw={noop}
+        onPublish={noop}
+      />,
+    );
+    expect(html).toContain("核准並發佈");
+    expect(html).toContain('disabled=""');
+    expect(html).toContain(`aria-describedby="publish-hint-${BASE_CONFIG.id}"`);
+    expect(html).toContain("需要由另一位財務或管理員核准");
   });
 
   test("shows an empty-state message when there are no configured payment methods", () => {

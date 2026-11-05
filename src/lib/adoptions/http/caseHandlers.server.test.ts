@@ -47,6 +47,9 @@ function createService(overrides: Partial<CaseService> = {}) {
     async finalizeAdoption() {
       return undefined as never;
     },
+    async recordAdoptionReturn() {
+      return undefined as never;
+    },
     ...overrides,
   } satisfies CaseService;
 
@@ -62,7 +65,12 @@ function jsonRequest(url: string, body: unknown) {
 }
 
 async function expectInvalidIdBeforeAuthorization(
-  handlerName: "changeCaseStatus" | "createMatch" | "createFollowup" | "finalizeAdoption",
+  handlerName:
+    | "changeCaseStatus"
+    | "createMatch"
+    | "createFollowup"
+    | "finalizeAdoption"
+    | "recordAdoptionReturn",
 ) {
   let authorizationCalls = 0;
   const handlers = createCaseHandlers({
@@ -135,6 +143,37 @@ describe("createCaseHandlers", () => {
     expect(await response.json()).toEqual({ error: "Closing case status not allowed at intake" });
   });
 
+  test("BUG-34: a finalised case's status change is a 409 and a reopen without a reason is a 400", async () => {
+    const caseId = "aaaaaaaa-bbbb-4333-8444-555555555555";
+    async function statusChangeFailingWith(message: string) {
+      const handlers = createCaseHandlers({
+        requireCoordinator: async () => staff,
+        service: createService({
+          async changeCaseStatus() {
+            // supabase-js hands RPC exceptions back as plain objects.
+            throw { code: "P0001", message, details: "Private detail" };
+          },
+        }),
+      });
+      return handlers.changeCaseStatus({
+        request: jsonRequest(`https://example.test/api/admin/adoptions/cases/${caseId}/status`, {
+          statusId: "bbbbbbbb-cccc-4333-8444-555555555555",
+        }),
+        params: { id: caseId },
+      });
+    }
+
+    const finalised = await statusChangeFailingWith("Finalized adoption case status cannot change");
+    expect(finalised.status).toBe(409);
+    expect(await finalised.json()).toEqual({
+      error: "Finalized adoption case status cannot change",
+    });
+
+    const reopen = await statusChangeFailingWith("reason_required");
+    expect(reopen.status).toBe(400);
+    expect(await reopen.json()).toEqual({ error: "reason_required" });
+  });
+
   test("validates a status-change case ID before authorization", async () => {
     await expectInvalidIdBeforeAuthorization("changeCaseStatus");
   });
@@ -145,6 +184,44 @@ describe("createCaseHandlers", () => {
 
   test("validates a follow-up case ID before authorization", async () => {
     await expectInvalidIdBeforeAuthorization("createFollowup");
+  });
+
+  test("BUG-33: validates a successful adoption ID before authorization", async () => {
+    await expectInvalidIdBeforeAuthorization("recordAdoptionReturn");
+  });
+
+  test("BUG-33: records a return as the coordinator and answers 200 with the adoption", async () => {
+    const adoptionId = "cccccccc-dddd-4333-8444-555555555555";
+    const calls: unknown[] = [];
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async recordAdoptionReturn(args) {
+          calls.push(args);
+          return { id: adoptionId, returnedAt: "2026-11-01T00:00:00.000Z" };
+        },
+      }),
+    });
+
+    const response = await handlers.recordAdoptionReturn({
+      request: jsonRequest(
+        `https://example.test/api/admin/adoptions/successful-adoptions/${adoptionId}/return`,
+        { reason: "Returned after two weeks" },
+      ),
+      params: { id: adoptionId },
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      adoption: { id: adoptionId, returnedAt: "2026-11-01T00:00:00.000Z" },
+    });
+    expect(calls).toEqual([
+      {
+        actorUserId: staff.authUserId,
+        successfulAdoptionId: adoptionId,
+        input: { reason: "Returned after two weeks" },
+      },
+    ]);
   });
 
   test("validates a finalization case ID before authorization", async () => {

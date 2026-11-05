@@ -18,6 +18,7 @@ export type ContentServerMessageCode =
   | "internalUpdateNoDrafts"
   | "noAdoptersToContact"
   | "draftCreationFailed"
+  | "storyNotPublished"
   | "unnamedAnimal"
   | "unnamedPerson"
   | "noCaseNumber"
@@ -38,6 +39,11 @@ const CONTENT_SERVER_MESSAGE_TEXT: Record<
   draftCreationFailed: {
     zh: "通知草稿建立失敗，更新已儲存。",
     en: "The update was saved, but its notification drafts could not be created. Select Create notification drafts on the update to try again.",
+  },
+  // The drafts link to the public story page, which does not exist until the story is published.
+  storyNotPublished: {
+    zh: "故事尚未發布，未有建立通知草稿，更新已儲存。",
+    en: "The update was saved, but the story is not published yet, so no notification drafts were created. Publish the story, then select Create notification drafts on the update.",
   },
   unnamedAnimal: { zh: "（未命名）", en: "(unnamed)" },
   // An adoption application and a supporter share this stand-in.

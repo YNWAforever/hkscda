@@ -23,6 +23,7 @@ const DRAFT_CONFIG: PaymentPublicConfig = {
   version: 1,
   createdBy: "auth-1",
   updatedBy: "auth-1",
+  editedBy: [],
   submittedBy: null,
   submittedAt: null,
   publishedBy: null,

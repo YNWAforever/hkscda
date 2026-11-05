@@ -25,10 +25,51 @@ const revisionSchema = z.object({
   is_published: z.boolean(),
 });
 
-type DatabaseError = { code?: string };
+type DatabaseError = { code?: string; message?: unknown };
+
+/**
+ * The known refusals of the content RPCs (BUG-69), read from the SQLSTATE and the text the
+ * migrations raise or the unique constraint Postgres names. Only the reason code leaves this
+ * module; the database's text never does.
+ *
+ * - `finalize_content_media_session` (20260905155426): 'Internal update media cannot be a cover'
+ *   and 'Media session expired', both 23514.
+ * - `mutate_content_revision_with_audit` create_link (20260905150012): 23505 on the
+ *   `content_link` unique key (content_item_id, linked_type, linked_id, relationship) or on
+ *   `content_link_one_primary_animal_idx` (20260705120000).
+ * - save_content: 23505 on `content_item_slug_key`; publish: 'Published slug already used' or
+ *   `content_item_published_slug_unique`.
+ *
+ * A duplicate link or primary subject is a refusal of the input, not a stale version, so it is
+ * `invalid` (422): the editor shows the reason without the conflict banner. A slug clash stays a
+ * `conflict`, as before; the editor's conflict banner already names a public URL clash.
+ */
+function knownRefusal(code: string | undefined, message: string): ContentLifecycleError | null {
+  if (code === "23514") {
+    if (message === "Internal update media cannot be a cover")
+      return new ContentLifecycleError("invalid", undefined, "media_cover_internal");
+    if (message === "Media session expired")
+      return new ContentLifecycleError("invalid", undefined, "session_expired");
+  }
+  if (code === "23505") {
+    if (message.includes('"content_link_one_primary_animal_idx"'))
+      return new ContentLifecycleError("invalid", undefined, "primary_subject_exists");
+    if (message.includes('"content_link_'))
+      return new ContentLifecycleError("invalid", undefined, "link_exists");
+    if (
+      message === "Published slug already used" ||
+      message.includes('"content_item_slug_key"') ||
+      message.includes('"content_item_published_slug_unique"')
+    )
+      return new ContentLifecycleError("conflict", undefined, "slug_taken");
+  }
+  return null;
+}
 
 export function mapContentLifecycleRepositoryError(error: unknown): ContentLifecycleError {
-  const code = (error as DatabaseError | null)?.code;
+  const { code, message } = (error as DatabaseError | null) ?? {};
+  const known = knownRefusal(code, typeof message === "string" ? message : "");
+  if (known) return known;
   if (code === "40001" || code === "23505") return new ContentLifecycleError("conflict");
   if (code === "P0002") return new ContentLifecycleError("not_found");
   if (code === "22023" || code === "23514") return new ContentLifecycleError("invalid");

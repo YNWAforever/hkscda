@@ -123,14 +123,18 @@ export function createContentMediaLifecycle(ports: ContentMediaPorts, now = () =
         !Number.isFinite(Date.parse(session.expiresAt)) ||
         Date.parse(session.expiresAt) <= now().getTime()
       )
-        throw new ContentLifecycleError("invalid", "Upload session expired");
+        throw new ContentLifecycleError("invalid", "Upload session expired", "session_expired");
       const bytes = await ports.download(session.storageBucket, session.storagePath);
       if (
         bytes.byteLength !== session.byteSize ||
         bytes.byteLength > MAX_CONTENT_MEDIA_BYTES ||
         !matchesContentImage(bytes, session.mimeType)
       )
-        throw new ContentLifecycleError("invalid", "Uploaded image bytes do not match the session");
+        throw new ContentLifecycleError(
+          "invalid",
+          "Uploaded image bytes do not match the session",
+          "media_mismatch",
+        );
       return ports.finalize({
         ...owner,
         ...input,

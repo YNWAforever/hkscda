@@ -52,6 +52,22 @@ export class ContentValidationError extends Error {
   }
 }
 
+/**
+ * Social copy and adopter notification drafts point people at the public story page, so they are
+ * built from what that page shows: the published slug and the published revision's wording. While
+ * the public page serves nothing for the item (never published, archived, not yet effective),
+ * there is nothing to link to, and the request is refused as a 409 with this code.
+ */
+export class ContentNotPublishedError extends Error {
+  name = "ContentNotPublishedError";
+  readonly code = "not_published";
+  readonly status = 409;
+
+  constructor() {
+    super("Publish the story before generating outbound copy");
+  }
+}
+
 export type ContentAuditLogInsert = {
   actor_user_id: string | null;
   action: string;
@@ -258,13 +274,30 @@ export function createContentService({
     await repo.insertAuditLog({ ...row, timestamp: timestamp(now) });
   }
 
+  /**
+   * The story as its public page shows it. `content` is the authoring row: its slug and wording
+   * may be an unpublished, unreviewed edit (BUG-66). The public page answers on
+   * `content_item.published_slug` with the published revision's snapshot, so outbound copy is built
+   * from that same read; when it serves nothing for this item, there is nothing to link to.
+   */
+  async function publishedStory(content: ContentDetail): Promise<ContentDetail> {
+    if (!content.publishedSlug) throw new ContentNotPublishedError();
+    const published = await repo.getPublicContentBySlug(content.publishedSlug);
+    if (!published || published.id !== content.id || published.status !== "published") {
+      throw new ContentNotPublishedError();
+    }
+    return published;
+  }
+
   async function draftAdopterNotifications(actorUserId: string | null, update: StoryUpdate) {
     assertPublicOutboundStoryUpdate(update);
     const content = await repo.getAdminContent(update.contentItemId);
     if (!content) throw new Error("Content item not found");
 
     const recipients = await repo.resolveAdopterRecipients(content.id);
-    const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
+    // With nobody to write to there is no link to get wrong, so only a real draft needs the
+    // published story; an unpublished story with adopters is refused.
+    const story = recipients.length > 0 ? await publishedStory(content) : null;
 
     // buildAdopterNotificationDrafts dedupes within one call, but knows
     // nothing about earlier ones. Without this filter a second press of the
@@ -281,15 +314,17 @@ export function createContentService({
       existingDrafts.map((draft) => `${draft.channel}:${draft.recipientContact}`),
     );
 
-    const drafts = buildAdopterNotificationDrafts({
-      contentItemId: content.id,
-      storyUpdateId: update.id,
-      storyTitle: content.title,
-      updateTitle: update.title,
-      updateBody: update.body,
-      publicUrl,
-      recipients,
-    }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`));
+    const drafts = story
+      ? buildAdopterNotificationDrafts({
+          contentItemId: content.id,
+          storyUpdateId: update.id,
+          storyTitle: story.title,
+          updateTitle: update.title,
+          updateBody: update.body,
+          publicUrl: publicStoryUrl(publicBaseUrl, story.slug),
+          recipients,
+        }).filter((draft) => !alreadyDrafted.has(`${draft.channel}:${draft.recipientContact}`))
+      : [];
 
     if (repo.generateNotificationDraftsWithAudit) {
       return repo.generateNotificationDraftsWithAudit(drafts, actorUserId, update.id);
@@ -480,8 +515,12 @@ export function createContentService({
               notificationDrafts.warning = "沒有可聯絡的領養者，已略過通知草稿。";
             }
           } catch (error) {
-            console.error(error);
-            notificationDrafts.warning = "通知草稿建立失敗，更新已儲存。";
+            if (error instanceof ContentNotPublishedError) {
+              notificationDrafts.warning = "故事尚未發布，未有建立通知草稿，更新已儲存。";
+            } else {
+              console.error(error);
+              notificationDrafts.warning = "通知草稿建立失敗，更新已儲存。";
+            }
           }
         }
       }
@@ -634,10 +673,14 @@ export function createContentService({
       }
       if (storyUpdate) assertPublicOutboundStoryUpdate(storyUpdate);
 
-      const publicUrl = publicStoryUrl(publicBaseUrl, content.slug);
-      const variants = generateSocialCopyVariants({ content, storyUpdate, publicUrl }).filter(
-        (variant) => !parsed.platform || variant.platform === parsed.platform,
-      );
+      // The link and the story's wording come from the published story, not the draft row.
+      const story = await publishedStory(content);
+      const publicUrl = publicStoryUrl(publicBaseUrl, story.slug);
+      const variants = generateSocialCopyVariants({
+        content: story,
+        storyUpdate,
+        publicUrl,
+      }).filter((variant) => !parsed.platform || variant.platform === parsed.platform);
 
       const rows = variants.map((variant) => ({
         contentItemId: content.id,

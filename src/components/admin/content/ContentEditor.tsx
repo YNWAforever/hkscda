@@ -5,6 +5,7 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -39,13 +40,27 @@ import { pickAdminCopy, useAdminCopy } from "../i18n/copy";
 import { uploadContentMediaImage } from "./contentMediaUpload";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
+  canSetMediaAsCover,
   contentStatusTone,
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
+import {
+  CONTENT_SLUG_INPUT_PATTERN,
+  CONTENT_SUMMARY_MAX,
+  CONTENT_TEXT_MAX,
+  CONTENT_TITLE_MAX,
+} from "../../../lib/content/limits";
+import { contentApiErrorLines } from "./contentApiErrors";
 import { contentCommonCopy } from "./contentCommonCopy";
-import { ContentAdminError, contentFailure, contentLifecycleErrorMessage } from "./contentErrors";
+import {
+  ContentAdminError,
+  contentFailure,
+  contentLifecycleErrorMessage,
+  isContentConflict,
+  isUploadSessionExpired,
+} from "./contentErrors";
 import { editorCopy } from "./editorCopy";
 import {
   createEditorState,
@@ -54,6 +69,15 @@ import {
   createEditorOperationGate,
   canAcceptEditorReload,
 } from "./editorState";
+import {
+  applyOwnSave,
+  createEditorVersions,
+  expectedVersionFor,
+  markPanelClean,
+  markPanelDirty,
+  observeServerVersion,
+  savedVersionFrom,
+} from "./editorVersions";
 import { ContentRevisionPanel } from "./ContentRevisionPanel";
 import { ContentTimeline } from "./ContentTimeline";
 import { LinkedRecordPicker } from "./LinkedRecordPicker";
@@ -181,17 +205,35 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   const [historyPage, setHistoryPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
   const runOperation = useRef(createEditorOperationGate()).current;
-  const dirtyVersions = useRef<Record<string, number | undefined>>({});
-  const currentVersion = useRef(initialContent?.version);
-  const expectedFor = (panel: string) =>
-    Object.hasOwn(dirtyVersions.current, panel)
-      ? dirtyVersions.current[panel]
-      : currentVersion.current;
+  // The version each panel saves against (BUG-67): see editorVersions.ts.
+  const versions = useRef(createEditorVersions(initialContent?.version));
+  const versionsContentId = useRef(contentId);
+  if (versionsContentId.current !== contentId) {
+    // The router keeps this editor mounted when only the id changes: another item's versions
+    // say nothing about this one.
+    versionsContentId.current = contentId;
+    versions.current = createEditorVersions(undefined);
+  }
+  const expectedFor = (panel: string) => expectedVersionFor(versions.current, panel);
+  /**
+   * Sends one panel's save against its expected version. When it succeeds, the other dirty panels
+   * that started from the same version move to the version the server returned, so their own
+   * saves are not refused as a conflict this editor caused itself.
+   */
+  const saveAgainst = async <T,>(
+    panel: string,
+    request: (expectedVersion: number | undefined) => Promise<T>,
+  ): Promise<T> => {
+    const sent = expectedFor(panel);
+    const data = await request(sent);
+    versions.current = applyOwnSave(versions.current, sent, savedVersionFrom(data, sent));
+    return data;
+  };
   const hasDirty = Object.values(editor.dirty).some(Boolean);
   const reportDirty = useCallback((panel: string, dirty: boolean) => {
-    if (dirty && !Object.hasOwn(dirtyVersions.current, panel))
-      dirtyVersions.current[panel] = currentVersion.current;
-    if (!dirty) delete dirtyVersions.current[panel];
+    versions.current = dirty
+      ? markPanelDirty(versions.current, panel)
+      : markPanelClean(versions.current, panel);
     setEditor((current) => editorTransition(current, { type: dirty ? "edit" : "saved", panel }));
   }, []);
   const leaveDialog = useLeaveConfirm({ dirty: hasDirty, consequence: copy.leaveConfirm });
@@ -227,7 +269,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const content = contentQuery.data?.content;
   useBreadcrumbRecordName(content?.title);
-  currentVersion.current = content?.version;
+  versions.current = observeServerVersion(versions.current, content?.version);
   useEffect(() => {
     if (content)
       setEditor((current) => ({
@@ -255,7 +297,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       setEditor(
         createEditorState(data.data.content.version, data.data.content.revisionId ?? undefined),
       );
-      dirtyVersions.current = {};
+      versions.current = createEditorVersions(data.data.content.version);
       setResetKey((value) => value + 1);
       setComparison(undefined);
       setUpdateDraftNotice(null);
@@ -284,10 +326,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const updateContent = useMutation({
     mutationFn: (body: ContentFormState) =>
-      fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ ...normalizeForm(body), expectedVersion: expectedFor("content") }),
-      }),
+      saveAgainst("content", (expectedVersion) =>
+        fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}`, {
+          method: "PATCH",
+          body: JSON.stringify({ ...normalizeForm(body), expectedVersion }),
+        }),
+      ),
     onSuccess: (data) => {
       setValidationIssues([]);
       queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
@@ -298,17 +342,21 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const updatePublicationMetadata = useMutation({
     mutationFn: (body: PublicationMetadataFormState) =>
-      fetchAdminJson(`/api/admin/content/${contentId}/publication-metadata`, {
-        method: "PUT",
-        body: JSON.stringify({
-          expectedVersion: expectedFor("metadata"),
-          contentClass: body.contentClass,
-          sourceReference: emptyToNull(body.sourceReference),
-          contentOwner: emptyToNull(body.contentOwner),
-          effectiveFrom: body.effectiveFrom ? parseDatetimeLocalToIso(body.effectiveFrom) : null,
-          effectiveUntil: body.effectiveUntil ? parseDatetimeLocalToIso(body.effectiveUntil) : null,
+      saveAgainst("metadata", (expectedVersion) =>
+        fetchAdminJson(`/api/admin/content/${contentId}/publication-metadata`, {
+          method: "PUT",
+          body: JSON.stringify({
+            expectedVersion,
+            contentClass: body.contentClass,
+            sourceReference: emptyToNull(body.sourceReference),
+            contentOwner: emptyToNull(body.contentOwner),
+            effectiveFrom: body.effectiveFrom ? parseDatetimeLocalToIso(body.effectiveFrom) : null,
+            effectiveUntil: body.effectiveUntil
+              ? parseDatetimeLocalToIso(body.effectiveUntil)
+              : null,
+          }),
         }),
-      }),
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -343,13 +391,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const upsertStoryProfile = useMutation({
     mutationFn: (body: StoryProfileFormState) =>
-      fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
-        method: "PUT",
-        body: JSON.stringify({
-          ...normalizeStoryProfileForm(body),
-          expectedVersion: expectedFor("profile"),
+      saveAgainst("profile", (expectedVersion) =>
+        fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/story-profile`, {
+          method: "PUT",
+          body: JSON.stringify({ ...normalizeStoryProfileForm(body), expectedVersion }),
         }),
-      }),
+      ),
     onSuccess: (data) => {
       queryClient.setQueryData(["admin-content-detail", contentId, historyPage], data);
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
@@ -359,15 +406,14 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createStoryUpdate = useMutation({
     mutationFn: (body: StoryUpdateFormState) =>
-      fetchAdminJson<{ id: string; notificationDrafts?: AdopterDraftNotice }>(
-        `/api/admin/content/${contentId}/updates`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            ...normalizeStoryUpdateForm(body),
-            expectedVersion: expectedFor("update"),
-          }),
-        },
+      saveAgainst("update", (expectedVersion) =>
+        fetchAdminJson<{ id: string; notificationDrafts?: AdopterDraftNotice }>(
+          `/api/admin/content/${contentId}/updates`,
+          {
+            method: "POST",
+            body: JSON.stringify({ ...normalizeStoryUpdateForm(body), expectedVersion }),
+          },
+        ),
       ),
     onSuccess: (result) => {
       setUpdateDraftNotice(result.notificationDrafts ?? null);
@@ -377,7 +423,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createContentMedia = useMutation({
     mutationFn: (body: ContentMediaFormState) =>
-      createContentMediaWithUpload(contentId, body, expectedFor("media")),
+      saveAgainst("media", (expectedVersion) =>
+        createContentMediaWithUpload(contentId, body, expectedVersion),
+      ),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
       void queryClient.invalidateQueries({ queryKey: ["admin-content"] });
@@ -386,10 +434,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
 
   const createContentLink = useMutation({
     mutationFn: (body: ContentLinkFormState) =>
-      fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
-        method: "POST",
-        body: JSON.stringify({ ...body, expectedVersion: expectedFor("link") }),
-      }),
+      saveAgainst("link", (expectedVersion) =>
+        fetchAdminJson<{ id: string }>(`/api/admin/content/${contentId}/links`, {
+          method: "POST",
+          body: JSON.stringify({ ...body, expectedVersion }),
+        }),
+      ),
     onSuccess: () =>
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] }),
   });
@@ -481,9 +531,7 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     createContentMedia.error,
     createContentLink.error,
     restoreContent.error,
-  ].some((error) =>
-    Boolean(error && typeof error === "object" && "status" in error && error.status === 409),
-  );
+  ].some(isContentConflict);
   const publishAllowed = canPublish({ ...editor, pending: editorActionPending, conflict });
   if (contentQuery.isLoading) {
     return (
@@ -1057,6 +1105,7 @@ function ContentEditorForm({
         <Field label={copy.title}>
           <input
             required
+            maxLength={CONTENT_TITLE_MAX}
             value={form.title}
             onChange={(event) => updateField("title", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1065,6 +1114,7 @@ function ContentEditorForm({
         <Field label={copy.slug}>
           <input
             required
+            pattern={CONTENT_SLUG_INPUT_PATTERN}
             value={form.slug}
             onChange={(event) => updateField("slug", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1087,6 +1137,7 @@ function ContentEditorForm({
         </Field>
         <Field label={copy.subtitle}>
           <input
+            maxLength={CONTENT_TEXT_MAX.subtitle}
             value={form.subtitle}
             onChange={(event) => updateField("subtitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1098,6 +1149,7 @@ function ContentEditorForm({
         <textarea
           required
           rows={3}
+          maxLength={CONTENT_SUMMARY_MAX}
           value={form.summary}
           onChange={(event) => updateField("summary", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1106,6 +1158,7 @@ function ContentEditorForm({
       <Field label={copy.body}>
         <textarea
           rows={7}
+          maxLength={CONTENT_TEXT_MAX.body}
           value={form.body}
           onChange={(event) => updateField("body", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1115,6 +1168,7 @@ function ContentEditorForm({
       <div className="grid gap-3 md:grid-cols-2">
         <Field label={copy.ctaLabel}>
           <input
+            maxLength={CONTENT_TEXT_MAX.ctaLabel}
             value={form.ctaLabel}
             onChange={(event) => updateField("ctaLabel", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1140,6 +1194,7 @@ function ContentEditorForm({
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <Field label={copy.seoTitle}>
             <input
+              maxLength={CONTENT_TEXT_MAX.seoTitle}
               value={form.seoTitle}
               onChange={(event) => updateField("seoTitle", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1147,6 +1202,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.seoDescription}>
             <input
+              maxLength={CONTENT_TEXT_MAX.seoDescription}
               value={form.seoDescription}
               onChange={(event) => updateField("seoDescription", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1154,6 +1210,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.ogTitle}>
             <input
+              maxLength={CONTENT_TEXT_MAX.ogTitle}
               value={form.ogTitle}
               onChange={(event) => updateField("ogTitle", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1161,6 +1218,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.ogDescription}>
             <input
+              maxLength={CONTENT_TEXT_MAX.ogDescription}
               value={form.ogDescription}
               onChange={(event) => updateField("ogDescription", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1662,6 +1720,8 @@ function ContentMediaPanel({
     isCover: false,
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const coverAllowed = canSetMediaAsCover(content.updates, form.storyUpdateId);
+  const coverNoteId = useId();
 
   return (
     <section
@@ -1710,9 +1770,15 @@ function ContentMediaPanel({
         <Field label={copy.update}>
           <select
             value={form.storyUpdateId}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, storyUpdateId: event.target.value }))
-            }
+            onChange={(event) => {
+              const storyUpdateId = event.target.value;
+              setForm((current) => ({
+                ...current,
+                storyUpdateId,
+                // An internal update's image cannot be the cover (BUG-69).
+                isCover: canSetMediaAsCover(content.updates, storyUpdateId) && current.isCover,
+              }));
+            }}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
           >
             <option value="">{copy.whole}</option>
@@ -1755,13 +1821,20 @@ function ContentMediaPanel({
         <label className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-panel)] md:col-span-2">
           <input
             type="checkbox"
-            checked={form.isCover}
+            checked={coverAllowed && form.isCover}
+            disabled={!coverAllowed}
+            aria-describedby={coverAllowed ? undefined : coverNoteId}
             onChange={(event) =>
               setForm((current) => ({ ...current, isCover: event.target.checked }))
             }
           />
           {copy.cover}
         </label>
+        {coverAllowed ? null : (
+          <p id={coverNoteId} className="text-sm text-[var(--color-text-muted)] md:col-span-3">
+            {copy.coverInternal}
+          </p>
+        )}
         <button
           type="submit"
           disabled={pending || !form.file}
@@ -1841,6 +1914,11 @@ export function ActionErrors({ errors }: { errors: unknown[] }) {
       className="rounded-lg border border-[var(--color-error)] bg-[var(--color-surface)] p-3 text-sm font-semibold text-[var(--color-error)]"
     >
       {visibleErrors.map((error) => {
+        // An error with a reason of its own (an unpublished story) is explained before the
+        // generic lifecycle text, which would call it an internal failure.
+        const explained = contentApiErrorLines(error, language);
+        if (explained)
+          return explained.map((line) => <p key={`${error.message}:${line}`}>{line}</p>);
         const failure = contentFailure(error);
         const message = failure.code
           ? common.errors[failure.code]
@@ -1975,7 +2053,16 @@ export async function createContentMediaWithUpload(
       sessions.delete(cacheKey);
       return recovered;
     } catch (error) {
-      if (!error || typeof error !== "object" || !("status" in error) || error.status !== 404)
+      if (isUploadSessionExpired(error)) {
+        // The cached session can never be finalized now (BUG-69): start a new one.
+        sessions.delete(cacheKey);
+        target = undefined;
+      } else if (
+        !error ||
+        typeof error !== "object" ||
+        !("status" in error) ||
+        error.status !== 404
+      )
         throw error;
     }
   }
@@ -2007,7 +2094,14 @@ export async function createContentMediaWithUpload(
     },
   });
   if (!target) throw new Error("Missing upload session");
-  const result = await finalize(storagePath, target.uploadSessionId);
+  let result: Awaited<ReturnType<typeof finalize>>;
+  try {
+    result = await finalize(storagePath, target.uploadSessionId);
+  } catch (error) {
+    // An expired session is never reused: the admin's retry opens a new one (BUG-69).
+    if (isUploadSessionExpired(error)) sessions.delete(cacheKey);
+    throw error;
+  }
   sessions.delete(cacheKey);
   return result;
 }

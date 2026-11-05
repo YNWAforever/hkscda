@@ -160,6 +160,11 @@ export type ContentSummary = {
 
 export type ContentDetail = ContentSummary & {
   history?: { page: number; hasMore: boolean };
+  /**
+   * The slug the public story page answers on (`content_item.published_slug`), set by publishing.
+   * `slug` is the draft's slug and may differ. Only the admin authoring read sets it.
+   */
+  publishedSlug?: string | null;
   version?: number;
   revisionId?: string | null;
   body: string | null;

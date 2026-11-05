@@ -154,6 +154,11 @@ export const finalizationCopy = defineAdminCopy({
     finalize: "完成領養",
     fillRequired: "請填寫必填欄位。費用可輸入元及角分。",
     outcome: "結果",
+    recordReturn: "記錄退回",
+    returnConsequence: "動物會回復為可領養，領養紀錄會保留並標示為已退回。原因會記錄在個案歷史中。",
+    returned: "已退回",
+    returnedAt: "退回日期",
+    returnReason: "退回原因",
   },
   en: {
     title: "Finalisation",
@@ -177,5 +182,11 @@ export const finalizationCopy = defineAdminCopy({
     finalize: "Finalise adoption",
     fillRequired: "Fill in the required fields. Enter the fee in dollars and cents.",
     outcome: "Outcome",
+    recordReturn: "Record return",
+    returnConsequence:
+      "The animal becomes available again. The adoption record stays and is marked as returned. The reason is saved in the case history.",
+    returned: "Returned",
+    returnedAt: "Return date",
+    returnReason: "Return reason",
   },
 });

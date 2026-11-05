@@ -1,5 +1,6 @@
 import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { useState } from "react";
+import { offeredLegacyProfileId } from "./legacyReconciliationLogic";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { volunteerAdminErrorMessage } from "../../../lib/volunteers/adminErrors";
@@ -37,7 +38,8 @@ export function VolunteerLegacyReconciliation({
     queryFn: () => post<{ registrations: LegacyRow[] }>({ action: "list_legacy" }),
   });
   const [registrationId, setRegistrationId] = useState("");
-  const [profileId, setProfileId] = useState("");
+  const [chosenProfileId, setProfileId] = useState("");
+  const profileId = offeredLegacyProfileId(chosenProfileId, profiles);
   const [reason, setReason] = useState("");
   const row = query.data?.registrations.find((r) => r.id === registrationId);
   const mutation = useMutation({
@@ -106,6 +108,7 @@ export function VolunteerLegacyReconciliation({
             ))}
         </select>
       </label>
+      <p>{copy.profileFromSearch}</p>
       <label className="block">
         {copy.reason}
         <textarea

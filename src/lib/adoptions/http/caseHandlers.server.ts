@@ -16,6 +16,7 @@ export type CaseService = Pick<
   | "createMatch"
   | "createFollowup"
   | "finalizeAdoption"
+  | "recordAdoptionReturn"
 >;
 
 export function createCaseHandlers({
@@ -34,6 +35,7 @@ export function createCaseHandlers({
   createMatch(context: HandlerContext): Promise<Response>;
   createFollowup(context: HandlerContext): Promise<Response>;
   finalizeAdoption(context: HandlerContext): Promise<Response>;
+  recordAdoptionReturn(context: HandlerContext): Promise<Response>;
 } {
   return {
     listCases({ request }: HandlerContext) {
@@ -140,6 +142,19 @@ export function createCaseHandlers({
           input: await jsonBody(request),
         });
         return jsonResponse({ adoption }, { status: 201 });
+      });
+    },
+
+    recordAdoptionReturn({ request, params }: HandlerContext) {
+      return withErrors(async () => {
+        const successfulAdoptionId = requiredUuid(params, "id");
+        const admin = await requireCoordinator(request);
+        const adoption = await service.recordAdoptionReturn({
+          actorUserId: admin.authUserId,
+          successfulAdoptionId,
+          input: await jsonBody(request),
+        });
+        return jsonResponse({ adoption });
       });
     },
   };

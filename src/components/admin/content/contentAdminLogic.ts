@@ -1,10 +1,24 @@
 import type { AdminLanguage } from "../../../lib/admin/language";
+import { CONTENT_SLUG_MAX } from "../../../lib/content/limits";
 import type {
   ContentStatus,
   ContentType,
   NotificationDraftStatus,
+  StoryUpdateVisibility,
 } from "../../../lib/content/types";
 import { contentCommonCopy } from "./contentCommonCopy";
+
+/**
+ * Whether an image added to `storyUpdateId` ("" for the whole item) may be set as the cover. The
+ * database refuses an internal update's image as the cover (BUG-69), so the editor does not offer it.
+ */
+export function canSetMediaAsCover(
+  updates: readonly { id: string; visibility: StoryUpdateVisibility }[],
+  storyUpdateId: string,
+): boolean {
+  if (!storyUpdateId) return true;
+  return updates.find((update) => update.id === storyUpdateId)?.visibility !== "internal";
+}
 
 export type ContentSearchInput = {
   q?: string;
@@ -76,7 +90,7 @@ export function suggestSlug(title: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 180)
+    .slice(0, CONTENT_SLUG_MAX)
     .replace(/-+$/g, "");
 }
 

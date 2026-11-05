@@ -36,6 +36,25 @@ describe("ContentCreateForm", () => {
       expect(markup).toContain(label);
     }
   });
+
+  test("BUG-73: the body and optional text inputs carry the server's length limits", async () => {
+    const { ContentCreateForm } = await import("./ContentCreateForm");
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentCreateForm />
+      </QueryClientProvider>,
+    );
+    const inputAfter = (label: string) =>
+      new RegExp(`${label.replace(/[()]/g, "\\$&")}<(input|textarea)[^>]*>`).exec(markup)?.[0];
+    const optional = contentCommonCopy.zh.optionalFields;
+
+    expect(inputAfter(optional.ctaLabel)).toContain('maxLength="60"');
+    expect(inputAfter(optional.seoTitle)).toContain('maxLength="120"');
+    expect(inputAfter(optional.seoDescription)).toContain('maxLength="320"');
+    expect(inputAfter(optional.ogTitle)).toContain('maxLength="180"');
+    expect(inputAfter(optional.ogDescription)).toContain('maxLength="320"');
+    expect(inputAfter("正文（可稍後填寫）")).toContain('maxLength="50000"');
+  });
 });
 
 describe("buildCreateContentPayload", () => {
@@ -121,6 +140,28 @@ describe("createErrorMessage", () => {
     const message = createErrorMessage(error);
     expect(message).toContain("slug");
     expect(message).toContain("此網址格式不正確");
+  });
+
+  test("BUG-68: names each field by its form label, with the reason in the admin's language", async () => {
+    const { createErrorMessage } = await import("./ContentCreateForm");
+    const error = new AdminApiError({
+      status: 400,
+      code: "invalid",
+      message: "Invalid content management request",
+      fields: {
+        title: ["String must contain at most 180 character(s)"],
+        ctaUrl: ["CTA URL must be an http(s) URL or a root-relative path"],
+      },
+    });
+
+    expect(createErrorMessage(error).split("\n")).toEqual([
+      "標題：不可超過 180 個字元。",
+      "CTA 連結：請填寫 http(s) 網址，或以 / 開頭的站內路徑。",
+    ]);
+    expect(createErrorMessage(error, "en").split("\n")).toEqual([
+      "Title: Must be 180 characters or fewer.",
+      "CTA link: Enter an http(s) URL or a site path starting with /.",
+    ]);
   });
 
   test("falls back to the generic message for unknown errors", async () => {

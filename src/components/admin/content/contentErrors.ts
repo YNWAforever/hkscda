@@ -6,19 +6,63 @@ import { contentCommonCopy } from "./contentCommonCopy";
 /** Why a content logic module refused to go on. The text of each code is in `contentCommonCopy`. */
 export type ContentErrorCode = keyof typeof contentCommonCopy.zh.errors;
 
-export type ContentLifecycleErrorCode = "conflict" | "not_found" | "invalid" | "internal";
+/**
+ * The code a lifecycle failure carries: its category, or the reason of a known refusal (BUG-69,
+ * `ContentLifecycleReason` on the server), so the line names the real cause.
+ */
+export type ContentLifecycleErrorCode =
+  | "conflict"
+  | "not_found"
+  | "invalid"
+  | "internal"
+  | "media_cover_internal"
+  | "session_expired"
+  | "media_mismatch"
+  | "link_exists"
+  | "primary_subject_exists"
+  | "slug_taken";
 
 const CONTENT_LIFECYCLE_ERROR_CODES: readonly ContentLifecycleErrorCode[] = [
   "conflict",
   "not_found",
   "invalid",
   "internal",
+  "media_cover_internal",
+  "session_expired",
+  "media_mismatch",
+  "link_exists",
+  "primary_subject_exists",
+  "slug_taken",
 ];
+
+/** Refusals of the input that are never a stale version, whatever status they came with. */
+const NOT_A_CONFLICT: readonly string[] = ["link_exists", "primary_subject_exists"];
 
 function contentLifecycleCode(error: unknown): ContentLifecycleErrorCode | null {
   if (!(error instanceof AdminApiError)) return null;
   const code = error.code;
   return CONTENT_LIFECYCLE_ERROR_CODES.find((known) => known === code) ?? "internal";
+}
+
+function errorCode(error: object): unknown {
+  return "code" in error ? error.code : undefined;
+}
+
+/**
+ * Whether a failed save is a conflict the editor shows its conflict banner for (and blocks
+ * Publish on): a 409, except a refusal whose reason says the input clashes with a record that
+ * already exists, such as a duplicate link (BUG-69).
+ */
+export function isContentConflict(error: unknown): boolean {
+  if (!error || typeof error !== "object" || !("status" in error) || error.status !== 409)
+    return false;
+  const code = errorCode(error);
+  return typeof code !== "string" || !NOT_A_CONFLICT.includes(code);
+}
+
+/** Whether a failure says the private upload session expired, so a retry needs a new one. */
+export function isUploadSessionExpired(error: unknown): boolean {
+  return Boolean(error && typeof error === "object" && errorCode(error) === "session_expired");
 }
 
 /**

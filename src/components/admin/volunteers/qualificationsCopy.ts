@@ -10,9 +10,7 @@ export const qualificationsCopy = defineAdminCopy({
     loading: "載入中…",
     loadFailed: "未能載入身份資料。",
     reload: "重新載入",
-    choose: "選擇義工",
-    chooseOption: "請選擇待核實或已有身份",
-    /** The status of a profile in the list of profiles. */
+    /** The status of the chosen profile. */
     status: (status: string) =>
       (({ pending: "待核實", active: "已核實" }) as Record<string, string>)[status] ?? "暫停",
     option: (name: string, status: string, tier: string) => `${name} · ${status} · ${tier}`,
@@ -56,8 +54,6 @@ export const qualificationsCopy = defineAdminCopy({
     loading: "Loading…",
     loadFailed: "Could not load the profile data. ",
     reload: "Reload",
-    choose: "Choose a volunteer",
-    chooseOption: "Choose a profile awaiting verification or an existing one",
     status: (status: string) =>
       (({ pending: "Awaiting verification", active: "Verified" }) as Record<string, string>)[
         status

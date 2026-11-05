@@ -274,6 +274,7 @@ import { Route as ApiAdminAdoptionsCasesIdFinalizeRouteImport } from './routes/a
 import { Route as ApiAdminAdoptionsCasesIdFollowupsRouteImport } from './routes/api/admin/adoptions/cases/$id/followups'
 import { Route as ApiAdminAdoptionsCasesIdMatchesRouteImport } from './routes/api/admin/adoptions/cases/$id/matches'
 import { Route as ApiAdminAdoptionsCasesIdStatusRouteImport } from './routes/api/admin/adoptions/cases/$id/status'
+import { Route as ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRouteImport } from './routes/api/admin/adoptions/successful-adoptions/$id/return'
 import { Route as ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport } from './routes/api/admin/content/updates/$updateId/notification-drafts'
 import { Route as ApiAdminDonationsDeliveryJobIdRetryRouteImport } from './routes/api/admin/donations/delivery/$jobId/retry'
 import { Route as ApiAdminExportsJobsIdDownloadRouteImport } from './routes/api/admin/exports/jobs/$id/download'
@@ -1749,6 +1750,12 @@ const ApiAdminAdoptionsCasesIdStatusRoute =
     path: '/status',
     getParentRoute: () => ApiAdminAdoptionsCasesIdRoute,
   } as any)
+const ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute =
+  ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRouteImport.update({
+    id: '/api/admin/adoptions/successful-adoptions/$id/return',
+    path: '/api/admin/adoptions/successful-adoptions/$id/return',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute =
   ApiAdminContentUpdatesUpdateIdNotificationDraftsRouteImport.update({
     id: '/updates/$updateId/notification-drafts',
@@ -2130,6 +2137,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/adoptions/cases/$id/followups': typeof ApiAdminAdoptionsCasesIdFollowupsRoute
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
+  '/api/admin/adoptions/successful-adoptions/$id/return': typeof ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/exports/jobs/$id/download': typeof ApiAdminExportsJobsIdDownloadRoute
@@ -2415,6 +2423,7 @@ export interface FileRoutesByTo {
   '/api/admin/adoptions/cases/$id/followups': typeof ApiAdminAdoptionsCasesIdFollowupsRoute
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
+  '/api/admin/adoptions/successful-adoptions/$id/return': typeof ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/exports/jobs/$id/download': typeof ApiAdminExportsJobsIdDownloadRoute
@@ -2702,6 +2711,7 @@ export interface FileRoutesById {
   '/api/admin/adoptions/cases/$id/followups': typeof ApiAdminAdoptionsCasesIdFollowupsRoute
   '/api/admin/adoptions/cases/$id/matches': typeof ApiAdminAdoptionsCasesIdMatchesRoute
   '/api/admin/adoptions/cases/$id/status': typeof ApiAdminAdoptionsCasesIdStatusRoute
+  '/api/admin/adoptions/successful-adoptions/$id/return': typeof ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute
   '/api/admin/content/updates/$updateId/notification-drafts': typeof ApiAdminContentUpdatesUpdateIdNotificationDraftsRoute
   '/api/admin/donations/delivery/$jobId/retry': typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   '/api/admin/exports/jobs/$id/download': typeof ApiAdminExportsJobsIdDownloadRoute
@@ -2990,6 +3000,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/followups'
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
+    | '/api/admin/adoptions/successful-adoptions/$id/return'
     | '/api/admin/content/updates/$updateId/notification-drafts'
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/exports/jobs/$id/download'
@@ -3275,6 +3286,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/followups'
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
+    | '/api/admin/adoptions/successful-adoptions/$id/return'
     | '/api/admin/content/updates/$updateId/notification-drafts'
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/exports/jobs/$id/download'
@@ -3561,6 +3573,7 @@ export interface FileRouteTypes {
     | '/api/admin/adoptions/cases/$id/followups'
     | '/api/admin/adoptions/cases/$id/matches'
     | '/api/admin/adoptions/cases/$id/status'
+    | '/api/admin/adoptions/successful-adoptions/$id/return'
     | '/api/admin/content/updates/$updateId/notification-drafts'
     | '/api/admin/donations/delivery/$jobId/retry'
     | '/api/admin/exports/jobs/$id/download'
@@ -3749,6 +3762,7 @@ export interface RootRouteChildren {
   ApiAdminVolunteersSourcesIndexRoute: typeof ApiAdminVolunteersSourcesIndexRoute
   ApiAdminAdoptionsAnimalsIdInternalRoute: typeof ApiAdminAdoptionsAnimalsIdInternalRoute
   ApiAdminAdoptionsAnimalsIdStatusRoute: typeof ApiAdminAdoptionsAnimalsIdStatusRoute
+  ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute: typeof ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute
   ApiAdminDonationsDeliveryJobIdRetryRoute: typeof ApiAdminDonationsDeliveryJobIdRetryRoute
   ApiAdminVolunteersJobsIdRetryRoute: typeof ApiAdminVolunteersJobsIdRetryRoute
   ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute: typeof ApiAdminAdoptionsApplicationsApplicationIdPhotosPhotoIdRoute
@@ -5611,6 +5625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminAdoptionsCasesIdStatusRouteImport
       parentRoute: typeof ApiAdminAdoptionsCasesIdRoute
     }
+    '/api/admin/adoptions/successful-adoptions/$id/return': {
+      id: '/api/admin/adoptions/successful-adoptions/$id/return'
+      path: '/api/admin/adoptions/successful-adoptions/$id/return'
+      fullPath: '/api/admin/adoptions/successful-adoptions/$id/return'
+      preLoaderRoute: typeof ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/content/updates/$updateId/notification-drafts': {
       id: '/api/admin/content/updates/$updateId/notification-drafts'
       path: '/updates/$updateId/notification-drafts'
@@ -6714,6 +6735,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminAdoptionsAnimalsIdInternalRoute:
     ApiAdminAdoptionsAnimalsIdInternalRoute,
   ApiAdminAdoptionsAnimalsIdStatusRoute: ApiAdminAdoptionsAnimalsIdStatusRoute,
+  ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute:
+    ApiAdminAdoptionsSuccessfulAdoptionsIdReturnRoute,
   ApiAdminDonationsDeliveryJobIdRetryRoute:
     ApiAdminDonationsDeliveryJobIdRetryRoute,
   ApiAdminVolunteersJobsIdRetryRoute: ApiAdminVolunteersJobsIdRetryRoute,

@@ -3,6 +3,7 @@ import { readAdminJson } from "../../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../../http/publicJson.server";
 import { createSupabaseServiceClient, requireAdmin } from "../../donations/supabase.server";
 import { pendingWorkQuerySchema, readPendingWorkSnapshot } from "../pending";
+import type { AdminRole } from "../../admin/access";
 export const volunteerTaskSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("list"), ...pendingWorkQuerySchema.shape }).strict(),
   z.object({ action: z.literal("retry"), id: z.string().uuid() }).strict(),
@@ -15,7 +16,7 @@ export const volunteerTaskSchema = z.discriminatedUnion("action", [
     .strict(),
 ]);
 export function createVolunteerTaskHandler(deps: {
-  authorize: (request: Request) => Promise<{ authUserId: string }>;
+  authorize: (request: Request) => Promise<{ authUserId: string; role: AdminRole }>;
   rpc: (
     name: "volunteer_task_command" | "volunteer_pending_work_snapshot",
     args: Record<string, unknown>,
@@ -55,6 +56,10 @@ export function createVolunteerTaskHandler(deps: {
           { headers },
         );
       }
+      // Retrying a failed notification is admin-only, as on
+      // /api/admin/volunteers/jobs/{id}/retry; staff keep list and complete (BUG-63).
+      if (command.action === "retry" && actor.role !== "admin")
+        return Response.json({ error: "Forbidden" }, { status: 403, headers });
       const data = await deps.rpc("volunteer_task_command", {
         p_actor: actor.authUserId,
         p_command: command,

@@ -35,12 +35,12 @@ const person = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
+const profiles = [
+  person(),
+  person({ id: "profile-2", tier: "regular", status: "active", birth_date: "" }),
+  person({ id: "profile-3", tier: "senior", status: "suspended" }),
+];
 const qualificationData = {
-  profiles: [
-    person(),
-    person({ id: "profile-2", tier: "regular", status: "active", birth_date: "" }),
-    person({ id: "profile-3", tier: "senior", status: "suspended" }),
-  ],
   credentials: [
     {
       id: "credential-1",
@@ -76,10 +76,29 @@ const qualificationData = {
   ],
 };
 
+/**
+ * The screen reads the definitions (`list`) and the chosen profile (the directory detail) under
+ * the same "volunteer-qualifications" prefix, and the mocked useQuery answers by that prefix, so
+ * one answer carries both: the definitions and the chosen profile with its credentials.
+ */
+function profileData(profileId: string) {
+  const profile = profiles.find((p) => p.id === profileId) ?? profiles[0];
+  return {
+    credential_definitions: qualificationData.credential_definitions,
+    profile,
+    credentials: qualificationData.credentials.filter((c) => c.profile_id === profile.id),
+    registrations: [],
+    attendance_events: [],
+    verification_history: [],
+  };
+}
+
 function qualifications(
   language: "en" | "zh",
   profileId = "profile-1",
-  data: Record<string, unknown> = { "volunteer-qualifications": kit.ok(qualificationData) },
+  data: Record<string, unknown> = {
+    "volunteer-qualifications": kit.ok(profileData(profileId)),
+  },
 ) {
   let markup = "";
   kit.withQueries(data, () => {
@@ -90,7 +109,7 @@ function qualifications(
 }
 
 describe("the qualification verification in English", () => {
-  test("shows the list of profiles, the verification of one and its qualifications", () => {
+  test("shows the chosen profile, its verification and its qualifications", () => {
     const markup = qualifications("en");
     expectNoChineseText(markup, { allow: POLICY_ALLOW });
     for (const text of [
@@ -99,11 +118,7 @@ describe("the qualification verification in English", () => {
       "A Remark that a volunteer fills in themselves does not grant a skill.",
       "Back to the volunteer directory",
       "Volunteer calendar",
-      'aria-label="Choose a volunteer"',
-      "Choose a profile awaiting verification or an existing one",
       `${POLICY_TEXT.volunteer} · Awaiting verification · Newcomer`,
-      `${POLICY_TEXT.volunteer} · Verified · Regular`,
-      `${POLICY_TEXT.volunteer} · Paused · Senior`,
       `${POLICY_TEXT.volunteer} · Identity verification`,
       "View the full volunteer record and service history",
       "Date of birth: 1 Jan 1990 (Mon)",
@@ -141,7 +156,30 @@ describe("the qualification verification in English", () => {
     expect(markup).toContain("Unnamed qualification · Verified · No expiry date");
     expect(markup.replace(/ value="[^"]*"/g, "")).not.toContain("forgotten_key");
     expect(markup.match(/Revoke qualification/g)).toHaveLength(2);
-    expect(rawKeysIn(markup)).toEqual(["profile-1", "profile-2", "profile-3"]);
+    expect(rawKeysIn(markup)).toEqual([]);
+  });
+
+  // BUG-65: the page used to list every profile (with birth date) from `list`. It now shows
+  // only the profile chosen through the directory search.
+  test("BUG-65: shows only the chosen profile, never a list of every profile", () => {
+    const chosen = qualifications("en", "profile-3");
+    expect(chosen).toContain(`${POLICY_TEXT.volunteer} · Paused · Senior`);
+    expect(chosen).not.toContain("Awaiting verification · Newcomer");
+    expect(chosen).not.toContain("Verified · Regular");
+    expect(chosen).not.toContain('<option value="profile-');
+    // An answer for another profile (a stale cache entry) is not shown as the chosen one.
+    const mismatched = qualifications("en", "profile-2", {
+      "volunteer-qualifications": kit.ok(profileData("profile-1")),
+    });
+    expect(mismatched).not.toContain("Identity verification");
+    expect(mismatched).not.toContain("1 Jan 1990");
+    // With nothing chosen, nothing about any profile is shown.
+    const none = qualifications("en", "");
+    expect(none).not.toContain("1 Jan 1990");
+    expect(none).not.toContain(POLICY_TEXT.evidence);
+    // A chosen profile that could not be read offers a retry.
+    const failed = qualifications("en", "profile-1", { "volunteer-qualifications": kit.failed() });
+    expect(failed).toContain("Could not load the profile data.");
   });
 
   test("says a birth date is not provided, and nothing for a profile that is not chosen", () => {
@@ -198,11 +236,7 @@ describe("the qualification verification in English", () => {
       "只按已核實證據設定級別及課程資格。自填 Remark 不會授予技能；既有出席及名單會保留。",
       "返回義工名冊",
       "義工月曆",
-      'aria-label="選擇義工"',
-      "請選擇待核實或已有身份",
       `${POLICY_TEXT.volunteer} · 待核實 · 新手義工`,
-      `${POLICY_TEXT.volunteer} · 已核實 · 恆常義工`,
-      `${POLICY_TEXT.volunteer} · 暫停 · 資深義工`,
       `${POLICY_TEXT.volunteer} · 身份核實`,
       "查看完整義工檔案及服務紀錄",
       "出生日期：1990年1月1日 (一)",

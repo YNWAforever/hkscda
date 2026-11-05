@@ -63,6 +63,7 @@ describe("coordinator csv builders", () => {
           adoptionFeeCents: 12345,
           approvalDate: "2026-06-27",
           pickupDate: null,
+          returnedAt: null,
         },
       ]),
     ).toContain("adoption-1,case-1,A-001,profile-1,supporter-1,animal-1,Mochi,123.45");
@@ -88,4 +89,24 @@ describe("coordinator csv builders", () => {
       ]),
     ).toContain("task-1,Follow up,Open,urgent");
   });
+});
+
+test("BUG-33: the successful adoption CSV carries the return date", () => {
+  const csv = buildCoordinatorSuccessfulAdoptionCsv([
+    {
+      successfulAdoptionId: "adoption-1",
+      caseId: "case-1",
+      caseNumber: "A-001",
+      adopterProfileId: "profile-1",
+      supporterId: "supporter-1",
+      animalId: "animal-1",
+      animalName: "Mochi",
+      adoptionFeeCents: null,
+      approvalDate: "2026-06-27",
+      pickupDate: null,
+      returnedAt: "2026-10-01T02:00:00.000Z",
+    },
+  ]);
+  expect(csv.split("\n")[0]).toContain(",pickup_date,returned_at");
+  expect(csv).toContain("2026-10-01T02:00:00.000Z");
 });

@@ -224,8 +224,7 @@ export function createAdminAccessService({
 
       if (input.status) assertPatchStatusTransition(user.status, input.status);
       // pending -> disabled -> active would skip accepting the invite. The
-      // update_admin_user_with_audit RPC still allows it until a migration adds
-      // the same check there (BUG-55).
+      // update_admin_user_with_audit RPC refuses it too (20261030130000, BUG-55).
       if (user.status === "disabled" && input.status === "active" && hasUnacceptedInvite(user)) {
         throw new AdminAccessError(
           "invite_not_accepted",

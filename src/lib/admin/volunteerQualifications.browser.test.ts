@@ -68,14 +68,44 @@ async function runQualificationBrowser(program: string, conflict = false) {
         profile.revision++;
         return Response.json({ fixtureId });
       }
+      // BUG-65: `list` returns only the credential definitions; the page reads the chosen
+      // profile (and searches) through the volunteer directory.
+      if (path === "/api/admin/volunteers/people" && request.method === "POST") {
+        const body = (await request.json()) as Record<string, unknown>;
+        const directoryRow = (row: (typeof profiles)[number]) => ({
+          ...row,
+          verified_at: null,
+          linked_email: null,
+          email_verified: false,
+          account_linked: false,
+        });
+        if (typeof body.profile_id === "string") {
+          if (failNextRead) {
+            failNextRead = false;
+            return Response.json({ error: "Synthetic refresh failure" }, { status: 503 });
+          }
+          const row = profiles.find((item) => item.id === body.profile_id);
+          if (!row) return Response.json({ error: "Not found" }, { status: 404 });
+          return Response.json({
+            profile: directoryRow(row),
+            credentials: [],
+            registrations: [],
+            attendance_events: [],
+            verification_history: [],
+          });
+        }
+        const q = String(body.q ?? "").toLowerCase();
+        const found = profiles.filter((row) => row.display_name.toLowerCase().includes(q));
+        return Response.json({
+          profiles: found.map(directoryRow),
+          total: found.length,
+          page: 1,
+          limit: 10,
+        });
+      }
       if (path === "/api/admin/volunteers/qualifications" && request.method === "POST") {
         const body = (await request.json()) as Record<string, unknown>;
-        if (body.action === "list" && failNextRead) {
-          failNextRead = false;
-          return Response.json({ error: "Synthetic refresh failure" }, { status: 503 });
-        }
-        if (body.action === "list")
-          return Response.json({ profiles, credentials: [], credential_definitions: [] });
+        if (body.action === "list") return Response.json({ credential_definitions: [] });
         commands.push(body);
         const row = profiles.find((item) => item.id === body.profile_id);
         if (!row) return Response.json({ kind: "not_found" }, { status: 404 });
@@ -162,6 +192,9 @@ try {
  const reason=page.getByLabel("Reason for verifying or correcting, and the source of the evidence",{exact:true});
  const save=page.getByRole("button",{name:"Confirm identity and tier",exact:true});
  const control=name=>page.request.post(process.env.QUALIFICATION_FIXTURE_ORIGIN+"/__fixture/"+name);
+ const search=page.getByLabel("Search volunteers by name or email",{exact:true});
+ const beta=page.getByRole("button",{name:/Synthetic volunteer Beta/});
+ const findBeta=async()=>{await search.fill("Beta");await page.getByRole("button",{name:"Search",exact:true}).click();await beta.waitFor();};
  const capture=async name=>{
   if(!process.env.VOLUNTEER_EVIDENCE_DIR) return;
   await fs.mkdir(process.env.VOLUNTEER_EVIDENCE_DIR,{recursive:true});
@@ -203,7 +236,7 @@ test("qualification edits survive a background profile refresh and retain their 
  await joined.fill("2023-01-01");
  await reason.fill("Synthetic evidence only");
  await Promise.all([
-  page.waitForResponse(r=>r.url().endsWith("/qualifications") && r.request().postDataJSON().action==="list"),
+  page.waitForResponse(r=>r.url().endsWith("/people") && r.request().postDataJSON().profile_id!==undefined),
   page.getByRole("button",{name:"Simulate another staff member updating the profile",exact:true}).click()
  ]);
  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
@@ -235,13 +268,14 @@ test("qualification verification saves and reloads, retries a failed write and s
  await tier.selectOption("senior");
  await joined.fill("2023-01-01");
  await reason.fill("Synthetic evidence only");
+ await findBeta();
  await control("hold-write");
  await coverage.fill("2021-01-01");
  await save.click();
  await page.waitForFunction(()=>document.querySelector('textarea[required]').disabled);
  assert.equal(await tier.isDisabled(),true);
  assert.equal(await joined.isDisabled(),true);
- assert.equal(await page.getByRole("combobox",{name:"Choose a volunteer",exact:true}).isDisabled(),true);
+ assert.equal(await beta.isDisabled(),true);
  await page.waitForFunction(async()=>{
   const r=await fetch("/__fixture/write-waiting");return (await r.json()).writeWaiting;
  });
@@ -271,7 +305,10 @@ test("qualification verification saves and reloads, retries a failed write and s
  await page.getByRole("heading",{name:"Synthetic volunteer Alpha · Identity verification",exact:true}).waitFor();
  assert.equal(await joined.inputValue(),"");
  assert.equal(await coverage.inputValue(),"");
- await page.getByRole("combobox",{name:"Choose a volunteer",exact:true}).selectOption("00000000-0000-4000-8000-000000000002");
+ await findBeta();
+ await beta.click();
+ await page.getByRole("heading",{name:"Synthetic volunteer Beta · Identity verification",exact:true}).waitFor();
+ for(let i=0;i<50&&await joined.inputValue()!=="2022-01-01";i++) await page.waitForTimeout(50);
  assert.equal(await tier.inputValue(),"newcomer");
  assert.equal(await joined.inputValue(),"2022-01-01");
  assert.equal(await reason.inputValue(),"");

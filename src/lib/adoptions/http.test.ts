@@ -223,6 +223,11 @@ function createFakeService(overrides: Partial<AdoptionCoordinatorService> = {}) 
       calls.push({ name: "finalizeAdoption", payload });
       return { id: adoptionId };
     },
+    // BUG-33: the service gained recordAdoptionReturn; the fake keeps up.
+    async recordAdoptionReturn(payload) {
+      calls.push({ name: "recordAdoptionReturn", payload });
+      return { id: adoptionId, returnedAt: "2026-11-01T00:00:00.000Z" };
+    },
     ...overrides,
   } satisfies AdoptionCoordinatorService;
 
@@ -275,6 +280,8 @@ describe("createAdoptionCoordinatorHandlers", () => {
         "listMatchableAnimals",
         "listStatuses",
         "listTasks",
+        // BUG-33: recording an adoption return.
+        "recordAdoptionReturn",
         "regenerateCoordinatorExport",
         "searchManualCaseIdentity",
         "updateStatus",

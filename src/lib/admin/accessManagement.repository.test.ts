@@ -5,6 +5,7 @@ import {
   createSupabaseAdminAccessRepository,
   createSupabaseInviteAuthProvider,
 } from "./accessManagement.repository.server";
+import { AdminAccessError } from "./accessManagement.server";
 
 describe("createSupabaseInviteAuthProvider", () => {
   test("prepares a first invite without delivering it", async () => {
@@ -221,5 +222,25 @@ describe("createSupabaseAdminAccessRepository", () => {
         },
       },
     ]);
+  });
+  // BUG-55: the RPC refuses disabled -> active for an invite that was never accepted
+  // (20261030130000). The access API must answer 422 invite_not_accepted, not 500.
+  test("BUG-55: maps the RPC's invite_not_accepted refusal to a 422 AdminAccessError", async () => {
+    const client = {
+      rpc: async () => ({
+        data: null,
+        error: { code: "P0001", message: "invite_not_accepted" },
+      }),
+    } as unknown as SupabaseClient;
+
+    const failure = await createSupabaseAdminAccessRepository(client)
+      .updateUserWithAudit({ actorUserId: "actor-auth", userId: "target-row", status: "active" })
+      .then(
+        () => null,
+        (error: unknown) => error,
+      );
+
+    expect(failure).toBeInstanceOf(AdminAccessError);
+    expect(failure).toMatchObject({ code: "invite_not_accepted", status: 422 });
   });
 });

@@ -95,6 +95,16 @@ export const conflictDomainErrors = new Set([
   "Animal already has a successful adoption",
   "Adoption case already finalized",
   "Adoption case is closed",
+  // change_adoption_case_status refusal (BUG-34, migration 20261030100000). Its other new
+  // refusal, a reopen without a note, raises the existing "reason_required" (400).
+  "Finalized adoption case status cannot change",
+  // animal_match create refusals (BUG-42, migration 20261030103000). A closed or finalised
+  // case reuses "Adoption case is closed" and "Adoption case already finalized" above.
+  "Animal is not available for matching",
+  "Animal already has an active match for this case",
+  // record_adoption_return_with_audit refusal (BUG-33, migration 20261030104000). An unknown
+  // adoption is P0002 (404) and a blank reason is "reason_required" (400).
+  "Adoption already returned",
 ]);
 
 export async function responseError(error: Response) {

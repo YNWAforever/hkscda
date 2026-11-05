@@ -193,6 +193,54 @@ describe("ContentEditor", () => {
     );
   });
 
+  test("BUG-68: the slug and title inputs carry the server's pattern and length limits", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const queryClient = new QueryClient();
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={queryClient}>
+        <ContentEditor contentId={content.id} initialContent={content} />
+      </QueryClientProvider>,
+    );
+    const inputs = markup.match(/<input[^>]*>/g) ?? [];
+    const slug = inputs.find((tag) => tag.includes(`value="${content.slug}"`));
+    const title = inputs.find((tag) => tag.includes(`value="${content.title}"`));
+
+    expect(slug).toContain('pattern="[a-z0-9]+(-[a-z0-9]+)*"');
+    expect(title).toContain('maxLength="180"');
+  });
+
+  test("BUG-73: the text, SEO and OG inputs carry the server's length limits", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const queryClient = new QueryClient();
+    const filled: ContentDetail = {
+      ...content,
+      subtitle: "subtitle-value",
+      ctaLabel: "cta-label-value",
+      seoTitle: "seo-title-value",
+      seoDescription: "seo-description-value",
+      ogTitle: "og-title-value",
+      ogDescription: "og-description-value",
+    };
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={queryClient}>
+        <ContentEditor contentId={filled.id} initialContent={filled} />
+      </QueryClientProvider>,
+    );
+    const fields = markup.match(/<(input|textarea)[^>]*>([^<]*<\/textarea>)?/g) ?? [];
+    const field = (value: string) => fields.find((tag) => tag.includes(value));
+
+    expect(field('value="subtitle-value"')).toContain('maxLength="180"');
+    expect(field('value="cta-label-value"')).toContain('maxLength="60"');
+    expect(field('value="seo-title-value"')).toContain('maxLength="120"');
+    expect(field('value="seo-description-value"')).toContain('maxLength="320"');
+    expect(field('value="og-title-value"')).toContain('maxLength="180"');
+    expect(field('value="og-description-value"')).toContain('maxLength="320"');
+    expect(field(">救援故事正文</textarea>")).toContain('maxLength="50000"');
+    expect(field(">小白正在康復。</textarea>")).toContain('maxLength="320"');
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();
@@ -413,6 +461,73 @@ test("missing object after uncertain upload retries the same private target then
   } finally {
     metadataErrorQueue.length = 0;
     metadataError = null;
+    uploadToSignedUrlError = null;
+  }
+});
+
+function sessionExpired() {
+  return Object.assign(new Error("Content lifecycle operation failed"), {
+    status: 422,
+    code: "session_expired",
+  });
+}
+
+test("BUG-69: a retry after an expired upload session starts a new session", async () => {
+  uploadCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = null;
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "expired.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    metadataErrorQueue.push(sessionExpired());
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toMatchObject({
+      code: "session_expired",
+    });
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    // The retry asks for a new upload target and uploads again instead of finalizing the
+    // expired session a second time.
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "target", "upload", "metadata"]);
+  } finally {
+    metadataErrorQueue.length = 0;
+  }
+});
+
+test("BUG-69: an uncertain upload whose session expired is retried in a new session", async () => {
+  uploadCalls.length = 0;
+  metadataError = null;
+  uploadToSignedUrlError = new Error("Synthetic lost upload response");
+  const { createContentMediaWithUpload } = await import("./ContentEditor");
+  const file = new File([new Uint8Array(8)], "expired-uncertain.jpg", { type: "image/jpeg" });
+  const form = {
+    file,
+    storyUpdateId: "",
+    altText: "Synthetic",
+    caption: "",
+    sortOrder: "0",
+    isCover: false,
+  };
+  try {
+    await expect(createContentMediaWithUpload("content-1", form, 7)).rejects.toThrow(
+      "lost upload response",
+    );
+    uploadToSignedUrlError = null;
+    metadataErrorQueue.push(sessionExpired());
+    await expect(createContentMediaWithUpload("content-1", form, 7)).resolves.toEqual({
+      id: "media-1",
+    });
+    expect(uploadCalls).toEqual(["target", "upload", "metadata", "target", "upload", "metadata"]);
+  } finally {
+    metadataErrorQueue.length = 0;
     uploadToSignedUrlError = null;
   }
 });

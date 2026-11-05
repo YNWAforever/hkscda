@@ -1274,6 +1274,228 @@ describe("admin animal and adoption RPC regressions", () => {
     });
   });
 
+  // BUG-34: fixed by 20261030100000_case_status_refuses_finalised_and_reopen_needs_reason.sql.
+  // Verified against Postgres 16: a finalised case is refused, a reopen needs a note.
+  test("BUG-34: change_adoption_case_status refuses a finalised case and needs a reason to reopen", () => {
+    const rpc = latestFunctionBody("change_adoption_case_status");
+    const body = rpc.body.replace(/--[^\n]*/g, "");
+    const finalisedCheck = body.search(
+      /from\s+public\.successful_adoption\s+where\s+adoption_case_id\s*=\s*p_case_id/i,
+    );
+    const update = body.search(/update\s+public\.adoption_case/i);
+    expect({
+      file: rpc.file,
+      // Both refusals run before the case row changes, under the case row lock.
+      locksCase: /from\s+public\.adoption_case\s+where\s+id\s*=\s*p_case_id\s+for\s+update/i.test(
+        body,
+      ),
+      refusesFinalised:
+        finalisedCheck >= 0 &&
+        finalisedCheck < update &&
+        body.includes("'Finalized adoption case status cannot change'"),
+      reopenNeedsReason:
+        /v_current\.is_closing[\s\S]*?not\s+v_status\.is_closing[\s\S]*?btrim\(coalesce\(p_note/i.test(
+          body,
+        ) && body.includes("'reason_required'"),
+    }).toMatchObject({ locksCase: true, refusesFinalised: true, reopenNeedsReason: true });
+  });
+
+  // BUG-36: fixed by 20261030101000_resolve_adoption_intake_items.sql. Verified against
+  // Postgres 16: closing or finalising a case resolves its open inbox items, and the
+  // backfill resolves items of cases that were already closed or finalised.
+  test("BUG-36: closing or finalising a case resolves its intake items, with a backfill", () => {
+    const resolvesIntake = (body: string) =>
+      /update\s+public\.adoption_intake_item\s+set\s+resolved_at\s*=[\s\S]*?where\s+resolved_at\s+is\s+null[\s\S]*?adoption_case_id\s*=\s*p_(?:adoption_)?case_id[\s\S]*?public_application_id\s*=\s*v_case\.public_application_id/i.test(
+        body.replace(/--[^\n]*/g, ""),
+      );
+    const status = latestFunctionBody("change_adoption_case_status");
+    const finalize = latestFunctionBody("finalize_successful_adoption");
+    const statusBody = status.body.replace(/--[^\n]*/g, "");
+    const closingBranch = statusBody.slice(statusBody.search(/if\s+v_status\.is_closing\s+then/i));
+    const migration = readMigrationBySuffix("_resolve_adoption_intake_items.sql");
+    const outsideFunctions = migration.replace(/\$\$[\s\S]*?\$\$/g, "");
+
+    expect({
+      statusFile: status.file,
+      finalizeFile: finalize.file,
+      statusResolvesOnClose:
+        closingBranch.length < statusBody.length && resolvesIntake(closingBranch),
+      finalizeResolves: resolvesIntake(finalize.body),
+      // finalize keeps every BUG-02 guard.
+      finalizeKeepsBug02: [
+        "'Animal already has a successful adoption'",
+        "'Adoption case already finalized'",
+        "'Adoption case is closed'",
+      ].every((refusal) => finalize.body.includes(refusal)),
+      backfill:
+        /update\s+public\.adoption_intake_item[\s\S]*?resolved_at\s+is\s+null[\s\S]*?is_closing[\s\S]*?public\.successful_adoption/i.test(
+          outsideFunctions,
+        ),
+    }).toMatchObject({
+      statusResolvesOnClose: true,
+      finalizeResolves: true,
+      finalizeKeepsBug02: true,
+      backfill: true,
+    });
+  });
+
+  // BUG-37: fixed by 20261030102000_identity_search_requires_query_and_masks_contacts.sql.
+  // Verified against Postgres 16: an empty or short query returns nothing, and a supporter
+  // who is not an adopter comes back with masked contact details.
+  test("BUG-37: search_manual_case_identity needs a real query and masks non-adopter contacts", () => {
+    const search = latestFunctionBody("search_manual_case_identity");
+    const body = search.body.replace(/--[^\n]*/g, "");
+    const migration = readMigrationBySuffix(
+      "_identity_search_requires_query_and_masks_contacts.sql",
+    );
+    expect({
+      file: search.file,
+      // The old `n.value = ''` branch matched every supporter.
+      noMatchAllBranch: !/n\.value\s*=\s*''\s*or/i.test(body),
+      minimumLength: /char_length\(n\.value\)\s*>=\s*3/i.test(body),
+      masksContacts: body.includes("'contactMasked'") && body.includes("'***@'"),
+      pinnedSearchPath: /set\s+search_path\s*=\s*''/i.test(migration),
+      serviceRoleOnly:
+        /revoke\s+all\s+on\s+function\s+public\.search_manual_case_identity\(text,\s*integer,\s*integer\)\s+from\s+public,\s*anon,\s*authenticated/i.test(
+          migration,
+        ) &&
+        /grant\s+execute\s+on\s+function\s+public\.search_manual_case_identity\(text,\s*integer,\s*integer\)\s+to\s+service_role/i.test(
+          migration,
+        ),
+    }).toMatchObject({
+      noMatchAllBranch: true,
+      minimumLength: true,
+      masksContacts: true,
+      pinnedSearchPath: true,
+      serviceRoleOnly: true,
+    });
+  });
+
+  // BUG-42 (RPC part): fixed by 20261030103000_match_create_checks_animal_and_case.sql.
+  // Verified against Postgres 16: adopted animals, closed or finalised cases and duplicate
+  // active matches are refused; a normal match is still created and audited.
+  test("BUG-42: the animal_match create branch checks the animal, the case and duplicates", () => {
+    const rpc = latestFunctionBody("mutate_adoption_coordinator_with_audit");
+    const body = rpc.body.replace(/--[^\n]*/g, "");
+    const start = body.search(/p_entity\s*=\s*'animal_match'\s+and\s+p_operation\s*=\s*'create'/i);
+    const branch = body.slice(start, body.indexOf("insert into public.animal_match", start));
+    expect({
+      file: rpc.file,
+      locksCase: /from\s+public\.adoption_case\s+where[\s\S]*?for\s+update/i.test(branch),
+      refusesFinalised:
+        /from\s+public\.successful_adoption/i.test(branch) &&
+        branch.includes("'Adoption case already finalized'"),
+      refusesClosedCase: branch.includes("'Adoption case is closed'"),
+      checksAnimalStatus:
+        branch.includes("'available'") &&
+        branch.includes("'fostered'") &&
+        branch.includes("'Animal is not available for matching'"),
+      refusesDuplicate:
+        /from\s+public\.animal_match\s+existing/i.test(branch) &&
+        branch.includes("'Animal already has an active match for this case'"),
+    }).toMatchObject({
+      locksCase: true,
+      refusesFinalised: true,
+      refusesClosedCase: true,
+      checksAnimalStatus: true,
+      refusesDuplicate: true,
+    });
+  });
+
+  // BUG-42 (schema part, r1 I1): 20261030103500_animal_match_unique_active_only.sql replaces the
+  // blanket unique (adoption_case_id, animal_id) with a partial unique index on active matches, so
+  // a declined or cancelled match no longer blocks a new one. Verified on local Postgres 17 by
+  // src/lib/adoptions/atomicForward.database.test.ts (BUG-42 test).
+  test("BUG-42: only an active match is unique per case and animal", () => {
+    const sql = readMigration("20261030103500_animal_match_unique_active_only.sql").replace(
+      /--[^\n]*/g,
+      "",
+    );
+    expect({
+      dropsBlanketUnique:
+        /drop\s+constraint\s+if\s+exists\s+animal_match_adoption_case_id_animal_id_key/i.test(sql),
+      partialUnique:
+        /create\s+unique\s+index[\s\S]*?on\s+public\.animal_match\s*\(\s*adoption_case_id\s*,\s*animal_id\s*\)\s*where\s+is_active_match/i.test(
+          sql,
+        ),
+      // Same predicate as the 20261030103000 duplicate guard.
+      matchesGuardPredicate:
+        /coalesce\(\s*p_is_approved\s*,\s*false\s*\)\s*or[\s\S]*?not\s+status\.is_closing\s+or\s+status\.key\s*=\s*'approved'/i.test(
+          sql,
+        ),
+      rowTrigger: /before\s+insert\s+or\s+update\s+on\s+public\.animal_match/i.test(sql),
+      statusResync:
+        /after\s+update\s+of\s+key\s*,\s*is_closing\s+on\s+public\.coordinator_status/i.test(sql),
+      pinnedSearchPath: (sql.match(/set\s+search_path\s*=\s*''/gi) ?? []).length === 3,
+    }).toEqual({
+      dropsBlanketUnique: true,
+      partialUnique: true,
+      matchesGuardPredicate: true,
+      rowTrigger: true,
+      statusResync: true,
+      pinnedSearchPath: true,
+    });
+  });
+
+  // BUG-33: fixed by 20261030104000_record_adoption_returns.sql. Verified against Postgres 16:
+  // finalise -> record return -> finalise the same animal on another case succeeds, and a
+  // second return of the same adoption is refused.
+  test("BUG-33: only an unreturned adoption blocks finalising, and returns are recorded with audit", () => {
+    const finalize = latestFunctionBody("finalize_successful_adoption");
+    const finalizeBody = finalize.body.replace(/--[^\n]*/g, "");
+    const ret = latestFunctionBody("record_adoption_return_with_audit");
+    const retBody = ret.body.replace(/--[^\n]*/g, "");
+    const migration = readMigrationBySuffix("_record_adoption_returns.sql");
+    expect({
+      finalizeFile: finalize.file,
+      // The per-animal refusal counts only adoptions that have not been returned.
+      finalizeChecksReturned:
+        /from\s+public\.successful_adoption\s+where\s+animal_id\s*=\s*v_match\.animal_id\s+and\s+returned_at\s+is\s+null/i.test(
+          finalizeBody,
+        ),
+      // The per-case guard and the other BUG-02 refusals are unchanged.
+      finalizeKeepsCaseGuard:
+        /from\s+public\.successful_adoption\s+where\s+adoption_case_id\s*=\s*p_adoption_case_id\s*\)/i.test(
+          finalizeBody,
+        ) &&
+        finalizeBody.includes("'Adoption case already finalized'") &&
+        finalizeBody.includes("'Adoption case is closed'"),
+      columns: ["returned_at timestamptz", "returned_by uuid", "return_reason text"].every(
+        (column) => migration.includes(column),
+      ),
+      // NULL-safe: a bare btrim(return_reason) <> '' is NULL for a NULL reason, and a CHECK
+      // that evaluates to NULL passes, so the reason must be coalesced (r1 M2).
+      returnedRowNeedsReason:
+        /check\s*\([\s\S]*?coalesce\(\s*btrim\(\s*return_reason\s*\)\s*,\s*''\s*\)\s*<>\s*''/i.test(
+          migration,
+        ),
+      returnLocksRow: /from\s+public\.successful_adoption[\s\S]*?for\s+update/i.test(retBody),
+      returnRefusesTwice: retBody.includes("'Adoption already returned'"),
+      returnNeedsReason: retBody.includes("'reason_required'"),
+      returnFreesAnimal: /update_animal_status_with_audit\([\s\S]*?'available'/i.test(retBody),
+      returnAuditsInSameFunction:
+        /insert\s+into\s+public\.audit_log[\s\S]*?'successful_adoption\.return'/i.test(retBody),
+      serviceRoleOnly:
+        /revoke\s+all\s+on\s+function\s+public\.record_adoption_return_with_audit\(uuid,\s*uuid,\s*text,\s*timestamptz\)\s+from\s+public,\s*anon,\s*authenticated/i.test(
+          migration,
+        ) &&
+        /grant\s+execute\s+on\s+function\s+public\.record_adoption_return_with_audit\(uuid,\s*uuid,\s*text,\s*timestamptz\)\s+to\s+service_role/i.test(
+          migration,
+        ),
+    }).toMatchObject({
+      finalizeChecksReturned: true,
+      finalizeKeepsCaseGuard: true,
+      columns: true,
+      returnedRowNeedsReason: true,
+      returnLocksRow: true,
+      returnRefusesTwice: true,
+      returnNeedsReason: true,
+      returnFreesAnimal: true,
+      returnAuditsInSameFunction: true,
+      serviceRoleOnly: true,
+    });
+  });
+
   // BUG-22: fixed by 20261029190000_audit_and_fence_animal_draft_restore.sql.
   test("BUG-22: animal draft save and copy write audit_log, and copy checks expected_revision", () => {
     const publication = latestFunctionBody("animal_publication_command");
@@ -1286,5 +1508,379 @@ describe("admin animal and adoption RPC regressions", () => {
       copyAudited: /insert\s+into\s+public\.audit_log/i.test(copyBranch),
       copyFenced: copyBranch.includes("expected_revision"),
     }).toMatchObject({ saveAudited: true, copyAudited: true, copyFenced: true });
+  });
+});
+
+/**
+ * The LAST definition (in filename order) of every function the migrations create, keyed
+ * by its lower-case `schema.name`. Overloads share a key; the last one written wins, which
+ * matches how `latestFunctionBody` reads a single name.
+ */
+function latestFunctionBodies() {
+  const header = /create\s+(?:or\s+replace\s+)?function\s+((?:"?\w+"?\.)?"?\w+"?)\s*\(/gi;
+  const latest = new Map<string, { file: string; body: string }>();
+  for (const file of migrationFileNames()) {
+    const sql = readMigration(file);
+    for (const match of sql.matchAll(header)) {
+      const rest = sql.slice(match.index ?? 0);
+      const open = /\$([A-Za-z_]*)\$/.exec(rest);
+      if (!open) continue;
+      const bodyStart = open.index + open[0].length;
+      const bodyEnd = rest.indexOf(open[0], bodyStart);
+      if (bodyEnd < 0) continue;
+      latest.set(match[1].replace(/"/g, "").toLowerCase(), {
+        file,
+        body: rest.slice(bodyStart, bodyEnd),
+      });
+    }
+  }
+  return latest;
+}
+
+/** Split a SQL list on top-level commas (ignoring commas inside parentheses or strings). */
+function splitTopLevel(list: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let quoted = false;
+  let current = "";
+  for (const char of list) {
+    if (char === "'") quoted = !quoted;
+    if (!quoted && char === "(") depth++;
+    if (!quoted && char === ")") depth--;
+    if (!quoted && depth === 0 && char === ",") {
+      parts.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  parts.push(current.trim());
+  return parts;
+}
+
+/**
+ * The expression written into audit_log.actor_user_id by each
+ * `insert into public.audit_log(<columns>) values(<first tuple>)` in a function body.
+ */
+function auditActorExpressions(body: string) {
+  const expressions: string[] = [];
+  const insert = /insert\s+into\s+public\.audit_log\s*\(([^)]*)\)\s*values\s*\(/gi;
+  for (const match of body.matchAll(insert)) {
+    const columns = splitTopLevel(match[1]).map((column) => column.replace(/"/g, "").toLowerCase());
+    const actorIndex = columns.indexOf("actor_user_id");
+    if (actorIndex < 0) continue;
+    const tupleStart = (match.index ?? 0) + match[0].length;
+    let depth = 1;
+    let quoted = false;
+    let end = tupleStart;
+    for (; end < body.length && depth > 0; end++) {
+      const char = body[end];
+      if (char === "'") quoted = !quoted;
+      if (!quoted && char === "(") depth++;
+      if (!quoted && char === ")") depth--;
+    }
+    const values = splitTopLevel(body.slice(tupleStart, end - 1));
+    expressions.push((values[actorIndex] ?? "").toLowerCase());
+  }
+  return expressions;
+}
+
+describe("content audit actor regressions", () => {
+  // BUG-39: fixed by 20261030120000_content_audit_actor_auth_user_id.sql. Both RPCs resolve the
+  // admin_user row from the auth user id; the audit row must carry the auth user id, the same
+  // id every other audit row uses, not the admin_user row id.
+  for (const name of ["set_content_publication_metadata", "retry_failed_media_repair"]) {
+    test(`BUG-39: ${name} logs the auth user id (p_actor_user_id) as the audit actor`, () => {
+      const latest = latestFunctionBody(name);
+      expect({ file: latest.file, actors: auditActorExpressions(latest.body) }).toEqual({
+        file: latest.file,
+        actors: ["p_actor_user_id"],
+      });
+    });
+  }
+
+  // Guard for the BUG-39 class: audit_log.actor_user_id holds an auth user id. A record typed
+  // public.admin_user%rowtype (conventionally `actor`) has its own row id in `.id`, which
+  // matches no user, so no function's latest definition may write `<that record>.id` there.
+  test("BUG-39: no function's latest definition logs an admin_user row id as the audit actor", () => {
+    const offenders: string[] = [];
+    for (const [name, { file, body }] of latestFunctionBodies()) {
+      const adminRecords = new Set(["actor"]);
+      for (const declared of body.matchAll(/(\w+)\s+public\.admin_user%rowtype/gi)) {
+        adminRecords.add(declared[1].toLowerCase());
+      }
+      for (const actor of auditActorExpressions(body)) {
+        const record = /^(\w+)\.id$/.exec(actor)?.[1];
+        if (record && adminRecords.has(record)) offenders.push(`${name} (${file}): ${actor}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+});
+
+describe("adoption guide release regressions", () => {
+  // BUG-53: fixed by 20261030121000_adoption_guide_publish_replaces_species_slot.sql. The public
+  // slot is per species, so the release being replaced is the published one for the species,
+  // whatever its topic; looking it up by (topic, species) left the old release "published".
+  test("BUG-53: publish_adoption_guide_release archives the published release of the same species, whatever its topic", () => {
+    const publish = latestFunctionBody("publish_adoption_guide_release");
+    const body = publish.body.replace(/--[^\n]*/g, "");
+    const statements = body.split(";");
+    const previousLookup =
+      statements.find((statement) => /into\s+previous_release\b/i.test(statement)) ?? "";
+    const archive = statements.find((statement) => /state\s*=\s*'archived'/i.test(statement)) ?? "";
+    const archiveLoop =
+      /for\s+(\w+)\s+in\s+select[\s\S]*?from\s+public\.adoption_guide_releases([\s\S]*?)\bloop\b/i.exec(
+        body,
+      );
+
+    expect({
+      file: publish.file,
+      lookupBySpecies: /species\s*=\s*release_to_publish\.species/i.test(previousLookup),
+      lookupByTopic: /\btopic\s*=/i.test(previousLookup),
+      lookupPublished: /state\s*=\s*'published'/i.test(previousLookup),
+      // Every published release of the species is archived (a duplicate left by the bug
+      // included), each in a locked row with its own audit row.
+      archivesEverySpeciesRelease:
+        archiveLoop !== null &&
+        /species\s*=\s*release_to_publish\.species/i.test(archiveLoop[2]) &&
+        !/\btopic\s*=/i.test(archiveLoop[2]) &&
+        /state\s*=\s*'published'/i.test(archiveLoop[2]) &&
+        /for\s+update/i.test(archiveLoop[2]),
+      archiveAudited: /'adoption_guide_release\.archive'/.test(body),
+      archiveWhere: /where\s+id\s*=\s*(\w+)\.id/i.exec(archive)?.[1] ?? null,
+    }).toEqual({
+      file: publish.file,
+      lookupBySpecies: true,
+      lookupByTopic: false,
+      lookupPublished: true,
+      archivesEverySpeciesRelease: true,
+      archiveAudited: true,
+      archiveWhere: archiveLoop?.[1] ?? "loop variable",
+    });
+  });
+});
+
+describe("second-pass access and volunteer RPC regressions", () => {
+  // BUG-55: fixed by 20261030130000_admin_reactivate_requires_accepted_invite.sql. Verified
+  // against Postgres 16: invite -> disable -> reactivate now raises invite_not_accepted and
+  // writes no audit row; reactivating a user who accepted their invite still works.
+  test("BUG-55: update_admin_user_with_audit refuses disabled -> active for an invite never accepted", () => {
+    const update = latestFunctionBody("update_admin_user_with_audit");
+    const guard =
+      /current_user_row\.status\s*=\s*'disabled'\s+and\s+p_status\s*=\s*'active'\s+and\s+current_user_row\.invited_at\s+is\s+not\s+null\s+and\s+current_user_row\.invite_accepted_at\s+is\s+null\s+then\s+raise\s+exception\s+'invite_not_accepted'/i;
+    const guardIndex = update.body.search(guard);
+    const writeIndex = update.body.search(/update\s+public\.admin_user\s+set/i);
+
+    expect({
+      file: update.file,
+      refusesUnacceptedInvite: guardIndex >= 0,
+      refusesBeforeWriting: guardIndex >= 0 && guardIndex < writeIndex,
+    }).toMatchObject({ refusesUnacceptedInvite: true, refusesBeforeWriting: true });
+  });
+
+  // BUG-63: fixed by 20261030131000_volunteer_notification_retry_admin_only.sql. The tasks
+  // route's retry goes volunteer_task_command -> retry_volunteer_operation_outbox, which let
+  // staff retry. Verified against Postgres 16: staff now get 42501 volunteer_forbidden through
+  // both entry points, admins still retry and write volunteer_outbox.retry.
+  test("BUG-63: retry_volunteer_operation_outbox accepts active admins only", () => {
+    const retry = latestFunctionBody("retry_volunteer_operation_outbox");
+    const command = latestFunctionBody("volunteer_task_command");
+    const roleChecks = [...retry.body.matchAll(/a\.role\s*(=|in)\s*(\([^)]*\)|'[a-z]+')/gi)].map(
+      (match) => match[0].replace(/\s+/g, ""),
+    );
+
+    expect({
+      file: retry.file,
+      roleChecks,
+      taskRetryDelegates: /'retry'[\s\S]*?public\.retry_volunteer_operation_outbox\(/i.test(
+        command.body,
+      ),
+    }).toEqual({ file: retry.file, roleChecks: ["a.role='admin'"], taskRetryDelegates: true });
+  });
+
+  // BUG-64: fixed by 20261030132000_volunteer_bulk_edit_single_audit.sql. Verified against
+  // Postgres 16: a bulk edit wrote volunteer_activity.update and volunteer_bulk.edit for one
+  // change; it now writes only volunteer_bulk.edit, carrying before, input and after.
+  test("BUG-64: a volunteer bulk edit writes one audit row with before and after facts", () => {
+    const item = latestFunctionBody("volunteer_bulk_item");
+    const start = item.body.search(/if\s+p_action\s*=\s*'edit'\s+then/i);
+    const end = item.body.search(/elsif\s+p_action\s*=\s*'rebind'\s+then/i);
+    expect(start).toBeGreaterThan(-1);
+    // Comments may name the old call; only the SQL counts.
+    const editBranch = item.body.slice(start, end).replace(/--[^\n]*/g, "");
+    const bulkAudit =
+      /insert\s+into\s+public\.audit_log[\s\S]*?'volunteer_bulk\.'\s*\|\|\s*p_action[\s\S]*?;/i.exec(
+        item.body,
+      );
+
+    expect({
+      file: item.file,
+      editCallsAuditedUpdate: /update_volunteer_activity_(with_audit|before_bulk)\s*\(/i.test(
+        editBranch,
+      ),
+      editWritesAuditItself: /insert\s+into\s+public\.audit_log/i.test(editBranch),
+      editUpdatesActivity: /update\s+public\.volunteer_activity\s+set/i.test(editBranch),
+      bulkAuditKeepsBefore: /'before'\s*,\s*before_fact/i.test(bulkAudit?.[0] ?? ""),
+      bulkAuditRecordsAfter: /'after'/i.test(bulkAudit?.[0] ?? ""),
+    }).toMatchObject({
+      editCallsAuditedUpdate: false,
+      editWritesAuditItself: false,
+      editUpdatesActivity: true,
+      bulkAuditKeepsBefore: true,
+      bulkAuditRecordsAfter: true,
+    });
+  });
+
+  // BUG-65: fixed by 20261030133000_volunteer_profile_list_definitions_only.sql. The `list`
+  // branch returned every volunteer_profile (with birth_date) and every credential, unbounded.
+  // The qualifications page now reads one profile through the paginated directory, so `list`
+  // returns only the credential definitions. Verified against Postgres 16.
+  test("BUG-65: volunteer_profile_command list no longer returns every profile or credential", () => {
+    const command = latestFunctionBody("volunteer_profile_command");
+    const start = command.body.search(/if\s+action\s*=\s*'list'\s+then/i);
+    expect(start).toBeGreaterThan(-1);
+    const rest = command.body.slice(start);
+    const listBranch = rest.slice(0, rest.search(/end\s+if\s*;/i)).replace(/--[^\n]*/g, "");
+
+    expect({
+      file: command.file,
+      readsProfiles: /from\s+public\.volunteer_profile\b/i.test(listBranch),
+      readsCredentials: /from\s+public\.volunteer_credential\b(?!_definition)/i.test(listBranch),
+      returnsDefinitions: /from\s+public\.volunteer_credential_definition\b/i.test(listBranch),
+    }).toMatchObject({ readsProfiles: false, readsCredentials: false, returnsDefinitions: true });
+  });
+});
+
+describe("content publication date regressions", () => {
+  // BUG-71: fixed by 20261105100000_content_publish_keeps_first_published_at.sql. Every
+  // publish_content_revision call set content_item.published_at = now(), so republishing a
+  // March story after a typo fix moved it to the top of /stories as November and changed
+  // article:published_time. A republished story now keeps its first publication date.
+  test("BUG-71: publish_content_revision sets published_at only when it is still null", () => {
+    const publish = latestFunctionBody("publish_content_revision");
+    const body = publish.body.replace(/--[^\n]*/g, "");
+    const assignments = [...body.matchAll(/\bpublished_at\s*=\s*(\w+\s*\([^)]*\)|[^,\n]+)/gi)].map(
+      (match) => match[1].replace(/\s+/g, ""),
+    );
+
+    expect({ file: publish.file, assignments }).toEqual({
+      file: "20261105100000_content_publish_keeps_first_published_at.sql",
+      assignments: ["coalesce(item.published_at,v_published_at)"],
+    });
+  });
+
+  test("BUG-71: the first-publication-date fix rewrites no existing rows", () => {
+    const sql = readMigrationBySuffix("_content_publish_keeps_first_published_at.sql");
+    const outsideFunctions = sql.replace(/\$\$[\s\S]*?\$\$/g, "");
+    expect(outsideFunctions).not.toMatch(/\bupdate\s+public\./i);
+    expect(outsideFunctions).not.toMatch(/\bdelete\s+from\b/i);
+    // Signature, security mode, search_path and grants stay as the 20260905150012 definition.
+    expect(sql).toMatch(
+      /create or replace function public\.publish_content_revision\(\s*p_actor_user_id uuid,\s*p_content_id uuid,\s*p_revision_id uuid,\s*p_expected_version integer,\s*p_idempotency_key text\s*\)\s*returns jsonb\s*language plpgsql\s*security invoker\s*set search_path = public, pg_temp/,
+    );
+    expect(sql).toContain(
+      "revoke all on function public.publish_content_revision(uuid,uuid,uuid,integer,text) from public,anon,authenticated;",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.publish_content_revision(uuid,uuid,uuid,integer,text) to service_role;",
+    );
+  });
+});
+
+describe("content public image withdrawal", () => {
+  // BUG-72: fixed by 20261105101000_content_public_asset_withdrawal.sql plus the content
+  // withdrawal step of /api/jobs/public-media-repair. Public copies at
+  // content-media/published/<revision>/<media>.<ext> were never removed when a newer revision
+  // was published or the story was archived, so a withdrawn photo stayed reachable.
+  const file = "20261105101000_content_public_asset_withdrawal.sql";
+  const sqlWithoutComments = () => readMigration(file).replace(/--[^\n]*/g, "");
+
+  test("BUG-72: publication and archive record unused public copies in the same transaction", () => {
+    const sql = sqlWithoutComments();
+    const trigger = latestFunctionBodies().get("private.withdraw_unused_content_public_assets");
+    const body = (trigger?.body ?? "").replace(/--[^\n]*/g, "");
+
+    expect({
+      columns: ["withdrawn_at", "removed_at", "removal_claimed_at", "removal_lease_token"].filter(
+        (column) => new RegExp(`add column ${column} (timestamptz|uuid)`, "i").test(sql),
+      ),
+      // A row-level AFTER trigger runs inside the publishing/archiving statement's transaction.
+      trigger:
+        /create trigger \w+\s+after update of status\s*,\s*published_revision_id on public\.content_item\s+for each row[\s\S]*?execute function private\.withdraw_unused_content_public_assets\(\)/i.test(
+          sql,
+        ),
+      file: trigger?.file,
+      withdrawsOtherRevisions:
+        /set\s+withdrawn_at\s*=\s*pg_catalog\.now\(\)[\s\S]*?new\.status\s+is\s+distinct\s+from\s+'published'\s+or\s+asset\.revision_id\s+is\s+distinct\s+from\s+new\.published_revision_id/i.test(
+          body,
+        ),
+      keepsCurrentRevision:
+        /asset\.revision_id\s*=\s*new\.published_revision_id[\s\S]*?withdrawn_at\s+is\s+not\s+null/i.test(
+          body,
+        ),
+      invoker: !/security\s+definer/i.test(sql),
+      pinnedSearchPath: (sql.match(/set search_path\s*=\s*''/gi) ?? []).length,
+    }).toEqual({
+      columns: ["withdrawn_at", "removed_at", "removal_claimed_at", "removal_lease_token"],
+      trigger: true,
+      file,
+      withdrawsOtherRevisions: true,
+      keepsCurrentRevision: true,
+      invoker: true,
+      pinnedSearchPath: 3,
+    });
+  });
+
+  test("BUG-72: the removal claim never returns a copy the current published revision uses", () => {
+    const claim = latestFunctionBody("claim_withdrawn_content_public_assets");
+    const mark = latestFunctionBody("mark_content_public_asset_removed");
+    const claimBody = claim.body.replace(/\s+/g, " ");
+    const markBody = mark.body.replace(/\s+/g, " ");
+
+    expect({
+      claimFile: claim.file,
+      markFile: mark.file,
+      claimsWithdrawn: /asset\.withdrawn_at is not null and asset\.removed_at is null/i.test(
+        claimBody,
+      ),
+      excludesCurrent:
+        /not \( ?item\.status ?= ?'published' and item\.published_revision_id is not distinct from asset\.revision_id ?\)/i.test(
+          claimBody,
+        ),
+      leased: /for update of asset skip locked/i.test(claimBody),
+      markNeedsLease: /asset\.removal_lease_token ?= ?p_lease_token/i.test(markBody),
+      markRechecksCurrent:
+        /not exists \(select 1 from public\.content_item item where item\.id ?= ?asset\.content_item_id and item\.status ?= ?'published' and item\.published_revision_id ?= ?asset\.revision_id\)/i.test(
+          markBody,
+        ),
+    }).toEqual({
+      claimFile: file,
+      markFile: file,
+      claimsWithdrawn: true,
+      excludesCurrent: true,
+      leased: true,
+      markNeedsLease: true,
+      markRechecksCurrent: true,
+    });
+  });
+
+  test("BUG-72: withdrawal RPCs are granted to service_role only and rewrite no content", () => {
+    const sql = sqlWithoutComments();
+    for (const signature of [
+      "public.claim_withdrawn_content_public_assets(integer)",
+      "public.mark_content_public_asset_removed(uuid,uuid)",
+    ]) {
+      expect(sql).toContain(`revoke all on function ${signature} from public,anon,authenticated;`);
+      expect(sql).toContain(`grant execute on function ${signature} to service_role;`);
+    }
+    expect(sql).toContain(
+      "revoke all on function private.withdraw_unused_content_public_assets() from public,anon,authenticated;",
+    );
+    expect(sql).not.toMatch(/grant[^;]*\bto\s+(anon|authenticated)\b/i);
+    expect(sql).not.toMatch(/storage\.objects/i);
+    expect(sql).not.toMatch(/\bdelete\s+from\b/i);
+    // No backfill: existing rows are only marked when their item is next published or archived.
+    expect(sql.replace(/\$\$[\s\S]*?\$\$/g, "")).not.toMatch(/\bupdate\s+public\./i);
   });
 });

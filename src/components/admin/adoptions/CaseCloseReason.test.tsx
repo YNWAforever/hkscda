@@ -31,6 +31,7 @@ const {
   caseStatusChangeRequest,
   inlineCaseStatusFailure,
   isClosingStatusChoice,
+  isReopeningStatusChoice,
   sendCaseStatusChange,
 } = await import("./caseStatusChange");
 
@@ -218,8 +219,10 @@ describe("a failed closing change is shown once, inside the dialog", () => {
 
   test("the screen's inline alert goes through it", async () => {
     const source = await Bun.file(SOURCE).text();
+    // BUG-34 added the case's current status as a fourth argument, so a failed reopen (which
+    // also goes through the reason dialog) is shown once too.
     expect(source).toMatch(
-      /inlineCaseStatusFailure\(\s*statuses,\s*statusMutation\.error,\s*statusMutation\.variables,?\s*\)/,
+      /inlineCaseStatusFailure\(\s*statuses,\s*statusMutation\.error,\s*statusMutation\.variables,\s*adoptionCase\?\.status\.id,?\s*\)/,
     );
     expect(source).toContain("adminErrorMessage(inlineFailure, language)");
     expect(source).not.toContain("{statusMutation.error && (");
@@ -256,5 +259,50 @@ describe("the dialog in Chinese and in English", () => {
     expect(en).toContain("Reason");
     expect(en).toContain("This status closes the case");
     expect(en).toContain("Save status");
+  });
+});
+
+describe("BUG-34: reopening a closed case asks for a reason; a finalised case cannot change", () => {
+  test("BUG-34: moving from a closing status to an open one is a reopen", () => {
+    expect(isReopeningStatusChoice(STATUSES, CLOSED_STATUS, OPEN_STATUS)).toBe(true);
+    expect(isReopeningStatusChoice(STATUSES, CLOSED_STATUS, CLOSED_STATUS)).toBe(false);
+    expect(isReopeningStatusChoice(STATUSES, OPEN_STATUS, OPEN_STATUS)).toBe(false);
+    expect(isReopeningStatusChoice(STATUSES, OPEN_STATUS, CLOSED_STATUS)).toBe(false);
+    expect(isReopeningStatusChoice(STATUSES, CLOSED_STATUS, "")).toBe(false);
+    expect(isReopeningStatusChoice(STATUSES, undefined, OPEN_STATUS)).toBe(false);
+  });
+
+  test("BUG-34: a reopen opens the reason dialog with the reopen consequence", async () => {
+    const source = await Bun.file(SOURCE).text();
+    expect(source).toContain(
+      "const reopening = isReopeningStatusChoice(statuses, adoptionCase?.status.id, selectedStatusId)",
+    );
+    const submit = source.slice(source.indexOf("function handleStatusSubmit"));
+    const beforeRequest = submit.slice(0, submit.indexOf("const request"));
+    expect(beforeRequest).toContain("if (reopening) {");
+    expect(beforeRequest.match(/setCloseOpen\(true\)/g)).toHaveLength(2);
+    const from = source.indexOf("open={closeOpen}");
+    const dialog = source.slice(from, source.indexOf("/>", from));
+    expect(dialog).toContain("reopening ? copy.reopenConsequence : copy.closeConsequence");
+    expect(caseDetailCopy.zh.reopenConsequence).not.toBe("");
+    expect(caseDetailCopy.en.reopenConsequence).toContain("reopens");
+  });
+
+  test("BUG-34: a failed reopen is shown in the dialog only", () => {
+    const failure = new Error("reason_required");
+    const request = { caseId: CASE, body: { statusId: OPEN_STATUS, note: "returned" } };
+    expect(inlineCaseStatusFailure(STATUSES, failure, request, CLOSED_STATUS)).toBeNull();
+    expect(inlineCaseStatusFailure(STATUSES, failure, request, OPEN_STATUS)).toBe(failure);
+  });
+
+  test("BUG-34: a finalised case's status control is locked with a note", async () => {
+    const source = await Bun.file(SOURCE).text();
+    expect(source).toContain("const statusLocked = Boolean(adoptionCase?.successfulAdoption)");
+    const from = source.indexOf('type="submit"');
+    expect(from).toBeGreaterThan(0);
+    expect(source.slice(from, source.indexOf(">", from))).toContain("statusLocked");
+    expect(source).toContain("copy.finalizedStatusLocked");
+    expect(caseDetailCopy.zh.finalizedStatusLocked).toContain("完成領養");
+    expect(caseDetailCopy.en.finalizedStatusLocked).toContain("finalised");
   });
 });

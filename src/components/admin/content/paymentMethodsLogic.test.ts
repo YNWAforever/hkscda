@@ -91,7 +91,7 @@ describe("canPublish", () => {
   test("is false for a staff actor even on an in_review row", () => {
     expect(
       canPublish({
-        config: { state: "in_review", submittedBy: "other" },
+        config: { state: "in_review", submittedBy: "other", editedBy: [] },
         currentActorAdminUserId: "me",
         currentActorRole: "staff",
       }),
@@ -101,7 +101,7 @@ describe("canPublish", () => {
   test("is false when the treasurer is the same person who submitted", () => {
     expect(
       canPublish({
-        config: { state: "in_review", submittedBy: "me" },
+        config: { state: "in_review", submittedBy: "me", editedBy: [] },
         currentActorAdminUserId: "me",
         currentActorRole: "treasurer",
       }),
@@ -111,7 +111,7 @@ describe("canPublish", () => {
   test("is true for a different treasurer on an in_review row", () => {
     expect(
       canPublish({
-        config: { state: "in_review", submittedBy: "other" },
+        config: { state: "in_review", submittedBy: "other", editedBy: [] },
         currentActorAdminUserId: "me",
         currentActorRole: "treasurer",
       }),
@@ -121,7 +121,27 @@ describe("canPublish", () => {
   test("is true for a different admin on an in_review row", () => {
     expect(
       canPublish({
-        config: { state: "in_review", submittedBy: "other" },
+        config: { state: "in_review", submittedBy: "other", editedBy: [] },
+        currentActorAdminUserId: "me",
+        currentActorRole: "admin",
+      }),
+    ).toBe(true);
+  });
+
+  test("BUG-38: is false when the treasurer edited the draft that someone else submitted", () => {
+    expect(
+      canPublish({
+        config: { state: "in_review", submittedBy: "other", editedBy: ["third", "me"] },
+        currentActorAdminUserId: "me",
+        currentActorRole: "treasurer",
+      }),
+    ).toBe(false);
+  });
+
+  test("BUG-38: is true for a treasurer who neither edited nor submitted the draft", () => {
+    expect(
+      canPublish({
+        config: { state: "in_review", submittedBy: "other", editedBy: ["other", "third"] },
         currentActorAdminUserId: "me",
         currentActorRole: "admin",
       }),
@@ -131,7 +151,7 @@ describe("canPublish", () => {
   test("is false when the row is not in_review", () => {
     expect(
       canPublish({
-        config: { state: "draft", submittedBy: null },
+        config: { state: "draft", submittedBy: null, editedBy: [] },
         currentActorAdminUserId: "me",
         currentActorRole: "admin",
       }),

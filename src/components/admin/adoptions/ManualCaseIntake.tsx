@@ -22,6 +22,8 @@ import { fetchCoordinatorJson } from "./api";
 import {
   buildIdentitySearchParams,
   buildManualCasePayload,
+  canSearchIdentity,
+  candidateContactPrefill,
   intakeCaseStatuses,
   type ManualAdopterProfileForm,
   type ManualCaseForm,
@@ -284,7 +286,7 @@ export function ManualCaseIntake() {
       fetchCoordinatorJson<IdentitySearchResponse>(
         `/api/admin/adoptions/intake/identity-search?${identitySearchParams}`,
       ),
-    enabled: searchText.length > 0,
+    enabled: canSearchIdentity(searchText),
   });
 
   const createCaseMutation = useMutation<ManualCaseCreateResponse, Error, ManualCaseIdentityForm>({
@@ -358,11 +360,12 @@ export function ManualCaseIntake() {
   function selectCandidate(candidate: ManualCaseIdentityCandidate) {
     setSelectedCandidate(candidate);
     setSubmitError(null);
+    const contact = candidateContactPrefill(candidate);
     setCaseForm((current) => ({
       ...current,
       applicantName: current.applicantName || candidate.displayName,
-      applicantPhone: current.applicantPhone || candidate.phone || "",
-      applicantEmail: current.applicantEmail || candidate.email || "",
+      applicantPhone: current.applicantPhone || contact.phone,
+      applicantEmail: current.applicantEmail || contact.email,
     }));
 
     if (candidate.kind === "adopter" && candidate.adopterProfileId) {
@@ -502,7 +505,11 @@ export function ManualCaseIntake() {
           </div>
         </div>
 
-        {identitySearchQuery.error && searchText && (
+        {searchText && !canSearchIdentity(searchText) && (
+          <p className="text-sm text-[var(--color-text-muted)]">{copy.identitySearchTooShort}</p>
+        )}
+
+        {identitySearchQuery.error && canSearchIdentity(searchText) && (
           <LoadFailure
             error={identitySearchQuery.error}
             onRetry={() => void identitySearchQuery.refetch()}
@@ -510,7 +517,7 @@ export function ManualCaseIntake() {
           />
         )}
 
-        {searchText && !identitySearchQuery.error && (
+        {canSearchIdentity(searchText) && !identitySearchQuery.error && (
           <div className="rounded-md border border-[var(--color-border)]">
             <div className="flex min-h-11 items-center justify-between border-b border-[var(--color-border)] px-3">
               <div className="text-sm font-medium text-[var(--color-panel)]">

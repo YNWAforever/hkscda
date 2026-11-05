@@ -38,6 +38,13 @@ test.skipIf(!url || process.env.VOLUNTEER_TEST_ALLOW_LOCAL_FIXTURES !== "1")(
         await db`insert into auth.users(id,email,email_confirmed_at) values(${id}::uuid,${id + "@example.invalid"},now())`;
       await db`insert into public.admin_user(auth_user_id,email,role,status) values(${admin}::uuid,${admin + "@example.invalid"},'admin','active')`;
       await db`insert into public.volunteer_profile(id,auth_user_id,display_name,birth_date,tier,status,verified_by,verified_at) values(${profile}::uuid,${actor}::uuid,'Synthetic terms volunteer','1990-01-01','regular','active',${admin}::uuid,now())`;
+      // BUG-65: `list` returns only the credential definitions, never every profile
+      // (with birth date) or every credential.
+      const listed = (
+        await db`select public.volunteer_profile_command(${admin}::uuid,'{"action":"list"}'::jsonb) result`
+      )[0].result as Record<string, unknown>;
+      expect(Object.keys(listed)).toEqual(["credential_definitions"]);
+      expect(JSON.stringify(listed)).not.toContain(profile);
       const body = structuredClone(initialPolicyCatalogue[0]);
       body.template_key = "terms-" + version;
       body.booking.auto_approve = false;

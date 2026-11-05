@@ -605,6 +605,8 @@ describe("matching an old registration to a profile in English", () => {
         FIXTURE.volunteer + " · " + FIXTURE.activity + " · 1 May 2026 (Fri)",
         "Verified volunteer",
         "Choose a verified profile",
+        // BUG-65: the profile comes from the qualifications page's search, not a full list.
+        "Find and choose the volunteer with the search above first.",
         "Evidence that the identity matches, and the reason for the match",
         "Record the check and link the profile",
       ]) {

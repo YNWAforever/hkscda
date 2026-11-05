@@ -5,7 +5,7 @@ import type { AdminUser } from "../donations/supabase.server";
 import { MAX_ADMIN_JSON_BYTES, readAdminJson } from "../http/adminJson.server";
 import { readBoundedText } from "../http/boundedBody.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
-import { ContentValidationError, createContentService } from "./service";
+import { ContentNotPublishedError, ContentValidationError, createContentService } from "./service";
 
 type ContentService = ReturnType<typeof createContentService>;
 
@@ -88,8 +88,9 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
   } catch (error) {
     if (error instanceof Response) return error;
     if (error instanceof ContentLifecycleError)
+      // A known refusal sends its safe reason as the code (BUG-69), so the screen names the cause.
       return jsonResponse(
-        { error: { message: error.message, code: error.code } },
+        { error: { message: error.message, code: error.reason ?? error.code } },
         { status: error.status },
       );
     if (error instanceof z.ZodError) {
@@ -101,9 +102,17 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
         (acc[key] ??= []).push(issue.message);
         return acc;
       }, {});
+      // The structured shape the admin client reads (structuredAdminApiError in
+      // lib/admin/session.ts), so the screens can name each field (BUG-68).
       return jsonResponse(
-        { error: "Invalid content management request", details: { fields } },
+        { error: { code: "invalid", message: "Invalid content management request", fields } },
         { status: 400 },
+      );
+    }
+    if (error instanceof ContentNotPublishedError) {
+      return jsonResponse(
+        { error: { code: error.code, message: error.message } },
+        { status: error.status },
       );
     }
     if (error instanceof ContentValidationError) {

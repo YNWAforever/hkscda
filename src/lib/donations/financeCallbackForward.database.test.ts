@@ -285,6 +285,36 @@ describe.skipIf(!db)("Task11 finance behavior and transaction contracts", () => 
           .next_value,
       ).toBe(2);
     }));
+  test("BUG-49: issuing an existing receipt writes no second receipt.issue row, whoever issues it", () =>
+    financeFixture(async (tx, f) => {
+      const second = randomUUID();
+      await tx`insert into auth.users(id,email,email_confirmed_at) values(${second}::uuid,${second + "@example.invalid"},now())`;
+      await tx`insert into public.admin_user(auth_user_id,email,role,status) values(${second}::uuid,${second + "@example.invalid"},'treasurer','active')`;
+      await tx`set local role service_role`;
+      const first = await manual(tx, "issue", f);
+      const again =
+        await tx`select * from public.issue_receipt_with_audit(${f.donation}::uuid,${f.supporter}::uuid,10000,2026,'2026-01-01T00:00:00Z',${second}::uuid)`;
+      expect(first[0].already_existed).toBe(false);
+      expect(again[0].already_existed).toBe(true);
+      expect(again[0].receipt_id).toBe(first[0].receipt_id);
+      await tx`set local role postgres`;
+      const rows =
+        await tx`select actor_user_id from public.audit_log where action='receipt.issue' and entity_id=${f.donation}`;
+      expect(rows.map((row: { actor_user_id: string }) => row.actor_user_id)).toEqual([f.actor]);
+    }));
+  test("BUG-49: issuing a receipt the delivery job already issued writes no receipt.issue row", () =>
+    financeFixture(async (tx, f) => {
+      await tx`set local role service_role`;
+      const result = await manual(tx, "issue", f);
+      expect(result[0].already_existed).toBe(true);
+      expect(result[0].receipt_id).toBe(f.receipt);
+      await tx`set local role postgres`;
+      expect(
+        (
+          await tx`select count(*)::integer n from public.audit_log where action='receipt.issue' and entity_id=${f.donation}`
+        )[0].n,
+      ).toBe(0);
+    }, true));
   test("manual void replay rejects without second audit; signed void retry returns zero rows", () =>
     financeFixture(async (tx, f) => {
       await tx`set local role service_role`;

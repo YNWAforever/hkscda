@@ -398,6 +398,12 @@ test.skipIf(!enabled)(
         (await cmd({ action: "apply", operation_id: copy.operation.id, group_index: 1 })).operation
           .groups[1].state,
       ).toBe("conflicted");
+      const activityAudit = async () =>
+        (await db`select action,detail from public.audit_log where entity='volunteer_activity' and entity_id=${draft.activity_id} and action in('volunteer_activity.update','volunteer_bulk.edit') order by id`) as {
+          action: string;
+          detail: { before: { title: string }; after?: { title: string }; item_key: string };
+        }[];
+      const auditBeforeEdit = await activityAudit();
       const edit = await cmd({
         action: "preview",
         operation: "edit",
@@ -437,6 +443,12 @@ test.skipIf(!enabled)(
         (await cmd({ action: "apply", operation_id: edit.operation.id, group_index: 0 })).operation
           .groups[0].state,
       ).toBe("applied");
+      // BUG-64: one bulk edit writes one audit row, volunteer_bulk.edit, with the before and
+      // after facts; it no longer also writes volunteer_activity.update for the same change.
+      const editAudit = (await activityAudit()).slice(auditBeforeEdit.length);
+      expect(editAudit.map((row) => row.action)).toEqual(["volunteer_bulk.edit"]);
+      expect(editAudit[0].detail.before.title).toBe(input.title);
+      expect(editAudit[0].detail.after?.title).toBe("Synthetic retry success");
       const delivery = await cmd({ action: "status", operation_id: edit.operation.id });
       expect(delivery.operation.notifications).toHaveLength(1);
       expect(delivery.operation.notifications[0].follow_up).toBe("pending");

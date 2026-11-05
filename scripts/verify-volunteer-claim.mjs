@@ -50,9 +50,11 @@ try {
     actors.staff.session,
   );
   const staffPage = await staffContext.newPage();
-  await staffPage.goto(`${origin}/admin/volunteers/qualifications`, { waitUntil: "networkidle" });
-  await staffPage.getByRole("combobox").first().selectOption(claim.profile_id);
-  await staffPage.getByRole("combobox").nth(1).selectOption("regular");
+  // The page opens one profile (BUG-65: it no longer lists every profile in a select).
+  await staffPage.goto(`${origin}/admin/volunteers/qualifications?profile_id=${claim.profile_id}`, {
+    waitUntil: "networkidle",
+  });
+  await staffPage.getByRole("combobox").first().selectOption("regular");
   await staffPage
     .getByLabel("核實／更正理由與證據來源")
     .fill("Synthetic local staff verification evidence");

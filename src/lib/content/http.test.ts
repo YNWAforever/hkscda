@@ -372,10 +372,66 @@ describe("createContentHandlers", () => {
     });
 
     expect(response.status).toBe(400);
+    // BUG-68: the fields travel inside a structured error, the shape the admin client reads.
+    // (It was `{error: "<string>", details: {fields}}`, which the client never read.)
     expect(await response.json()).toEqual({
-      error: "Invalid content management request",
-      details: { fields: { slug: ["此網址格式不正確"] } },
+      error: {
+        code: "invalid",
+        message: "Invalid content management request",
+        fields: { slug: ["此網址格式不正確"] },
+      },
     });
+  });
+
+  test("BUG-68: a real content validation failure reaches the admin client with its fields", async () => {
+    const { contentInputSchema } = await import("./schemas");
+    const service = createService({
+      async createContent({ input }: { input: unknown }) {
+        return contentInputSchema.parse(input);
+      },
+    });
+    const handlers = createContentHandlers({ requireContentAdmin: async () => admin, service });
+
+    const response = await handlers.createContent({
+      request: new Request("https://example.test/api/admin/content", {
+        method: "POST",
+        body: JSON.stringify({
+          type: "rescue_story",
+          slug: "Lucky Story",
+          title: "標".repeat(181),
+          summary: "摘要",
+          ctaUrl: "www.hkscda.org",
+        }),
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error.code).toBe("invalid");
+    // An object `error` with string-array `fields` is what structuredAdminApiError
+    // (lib/admin/session.ts, covered by session.test.ts) turns into AdminApiError.fields.
+    expect(typeof body.error.message).toBe("string");
+    expect(Object.keys(body.error.fields).sort()).toEqual(["ctaUrl", "slug", "title"]);
+    for (const messages of Object.values(body.error.fields)) {
+      expect(Array.isArray(messages)).toBe(true);
+      for (const message of messages as unknown[]) expect(typeof message).toBe("string");
+    }
+  });
+
+  test("BUG-68: a public request keeps its plain message and no field details", async () => {
+    const service = createService({
+      async listPublicContent() {
+        return z.object({ page: z.number() }).parse({ page: "x" });
+      },
+    });
+    const handlers = createContentHandlers({ requireContentAdmin: async () => admin, service });
+
+    const response = await handlers.listPublicContent({
+      request: new Request("https://example.test/api/content?page=x"),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Could not load story content" });
   });
 
   test("maps draft-only creation errors to 400 responses", async () => {

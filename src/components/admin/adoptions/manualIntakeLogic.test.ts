@@ -4,6 +4,8 @@ import type { CoordinatorStatus } from "../../../lib/adoptions/types";
 import {
   buildManualCasePayload,
   buildIdentitySearchParams,
+  canSearchIdentity,
+  candidateContactPrefill,
   intakeCaseStatuses,
 } from "./manualIntakeLogic";
 
@@ -36,6 +38,45 @@ describe("manual intake logic", () => {
 
     expect(intakeCaseStatuses(statuses).map((status) => status.key)).toEqual(["new", "contacted"]);
     expect(intakeCaseStatuses(undefined)).toEqual([]);
+  });
+
+  test("BUG-37: identity search starts at three characters", () => {
+    expect(canSearchIdentity("")).toBe(false);
+    expect(canSearchIdentity(" ab ")).toBe(false);
+    expect(canSearchIdentity("abc")).toBe(true);
+    expect(canSearchIdentity(" 陳大文 ")).toBe(true);
+  });
+
+  test("BUG-37: a masked supporter's contact is not copied into the case", () => {
+    const candidate = {
+      kind: "supporter" as const,
+      supporterId: "s1",
+      adopterProfileId: null,
+      displayName: "Ada",
+      email: "a***@example.com",
+      phone: "****5678",
+      isBlacklisted: false,
+      latestCaseAt: null,
+    };
+    expect(candidateContactPrefill({ ...candidate, contactMasked: true })).toEqual({
+      phone: "",
+      email: "",
+    });
+    expect(
+      candidateContactPrefill({
+        ...candidate,
+        email: "ada@example.com",
+        phone: "91235678",
+        contactMasked: false,
+      }),
+    ).toEqual({ phone: "91235678", email: "ada@example.com" });
+  });
+
+  test("BUG-37: the intake screen searches only from the minimum and says so", async () => {
+    const source = await Bun.file("src/components/admin/adoptions/ManualCaseIntake.tsx").text();
+    expect(source).toContain("enabled: canSearchIdentity(searchText)");
+    expect(source).toContain("copy.identitySearchTooShort");
+    expect(source).toContain("candidateContactPrefill(candidate)");
   });
 
   test("builds trimmed identity search params", () => {

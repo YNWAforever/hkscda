@@ -6,6 +6,7 @@ import {
   type CoordinatorOpsRepositoryMethods,
 } from "./service";
 import type { CoordinatorStatus, CoordinatorTask, CoordinatorTaskExportRow } from "./types";
+import { createAdopterHandlers } from "./http/adopterHandlers.server";
 
 const adminId = "11111111-2222-4333-8444-555555555555";
 const caseId = "22222222-3333-4333-8444-555555555555";
@@ -145,6 +146,10 @@ function createRepo(
     async searchManualCaseIdentity(input) {
       calls.push({ name: "searchManualCaseIdentity", payload: input });
       return { candidates: [], total: 0 };
+    },
+    async recordAdoptionReturn(input) {
+      calls.push({ name: "recordAdoptionReturn", payload: input });
+      return { id: input.successfulAdoptionId, returnedAt: "2026-11-01T00:00:00.000Z" };
     },
     async createManualCase(input) {
       calls.push({ name: "createManualCase", payload: input });
@@ -529,6 +534,85 @@ describe("createAdoptionCoordinatorService", () => {
       name: "searchManualCaseIdentityWithThis",
       payload: { q: "Ada", page: 1, pageSize: 10 },
     });
+  });
+
+  // required-reason: successful_adoption.return
+  test("BUG-33: recording a return needs a reason and passes the trimmed reason on", async () => {
+    const adoptionId = "abababab-cdcd-4333-8444-555555555555";
+    const repo = createRepo({
+      async recordAdoptionReturn(input) {
+        repo.calls.push({ name: "recordAdoptionReturn", payload: input });
+        return { id: adoptionId, returnedAt: "2026-11-01T00:00:00.000Z" };
+      },
+    });
+    const service = createAdoptionCoordinatorService({ repo });
+
+    for (const input of [{}, { reason: "" }, { reason: "   " }, { reason: "x".repeat(501) }]) {
+      await expect(
+        service.recordAdoptionReturn({
+          actorUserId: adminId,
+          successfulAdoptionId: adoptionId,
+          input,
+        }),
+      ).rejects.toThrow("reason_required");
+    }
+    expect(repo.calls.filter((call) => call.name === "recordAdoptionReturn")).toEqual([]);
+
+    await expect(
+      service.recordAdoptionReturn({
+        actorUserId: adminId,
+        successfulAdoptionId: adoptionId,
+        input: { reason: "  Returned: allergy  ", returnedAt: "2026-11-01T08:00:00+08:00" },
+      }),
+    ).resolves.toEqual({ id: adoptionId, returnedAt: "2026-11-01T00:00:00.000Z" });
+    expect(repo.calls).toContainEqual({
+      name: "recordAdoptionReturn",
+      payload: {
+        actorUserId: adminId,
+        successfulAdoptionId: adoptionId,
+        reason: "Returned: allergy",
+        returnedAt: "2026-11-01T08:00:00+08:00",
+      },
+    });
+  });
+
+  test("BUG-37: identity search needs a query of at least three characters", async () => {
+    const repo = createRepo();
+    const service = createAdoptionCoordinatorService({ repo });
+    // No query, a blank one, or one below the minimum never reaches the database.
+    for (const search of [{}, { q: "" }, { q: "   " }, { q: " ab " }, { page: "3" }]) {
+      expect(() => service.searchManualCaseIdentity(search)).toThrow();
+    }
+    expect(repo.calls.filter((call) => call.name === "searchManualCaseIdentity")).toEqual([]);
+
+    await service.searchManualCaseIdentity({ q: " abc ", page: "2" });
+    expect(repo.calls).toContainEqual({
+      name: "searchManualCaseIdentity",
+      payload: { q: "abc", page: 2, pageSize: 10 },
+    });
+  });
+
+  test("BUG-37: a short identity search is a 400 from the API", async () => {
+    const repo = createRepo();
+    const handlers = createAdopterHandlers({
+      requireCoordinator: async () => ({
+        id: "staff-row",
+        authUserId: adminId,
+        email: "staff@example.com",
+        role: "staff",
+        status: "active",
+      }),
+      service: createAdoptionCoordinatorService({ repo }),
+    });
+    for (const query of ["", "?page=2", "?q=ab"]) {
+      const response = await handlers.searchManualCaseIdentity({
+        request: new Request(
+          `https://example.test/api/admin/adoptions/intake/identity-search${query}`,
+        ),
+      });
+      expect(response.status).toBe(400);
+    }
+    expect(repo.calls.filter((call) => call.name === "searchManualCaseIdentity")).toEqual([]);
   });
 
   test("exports coordinator CSV and audits row count", async () => {

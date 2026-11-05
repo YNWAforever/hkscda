@@ -13,8 +13,8 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
 - **Second pass (2026-10-30):** 33 more findings, BUG-33 to BUG-65 (7 Medium, 26 Low).
-  21 code-only ones are fixed, one commit each; 12 wait for a migration approval or a
-  decision, as do the database parts of BUG-42 and BUG-55. See [Second pass](#second-pass-2026-10-30).
+  21 code-only ones were fixed in PR #228; the other 12, and the database parts of BUG-42
+  and BUG-55, were fixed after their migrations were approved. All 33 are fixed. See [Second pass](#second-pass-2026-10-30).
 
 ## How this was run
 
@@ -230,7 +230,7 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-41 | Low | Manual intake refuses a closing initial status (400) and no longer offers it                             |
 | BUG-42 | Low | Code part: unknown linked ids are 404 and check violations 400, not 500 (RPC part deferred)              |
 | BUG-43 | Low | Sponsorship RPC errors (plain objects) keep their domain status (404/409/400)                            |
-| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker; changing the search clears the old selection    |
+| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker; changing the search clears the old selection     |
 | BUG-45 | Low | A new idempotency key for each successfully recorded sponsorship payment                                 |
 | BUG-47 | Low | Sponsorship finance: linked payments left out of candidates, coded errors, 404 for an unknown pledge     |
 | BUG-48 | Low | Consents: unknown supporter is 404; Save stays disabled until the refetch settles                        |
@@ -247,24 +247,72 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-61 | Low | Internship 409/404 show a real message and reload; settings discard the old body before a retry          |
 | BUG-62 | Low | The overview "Today" list shows published sessions and flags a partial list                              |
 
-### Waiting for approval or a decision
+### Fixed with approved migrations (follow-up, 2026-11-05)
 
-| ID     | Sev | Needs                                                                                      |
-| ------ | --- | ------------------------------------------------------------------------------------------ |
-| BUG-33 | Med | Migration, plus a decision on how a returned adoption is recorded (regression from BUG-02) |
-| BUG-34 | Med | Migration: refuse reopening a finalised case; reason to reopen a closed one                |
-| BUG-36 | Med | Migration (or an audited resolve action): resolve intake items                             |
-| BUG-37 | Med | Migration: minimum query and masking in the intake identity search                         |
-| BUG-38 | Med | Migration: refuse publish by anyone who edited the payment-method draft                    |
-| BUG-39 | Med | Migration: audit the auth user id in two content functions, repair existing rows           |
-| BUG-42 | Low | Migration (RPC part): refuse matches on adopted animals and closed cases                   |
-| BUG-46 | Low | Migration: "receipt needed" only for eligible donations without a receipt                  |
-| BUG-49 | Low | Migration: no second `receipt.issue` audit row                                             |
-| BUG-53 | Low | Migration: one published guide per species                                                 |
-| BUG-55 | Low | Migration (RPC part): refuse disabled → active for a never-accepted invite                 |
-| BUG-63 | Low | Decision: may staff retry failed volunteer notifications, or admins only?                  |
-| BUG-64 | Low | Migration: one audit row per bulk edit                                                     |
-| BUG-65 | Low | Migration: narrow the qualifications `list` read                                           |
+Approved by the user after PR #228 merged; BUG-33 uses the "record the return" design and
+BUG-63 the "admins only" decision. Each migration was reproduced and verified on a throwaway
+Postgres 16 before and after.
+
+Review fixes on PR #232 (r1 I1, M1, M2):
+
+- I1: `20261030103500` replaces the blanket `unique (adoption_case_id, animal_id)` on `animal_match`
+  with a partial unique index on active matches. A trigger maintains `is_active_match` with the
+  same predicate as the `103000` duplicate guard, and status edits re-sync it. A declined or
+  cancelled match no longer blocks a new one. This was verified on a local Postgres 17 with all
+  225 migrations applied. The BUG-42 database test fails before the fix (23505) and passes after it.
+- M2: the `104000` return check was edited in place, because the PR is unmerged and not applied
+  anywhere. It now requires `coalesce(btrim(return_reason), '') <> ''`, so a NULL reason fails.
+- M1: there is now a single deploy order (below).
+
+| ID     | Sev | Fix                                                                                                                                                                                                                       | Migration                          |
+| ------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| BUG-33 | Med | Adoption returns are recorded (`returned_at`, `returned_by`, `return_reason`) by an audited "Record return" action that sets the animal back to available; finalising is refused only while an unreturned adoption exists | `20261030104000`                   |
+| BUG-34 | Med | A finalised case's status cannot change (409); reopening a closed case needs a reason                                                                                                                                     | `20261030100000`                   |
+| BUG-36 | Med | Intake items resolve when their case closes or is finalised; existing ones are backfilled                                                                                                                                 | `20261030101000`                   |
+| BUG-37 | Med | Intake identity search needs a 3+ character query (or an exact email/phone) and masks non-adopters' contacts                                                                                                              | `20261030102000`                   |
+| BUG-38 | Med | Anyone who edited a payment-method draft cannot publish it (editors tracked by trigger)                                                                                                                                   | `20261030110000`                   |
+| BUG-39 | Med | Content metadata and media-repair audits log the auth user id; a guard test covers every function                                                                                                                         | `20261030120000`                   |
+| BUG-42 | Low | Matches refuse unavailable animals, closed or finalised cases and duplicate active matches; only an active match is unique per case and animal, so a declined one no longer blocks a new match                            | `20261030103000`, `20261030103500` |
+| BUG-46 | Low | "Receipt needed" (supporter list, filter, donation exports, export jobs) only for eligible donations with no issued receipt                                                                                               | `20261030111000`, `20261030113000` |
+| BUG-49 | Low | `receipt.issue` is audited only when the receipt is new                                                                                                                                                                   | `20261030112000`                   |
+| BUG-53 | Low | Publishing a guide archives every live release of the same species, whatever its topic; publishes per species are serialised                                                                                              | `20261030121000`                   |
+| BUG-55 | Low | The RPC also refuses disabled → active for a never-accepted invite                                                                                                                                                        | `20261030130000`                   |
+| BUG-63 | Low | Notification retry is admin-only in the API, the button and the SQL function                                                                                                                                              | `20261030131000`                   |
+| BUG-64 | Low | A bulk edit writes one `volunteer_bulk.edit` row with before and after facts                                                                                                                                              | `20261030132000`                   |
+| BUG-65 | Low | The qualifications page loads only the chosen profile; `list` returns credential definitions only                                                                                                                         | `20261030133000`                   |
+
+**Deploy order.** There are 16 migrations. Deploy in exactly three steps:
+
+1. Apply `20261030100000` → `20261030130000` in filename order (13 migrations, including
+   `20261030103500` for BUG-42).
+2. Deploy the code.
+3. Apply `20261030131000` → `20261030133000` in filename order (3 migrations).
+
+Why this works:
+
+- `20261030110000` (BUG-38) runs before the code, in step 1. The payment-methods list reads `edited_by`.
+- `20261030131000` (BUG-63) runs after the code, in step 3. With the migration first, a staff click on
+  the old button would get a 500.
+- `20261030133000` (BUG-65) runs after the code, in step 3. The old page reads `profiles` from `list`.
+- The adoptions migrations (`20261030100000`–`104000`, with `103500`) run before the code, in step 1.
+  Their signatures are unchanged, so the old code keeps working against them. Until step 2, a new
+  refusal (for example, reopening without a reason) may show as a generic error, and "Record
+  return" is available only once step 2 is live.
+- The others carry no code dependency. The BUG-36 backfill is one update over open intake items.
+
+**Not done, by design or pending a decision.**
+
+- BUG-39: rows already written with the wrong actor are not rewritten: `audit_log` is append-only
+  (no runtime role may update it). `admin_user.auth_user_id` recovers the real user for those rows.
+- BUG-53: no unique "one published guide per species" index, since existing data may hold duplicates;
+  the next publish for that species archives them with an audit row.
+- BUG-33: reports and impact counts still include returned adoptions (product decision);
+  no unique index on unreturned adoptions, since pre-BUG-02 duplicates may exist.
+- BUG-46: a donation export filtered to "receipt not needed" leaves out every donation of a supporter
+  who is still owed a receipt.
+- Several new database scenarios (in `changeCaseStatus`, `atomicForward`, `notificationClaims`,
+  `bookingEnforcement` database tests) need a local stack that CI's `rls-matrix` job does not run;
+  each of those migrations was verified on Postgres 16 instead.
 
 Follow-ups that were already cancelled with `completed_at` null stay open until saved again;
 a one-off data fix would close them (not done; it changes production data).
@@ -309,6 +357,46 @@ Postgres did not answer on `127.0.0.1:55322`, so database-backed tests were skip
 
 The deferred findings and database parts of BUG-42/BUG-55 above remain deferred. No migration
 or production database change is part of this review.
+
+## Content creation pass (2026-11-05)
+
+A focused review of content creation in the admin CMS ([`BUGS.md`](BUGS.md#content-creation-pass-bug-66bug-73)).
+Each fix has a `BUG-xx` test that failed before it.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                               |
+| ------ | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BUG-66 | Med | Social copy and adopter drafts use the published slug and wording; refused (409 `not_published`) while nothing is published                                                                                                                                                                                       |
+| BUG-67 | Med | After the editor's own save, other dirty panels that shared its base move to the new version; another person's change still conflicts                                                                                                                                                                             |
+| BUG-68 | Low | Validation errors arrive as `{code: "invalid", fields}` and are shown per field, by label, in the admin's language; slug pattern and title length on the inputs                                                                                                                                                   |
+| BUG-69 | Low | Lifecycle and media refusals carry a safe reason code (cover on an internal update, expired session, existing link or primary subject, slug taken, byte mismatch) with its own message; a duplicate link is not a conflict; "Set as cover" disabled for internal updates; an expired session is replaced on retry |
+| BUG-70 | Low | One story slug limit (`CONTENT_SLUG_MAX` = 180) in the schema, `suggestSlug` and the public story validators                                                                                                                                                                                                      |
+| BUG-73 | Low | Length limits for subtitle, body, CTA label and SEO/OG fields, with matching `maxLength`                                                                                                                                                                                                                          |
+
+**Fixed with approved migrations (user decision for BUG-71: keep the first publication date):**
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                        | Migration        |
+| ------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- |
+| BUG-71 | Low | Republishing keeps the first `published_at`; the /stories order, public date and `article:published_time` follow it. No existing rows rewritten                                                                                                                                                                                            | `20261105100000` |
+| BUG-72 | Med | A trigger marks public image copies not used by the current published revision as withdrawn on publish or archive; the daily `/api/jobs/public-media-repair` run deletes them from `content-media` (lease, idempotent, retried on storage failure, never a current copy); republishing a withdrawn or removed copy cancels or re-queues it | `20261105101000` |
+
+**Deploy:** `20261105100000` any time; `20261105101000` before or with the code (if the code ships first,
+the job's withdrawal step fails with 500 until the migration runs; repairs still run). No new cron or
+environment variable.
+
+**Decided not to do (user, 2026-11-05).** BUG-71: no backfill; stories already republished keep
+their later date (the first date stays recoverable from the earliest `content.publish` audit row).
+BUG-72: no one-off sweep; copies left behind before the migration are withdrawn when their story is
+next published or archived, not all at once; removal runs daily, so a withdrawn image can stay public
+up to about a day (plus CDN caching); images stored directly in the public bucket by older code have
+no copy record and are not covered.
+
+**Behaviour to know.** Content already longer than a new BUG-73 limit still shows publicly; its
+next save is refused, naming the field, until it is shortened. A slug clash still shows the
+conflict banner (now with its own message).
+
+**Verification.** `bun run test` 7,782 pass, 0 fail; `bunx tsc --noEmit` clean; `bun run lint`
+0 errors (the same 53 warnings); `bun run build` passes with the route tree unchanged;
+`verify:client-bundle` clean.
 
 ## Manual QA checklist (staging or local, never production data)
 

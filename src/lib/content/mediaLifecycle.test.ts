@@ -215,3 +215,28 @@ test("invalid preparation never copies private media or advances publication", a
   expect(ports.copyPublic).not.toHaveBeenCalled();
   expect(ports.publish).not.toHaveBeenCalled();
 });
+
+test("BUG-69: an expired upload session carries the session_expired reason", async () => {
+  const { ports, service } = fixture();
+  const session = await ports.getSession();
+  ports.getSession.mockResolvedValue({ ...session, expiresAt: "2026-09-04T00:00:00Z" });
+  await expect(
+    service.finalize({
+      actorUserId,
+      contentId,
+      input: { uploadSessionId: sessionId, expectedVersion: 7, altText: "Image" },
+    }),
+  ).rejects.toMatchObject({ code: "invalid", status: 422, reason: "session_expired" });
+});
+
+test("BUG-69: uploaded bytes that do not match the session carry the media_mismatch reason", async () => {
+  const { ports, service } = fixture();
+  ports.download.mockResolvedValue(new Uint8Array(8));
+  await expect(
+    service.finalize({
+      actorUserId,
+      contentId,
+      input: { uploadSessionId: sessionId, expectedVersion: 7, altText: "Image" },
+    }),
+  ).rejects.toMatchObject({ code: "invalid", status: 422, reason: "media_mismatch" });
+});

@@ -186,6 +186,51 @@ test("detail pages stay bounded while cover and latest summary remain independen
   expect(detail?.latestPublicUpdate?.id).toBe("latest");
 });
 
+test("BUG-66: the authoring detail maps content_item.published_slug apart from the draft slug", async () => {
+  const content = {
+    id: "content",
+    title: "Synthetic",
+    slug: "lucky-rescue-2026",
+    published_slug: "lucky-rescue",
+    type: "event",
+    summary: "Summary",
+    status: "published",
+    cover_media_id: null,
+  };
+  const snapshot = {
+    content,
+    profile: null,
+    cover: null,
+    latest: null,
+    links: [],
+    media: [],
+    updates: [],
+    socialCopies: [],
+    notificationDrafts: [],
+  };
+  const query = {
+    select: () => query,
+    eq: () => query,
+    maybeSingle: async () => ({ data: content, error: null }),
+  };
+  const client = {
+    from: () => query,
+    rpc: async () => ({ data: snapshot, error: null }),
+  } as unknown as SupabaseClient;
+  const repo = createSupabaseContentRepository(client);
+
+  const detail = await repo.getAdminContent("content");
+  expect(detail?.slug).toBe("lucky-rescue-2026");
+  expect(detail?.publishedSlug).toBe("lucky-rescue");
+
+  const neverPublished = { ...content, published_slug: null };
+  const unpublished = await createSupabaseContentRepository({
+    ...client,
+    rpc: async () => ({ data: { ...snapshot, content: neverPublished }, error: null }),
+  } as unknown as SupabaseClient).getAdminContent("content");
+  expect(unpublished?.publishedSlug).toBeNull();
+});
+
 test("detail page and its separate private cover share one signing batch", async () => {
   const content = {
     id: "content",

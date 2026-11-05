@@ -85,6 +85,7 @@ const NEXT_STEP: Partial<Record<ContentServerMessageCode, RegExp>> = {
   internalUpdateNoDrafts: /Make the update public/,
   noAdoptersToContact: /Check the adopters/,
   draftCreationFailed: /Select Create notification drafts/,
+  storyNotPublished: /Publish the story/,
 };
 
 describe("the table of server messages", () => {
@@ -198,23 +199,36 @@ describe("the notice a saved story update comes back with", () => {
     expect(contentServerMessageCode(result.warning)).toBe("draftCreationFailed");
   });
 
+  const adopter = {
+    adoptionCaseId: "case-1",
+    supporterId: "supporter-1",
+    name: "Ada",
+    email: "ada@example.com",
+    phone: null,
+  };
+
   test("an update whose drafts were made has no warning to translate", async () => {
     const result = await saveUpdate(
       createRepo({
-        resolveAdopterRecipients: async () => [
-          {
-            adoptionCaseId: "case-1",
-            supporterId: "supporter-1",
-            name: "Ada",
-            email: "ada@example.com",
-            phone: null,
-          },
-        ],
+        resolveAdopterRecipients: async () => [adopter],
+        // The drafts link to the published story (BUG-66), so this story has been published.
+        getAdminContent: async () => ({ ...draft, publishedSlug: "story" }) as never,
+        getPublicContentBySlug: async () => ({ ...draft, status: "published" }) as never,
       }),
       "public",
     );
     expect(result.warning).toBeNull();
     expect(result.created).toBeGreaterThan(0);
+  });
+
+  test("BUG-66: an update on an unpublished story says the story must be published first", async () => {
+    const result = await saveUpdate(
+      createRepo({ resolveAdopterRecipients: async () => [adopter] }),
+      "public",
+    );
+    expect(result.warning).toBe(contentServerMessageText("storyNotPublished"));
+    expect(contentServerMessageCode(result.warning)).toBe("storyNotPublished");
+    expect(result.created).toBe(0);
   });
 });
 
