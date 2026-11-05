@@ -1751,3 +1751,39 @@ describe("second-pass access and volunteer RPC regressions", () => {
     }).toMatchObject({ readsProfiles: false, readsCredentials: false, returnsDefinitions: true });
   });
 });
+
+describe("content publication date regressions", () => {
+  // BUG-71: fixed by 20261105100000_content_publish_keeps_first_published_at.sql. Every
+  // publish_content_revision call set content_item.published_at = now(), so republishing a
+  // March story after a typo fix moved it to the top of /stories as November and changed
+  // article:published_time. A republished story now keeps its first publication date.
+  test("BUG-71: publish_content_revision sets published_at only when it is still null", () => {
+    const publish = latestFunctionBody("publish_content_revision");
+    const body = publish.body.replace(/--[^\n]*/g, "");
+    const assignments = [...body.matchAll(/\bpublished_at\s*=\s*(\w+\s*\([^)]*\)|[^,\n]+)/gi)].map(
+      (match) => match[1].replace(/\s+/g, ""),
+    );
+
+    expect({ file: publish.file, assignments }).toEqual({
+      file: "20261105100000_content_publish_keeps_first_published_at.sql",
+      assignments: ["coalesce(item.published_at,v_published_at)"],
+    });
+  });
+
+  test("BUG-71: the first-publication-date fix rewrites no existing rows", () => {
+    const sql = readMigrationBySuffix("_content_publish_keeps_first_published_at.sql");
+    const outsideFunctions = sql.replace(/\$\$[\s\S]*?\$\$/g, "");
+    expect(outsideFunctions).not.toMatch(/\bupdate\s+public\./i);
+    expect(outsideFunctions).not.toMatch(/\bdelete\s+from\b/i);
+    // Signature, security mode, search_path and grants stay as the 20260905150012 definition.
+    expect(sql).toMatch(
+      /create or replace function public\.publish_content_revision\(\s*p_actor_user_id uuid,\s*p_content_id uuid,\s*p_revision_id uuid,\s*p_expected_version integer,\s*p_idempotency_key text\s*\)\s*returns jsonb\s*language plpgsql\s*security invoker\s*set search_path = public, pg_temp/,
+    );
+    expect(sql).toContain(
+      "revoke all on function public.publish_content_revision(uuid,uuid,uuid,integer,text) from public,anon,authenticated;",
+    );
+    expect(sql).toContain(
+      "grant execute on function public.publish_content_revision(uuid,uuid,uuid,integer,text) to service_role;",
+    );
+  });
+});
