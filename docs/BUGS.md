@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). BUG-66 to BUG-73 come from a content-creation review (2026-11-05) and are open; see [Content creation pass](#content-creation-pass-bug-66bug-73). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -85,6 +85,14 @@ Proof scripts (throwaway, not committed) are under the session scratchpad
 | BUG-63 | Low  | Volunteers      | Notification-job retry is admin-only on one route but open to staff on another                          | Traced           | code + decision      |
 | BUG-64 | Low  | Volunteers      | Bulk edit writes two audit rows for one change                                                          | Traced           | migration            |
 | BUG-65 | Low  | Volunteers      | Qualifications page loads every volunteer profile (with birth date) on each visit                       | Traced           | migration            |
+| BUG-66 | Med  | Content         | Social copy and adopter drafts link to the draft slug (404) and use unreviewed text                     | Proven           | code                 |
+| BUG-67 | Med  | Content UI      | Saving one editor panel makes the other unsaved panels fail as a version conflict                       | Traced           | code                 |
+| BUG-68 | Low  | Content         | Validation errors lose the field and show English text in both languages                                | Proven           | code                 |
+| BUG-69 | Low  | Content UI      | Content error messages give the wrong cause for media and link failures                                 | Proven           | code                 |
+| BUG-70 | Low  | Content         | Slugs of 161–180 characters publish but their public story page never loads                             | Proven           | code                 |
+| BUG-71 | Low  | Content         | Republishing a story resets its publication date                                                        | Traced           | migration + decision |
+| BUG-72 | Med  | Content         | Withdrawn or replaced story images stay in the public bucket                                            | Traced           | migration + code     |
+| BUG-73 | Low  | Content         | Content text, SEO and OG fields have no length limit                                                    | Proven           | code                 |
 
 Severity rubric: **Critical** = unauthenticated data access or money loss. **High** =
 public data integrity or authorization defect with normal use. **Med** = wrong
@@ -744,6 +752,102 @@ Status: all fixed; see [`FIX_REPORT.md`](FIX_REPORT.md#second-pass-2026-10-30) f
   `VolunteerQualifications.tsx` calls it on load.
 - **Fix:** use the paginated directory search and load credentials for the selected profile.
   Needs a migration if `list` is narrowed.
+
+## Content creation pass (BUG-66–BUG-73)
+
+Found on 2026-11-05 by a focused review of content creation in the admin CMS: create,
+edit, revisions, SEO/OG fields, media and links, review and publish, including the CMS
+change in #230 (folded SEO/OG panel, lifecycle and version labels). Each finding was traced
+from a real admin action or route to the wrong result; the ones marked Proven were
+reproduced with the real code and fakes. All are open.
+
+### BUG-66 — Med — Social copy and adopter drafts link to the draft slug and use unreviewed text
+
+- **Where:** `src/lib/content/service.ts` `publicStoryUrl(…, content.slug)` in
+  `draftAdopterNotifications` and `generateSocialCopy`. `content` is the live draft row;
+  the public page matches `content_item.published_slug`, which nothing in `src` reads.
+- **Repro (proven with a fake repository):** publish `lucky-rescue`, save the draft slug as
+  `lucky-rescue-2026`, generate social copy → "詳情：…/stories/lucky-rescue-2026" (404), with
+  the unreviewed draft title and summary. Same for a never-published draft, and for adopter
+  notification drafts created with a story update.
+- **Fix (code):** build links from `published_slug` and text from the published snapshot;
+  refuse (409) while nothing is published.
+
+### BUG-67 — Med — Saving one editor panel makes the other unsaved panels fail as a conflict
+
+- **Where:** `src/components/admin/content/ContentEditor.tsx` (`dirtyVersions`,
+  `expectedFor`, `reportDirty`): each dirty panel keeps the version it started from, and a
+  successful save by another panel does not move it forward.
+- **Repro:** at version 5, type in Basic content; save Publication eligibility (→ 6); save
+  Basic content → it sends expectedVersion 5 → 409 "Stale content version". The conflict
+  banner appears, Publish and Restore are disabled, and only "Reload latest version" (which
+  discards the typed work) gets out. Any pair of panels behaves the same.
+- **Fix (code):** after this editor's own successful save, move other dirty panels whose base
+  equals the version just sent to the new version; a change by someone else still conflicts.
+
+### BUG-68 — Low — Content validation errors lose the field and the language
+
+- **Where:** `src/lib/content/http.server.ts` sends `{error: "<string>", details: {fields}}`;
+  `structuredAdminApiError` (`src/lib/admin/session.ts`) reads fields only when `error` is an
+  object, so `ContentCreateForm` and the editor show "Invalid content management request" in
+  English in both languages, naming no field (proven with the real handler).
+- **Repro:** create with CTA URL `www.hkscda.org`, or save a slug `Lucky Story` or a title over
+  180 characters.
+- **Fix (code):** send `{error: {code: "invalid", message, fields}}` for validation errors;
+  add the slug pattern and title max length to the editor inputs.
+
+### BUG-69 — Low — Content error messages give the wrong cause for media and link failures
+
+- **Where:** `src/components/admin/content/contentErrors.ts` (from #230) maps every error to
+  four generic texts; the server collapses SQL reasons into conflict/not_found/invalid.
+- **Repro (proven for the text):** a cover photo on an internal update (refused at finalize),
+  or an expired upload session, shows "check required fields and the URL slug"; adding a link
+  that already exists (23505) shows the stale-version conflict banner and "reload, then save
+  again", which repeats the 409. An expired session is also reused on retry until the file is
+  picked again.
+- **Fix (code):** pass safe reason codes (e.g. `media_cover_internal`, `session_expired`,
+  `link_exists`) and map them; disable "Set as cover" for internal updates; do not treat a
+  duplicate link as a version conflict.
+
+### BUG-70 — Low — Slugs of 161–180 characters publish but their story page never loads
+
+- **Where:** `src/lib/content/schemas.ts` and `suggestSlug` allow 180 characters;
+  `src/lib/content/publicStory.functions.ts` (`getPublicStory`, `getRelatedStories`) reject
+  over 160.
+- **Repro:** a long English title auto-suggests a 175-character slug; create, review and
+  publish succeed; `/stories/<slug>` shows "暫時未能載入故事詳情" with HTTP 200 for good, while the
+  sitemap and story wall link to it.
+- **Fix (code):** one shared slug length limit at every layer.
+
+### BUG-71 — Low — Republishing a story resets its publication date
+
+- **Where:** `publish_content_revision` (`20260905150012`) always sets `published_at = now()`
+  (the older service path only set it when null).
+- **Effect:** fixing a typo moves a March story to the top of /stories as November, and the
+  public date and `article:published_time` change; the original date is lost.
+- **Fix (migration):** keep the first publication date (`coalesce(item.published_at, …)`);
+  optionally add a separate "last updated" date. Needs confirmation of the intended behaviour.
+
+### BUG-72 — Med — Withdrawn story images stay public
+
+- **Where:** published images are copied to the public `content-media` bucket at
+  `published/<revision>/<media>.<ext>` (`prepare_content_public_assets`, `20260926190000`);
+  nothing removes them on archive or when a newer revision is published.
+- **Effect:** a photo removed from a story (for example one showing an adopter's home), or a
+  whole archived story's images, stay reachable at their old URLs.
+- **Fix:** a cleanup step that deletes public copies no longer used by the current published
+  revision of a published item, run on archive and after publish; recording it needs a
+  migration.
+
+### BUG-73 — Low — Content text, SEO and OG fields have no length limit
+
+- **Where:** `src/lib/content/schemas.ts`: `subtitle`, `body`, `ctaLabel`, `seoTitle`,
+  `seoDescription`, `ogTitle`, `ogDescription` have no `.max` (only the 8 MB body cap).
+- **Effect:** every save copies the whole row into two revision snapshots; long SEO/OG titles
+  go straight into the public `<title>` and `og:*` tags (escaped, so not XSS). Same class as
+  BUG-12.
+- **Fix (code):** add limits (e.g. seoTitle 120, seoDescription 320, ogTitle 180,
+  ogDescription 320, subtitle 180, ctaLabel 60, body ~50,000) and matching `maxLength`.
 
 ## Not filed as bugs (recorded for the report)
 
