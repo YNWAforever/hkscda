@@ -1,5 +1,6 @@
 import { isSafePublicHref } from "./publicHref";
 import { z } from "zod";
+import { CONTENT_SLUG_PATTERN, CONTENT_SUMMARY_MAX, CONTENT_TITLE_MAX } from "./limits";
 import {
   animalStoryTypes,
   contentLinkRelationships,
@@ -71,13 +72,10 @@ export const publicContentSearchSchema = contentSearchSchema.extend({
 
 export const contentInputSchema = z.object({
   type: z.enum(contentTypes),
-  slug: trimmed
-    .min(1)
-    .max(180)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  title: trimmed.min(1).max(180),
+  slug: trimmed.min(1).max(180).regex(CONTENT_SLUG_PATTERN),
+  title: trimmed.min(1).max(CONTENT_TITLE_MAX),
   subtitle: optionalTrimmed,
-  summary: trimmed.min(1).max(320),
+  summary: trimmed.min(1).max(CONTENT_SUMMARY_MAX),
   body: optionalTrimmed,
   coverMediaId: z.string().uuid().nullable().optional().default(null),
   status: z.enum(contentStatuses).default("draft"),

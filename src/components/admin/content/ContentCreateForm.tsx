@@ -4,9 +4,15 @@ import { useMutation } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
 import { AdminApiError, adminErrorMessage } from "../../../lib/admin/session";
+import {
+  CONTENT_SLUG_INPUT_PATTERN,
+  CONTENT_SUMMARY_MAX,
+  CONTENT_TITLE_MAX,
+} from "../../../lib/content/limits";
 import type { ContentType } from "../../../lib/content/types";
 import { useAdminLanguage } from "../adminI18n";
 import { pickAdminCopy, useAdminCopy, type AdminLanguage } from "../i18n/copy";
+import { contentFieldErrorLines, editorFieldLabels } from "./contentApiErrors";
 import { contentCommonCopy } from "./contentCommonCopy";
 import { formatContentTypeLabel, suggestSlug } from "./contentAdminLogic";
 import { managementCopy } from "./managementCopy";
@@ -36,15 +42,31 @@ export function buildCreateContentPayload(form: ContentCreateFormState) {
   };
 }
 
-/** The message for an error from creating content, in `language` (zh-HK when none is given). */
+/** The label of each field as this form names it, for a validation failure's lines. */
+function createFieldLabels(language: AdminLanguage): Record<string, string> {
+  const copy = pickAdminCopy(managementCopy, language).createForm;
+  return {
+    ...editorFieldLabels(language),
+    ...pickAdminCopy(contentCommonCopy, language).optionalFields,
+    type: copy.type,
+    title: copy.titleLabel,
+    slug: copy.slug,
+    summary: copy.summary,
+    body: copy.body,
+  };
+}
+
+/**
+ * The message for an error from creating content, in `language` (zh-HK when none is given). A
+ * validation failure gives one line per field, named by this form's label, with the reason in
+ * `language` (BUG-68).
+ */
 export function createErrorMessage(error: unknown, language: AdminLanguage = "zh"): string {
   const copy = pickAdminCopy(managementCopy, language).createForm;
   if (error instanceof AdminApiError) {
     if (error.status === 409) return copy.slugTaken;
-    if (error.fields) {
-      return Object.entries(error.fields)
-        .flatMap(([field, messages]) => messages.map((message) => `${field}: ${message}`))
-        .join("\n");
+    if (error.fields && Object.keys(error.fields).length > 0) {
+      return contentFieldErrorLines(error.fields, language, createFieldLabels(language)).join("\n");
     }
   }
   return adminErrorMessage(error, language) ?? copy.failed;
@@ -114,6 +136,7 @@ export function ContentCreateForm() {
           {copy.titleLabel}
           <input
             required
+            maxLength={CONTENT_TITLE_MAX}
             value={title}
             onChange={(event) => {
               setTitle(event.target.value);
@@ -131,7 +154,7 @@ export function ContentCreateForm() {
               setSlugTouched(true);
               setSlug(event.target.value);
             }}
-            pattern="[a-z0-9]+(-[a-z0-9]+)*"
+            pattern={CONTENT_SLUG_INPUT_PATTERN}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
           />
         </label>
@@ -139,7 +162,7 @@ export function ContentCreateForm() {
           {copy.summary}
           <textarea
             required
-            maxLength={320}
+            maxLength={CONTENT_SUMMARY_MAX}
             value={summary}
             onChange={(event) => setSummary(event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-normal"
@@ -173,15 +196,15 @@ export function ContentCreateForm() {
 
         {create.error ? (
           <div role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-            {create.error instanceof AdminApiError && create.error.fields ? (
+            {create.error instanceof AdminApiError &&
+            create.error.status !== 409 &&
+            create.error.fields ? (
               <ul className="space-y-1">
-                {Object.entries(create.error.fields).flatMap(([field, messages]) =>
-                  messages.map((message) => (
-                    <li key={`${field}:${message}`}>
-                      {field}: {message}
-                    </li>
-                  )),
-                )}
+                {createErrorMessage(create.error, language)
+                  .split("\n")
+                  .map((line, index) => (
+                    <li key={`${index}:${line}`}>{line}</li>
+                  ))}
               </ul>
             ) : (
               <p>{createErrorMessage(create.error, language)}</p>

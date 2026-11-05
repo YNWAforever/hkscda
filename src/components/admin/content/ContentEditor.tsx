@@ -46,6 +46,7 @@ import {
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
+import { CONTENT_SLUG_INPUT_PATTERN, CONTENT_TITLE_MAX } from "../../../lib/content/limits";
 import { contentApiErrorLines } from "./contentApiErrors";
 import { contentCommonCopy } from "./contentCommonCopy";
 import {
@@ -1051,6 +1052,7 @@ function ContentEditorForm({
         <Field label={copy.title}>
           <input
             required
+            maxLength={CONTENT_TITLE_MAX}
             value={form.title}
             onChange={(event) => updateField("title", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1059,6 +1061,7 @@ function ContentEditorForm({
         <Field label={copy.slug}>
           <input
             required
+            pattern={CONTENT_SLUG_INPUT_PATTERN}
             value={form.slug}
             onChange={(event) => updateField("slug", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"

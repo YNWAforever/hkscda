@@ -123,6 +123,28 @@ describe("createErrorMessage", () => {
     expect(message).toContain("此網址格式不正確");
   });
 
+  test("BUG-68: names each field by its form label, with the reason in the admin's language", async () => {
+    const { createErrorMessage } = await import("./ContentCreateForm");
+    const error = new AdminApiError({
+      status: 400,
+      code: "invalid",
+      message: "Invalid content management request",
+      fields: {
+        title: ["String must contain at most 180 character(s)"],
+        ctaUrl: ["CTA URL must be an http(s) URL or a root-relative path"],
+      },
+    });
+
+    expect(createErrorMessage(error).split("\n")).toEqual([
+      "標題：不可超過 180 個字元。",
+      "CTA 連結：請填寫 http(s) 網址，或以 / 開頭的站內路徑。",
+    ]);
+    expect(createErrorMessage(error, "en").split("\n")).toEqual([
+      "Title: Must be 180 characters or fewer.",
+      "CTA link: Enter an http(s) URL or a site path starting with /.",
+    ]);
+  });
+
   test("falls back to the generic message for unknown errors", async () => {
     const { createErrorMessage } = await import("./ContentCreateForm");
 

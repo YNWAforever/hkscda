@@ -193,6 +193,23 @@ describe("ContentEditor", () => {
     );
   });
 
+  test("BUG-68: the slug and title inputs carry the server's pattern and length limits", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const queryClient = new QueryClient();
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={queryClient}>
+        <ContentEditor contentId={content.id} initialContent={content} />
+      </QueryClientProvider>,
+    );
+    const inputs = markup.match(/<input[^>]*>/g) ?? [];
+    const slug = inputs.find((tag) => tag.includes(`value="${content.slug}"`));
+    const title = inputs.find((tag) => tag.includes(`value="${content.title}"`));
+
+    expect(slug).toContain('pattern="[a-z0-9]+(-[a-z0-9]+)*"');
+    expect(title).toContain('maxLength="180"');
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();

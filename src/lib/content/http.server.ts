@@ -102,8 +102,10 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
         (acc[key] ??= []).push(issue.message);
         return acc;
       }, {});
+      // The structured shape the admin client reads (structuredAdminApiError in
+      // lib/admin/session.ts), so the screens can name each field (BUG-68).
       return jsonResponse(
-        { error: "Invalid content management request", details: { fields } },
+        { error: { code: "invalid", message: "Invalid content management request", fields } },
         { status: 400 },
       );
     }
