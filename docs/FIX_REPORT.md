@@ -13,8 +13,8 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
 - **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
   data, credential or deployment was touched.
 - **Second pass (2026-10-30):** 33 more findings, BUG-33 to BUG-65 (7 Medium, 26 Low).
-  21 code-only ones are fixed, one commit each; 12 wait for a migration approval or a
-  decision, as do the database parts of BUG-42 and BUG-55. See [Second pass](#second-pass-2026-10-30).
+  21 code-only ones were fixed in PR #228; the other 12, and the database parts of BUG-42
+  and BUG-55, were fixed after their migrations were approved. All 33 are fixed. See [Second pass](#second-pass-2026-10-30).
 
 ## How this was run
 
@@ -230,7 +230,7 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-41 | Low | Manual intake refuses a closing initial status (400) and no longer offers it                             |
 | BUG-42 | Low | Code part: unknown linked ids are 404 and check violations 400, not 500 (RPC part deferred)              |
 | BUG-43 | Low | Sponsorship RPC errors (plain objects) keep their domain status (404/409/400)                            |
-| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker; changing the search clears the old selection    |
+| BUG-44 | Low | Sponsorship animal assignment uses a searchable picker; changing the search clears the old selection     |
 | BUG-45 | Low | A new idempotency key for each successfully recorded sponsorship payment                                 |
 | BUG-47 | Low | Sponsorship finance: linked payments left out of candidates, coded errors, 404 for an unknown pledge     |
 | BUG-48 | Low | Consents: unknown supporter is 404; Save stays disabled until the refetch settles                        |
@@ -247,24 +247,51 @@ before the fix; the fixes were made test-first in five parallel groups and then 
 | BUG-61 | Low | Internship 409/404 show a real message and reload; settings discard the old body before a retry          |
 | BUG-62 | Low | The overview "Today" list shows published sessions and flags a partial list                              |
 
-### Waiting for approval or a decision
+### Fixed with approved migrations (follow-up, 2026-11-05)
 
-| ID     | Sev | Needs                                                                                      |
-| ------ | --- | ------------------------------------------------------------------------------------------ |
-| BUG-33 | Med | Migration, plus a decision on how a returned adoption is recorded (regression from BUG-02) |
-| BUG-34 | Med | Migration: refuse reopening a finalised case; reason to reopen a closed one                |
-| BUG-36 | Med | Migration (or an audited resolve action): resolve intake items                             |
-| BUG-37 | Med | Migration: minimum query and masking in the intake identity search                         |
-| BUG-38 | Med | Migration: refuse publish by anyone who edited the payment-method draft                    |
-| BUG-39 | Med | Migration: audit the auth user id in two content functions, repair existing rows           |
-| BUG-42 | Low | Migration (RPC part): refuse matches on adopted animals and closed cases                   |
-| BUG-46 | Low | Migration: "receipt needed" only for eligible donations without a receipt                  |
-| BUG-49 | Low | Migration: no second `receipt.issue` audit row                                             |
-| BUG-53 | Low | Migration: one published guide per species                                                 |
-| BUG-55 | Low | Migration (RPC part): refuse disabled → active for a never-accepted invite                 |
-| BUG-63 | Low | Decision: may staff retry failed volunteer notifications, or admins only?                  |
-| BUG-64 | Low | Migration: one audit row per bulk edit                                                     |
-| BUG-65 | Low | Migration: narrow the qualifications `list` read                                           |
+Approved by the user after PR #228 merged; BUG-33 uses the "record the return" design and
+BUG-63 the "admins only" decision. Each migration was reproduced and verified on a throwaway
+Postgres 16 before and after.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                       | Migration                          |
+| ------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| BUG-33 | Med | Adoption returns are recorded (`returned_at`, `returned_by`, `return_reason`) by an audited "Record return" action that sets the animal back to available; finalising is refused only while an unreturned adoption exists | `20261030104000`                   |
+| BUG-34 | Med | A finalised case's status cannot change (409); reopening a closed case needs a reason                                                                                                                                     | `20261030100000`                   |
+| BUG-36 | Med | Intake items resolve when their case closes or is finalised; existing ones are backfilled                                                                                                                                 | `20261030101000`                   |
+| BUG-37 | Med | Intake identity search needs a 3+ character query (or an exact email/phone) and masks non-adopters' contacts                                                                                                              | `20261030102000`                   |
+| BUG-38 | Med | Anyone who edited a payment-method draft cannot publish it (editors tracked by trigger)                                                                                                                                   | `20261030110000`                   |
+| BUG-39 | Med | Content metadata and media-repair audits log the auth user id; a guard test covers every function                                                                                                                         | `20261030120000`                   |
+| BUG-42 | Low | Matches refuse unavailable animals, closed or finalised cases and duplicate active matches                                                                                                                                | `20261030103000`                   |
+| BUG-46 | Low | "Receipt needed" (supporter list, filter, donation exports, export jobs) only for eligible donations with no issued receipt                                                                                               | `20261030111000`, `20261030113000` |
+| BUG-49 | Low | `receipt.issue` is audited only when the receipt is new                                                                                                                                                                   | `20261030112000`                   |
+| BUG-53 | Low | Publishing a guide archives every live release of the same species, whatever its topic; publishes per species are serialised                                                                                              | `20261030121000`                   |
+| BUG-55 | Low | The RPC also refuses disabled → active for a never-accepted invite                                                                                                                                                        | `20261030130000`                   |
+| BUG-63 | Low | Notification retry is admin-only in the API, the button and the SQL function                                                                                                                                              | `20261030131000`                   |
+| BUG-64 | Low | A bulk edit writes one `volunteer_bulk.edit` row with before and after facts                                                                                                                                              | `20261030132000`                   |
+| BUG-65 | Low | The qualifications page loads only the chosen profile; `list` returns credential definitions only                                                                                                                         | `20261030133000`                   |
+
+**Deploy order.** Apply the 15 migrations in filename order. Within that:
+
+- `20261030110000` (BUG-38) must run **before** the code deploy: the payment-methods list reads `edited_by`.
+- `20261030133000` (BUG-65) must run **after** the code deploy: the old page reads `profiles` from `list`.
+- `20261030131000` (BUG-63): code with or before it (a staff click on the old button would get a 500).
+- The adoptions migrations (`20261030100000`–`104000`) build on each other; with the code shipped
+  first or together, nothing breaks. Until both are live, the return action is unavailable.
+- The rest are migration-only and order-free. The BUG-36 backfill is one update over open intake items.
+
+**Not done, by design or pending a decision.**
+
+- BUG-39: rows already written with the wrong actor are not rewritten: `audit_log` is append-only
+  (no runtime role may update it). `admin_user.auth_user_id` recovers the real user for those rows.
+- BUG-53: no unique "one published guide per species" index, since existing data may hold duplicates;
+  the next publish for that species archives them with an audit row.
+- BUG-33: reports and impact counts still include returned adoptions (product decision);
+  no unique index on unreturned adoptions, since pre-BUG-02 duplicates may exist.
+- BUG-46: a donation export filtered to "receipt not needed" leaves out every donation of a supporter
+  who is still owed a receipt.
+- Several new database scenarios (in `changeCaseStatus`, `atomicForward`, `notificationClaims`,
+  `bookingEnforcement` database tests) need a local stack that CI's `rls-matrix` job does not run;
+  each of those migrations was verified on Postgres 16 instead.
 
 Follow-ups that were already cancelled with `completed_at` null stay open until saved again;
 a one-off data fix would close them (not done; it changes production data).
