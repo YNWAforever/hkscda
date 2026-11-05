@@ -1476,4 +1476,37 @@ describe("second-pass access and volunteer RPC regressions", () => {
       ),
     }).toEqual({ file: retry.file, roleChecks: ["a.role='admin'"], taskRetryDelegates: true });
   });
+
+  // BUG-64: fixed by 20261030132000_volunteer_bulk_edit_single_audit.sql. Verified against
+  // Postgres 16: a bulk edit wrote volunteer_activity.update and volunteer_bulk.edit for one
+  // change; it now writes only volunteer_bulk.edit, carrying before, input and after.
+  test("BUG-64: a volunteer bulk edit writes one audit row with before and after facts", () => {
+    const item = latestFunctionBody("volunteer_bulk_item");
+    const start = item.body.search(/if\s+p_action\s*=\s*'edit'\s+then/i);
+    const end = item.body.search(/elsif\s+p_action\s*=\s*'rebind'\s+then/i);
+    expect(start).toBeGreaterThan(-1);
+    // Comments may name the old call; only the SQL counts.
+    const editBranch = item.body.slice(start, end).replace(/--[^\n]*/g, "");
+    const bulkAudit =
+      /insert\s+into\s+public\.audit_log[\s\S]*?'volunteer_bulk\.'\s*\|\|\s*p_action[\s\S]*?;/i.exec(
+        item.body,
+      );
+
+    expect({
+      file: item.file,
+      editCallsAuditedUpdate: /update_volunteer_activity_(with_audit|before_bulk)\s*\(/i.test(
+        editBranch,
+      ),
+      editWritesAuditItself: /insert\s+into\s+public\.audit_log/i.test(editBranch),
+      editUpdatesActivity: /update\s+public\.volunteer_activity\s+set/i.test(editBranch),
+      bulkAuditKeepsBefore: /'before'\s*,\s*before_fact/i.test(bulkAudit?.[0] ?? ""),
+      bulkAuditRecordsAfter: /'after'/i.test(bulkAudit?.[0] ?? ""),
+    }).toMatchObject({
+      editCallsAuditedUpdate: false,
+      editWritesAuditItself: false,
+      editUpdatesActivity: true,
+      bulkAuditKeepsBefore: true,
+      bulkAuditRecordsAfter: true,
+    });
+  });
 });
