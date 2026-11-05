@@ -10,7 +10,7 @@ import {
   publicStorySlugInputSchema,
   socialCopyUpdateSchema,
 } from "./schemas";
-import { CONTENT_SLUG_MAX } from "./limits";
+import { CONTENT_SLUG_MAX, CONTENT_TEXT_MAX } from "./limits";
 
 const baseInput = {
   type: "event",
@@ -144,6 +144,37 @@ describe("linkSearchSchema", () => {
     expect(linkSearchSchema.parse({ linkedType: "animal", q: "  mi  " }).q).toBe("mi");
     expect(linkSearchSchema.parse({ linkedType: "animal", q: "x" }).limit).toBe(20);
     expect(linkSearchSchema.safeParse({ linkedType: "nope", q: "x" }).success).toBe(false);
+  });
+});
+
+describe("BUG-73: content text, SEO and OG fields have length limits", () => {
+  const limits = {
+    subtitle: 180,
+    body: 50000,
+    ctaLabel: 60,
+    seoTitle: 120,
+    seoDescription: 320,
+    ogTitle: 180,
+    ogDescription: 320,
+  } as const;
+
+  for (const [field, max] of Object.entries(limits)) {
+    test(`BUG-73: ${field} accepts ${max} characters and refuses ${max + 1}`, () => {
+      expect(CONTENT_TEXT_MAX[field as keyof typeof CONTENT_TEXT_MAX]).toBe(max);
+      expect(
+        contentInputSchema.safeParse({ ...baseInput, [field]: "字".repeat(max) }).success,
+      ).toBe(true);
+      const tooLong = contentInputSchema.safeParse({ ...baseInput, [field]: "字".repeat(max + 1) });
+      expect(tooLong.success).toBe(false);
+      expect(tooLong.error?.issues.map((issue) => issue.path.join("."))).toEqual([field]);
+    });
+  }
+
+  test("BUG-73: the limit applies to the trimmed text, and an empty field is still null", () => {
+    const padded = contentInputSchema.parse({ ...baseInput, ctaLabel: `  ${"a".repeat(60)}  ` });
+    expect(padded.ctaLabel).toHaveLength(60);
+    expect(contentInputSchema.parse({ ...baseInput, seoTitle: "   " }).seoTitle).toBeNull();
+    expect(contentInputSchema.parse({ ...baseInput, seoTitle: null }).seoTitle).toBeNull();
   });
 });
 

@@ -46,7 +46,12 @@ import {
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
-import { CONTENT_SLUG_INPUT_PATTERN, CONTENT_TITLE_MAX } from "../../../lib/content/limits";
+import {
+  CONTENT_SLUG_INPUT_PATTERN,
+  CONTENT_SUMMARY_MAX,
+  CONTENT_TEXT_MAX,
+  CONTENT_TITLE_MAX,
+} from "../../../lib/content/limits";
 import { contentApiErrorLines } from "./contentApiErrors";
 import { contentCommonCopy } from "./contentCommonCopy";
 import {
@@ -1084,6 +1089,7 @@ function ContentEditorForm({
         </Field>
         <Field label={copy.subtitle}>
           <input
+            maxLength={CONTENT_TEXT_MAX.subtitle}
             value={form.subtitle}
             onChange={(event) => updateField("subtitle", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1095,6 +1101,7 @@ function ContentEditorForm({
         <textarea
           required
           rows={3}
+          maxLength={CONTENT_SUMMARY_MAX}
           value={form.summary}
           onChange={(event) => updateField("summary", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1103,6 +1110,7 @@ function ContentEditorForm({
       <Field label={copy.body}>
         <textarea
           rows={7}
+          maxLength={CONTENT_TEXT_MAX.body}
           value={form.body}
           onChange={(event) => updateField("body", event.target.value)}
           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1112,6 +1120,7 @@ function ContentEditorForm({
       <div className="grid gap-3 md:grid-cols-2">
         <Field label={copy.ctaLabel}>
           <input
+            maxLength={CONTENT_TEXT_MAX.ctaLabel}
             value={form.ctaLabel}
             onChange={(event) => updateField("ctaLabel", event.target.value)}
             className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1137,6 +1146,7 @@ function ContentEditorForm({
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           <Field label={copy.seoTitle}>
             <input
+              maxLength={CONTENT_TEXT_MAX.seoTitle}
               value={form.seoTitle}
               onChange={(event) => updateField("seoTitle", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1144,6 +1154,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.seoDescription}>
             <input
+              maxLength={CONTENT_TEXT_MAX.seoDescription}
               value={form.seoDescription}
               onChange={(event) => updateField("seoDescription", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1151,6 +1162,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.ogTitle}>
             <input
+              maxLength={CONTENT_TEXT_MAX.ogTitle}
               value={form.ogTitle}
               onChange={(event) => updateField("ogTitle", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1158,6 +1170,7 @@ function ContentEditorForm({
           </Field>
           <Field label={copy.ogDescription}>
             <input
+              maxLength={CONTENT_TEXT_MAX.ogDescription}
               value={form.ogDescription}
               onChange={(event) => updateField("ogDescription", event.target.value)}
               className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"

@@ -210,6 +210,37 @@ describe("ContentEditor", () => {
     expect(title).toContain('maxLength="180"');
   });
 
+  test("BUG-73: the text, SEO and OG inputs carry the server's length limits", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const queryClient = new QueryClient();
+    const filled: ContentDetail = {
+      ...content,
+      subtitle: "subtitle-value",
+      ctaLabel: "cta-label-value",
+      seoTitle: "seo-title-value",
+      seoDescription: "seo-description-value",
+      ogTitle: "og-title-value",
+      ogDescription: "og-description-value",
+    };
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={queryClient}>
+        <ContentEditor contentId={filled.id} initialContent={filled} />
+      </QueryClientProvider>,
+    );
+    const fields = markup.match(/<(input|textarea)[^>]*>([^<]*<\/textarea>)?/g) ?? [];
+    const field = (value: string) => fields.find((tag) => tag.includes(value));
+
+    expect(field('value="subtitle-value"')).toContain('maxLength="180"');
+    expect(field('value="cta-label-value"')).toContain('maxLength="60"');
+    expect(field('value="seo-title-value"')).toContain('maxLength="120"');
+    expect(field('value="seo-description-value"')).toContain('maxLength="320"');
+    expect(field('value="og-title-value"')).toContain('maxLength="180"');
+    expect(field('value="og-description-value"')).toContain('maxLength="320"');
+    expect(field(">救援故事正文</textarea>")).toContain('maxLength="50000"');
+    expect(field(">小白正在康復。</textarea>")).toContain('maxLength="320"');
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();

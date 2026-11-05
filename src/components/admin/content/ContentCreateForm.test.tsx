@@ -36,6 +36,25 @@ describe("ContentCreateForm", () => {
       expect(markup).toContain(label);
     }
   });
+
+  test("BUG-73: the body and optional text inputs carry the server's length limits", async () => {
+    const { ContentCreateForm } = await import("./ContentCreateForm");
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentCreateForm />
+      </QueryClientProvider>,
+    );
+    const inputAfter = (label: string) =>
+      new RegExp(`${label.replace(/[()]/g, "\\$&")}<(input|textarea)[^>]*>`).exec(markup)?.[0];
+    const optional = contentCommonCopy.zh.optionalFields;
+
+    expect(inputAfter(optional.ctaLabel)).toContain('maxLength="60"');
+    expect(inputAfter(optional.seoTitle)).toContain('maxLength="120"');
+    expect(inputAfter(optional.seoDescription)).toContain('maxLength="320"');
+    expect(inputAfter(optional.ogTitle)).toContain('maxLength="180"');
+    expect(inputAfter(optional.ogDescription)).toContain('maxLength="320"');
+    expect(inputAfter("正文（可稍後填寫）")).toContain('maxLength="50000"');
+  });
 });
 
 describe("buildCreateContentPayload", () => {

@@ -7,6 +7,7 @@ import { AdminApiError, adminErrorMessage } from "../../../lib/admin/session";
 import {
   CONTENT_SLUG_INPUT_PATTERN,
   CONTENT_SUMMARY_MAX,
+  CONTENT_TEXT_MAX,
   CONTENT_TITLE_MAX,
 } from "../../../lib/content/limits";
 import type { ContentType } from "../../../lib/content/types";
@@ -171,6 +172,7 @@ export function ContentCreateForm() {
         <label className="block space-y-1 text-sm font-semibold text-[var(--color-panel)]">
           {copy.body}
           <textarea
+            maxLength={CONTENT_TEXT_MAX.body}
             value={body}
             onChange={(event) => setBody(event.target.value)}
             rows={6}
@@ -185,6 +187,7 @@ export function ContentCreateForm() {
           >
             {common.optionalFields[key]}
             <input
+              maxLength={key === "ctaUrl" ? undefined : CONTENT_TEXT_MAX[key]}
               value={optional[key]}
               onChange={(event) =>
                 setOptional((current) => ({ ...current, [key]: event.target.value }))
