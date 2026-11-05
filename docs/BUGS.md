@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). BUG-66 to BUG-73 come from a content-creation review (2026-11-05) and are open; see [Content creation pass](#content-creation-pass-bug-66bug-73). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). BUG-66 to BUG-73 come from a content-creation review (2026-11-05): BUG-66, 67, 68, 69, 70 and 73 are fixed in code; BUG-71 and BUG-72 need a migration (and BUG-71 a decision); see [Content creation pass](#content-creation-pass-bug-66bug-73). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -759,7 +759,9 @@ Found on 2026-11-05 by a focused review of content creation in the admin CMS: cr
 edit, revisions, SEO/OG fields, media and links, review and publish, including the CMS
 change in #230 (folded SEO/OG panel, lifecycle and version labels). Each finding was traced
 from a real admin action or route to the wrong result; the ones marked Proven were
-reproduced with the real code and fakes. All are open.
+reproduced with the real code and fakes. BUG-66–70 and BUG-73 are fixed in code (see
+[`FIX_REPORT.md`](FIX_REPORT.md#content-creation-pass-2026-11-05)); BUG-71 and BUG-72 wait for
+migration approval.
 
 ### BUG-66 — Med — Social copy and adopter drafts link to the draft slug and use unreviewed text
 

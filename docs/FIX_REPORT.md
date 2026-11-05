@@ -358,6 +358,31 @@ Postgres did not answer on `127.0.0.1:55322`, so database-backed tests were skip
 The deferred findings and database parts of BUG-42/BUG-55 above remain deferred. No migration
 or production database change is part of this review.
 
+## Content creation pass (2026-11-05)
+
+A focused review of content creation in the admin CMS ([`BUGS.md`](BUGS.md#content-creation-pass-bug-66bug-73)).
+Each fix has a `BUG-xx` test that failed before it.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                               |
+| ------ | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BUG-66 | Med | Social copy and adopter drafts use the published slug and wording; refused (409 `not_published`) while nothing is published                                                                                                                                                                                       |
+| BUG-67 | Med | After the editor's own save, other dirty panels that shared its base move to the new version; another person's change still conflicts                                                                                                                                                                             |
+| BUG-68 | Low | Validation errors arrive as `{code: "invalid", fields}` and are shown per field, by label, in the admin's language; slug pattern and title length on the inputs                                                                                                                                                   |
+| BUG-69 | Low | Lifecycle and media refusals carry a safe reason code (cover on an internal update, expired session, existing link or primary subject, slug taken, byte mismatch) with its own message; a duplicate link is not a conflict; "Set as cover" disabled for internal updates; an expired session is replaced on retry |
+| BUG-70 | Low | One story slug limit (`CONTENT_SLUG_MAX` = 180) in the schema, `suggestSlug` and the public story validators                                                                                                                                                                                                      |
+| BUG-73 | Low | Length limits for subtitle, body, CTA label and SEO/OG fields, with matching `maxLength`                                                                                                                                                                                                                          |
+
+**Waiting:** BUG-71 (keep the first publication date on republish; migration plus a decision)
+and BUG-72 (remove public image copies a story no longer uses; migration plus a cleanup step).
+
+**Behaviour to know.** Content already longer than a new BUG-73 limit still shows publicly; its
+next save is refused, naming the field, until it is shortened. A slug clash still shows the
+conflict banner (now with its own message).
+
+**Verification.** `bun run test` 7,767 pass, 0 fail; `bunx tsc --noEmit` clean; `bun run lint`
+0 errors (the same 53 warnings); `bun run build` passes with the route tree unchanged;
+`verify:client-bundle` clean.
+
 ## Manual QA checklist (staging or local, never production data)
 
 - [ ] Sign in as each role (staff, treasurer, admin). Each lands on its first allowed
