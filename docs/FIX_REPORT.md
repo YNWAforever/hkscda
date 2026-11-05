@@ -383,9 +383,9 @@ Each fix has a `BUG-xx` test that failed before it.
 the job's withdrawal step fails with 500 until the migration runs; repairs still run). No new cron or
 environment variable.
 
-**Not done, for a decision.** BUG-71: stories already republished keep their later date; the first date
-is recoverable from the earliest `content.publish` audit row (or the legacy backfill revision) if a
-backfill is wanted. BUG-72: copies left behind before the migration are withdrawn when their story is
+**Decided not to do (user, 2026-11-05).** BUG-71: no backfill; stories already republished keep
+their later date (the first date stays recoverable from the earliest `content.publish` audit row).
+BUG-72: no one-off sweep; copies left behind before the migration are withdrawn when their story is
 next published or archived, not all at once; removal runs daily, so a withdrawn image can stay public
 up to about a day (plus CDN caching); images stored directly in the public bucket by older code have
 no copy record and are not covered.
