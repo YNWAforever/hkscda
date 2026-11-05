@@ -240,7 +240,7 @@ export async function loadDestinations() {
       shows: "Payment method settings",
     },
     supporters: { page: () => <SupporterList />, shows: "Supporters" },
-    content: { page: () => <ContentManagement />, shows: "Content source review queue" },
+    content: { page: () => <ContentManagement />, shows: "Pending review" },
     "adoption-information": {
       page: () => <AdoptionInformationManagement />,
       shows: "Manage the public adoption fees and the reference list of dog-friendly estates.",

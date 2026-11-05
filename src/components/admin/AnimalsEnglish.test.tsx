@@ -316,7 +316,7 @@ describe("animal form in English", () => {
     );
     expectNoChineseText(markup);
     for (const text of [
-      "Source review of this saved version",
+      "Source review",
       ">Awaiting verification</option>",
       "Verified source and reason",
       ">Record review of this version</button>",

@@ -20,15 +20,28 @@ export const reviewCopy = defineAdminCopy({
     },
     panel: {
       legend: "此已儲存版本的來源審核",
+      sectionTitle: "來源審核",
       intro: "只按已核實來源分類。示範資料及未核實資料不可發布；每次儲存新版本均須重新審核。",
       classification: "分類",
       evidence: "核實來源及理由",
+      presets: {
+        staffOnSite: "職員現場紀錄",
+        medicalReport: "醫療報告",
+        volunteerFoster: "義工／領養家庭回報",
+        other: "其他",
+      },
+      otherPlaceholder: "請簡述來源",
+      verifiedReady: "已核實可發布",
+      verifiedSummary: (category: string, reasonSnippet: string) =>
+        `${category} · ${reasonSnippet}`,
+      expand: "展開來源審核",
+      collapseHint: "已核實 — 需要時再展開",
       record: "記錄此版本審核",
       recorded: "此版本的審核已記錄。公開內容尚未改動。",
       failed: "未能記錄；版本可能已變更，請重新載入後審核。",
     },
     queue: {
-      summary: "內容來源審核佇列",
+      summary: "待審核",
       intro:
         "分類不會自動撤下現有公開內容。示範內容須先列明記錄、原因及建議處理，再取得內容負責人批准。",
       kindLabel: "資料類型",
@@ -115,17 +128,30 @@ export const reviewCopy = defineAdminCopy({
     },
     panel: {
       legend: "Source review of this saved version",
+      sectionTitle: "Source review",
       intro:
         "Classify the version only by verified sources. Demo data and unverified data cannot be published. Every new saved version must be reviewed again.",
       classification: "Classification",
       evidence: "Verified source and reason",
+      presets: {
+        staffOnSite: "Staff on-site record",
+        medicalReport: "Medical report",
+        volunteerFoster: "Volunteer / foster-home report",
+        other: "Other",
+      },
+      otherPlaceholder: "Briefly describe the source",
+      verifiedReady: "Verified — ready to publish",
+      verifiedSummary: (category: string, reasonSnippet: string) =>
+        `${category} · ${reasonSnippet}`,
+      expand: "Expand source review",
+      collapseHint: "Verified — expand if you need to edit",
       record: "Record review of this version",
       recorded: "The review of this version is recorded. Public content has not changed.",
       failed:
         "Could not record the review. The version may have changed. Reload the page, then review again.",
     },
     queue: {
-      summary: "Content source review queue",
+      summary: "Pending review",
       intro:
         "Classifying does not take down existing public content automatically. For demo content, first list the records, the reason and the proposed action, then get the content owner's approval.",
       kindLabel: "Record type",

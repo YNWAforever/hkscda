@@ -50,6 +50,16 @@ const content: ContentDetail = {
 };
 
 describe("ContentRevisionPanel", () => {
+  test("folds the version history under a closed disclosure by default", () => {
+    historyError = new Error("boom");
+    const markup = renderAdminInChinese(
+      <ContentRevisionPanel content={content} disabled={false} onRestore={async () => {}} />,
+    );
+    expect(markup).toContain("版本紀錄");
+    expect(markup).not.toContain("版本紀錄與比較");
+    expect(markup).not.toMatch(/<details[^>]*\bopen\b/);
+  });
+
   test("shows a retry control instead of the old unclickable reload message on failure", () => {
     historyError = new Error("boom");
     const markup = renderAdminInChinese(

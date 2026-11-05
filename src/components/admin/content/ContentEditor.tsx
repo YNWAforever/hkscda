@@ -129,6 +129,47 @@ function useDirtyPanel(panel: string) {
   };
 }
 
+const DIRTY_KEY_TO_PANEL = {
+  content: "basic",
+  profile: "storyWall",
+  link: "related",
+  update: "storyUpdates",
+  media: "media",
+} as const;
+
+export type DirtyPanelName = keyof (typeof editorCopy)["zh"]["dirtyBanner"]["panels"];
+
+/**
+ * The named panels to list in the unsaved banner, or none when any dirty panel has no Hazel
+ * label (the banner then keeps the generic Wave 1a line rather than listing only some panels).
+ */
+export function dirtyPanelNames(dirty: Record<string, boolean>): DirtyPanelName[] {
+  const dirtyKeys = Object.keys(dirty).filter((key) => dirty[key]);
+  if (dirtyKeys.some((key) => !(key in DIRTY_KEY_TO_PANEL))) return [];
+  return (Object.keys(DIRTY_KEY_TO_PANEL) as Array<keyof typeof DIRTY_KEY_TO_PANEL>)
+    .filter((key) => dirty[key])
+    .map((key) => DIRTY_KEY_TO_PANEL[key]);
+}
+
+export function DirtyPanelBanner({ dirty }: { dirty: Record<string, boolean> }) {
+  const copy = useAdminCopy(editorCopy).dirtyBanner;
+  const panels = dirtyPanelNames(dirty);
+  if (panels.length === 0) return null;
+  return (
+    <p role="status">
+      {copy.lead}{" "}
+      {panels.map((panel, index) => (
+        <span key={panel}>
+          {index > 0 ? " · " : ""}
+          <a href={`#content-panel-${panel}`} className="font-semibold underline">
+            {copy.panels[panel]}
+          </a>
+        </span>
+      ))}
+    </p>
+  );
+}
+
 export function ContentEditor({ contentId, initialContent }: ContentEditorProps) {
   const copy = useAdminCopy(editorCopy);
   const common = useAdminCopy(contentCommonCopy);
@@ -557,7 +598,11 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       </div>
 
       {reloadFailed ? <p role="alert">{copy.reloadFailed}</p> : null}
-      <p role="status">{hasDirty ? copy.unsaved : copy.saved(content.version)}</p>
+      {dirtyPanelNames(editor.dirty).length > 0 ? (
+        <DirtyPanelBanner dirty={editor.dirty} />
+      ) : (
+        <p role="status">{hasDirty ? copy.unsaved : copy.saved(content.version)}</p>
+      )}
       {conflict ? (
         <div role="alert" className="rounded border border-[var(--color-warning)] p-3">
           <p>{copy.conflict.message}</p>
@@ -609,13 +654,15 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
       </nav>
       <StoryUpdateDraftNotice notice={formatAdopterDraftNotice(updateDraftNotice, language)} />
       {content.revisionId && (
-        <ContentReviewPanel
-          key={content.revisionId}
-          kind="content"
-          id={contentId}
-          revision={content.revisionId}
-          disabled={hasDirty}
-        />
+        <div id="content-panel-sourceReview">
+          <ContentReviewPanel
+            key={content.revisionId}
+            kind="content"
+            id={contentId}
+            revision={content.revisionId}
+            disabled={hasDirty}
+          />
+        </div>
       )}
       <ContentRevisionPanel
         content={content}
@@ -911,7 +958,7 @@ export function ContentAuthoringPanels({
         <StoryWallSettings content={content} pending={pending} onSave={onSaveStoryProfile} />
       </section>
 
-      <section className="space-y-3">
+      <section id="content-panel-storyUpdates" className="space-y-3">
         <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
         <StoryUpdateCreateForm pending={pending} onCreate={onCreateStoryUpdate} />
         <ContentTimeline
@@ -978,6 +1025,7 @@ function ContentEditorForm({
 
   return (
     <form
+      id="content-panel-basic"
       onChangeCapture={panelState.mark}
       onSubmit={async (event) => {
         event.preventDefault();
@@ -1144,7 +1192,10 @@ function LinkedRecords({
   const [linkedLabel, setLinkedLabel] = useState("");
 
   return (
-    <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+    <section
+      id="content-panel-related"
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+    >
       <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
       <form
         onChangeCapture={panelState.mark}
@@ -1279,7 +1330,10 @@ function StoryWallSettings({
 
   if (content.type !== "rescue_story") {
     return (
-      <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+      <section
+        id="content-panel-storyWall"
+        className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+      >
         <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
         <p className="mt-3 text-sm text-[var(--color-text-muted)]">{copy.notNeeded}</p>
       </section>
@@ -1287,7 +1341,10 @@ function StoryWallSettings({
   }
 
   return (
-    <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+    <section
+      id="content-panel-storyWall"
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+    >
       <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
       <form
         onChangeCapture={panelState.mark}
@@ -1607,7 +1664,10 @@ function ContentMediaPanel({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <section className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+    <section
+      id="content-panel-media"
+      className="space-y-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+    >
       <div>
         <h2 className="text-lg font-bold text-[var(--color-panel)]">{copy.heading}</h2>
         <p className="text-sm text-[var(--color-text-muted)]">{copy.intro1}</p>

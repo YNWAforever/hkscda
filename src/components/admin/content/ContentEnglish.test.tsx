@@ -620,6 +620,7 @@ const {
   ActionErrors,
   ContentAuthoringPanels,
   ContentEditor,
+  DirtyPanelBanner,
   PublishValidationPanel,
   StoryUpdateDraftNotice,
   createContentMediaWithUpload,
@@ -690,7 +691,7 @@ describe("content list in English", () => {
       ">Website content</p>",
       ">Content</h1>",
       "Manage story, event, market and report pages.",
-      ">Create content</a>",
+      ">Add content</a>",
       ">Adoption information</a>",
       ">Post-adoption guide releases</a>",
       ">Documents</a>",
@@ -751,7 +752,7 @@ describe("content list in English", () => {
     const markup = renderAdminInEnglish(<ContentManagement />);
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      "Content source review queue",
+      "Pending review",
       "Add content",
       "The draft editor opens after you create it.",
       ">Create draft</button>",
@@ -835,7 +836,7 @@ describe("content list in English", () => {
       ">宣傳</p>",
       ">宣傳內容</h1>",
       "管理故事、活動、市集與報告頁面。",
-      ">建立內容</a>",
+      ">新增內容</a>",
       ">領養後指南版本</a>",
       "本頁內容資格待核對",
       "小白回家路 · 示範",
@@ -852,6 +853,41 @@ describe("content list in English", () => {
       "救援故事",
       "慈善市集",
     ]);
+  });
+});
+
+describe("Wave 1b list and editor density", () => {
+  test("names the primary create action 新增內容 / Add content", () => {
+    expect(managementCopy.zh.actions.create).toBe("新增內容");
+    expect(managementCopy.en.actions.create).toBe("Add content");
+  });
+
+  test("lists only the panels that are actually dirty, with jump links", () => {
+    const dirty = { content: true, profile: false, media: true, link: true };
+    const english = renderAdminInEnglish(<DirtyPanelBanner dirty={dirty} />);
+    expect(english).toContain("Unsaved changes — save these panels first:");
+    for (const label of ["Basic content", "Media", "Related"]) {
+      expect(english).toContain(label);
+    }
+    expect(english).not.toContain("Story wall settings");
+    expect(english).toContain('href="#content-panel-basic"');
+    expect(english).toContain('href="#content-panel-media"');
+    expect(english).toContain('href="#content-panel-related"');
+
+    const chinese = renderAdminInChinese(<DirtyPanelBanner dirty={dirty} />);
+    expect(chinese).toContain("尚有未儲存變更，請先儲存以下面板：");
+    expect(chinese).toContain("基本內容");
+    expect(chinese).toContain("媒體");
+    expect(chinese).toContain("關聯");
+    expect(chinese).not.toContain("故事牆設定");
+  });
+
+  test("falls back to the generic unsaved line when no panel is known", () => {
+    expect(renderAdminInEnglish(<DirtyPanelBanner dirty={{}} />)).toBe("");
+    expect(renderAdminInEnglish(<DirtyPanelBanner dirty={{ metadata: true }} />)).toBe("");
+    expect(
+      renderAdminInEnglish(<DirtyPanelBanner dirty={{ metadata: true, content: true }} />),
+    ).toBe("");
   });
 });
 
@@ -932,8 +968,8 @@ describe("content editor in English", () => {
       "History page 2 · up to 20 per type",
       "Next history page",
       // the source review panel, and the version history
-      "Source review of this saved version",
-      "Version history and comparison",
+      "Source review",
+      "Version history",
       // publication eligibility
       "Publication eligibility and source",
       "Content classification",
@@ -1045,7 +1081,7 @@ describe("content editor in English", () => {
       "No notification drafts yet.",
       "History page 1 · up to 20 per type",
     ]);
-    expect(markup).not.toContain("Source review of this saved version");
+    expect(markup).not.toContain("Source review");
   });
 
   test("shows the loading and not-found pages in English", () => {
@@ -1379,7 +1415,7 @@ describe("source review in English", () => {
       const markup = renderAdminInEnglish(<ContentReviewPanel kind={kind} id="a" revision="3" />);
       expectNoChineseText(markup);
       expectAll(markup, [
-        "Source review of this saved version",
+        "Source review",
         "Classify the version only by verified sources.",
         "Classification",
         ">Verified and publishable</option>",
@@ -1400,7 +1436,7 @@ describe("source review in English", () => {
     reset();
     const markup = renderAdminInChinese(<ContentReviewPanel kind="animal" id="a" revision="3" />);
     expectAll(markup, [
-      "此已儲存版本的來源審核",
+      "來源審核",
       "只按已核實來源分類。示範資料及未核實資料不可發布；每次儲存新版本均須重新審核。",
       ">已核實可發布</option>",
       ">示範資料（不可發布）</option>",
@@ -1457,7 +1493,7 @@ describe("source review in English", () => {
     const markup = renderAdminInEnglish(<ContentReviewQueue initialKind="content" />);
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      "Content source review queue",
+      "Pending review",
       "Classifying does not take down existing public content automatically.",
       "Record type",
       ">Content</option>",
@@ -1529,7 +1565,7 @@ describe("source review in English", () => {
     reset();
     const markup = renderAdminInChinese(<ContentReviewQueue initialKind="content" />);
     expectAll(markup, [
-      "內容來源審核佇列",
+      "待審核",
       "資料類型",
       "品質隊列",
       ">缺來源內容</option>",
@@ -1673,7 +1709,7 @@ describe("version history in English", () => {
     const markup = renderAdminInEnglish(panel);
     expectNoChineseText(markup, { allow: DATA });
     expectAll(markup, [
-      'aria-label="Version history and comparison"',
+      'aria-label="Version history"',
       "Current saved version 5. Restoring creates a new draft; the public version does not change.",
       ">Version 5 · Saved content",
       "Was published",
@@ -1756,7 +1792,7 @@ describe("version history in English", () => {
     reset();
     const markup = renderAdminInChinese(panel);
     expectAll(markup, [
-      'aria-label="版本紀錄與比較"',
+      'aria-label="版本紀錄"',
       "目前已儲存版本 5；還原會建立新草稿，公開版本保持不變。",
       "版本 5 · 儲存內容",
       "曾發布",
