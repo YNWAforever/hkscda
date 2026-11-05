@@ -361,6 +361,45 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
       if (error !== rollback) throw error;
     }
   });
+  test("BUG-46: receipt needed clears once the receipt is issued and ignores failed, refunded and small gifts", async () => {
+    const rollback = new Error("rollback synthetic receipt-needed fixture");
+    const id = randomUUID();
+    try {
+      await database().begin(async (tx) => {
+        await tx`insert into public.supporter(id,name,email,language,tags) values(${id}::uuid,'Receipt fixture',${id + "@example.invalid"},'en',array[${id}])`;
+        // Requested but not owed a receipt: failed, fully refunded, below HK$100 retained.
+        await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values
+          (${id}::uuid,50000,'general','failed','manual',true),
+          (${id}::uuid,50000,'general','refunded','manual',true),
+          (${id}::uuid,9999,'general','succeeded','manual',true)`;
+        // HK$150 with HK$60 refunded keeps HK$90: below the threshold.
+        await tx`insert into public.donation(supporter_id,amount_cents,refunded_cents,purpose,status,method,receipt_requested) values(${id}::uuid,15000,6000,'general','succeeded','manual',true)`;
+        const needed = async () =>
+          (await tx`select public.crm_supporter_summary(${id}::uuid) result`)[0].result
+            .receiptNeeded as boolean;
+        const filtered = async (receiptNeeded: boolean) =>
+          (
+            await tx`select public.crm_read_supporters(${{ tag: id, receiptNeeded }}::jsonb,0,25,false) result`
+          )[0].result.total as number;
+        expect(await needed()).toBe(false);
+        expect(await filtered(true)).toBe(0);
+        expect(await filtered(false)).toBe(1);
+
+        const [eligible] =
+          await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values(${id}::uuid,10000,'general','succeeded','manual',true) returning id`;
+        expect(await needed()).toBe(true);
+        expect(await filtered(true)).toBe(1);
+        expect(await filtered(false)).toBe(0);
+
+        await tx`insert into public.receipt(supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,status) values(${id}::uuid,${"LOCAL-" + id},array[${eligible.id}::uuid],10000,2026,'issued')`;
+        expect(await needed()).toBe(false);
+        expect(await filtered(true)).toBe(0);
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
+  });
   async function activityFixture(capacity: number) {
     const id = randomUUID();
     volunteerActivities.push(id);
