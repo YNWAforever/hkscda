@@ -1395,3 +1395,46 @@ describe("content audit actor regressions", () => {
     expect(offenders).toEqual([]);
   });
 });
+
+describe("adoption guide release regressions", () => {
+  // BUG-53: fixed by 20261030121000_adoption_guide_publish_replaces_species_slot.sql. The public
+  // slot is per species, so the release being replaced is the published one for the species,
+  // whatever its topic; looking it up by (topic, species) left the old release "published".
+  test("BUG-53: publish_adoption_guide_release archives the published release of the same species, whatever its topic", () => {
+    const publish = latestFunctionBody("publish_adoption_guide_release");
+    const body = publish.body.replace(/--[^\n]*/g, "");
+    const statements = body.split(";");
+    const previousLookup =
+      statements.find((statement) => /into\s+previous_release\b/i.test(statement)) ?? "";
+    const archive = statements.find((statement) => /state\s*=\s*'archived'/i.test(statement)) ?? "";
+    const archiveLoop =
+      /for\s+(\w+)\s+in\s+select[\s\S]*?from\s+public\.adoption_guide_releases([\s\S]*?)\bloop\b/i.exec(
+        body,
+      );
+
+    expect({
+      file: publish.file,
+      lookupBySpecies: /species\s*=\s*release_to_publish\.species/i.test(previousLookup),
+      lookupByTopic: /\btopic\s*=/i.test(previousLookup),
+      lookupPublished: /state\s*=\s*'published'/i.test(previousLookup),
+      // Every published release of the species is archived (a duplicate left by the bug
+      // included), each in a locked row with its own audit row.
+      archivesEverySpeciesRelease:
+        archiveLoop !== null &&
+        /species\s*=\s*release_to_publish\.species/i.test(archiveLoop[2]) &&
+        !/\btopic\s*=/i.test(archiveLoop[2]) &&
+        /state\s*=\s*'published'/i.test(archiveLoop[2]) &&
+        /for\s+update/i.test(archiveLoop[2]),
+      archiveAudited: /'adoption_guide_release\.archive'/.test(body),
+      archiveWhere: /where\s+id\s*=\s*(\w+)\.id/i.exec(archive)?.[1] ?? null,
+    }).toEqual({
+      file: publish.file,
+      lookupBySpecies: true,
+      lookupByTopic: false,
+      lookupPublished: true,
+      archivesEverySpeciesRelease: true,
+      archiveAudited: true,
+      archiveWhere: archiveLoop?.[1] ?? "loop variable",
+    });
+  });
+});
