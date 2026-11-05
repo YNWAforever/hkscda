@@ -15,6 +15,7 @@ export const legacyReconciliationCopy = defineAdminCopy({
     policyNotBound: "尚未綁定政策；管理員須先在設定中心預覽並發佈套用於此場次的政策。",
     profile: "已核實義工",
     chooseProfile: "請選擇已核實身份",
+    profileFromSearch: "請先在上方搜尋並選擇義工；只可連結已核實身份。",
     reason: "身份相符證據及核對理由",
     submit: "記錄核對並連結身份",
     linked: "身份已連結；請完成政策及本人條款確認後審批。",
@@ -34,6 +35,8 @@ export const legacyReconciliationCopy = defineAdminCopy({
       "No policy is linked yet. An administrator must first preview and publish a policy for this session in the settings.",
     profile: "Verified volunteer",
     chooseProfile: "Choose a verified profile",
+    profileFromSearch:
+      "Find and choose the volunteer with the search above first. Only a verified profile can be linked.",
     reason: "Evidence that the identity matches, and the reason for the match",
     submit: "Record the check and link the profile",
     linked:

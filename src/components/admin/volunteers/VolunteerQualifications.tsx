@@ -1,7 +1,5 @@
 import { VolunteerPageHeading } from "../VolunteerPageHeading";
-import { volunteerQueryKeys } from "../../../lib/volunteers/queryKeys";
 import { refreshVolunteerQueries } from "./refreshVolunteerQueries";
-import { distinguishProfileId } from "./profileIdentity";
 import { VolunteerLegacyReconciliation } from "./VolunteerLegacyReconciliation";
 import { useEffect, useRef, useState } from "react";
 import { QualificationProfileSearch } from "./QualificationProfileSearch";
@@ -16,31 +14,13 @@ import { volunteerDirectoryCopy } from "./volunteerDirectoryCopy";
 import { policyFormatCopy } from "./policyFormatCopy";
 import { LoadFailure } from "../LoadFailure";
 import { canHydrateVolunteerDraft } from "./draftHydration";
+import {
+  qualificationDefinitionsQueryOptions,
+  qualificationProfileQueryOptions,
+} from "./qualificationQueries";
+import type { DirectoryProfile } from "../../../lib/volunteers/directory/types";
 
-type Profile = {
-  id: string;
-  display_name: string;
-  birth_date: string;
-  joined_on: string | null;
-  history_coverage_start: string | null;
-  tier: "newcomer" | "regular" | "senior";
-  status: string;
-  revision: number;
-};
-type Credential = {
-  id: string;
-  profile_id: string;
-  credential_key: string;
-  valid_from: string;
-  valid_until: string | null;
-  revoked_at: string | null;
-  evidence: string;
-};
-type Data = {
-  profiles: Profile[];
-  credentials: Credential[];
-  credential_definitions: { key: string; label: string }[];
-};
+type Profile = DirectoryProfile;
 type QualificationCommand = { action: string } & Record<string, unknown>;
 const post = <T,>(body: object, signal?: AbortSignal) =>
   fetchAdminJson<T>("/api/admin/volunteers/qualifications", {
@@ -59,10 +39,9 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const format = pickAdminCopy(policyFormatCopy, language);
   const queryClient = useQueryClient();
   const [legacyOpened, setLegacyOpened] = useState(false);
-  const query = useQuery({
-    queryKey: volunteerQueryKeys.key("qualifications"),
-    queryFn: ({ signal }) => post<Data>({ action: "list" }, signal),
-  });
+  // BUG-65: read the definitions, and only the chosen profile with its credentials, instead
+  // of every profile (with birth date) and every credential.
+  const definitionsQuery = useQuery(qualificationDefinitionsQueryOptions());
   const [selected, setSelected] = useState(() => {
     if (initial?.profileId !== undefined) return initial.profileId;
     return typeof window === "undefined"
@@ -80,7 +59,11 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
   const [dirty, setDirty] = useState(false);
   const [draftRevision, setDraftRevision] = useState(0);
   const loaded = useRef({ identity: "", revision: -1 });
-  const profile = query.data?.profiles.find((p) => p.id === selected);
+  const profileQuery = useQuery(qualificationProfileQueryOptions(selected));
+  const profile =
+    selected && profileQuery.data?.profile.id === selected ? profileQuery.data.profile : undefined;
+  const credentials = profile ? (profileQuery.data?.credentials ?? []) : [];
+  const definitions = definitionsQuery.data?.credential_definitions ?? [];
   const mutation = useMutation({
     mutationFn: (command: QualificationCommand) =>
       post<{ profile_id?: string; revision?: number }>(command),
@@ -149,36 +132,31 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
         <a href="/admin/volunteers/calendar">{copy.links.calendar}</a>
       </nav>
       <QualificationProfileSearch onSelect={selectProfile} disabled={mutation.isPending} />
-      {query.isLoading && <p>{copy.loading}</p>}
-      {query.error && (
+      {(definitionsQuery.isLoading || (selected !== "" && profileQuery.isLoading)) && (
+        <p>{copy.loading}</p>
+      )}
+      {definitionsQuery.error && (
         <LoadFailure
-          error={query.error}
-          onRetry={() => void query.refetch()}
+          error={definitionsQuery.error}
+          onRetry={() => void definitionsQuery.refetch()}
           title={copy.loadFailed}
           retryLabel={copy.reload}
         />
       )}
-      <label className="flex flex-col gap-2">
-        {copy.choose}
-        <select
-          className={inputClass}
-          value={selected}
-          aria-label={copy.choose}
-          disabled={mutation.isPending}
-          onChange={(e) => selectProfile(e.target.value)}
-        >
-          <option value="">{copy.chooseOption}</option>
-          {query.data?.profiles.map((p) => (
-            <option key={p.id} value={p.id}>
-              {copy.option(p.display_name, copy.status(p.status), tiers[p.tier])} ·{" "}
-              {distinguishProfileId(p.id, query.data?.profiles.map((profile) => profile.id) ?? [])}
-            </option>
-          ))}
-        </select>
-      </label>
+      {selected !== "" && profileQuery.error && (
+        <LoadFailure
+          error={profileQuery.error}
+          onRetry={() => void profileQuery.refetch()}
+          title={copy.loadFailed}
+          retryLabel={copy.reload}
+        />
+      )}
       {profile && (
         <div className="space-y-4 rounded-lg border p-5">
           <h2 className="text-lg font-bold">{copy.profile.heading(profile.display_name)}</h2>
+          <p>
+            {copy.option(profile.display_name, copy.status(profile.status), tiers[profile.tier])}
+          </p>
           <a
             className="inline-block min-h-11 py-2 underline"
             href={`/admin/volunteers/people/${profile.id}`}
@@ -281,7 +259,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
               onChange={(e) => setKey(e.target.value)}
             >
               <option value="">{copy.credential.choose}</option>
-              {query.data?.credential_definitions.map((d) => (
+              {definitions.map((d) => (
                 <option key={d.key} value={d.key}>
                   {d.label}
                 </option>
@@ -336,32 +314,25 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
             {copy.credential.save}
           </button>
           <ul className="space-y-2">
-            {query.data?.credentials
-              .filter((c) => c.profile_id === profile.id)
-              .map((c) => (
-                <li key={c.id} className="rounded border p-3">
-                  {copy.credential.line(
-                    copy.credential.name(
-                      query.data?.credential_definitions.find((d) => d.key === c.credential_key)
-                        ?.label,
-                    ),
-                    c.revoked_at ? copy.credential.revoked : copy.credential.verified,
-                    c.valid_until
-                      ? format.credentialExpiry(c.valid_until)
-                      : copy.credential.noExpiry,
-                  )}
-                  <p>{c.evidence}</p>
-                  {!c.revoked_at && (
-                    <button
-                      className={inputClass}
-                      disabled={!reason.trim() || mutation.isPending}
-                      onClick={() => act({ action: "revoke", credential_id: c.id })}
-                    >
-                      {copy.credential.revoke}
-                    </button>
-                  )}
-                </li>
-              ))}
+            {credentials.map((c) => (
+              <li key={c.id} className="rounded border p-3">
+                {copy.credential.line(
+                  copy.credential.name(definitions.find((d) => d.key === c.credential_key)?.label),
+                  c.revoked_at ? copy.credential.revoked : copy.credential.verified,
+                  c.valid_until ? format.credentialExpiry(c.valid_until) : copy.credential.noExpiry,
+                )}
+                <p>{c.evidence}</p>
+                {!c.revoked_at && (
+                  <button
+                    className={inputClass}
+                    disabled={!reason.trim() || mutation.isPending}
+                    onClick={() => act({ action: "revoke", credential_id: c.id })}
+                  >
+                    {copy.credential.revoke}
+                  </button>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
       )}
@@ -374,7 +345,7 @@ export function VolunteerQualifications({ initial }: { initial?: QualificationsI
         <summary className="cursor-pointer font-semibold">
           {pickAdminCopy(legacyReconciliationCopy, language).title}
         </summary>
-        {legacyOpened && <VolunteerLegacyReconciliation profiles={query.data?.profiles ?? []} />}
+        {legacyOpened && <VolunteerLegacyReconciliation profiles={profile ? [profile] : []} />}
       </details>
       {mutation.error && <p role="alert">{volunteerAdminErrorMessage(mutation.error, language)}</p>}
       {mutation.isSuccess && <p role="status">{copy.saved}</p>}

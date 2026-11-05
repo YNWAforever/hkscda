@@ -106,6 +106,7 @@ export function VolunteerLegacyReconciliation({
             ))}
         </select>
       </label>
+      <p>{copy.profileFromSearch}</p>
       <label className="block">
         {copy.reason}
         <textarea

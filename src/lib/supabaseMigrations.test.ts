@@ -1509,4 +1509,23 @@ describe("second-pass access and volunteer RPC regressions", () => {
       bulkAuditRecordsAfter: true,
     });
   });
+
+  // BUG-65: fixed by 20261030133000_volunteer_profile_list_definitions_only.sql. The `list`
+  // branch returned every volunteer_profile (with birth_date) and every credential, unbounded.
+  // The qualifications page now reads one profile through the paginated directory, so `list`
+  // returns only the credential definitions. Verified against Postgres 16.
+  test("BUG-65: volunteer_profile_command list no longer returns every profile or credential", () => {
+    const command = latestFunctionBody("volunteer_profile_command");
+    const start = command.body.search(/if\s+action\s*=\s*'list'\s+then/i);
+    expect(start).toBeGreaterThan(-1);
+    const rest = command.body.slice(start);
+    const listBranch = rest.slice(0, rest.search(/end\s+if\s*;/i)).replace(/--[^\n]*/g, "");
+
+    expect({
+      file: command.file,
+      readsProfiles: /from\s+public\.volunteer_profile\b/i.test(listBranch),
+      readsCredentials: /from\s+public\.volunteer_credential\b(?!_definition)/i.test(listBranch),
+      returnsDefinitions: /from\s+public\.volunteer_credential_definition\b/i.test(listBranch),
+    }).toMatchObject({ readsProfiles: false, readsCredentials: false, returnsDefinitions: true });
+  });
 });
