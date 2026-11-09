@@ -53,6 +53,20 @@ export function expectedVersionFor(state: EditorVersions, panel: string): number
 }
 
 /**
+ * The expected version a lifecycle action sends (CMS-05): publish, archive and restore are not
+ * panel saves, so they take the newest version this editor knows — the fence its own saves advance
+ * synchronously — instead of the query cache's row, which is still one save behind until the
+ * detail refetch lands. Falling back to the cached row only covers the first render, when the
+ * fence has not seen a version yet.
+ */
+export function lifecycleExpectedVersion(
+  state: EditorVersions,
+  cachedVersion: number | undefined,
+): number | undefined {
+  return state.latest ?? cachedVersion;
+}
+
+/**
  * One of this editor's own saves succeeded: it sent `sent` and the server now holds `saved`.
  * Every dirty panel whose base is `sent` moves to `saved`; any other base is left as it is.
  */

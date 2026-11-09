@@ -49,6 +49,16 @@ describe("AdminLoginContent", () => {
     expect(markup).toContain("密碼已更新");
   });
 
+  test("AUTH-02: explains a refused mid-session account on the sign-in form", () => {
+    const markup = renderToStaticMarkup(
+      <AdminLanguageProvider>
+        <AdminLoginContent passwordResetSuccess={false} noAdminAccess onSignedIn={() => {}} />
+      </AdminLanguageProvider>,
+    );
+    expect(markup).toContain("此帳戶沒有管理後台權限，或已被停用");
+    expect(markup).toContain('role="alert"');
+  });
+
   test("declares the language of the page it shows", () => {
     const chinese = renderToStaticMarkup(
       <AdminLanguageProvider>

@@ -38,6 +38,7 @@ export const accessCopy = defineAdminCopy({
       `${email} 將不能再登入管理後台，直至有管理員重新啟用此帳戶。`,
     currentUser: "你",
     genericError: "操作失敗，請稍後再試。",
+    emailDeliveryFailed: "邀請已建立，但電郵未能送出。請使用「重發」再發送一次。",
     auditLoadError: "未能載入紀錄。",
     retry: "重試",
     auditPagerLabel: "權限紀錄分頁",
@@ -96,6 +97,8 @@ export const accessCopy = defineAdminCopy({
       `${email} will no longer be able to sign in to the admin until an admin reactivates them.`,
     currentUser: "You",
     genericError: "The action failed. Try again later.",
+    emailDeliveryFailed:
+      "The invite was created, but the email could not be sent. Use Resend to send it again.",
     auditLoadError: "Could not load the history.",
     retry: "Retry",
     auditPagerLabel: "Access history pagination",

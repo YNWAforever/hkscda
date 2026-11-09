@@ -47,6 +47,7 @@ import {
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
 import {
+  CONTENT_CHILD_TEXT_MAX,
   CONTENT_SLUG_INPUT_PATTERN,
   CONTENT_SUMMARY_MAX,
   CONTENT_TEXT_MAX,
@@ -73,6 +74,7 @@ import {
   applyOwnSave,
   createEditorVersions,
   expectedVersionFor,
+  lifecycleExpectedVersion,
   markPanelClean,
   markPanelDirty,
   observeServerVersion,
@@ -316,7 +318,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: (revisionId: string) =>
       fetchAdminJson(`/api/admin/content/${contentId}/revisions/${revisionId}/restore`, {
         method: "POST",
-        body: JSON.stringify({ expectedVersion: content?.version }),
+        // Archive and restore are not panel saves: send the version this editor's own saves
+        // advanced the fence to, never the cached row that is behind until its refetch lands
+        // (CMS-05).
+        body: JSON.stringify({
+          expectedVersion: lifecycleExpectedVersion(versions.current, content?.version),
+        }),
       }),
     onSuccess: async () => {
       await requestReload();
@@ -365,7 +372,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const publishContent = useMutation({
-    mutationFn: () => publishWithValidation(contentId, content?.version, content?.revisionId),
+    mutationFn: () =>
+      publishWithValidation(
+        contentId,
+        lifecycleExpectedVersion(versions.current, content?.version),
+        content?.revisionId,
+      ),
     onSuccess: (data) => {
       setValidationIssues([]);
       setPendingPublishedMedia(data.content.mediaPending ?? 0);
@@ -381,7 +393,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: () =>
       fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/archive`, {
         method: "POST",
-        body: JSON.stringify({ expectedVersion: content?.version }),
+        body: JSON.stringify({
+          expectedVersion: lifecycleExpectedVersion(versions.current, content?.version),
+        }),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
@@ -709,6 +723,8 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             id={contentId}
             revision={content.revisionId}
             disabled={hasDirty}
+            savedClassification={content.savedReview?.classification}
+            savedEvidence={content.savedReview?.evidence ?? null}
           />
         </div>
       )}
@@ -1515,6 +1531,7 @@ function StoryWallSettings({
           </Field>
           <Field label={copy.address}>
             <input
+              maxLength={CONTENT_CHILD_TEXT_MAX.internalAddress}
               value={form.internalAddress}
               onChange={(event) =>
                 setForm((current) => ({ ...current, internalAddress: event.target.value }))
@@ -1526,6 +1543,7 @@ function StoryWallSettings({
         <Field label={copy.notes}>
           <textarea
             rows={2}
+            maxLength={CONTENT_CHILD_TEXT_MAX.internalLocationNotes}
             value={form.internalLocationNotes}
             onChange={(event) =>
               setForm((current) => ({ ...current, internalLocationNotes: event.target.value }))
@@ -1668,6 +1686,7 @@ function StoryUpdateCreateForm({
       <Field label={copy.body}>
         <textarea
           rows={3}
+          maxLength={CONTENT_CHILD_TEXT_MAX.storyUpdateBody}
           value={form.body}
           onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
           className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1801,6 +1820,7 @@ function ContentMediaPanel({
         </Field>
         <Field label={copy.caption}>
           <input
+            maxLength={CONTENT_CHILD_TEXT_MAX.mediaCaption}
             value={form.caption}
             onChange={(event) =>
               setForm((current) => ({ ...current, caption: event.target.value }))

@@ -9,8 +9,10 @@ import {
   MAX_CONTENT_MEDIA_BYTES,
   publicStorySlugInputSchema,
   socialCopyUpdateSchema,
+  storyProfileInputSchema,
+  storyUpdateInputSchema,
 } from "./schemas";
-import { CONTENT_SLUG_MAX, CONTENT_TEXT_MAX } from "./limits";
+import { CONTENT_CHILD_TEXT_MAX, CONTENT_SLUG_MAX, CONTENT_TEXT_MAX } from "./limits";
 
 const baseInput = {
   type: "event",
@@ -175,6 +177,72 @@ describe("BUG-73: content text, SEO and OG fields have length limits", () => {
     expect(padded.ctaLabel).toHaveLength(60);
     expect(contentInputSchema.parse({ ...baseInput, seoTitle: "   " }).seoTitle).toBeNull();
     expect(contentInputSchema.parse({ ...baseInput, seoTitle: null }).seoTitle).toBeNull();
+  });
+});
+
+describe("CMS-08: story-update, media-caption and story-profile text have length limits", () => {
+  const updateInput = {
+    kind: "care",
+    title: "近況",
+    occurredAt: "2026-11-09T10:00:00.000Z",
+  };
+  const profileInput = {
+    animalType: "cat",
+    publicStatus: "medical_care",
+    rescueRegion: "灣仔",
+  };
+  const mediaInput = {
+    storagePath: "stories/siu-bak/checkup.jpg",
+    altText: "小白覆診照片",
+  };
+  const limits = [
+    {
+      name: "a story update's body",
+      max: CONTENT_CHILD_TEXT_MAX.storyUpdateBody,
+      parse: (value: string) => storyUpdateInputSchema.safeParse({ ...updateInput, body: value }),
+      path: "body",
+    },
+    {
+      name: "a media caption",
+      max: CONTENT_CHILD_TEXT_MAX.mediaCaption,
+      parse: (value: string) =>
+        contentMediaInputSchema.safeParse({ ...mediaInput, caption: value }),
+      path: "caption",
+    },
+    {
+      name: "the story profile's internal address",
+      max: CONTENT_CHILD_TEXT_MAX.internalAddress,
+      parse: (value: string) =>
+        storyProfileInputSchema.safeParse({ ...profileInput, internalAddress: value }),
+      path: "internalAddress",
+    },
+    {
+      name: "the story profile's internal location notes",
+      max: CONTENT_CHILD_TEXT_MAX.internalLocationNotes,
+      parse: (value: string) =>
+        storyProfileInputSchema.safeParse({ ...profileInput, internalLocationNotes: value }),
+      path: "internalLocationNotes",
+    },
+  ] as const;
+
+  for (const { name, max, parse, path } of limits) {
+    test(`CMS-08: ${name} accepts ${max} characters and refuses ${max + 1}`, () => {
+      expect(max).toBeLessThan(CONTENT_TEXT_MAX.body);
+      expect(parse("字".repeat(max)).success).toBe(true);
+      const tooLong = parse("字".repeat(max + 1));
+      expect(tooLong.success).toBe(false);
+      expect(tooLong.error?.issues.map((issue) => issue.path.join("."))).toEqual([path]);
+    });
+  }
+
+  test("CMS-08: the limit applies to the trimmed text and an empty field is still null", () => {
+    const update = storyUpdateInputSchema.parse({
+      ...updateInput,
+      body: `  ${"a".repeat(CONTENT_CHILD_TEXT_MAX.storyUpdateBody)}  `,
+    });
+    expect(update.body).toHaveLength(CONTENT_CHILD_TEXT_MAX.storyUpdateBody);
+    expect(storyUpdateInputSchema.parse({ ...updateInput, body: "   " }).body).toBeNull();
+    expect(contentMediaInputSchema.parse({ ...mediaInput, caption: "  " }).caption).toBeNull();
   });
 });
 

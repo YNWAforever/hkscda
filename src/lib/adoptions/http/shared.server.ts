@@ -13,6 +13,19 @@ export type HandlerContext = {
   params?: Record<string, string | undefined>;
 };
 
+/** The supporter holding an email, including a soft-deleted row (OPS-04). */
+export type SupporterEmailLookup = (email: string) => Promise<{ deletedAt: string | null } | null>;
+
+export type WithErrorsOptions = {
+  /**
+   * OPS-04: wired for manual intake only. When the new-supporter insert hits the email unique
+   * constraint, this service-role lookup finds the existing supporter including a soft-deleted
+   * one, so the response can name that case instead of the generic "choose the existing
+   * supporter" advice.
+   */
+  lookupSupporterByEmail?: SupporterEmailLookup;
+};
+
 export function queryParams(request: Request) {
   return Object.fromEntries(new URL(request.url).searchParams);
 }
@@ -176,14 +189,54 @@ const uniqueViolationMessages = new Map([
 ]);
 
 function uniqueViolationMessage(error: object) {
-  const message = "message" in error && typeof error.message === "string" ? error.message : "";
-  const constraint = /unique constraint "([^"]+)"/.exec(message)?.[1] ?? "";
+  const constraint = uniqueViolationConstraint(error);
   return (
     uniqueViolationMessages.get(constraint) ?? "This record already exists. Reload and try again."
   );
 }
 
-export async function withErrors(operation: () => Promise<Response>) {
+function uniqueViolationConstraint(error: object) {
+  const message = "message" in error && typeof error.message === "string" ? error.message : "";
+  return /unique constraint "([^"]+)"/.exec(message)?.[1] ?? "";
+}
+
+// OPS-04: the email belongs to a soft-deleted supporter. Both identity paths hide deleted
+// rows and staff do not have CRM access, so "choose the existing supporter instead" was a
+// dead end. The code lets the manual-intake screen show actionable copy in both languages.
+const ARCHIVED_SUPPORTER_CODE = "supporter_archived";
+const ARCHIVED_SUPPORTER_MESSAGE =
+  "This email belongs to an archived supporter. Ask a treasurer or admin to unarchive that supporter, or record the intake without the email.";
+
+/** PostgREST puts the clashing values in DETAIL, which never reaches the caller. */
+function uniqueViolationEmail(error: object) {
+  const details = "details" in error && typeof error.details === "string" ? error.details : "";
+  return /Key \(email\)=\(([^)]+)\) already exists\./.exec(details)?.[1] ?? null;
+}
+
+async function archivedSupporterConflict(
+  error: object,
+  lookupSupporterByEmail: SupporterEmailLookup,
+): Promise<Response | null> {
+  const email = uniqueViolationEmail(error);
+  if (!email) return null;
+  try {
+    const supporter = await lookupSupporterByEmail(email);
+    if (!supporter?.deletedAt) return null;
+  } catch (lookupError) {
+    // A failed lookup must not turn a known 409 into a 500; fall back to the generic message.
+    console.error(lookupError);
+    return null;
+  }
+  return jsonResponse(
+    { error: { code: ARCHIVED_SUPPORTER_CODE, message: ARCHIVED_SUPPORTER_MESSAGE } },
+    { status: 409 },
+  );
+}
+
+export async function withErrors(
+  operation: () => Promise<Response>,
+  options: WithErrorsOptions = {},
+) {
   try {
     return await operation();
   } catch (error) {
@@ -199,6 +252,13 @@ export async function withErrors(operation: () => Promise<Response>) {
     }
     // A unique violation is a 409 (BUG-15), worded for the constraint that was hit (BUG-40).
     if (error && typeof error === "object" && "code" in error && error.code === "23505") {
+      if (
+        options.lookupSupporterByEmail &&
+        uniqueViolationConstraint(error) === "supporter_email_key"
+      ) {
+        const archived = await archivedSupporterConflict(error, options.lookupSupporterByEmail);
+        if (archived) return archived;
+      }
       return jsonResponse({ error: uniqueViolationMessage(error) }, { status: 409 });
     }
     // A match or follow-up on an unknown case/animal id was a 500 (BUG-42). The

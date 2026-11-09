@@ -62,6 +62,7 @@ type SummaryCounts = {
 type FakeState = {
   calls: QueryCall[];
   existingSupporter: { id: string } | null;
+  supporterByEmailRow: { id: string; deleted_at: string | null } | null;
   existingProfile: Record<string, unknown> | null;
   supporterRows: Record<string, unknown>[];
   auditRows: Record<string, unknown>[];
@@ -228,7 +229,13 @@ class FakeQuery {
 
   private executeMaybeSingle() {
     if (this.table === "coordinator_status") return { data: { id: statusId }, error: null };
-    if (this.table === "supporter") return { data: this.state.existingSupporter, error: null };
+    if (this.table === "supporter") {
+      // OPS-04: the email lookup selects deleted_at too, and must not filter it out.
+      if (this.selectedColumns === "id,deleted_at") {
+        return { data: this.state.supporterByEmailRow, error: null };
+      }
+      return { data: this.state.existingSupporter, error: null };
+    }
     if (this.table === "adopter_profile") {
       const rows =
         this.state.adopterRows.length > 0
@@ -419,6 +426,7 @@ function matchesNotFilter(
 function createFakeClient(
   options: {
     existingSupporter?: { id: string } | null;
+    supporterByEmailRow?: { id: string; deleted_at: string | null } | null;
     existingProfile?: Record<string, unknown> | null;
     supporterRows?: Record<string, unknown>[];
     auditRows?: Record<string, unknown>[];
@@ -450,6 +458,7 @@ function createFakeClient(
   const state: FakeState = {
     calls: [],
     existingSupporter: options.existingSupporter ?? null,
+    supporterByEmailRow: options.supporterByEmailRow ?? null,
     existingProfile: options.existingProfile ?? null,
     supporterRows: options.supporterRows ?? [],
     auditRows: options.auditRows ?? [],
@@ -944,6 +953,50 @@ describe("createSupabaseAdoptionCoordinatorRepository", () => {
         p_actor_user_id: createdSupporterId,
       }),
     });
+  });
+
+  test("OPS-04: finds a supporter by email even when the row is soft-deleted", async () => {
+    const { repo, calls } = setupRepository({
+      supporterByEmailRow: { id: existingSupporterId, deleted_at: "2026-11-01T00:00:00Z" },
+    });
+
+    await expect(repo.findSupporterByEmailIncludingDeleted("Ada@Example.test")).resolves.toEqual({
+      id: existingSupporterId,
+      deletedAt: "2026-11-01T00:00:00Z",
+    });
+
+    expect(calls).toContainEqual({
+      table: "supporter",
+      method: "select",
+      payload: "id,deleted_at",
+      options: undefined,
+    });
+    expect(calls).toContainEqual({
+      table: "supporter",
+      method: "eq",
+      payload: { column: "email", value: "Ada@Example.test" },
+    });
+    // The point of this lookup: a soft-deleted row must not be filtered out.
+    expect(calls.filter((call) => call.table === "supporter" && call.method === "is")).toEqual([]);
+  });
+
+  test("OPS-04: finds the active supporter holding the email", async () => {
+    const { repo } = setupRepository({
+      supporterByEmailRow: { id: existingSupporterId, deleted_at: null },
+    });
+
+    await expect(repo.findSupporterByEmailIncludingDeleted("ada@example.test")).resolves.toEqual({
+      id: existingSupporterId,
+      deletedAt: null,
+    });
+  });
+
+  test("OPS-04: returns null for an email no supporter holds", async () => {
+    const { repo } = setupRepository();
+
+    await expect(
+      repo.findSupporterByEmailIncludingDeleted("nobody@example.test"),
+    ).resolves.toBeNull();
   });
 
   test("searches case list and export beyond a capped preliminary result", async () => {

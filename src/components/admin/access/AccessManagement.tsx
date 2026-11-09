@@ -28,6 +28,7 @@ import {
   accessConfirmationText,
   accessMutationSuccess,
   disabledRowAction,
+  inviteDeliveryNotice,
   isOwnAccessRow,
   type AccessConfirmation,
 } from "./accessActions";
@@ -50,6 +51,16 @@ type AdminAccessUser = {
 type AccessUsersResponse = {
   users: AdminAccessUser[];
   summary: { active: number; pending: number; disabled: number };
+};
+
+/**
+ * What the invite and resend endpoints answer. The pending row is committed before the email
+ * is sent, so `emailDeliveryFailed` is a non-fatal outcome the page reports and the operator
+ * can act on with Resend (AUTH-03).
+ */
+type InviteOutcomeResponse = {
+  user: AdminAccessUser;
+  emailDeliveryFailed: boolean;
 };
 
 type AccessAuditRow = {
@@ -86,6 +97,8 @@ export function AccessManagement() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<AdminRole>("staff");
   const [error, setError] = useState<string | null>(null);
+  // An invite whose row committed but whose email did not deliver (AUTH-03).
+  const [deliveryNotice, setDeliveryNotice] = useState<string | null>(null);
   // A role change or disable waits here until it is confirmed (BUG-56).
   const [confirmation, setConfirmation] = useState<AccessConfirmation | null>(null);
 
@@ -109,20 +122,28 @@ export function AccessManagement() {
   };
   // Any successful action clears an earlier error banner, not only an invite (BUG-56).
   const onActionSuccess = accessMutationSuccess({ setError, invalidate });
-  const showActionError = (mutationError: Error) =>
+  // A delivery failure is a warning the operator acts on, so it is shown beside the list and
+  // cleared by the next successful action (AUTH-03).
+  const onInviteOutcome = async (outcome: InviteOutcomeResponse) => {
+    setDeliveryNotice(inviteDeliveryNotice(outcome, t));
+    await onActionSuccess();
+  };
+  const showActionError = (mutationError: Error) => {
+    setDeliveryNotice(null);
     setError(adminErrorMessage(mutationError, language) ?? t.genericError);
+  };
 
   const inviteMutation = useMutation({
     mutationFn: () =>
-      fetchAdminJson("/api/admin/access/invites", {
+      fetchAdminJson<InviteOutcomeResponse>("/api/admin/access/invites", {
         method: "POST",
         body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
       }),
-    onSuccess: async () => {
+    onSuccess: async (outcome) => {
       setInviteEmail("");
       setInviteRole("staff");
       setInviteOpen(false);
-      await onActionSuccess();
+      await onInviteOutcome(outcome);
     },
     onError: showActionError,
   });
@@ -139,17 +160,23 @@ export function AccessManagement() {
         method: "PATCH",
         body: JSON.stringify(input),
       }),
-    onSuccess: onActionSuccess,
+    onSuccess: async () => {
+      setDeliveryNotice(null);
+      await onActionSuccess();
+    },
     // A confirmed action shows its failure in the dialog, which stays open; only the
     // unconfirmed reactivate reports through the banner (passed per call below).
   });
 
   const resendMutation = useMutation({
     mutationFn: (id: string) =>
-      fetchAdminJson(`/api/admin/access/invites/${encodeURIComponent(id)}/resend`, {
-        method: "POST",
-      }),
-    onSuccess: onActionSuccess,
+      fetchAdminJson<InviteOutcomeResponse>(
+        `/api/admin/access/invites/${encodeURIComponent(id)}/resend`,
+        {
+          method: "POST",
+        },
+      ),
+    onSuccess: onInviteOutcome,
     onError: showActionError,
   });
 
@@ -157,11 +184,11 @@ export function AccessManagement() {
   // pending with a fresh invite (the resend endpoint accepts only pending rows).
   const reinviteMutation = useMutation({
     mutationFn: (user: Pick<AdminAccessUser, "email" | "role">) =>
-      fetchAdminJson("/api/admin/access/invites", {
+      fetchAdminJson<InviteOutcomeResponse>("/api/admin/access/invites", {
         method: "POST",
         body: JSON.stringify({ email: user.email, role: user.role }),
       }),
-    onSuccess: onActionSuccess,
+    onSuccess: onInviteOutcome,
     onError: showActionError,
   });
 
@@ -369,6 +396,15 @@ export function AccessManagement() {
           className="rounded-md border border-[var(--color-error)] bg-white px-3 py-2 text-sm text-[var(--color-error)]"
         >
           {error}
+        </div>
+      )}
+
+      {deliveryNotice && (
+        <div
+          role="status"
+          className="rounded-md border border-[var(--color-warning)] bg-[var(--color-warning-highlight)] px-3 py-2 text-sm text-[var(--color-warning)]"
+        >
+          {deliveryNotice}
         </div>
       )}
 

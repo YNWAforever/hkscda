@@ -1,6 +1,7 @@
 import { isSafePublicHref } from "./publicHref";
 import { z } from "zod";
 import {
+  CONTENT_CHILD_TEXT_MAX,
   CONTENT_SLUG_MAX,
   CONTENT_SLUG_PATTERN,
   CONTENT_SUMMARY_MAX,
@@ -122,15 +123,15 @@ export const storyProfileInputSchema = z.object({
   publicMapLabel: optionalTrimmed,
   publicLat: numberFromInput(z.number().min(-90).max(90)).nullable().optional().default(null),
   publicLng: numberFromInput(z.number().min(-180).max(180)).nullable().optional().default(null),
-  internalAddress: optionalTrimmed,
-  internalLocationNotes: optionalTrimmed,
+  internalAddress: optionalTrimmedMax(CONTENT_CHILD_TEXT_MAX.internalAddress),
+  internalLocationNotes: optionalTrimmedMax(CONTENT_CHILD_TEXT_MAX.internalLocationNotes),
   isFeatured: z.boolean().default(false),
 });
 
 export const storyUpdateInputSchema = z.object({
   kind: z.enum(storyUpdateKinds),
   title: trimmed.min(1).max(180),
-  body: optionalTrimmed,
+  body: optionalTrimmedMax(CONTENT_CHILD_TEXT_MAX.storyUpdateBody),
   occurredAt: z.string().datetime(),
   visibility: z.enum(storyUpdateVisibilities).default("public"),
   shouldGenerateAdopterDrafts: z.boolean().default(false),
@@ -156,7 +157,7 @@ export const contentMediaInputSchema = z.object({
   storyUpdateId: z.string().uuid().nullable().optional().default(null),
   storagePath: contentMediaPathSchema,
   altText: trimmed.min(1).max(180),
-  caption: optionalTrimmed,
+  caption: optionalTrimmedMax(CONTENT_CHILD_TEXT_MAX.mediaCaption),
   sortOrder: numberFromInput(z.number().int().min(0)).optional().default(0),
   isCover: z.boolean().default(false),
 });

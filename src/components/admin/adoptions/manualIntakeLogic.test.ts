@@ -1,11 +1,13 @@
 import { describe, expect, test } from "bun:test";
 
 import type { CoordinatorStatus } from "../../../lib/adoptions/types";
+import { adminPageCopy } from "../adminPageCopy";
 import {
   buildManualCasePayload,
   buildIdentitySearchParams,
   canSearchIdentity,
   candidateContactPrefill,
+  codedManualIntakeErrorMessage,
   intakeCaseStatuses,
 } from "./manualIntakeLogic";
 
@@ -77,6 +79,34 @@ describe("manual intake logic", () => {
     expect(source).toContain("enabled: canSearchIdentity(searchText)");
     expect(source).toContain("copy.identitySearchTooShort");
     expect(source).toContain("candidateContactPrefill(candidate)");
+  });
+
+  test("OPS-04: a supporter_archived failure shows actionable copy in both languages", () => {
+    const error = {
+      status: 409,
+      code: "supporter_archived",
+      message:
+        "This email belongs to an archived supporter. Ask a treasurer or admin to unarchive that supporter, or record the intake without the email.",
+    };
+    const zh = adminPageCopy.zh.manualIntake.serverErrors;
+    const en = adminPageCopy.en.manualIntake.serverErrors;
+
+    expect(codedManualIntakeErrorMessage(error, zh)).toBe(zh.supporter_archived);
+    expect(codedManualIntakeErrorMessage(error, en)).toBe(en.supporter_archived);
+    expect(zh.supporter_archived).toContain("已封存");
+    expect(zh.supporter_archived).toContain("司庫或管理員");
+    expect(zh.supporter_archived).toContain("不填寫電郵");
+    expect(en.supporter_archived).toContain("archived supporter");
+    expect(en.supporter_archived).toContain("treasurer or admin");
+    expect(en.supporter_archived).toContain("without the email");
+  });
+
+  test("OPS-04: failures without a mapped code keep the server's own message", () => {
+    const en = adminPageCopy.en.manualIntake.serverErrors;
+    expect(codedManualIntakeErrorMessage(new Error("A supporter already exists"), en)).toBeNull();
+    expect(codedManualIntakeErrorMessage({ status: 409, code: "supporter_exists" }, en)).toBeNull();
+    expect(codedManualIntakeErrorMessage(null, en)).toBeNull();
+    expect(codedManualIntakeErrorMessage(undefined, en)).toBeNull();
   });
 
   test("builds trimmed identity search params", () => {

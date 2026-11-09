@@ -8,13 +8,14 @@ import {
 
 export function createHandlers() {
   const client = createSupabaseServiceClient();
-  const service = createAdoptionCoordinatorService({
-    repo: createSupabaseAdoptionCoordinatorRepository(client),
-  });
+  const repo = createSupabaseAdoptionCoordinatorRepository(client);
+  const service = createAdoptionCoordinatorService({ repo });
 
   return createAdoptionCoordinatorHandlers({
     requireCoordinator: (request) => requireAdmin(request, ["staff", "admin"], client),
     requireStatusAdmin: (request) => requireAdmin(request, ["admin"], client),
     service,
+    // OPS-04: the manual-intake error mapper needs the email's supporter even when deleted.
+    lookupSupporterByEmail: (email) => repo.findSupporterByEmailIncludingDeleted(email),
   });
 }

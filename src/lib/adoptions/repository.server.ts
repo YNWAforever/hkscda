@@ -1725,7 +1725,17 @@ function mapTaskExportRow(task: CoordinatorTask): CoordinatorTaskExportRow {
 
 export function createSupabaseAdoptionCoordinatorRepository(
   client: SupabaseClient,
-): AdoptionCoordinatorRepository & CoordinatorOpsRepositoryMethods {
+): AdoptionCoordinatorRepository &
+  CoordinatorOpsRepositoryMethods & {
+    /**
+     * The supporter holding `email`, **including a soft-deleted row** (OPS-04). Manual intake
+     * dead-ended on the `supporter_email_key` unique violation because both identity paths
+     * hide deleted rows; the API's error mapper uses this to name an archived supporter.
+     */
+    findSupporterByEmailIncludingDeleted(
+      email: string,
+    ): Promise<{ id: string; deletedAt: string | null } | null>;
+  } {
   return {
     usesAtomicAudit: true,
     async listStatuses(category) {
@@ -2228,6 +2238,20 @@ export function createSupabaseAdoptionCoordinatorRepository(
       });
       if (error) throw error;
       return data as ManualCaseIntakeResult;
+    },
+
+    // OPS-04: no deleted_at filter. supporter.email is citext, so the comparison is
+    // case-insensitive, and the unique index allows at most one row holding the email.
+    async findSupporterByEmailIncludingDeleted(email) {
+      const { data, error } = await client
+        .from("supporter")
+        .select("id,deleted_at")
+        .eq("email", email)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      const row = data as { id: string; deleted_at: string | null };
+      return { id: row.id, deletedAt: row.deleted_at };
     },
 
     async listCoordinatorExportHistory(input) {

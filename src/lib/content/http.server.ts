@@ -5,7 +5,12 @@ import type { AdminUser } from "../donations/supabase.server";
 import { MAX_ADMIN_JSON_BYTES, readAdminJson } from "../http/adminJson.server";
 import { readBoundedText } from "../http/boundedBody.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
-import { ContentNotPublishedError, ContentValidationError, createContentService } from "./service";
+import {
+  ContentNotPublishedError,
+  ContentUpdateNotPublishedError,
+  ContentValidationError,
+  createContentService,
+} from "./service";
 
 type ContentService = ReturnType<typeof createContentService>;
 
@@ -110,6 +115,14 @@ async function withContentErrors(operation: () => Promise<Response>, publicReque
       );
     }
     if (error instanceof ContentNotPublishedError) {
+      return jsonResponse(
+        { error: { code: error.code, message: error.message } },
+        { status: error.status },
+      );
+    }
+    if (error instanceof ContentUpdateNotPublishedError) {
+      // Social copy for a specific update quotes the published snapshot; an update the published
+      // revision does not contain has nothing on the linked page to quote (CMS-02).
       return jsonResponse(
         { error: { code: error.code, message: error.message } },
         { status: error.status },

@@ -9,7 +9,7 @@ import {
 
 const realRouter = await import("@tanstack/react-router");
 
-let search: { passwordReset?: "success" } = {};
+let search: { passwordReset?: "success"; reason?: "no_admin_access" } = {};
 
 // Both pages read the router: the login page its search string, both a navigate function.
 mock.module("@tanstack/react-router", () => ({
@@ -61,6 +61,15 @@ describe("/admin/login as a whole page", () => {
     const markup = renderAdminInEnglish(<LoginPage />);
     expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
     expect(markup).toContain("Your password has been updated. Sign in with your new password.");
+  });
+
+  test("AUTH-02: a refused mid-session account is explained in English on the sign-in page", () => {
+    search = { reason: "no_admin_access" };
+    const markup = renderAdminInEnglish(<LoginPage />);
+    expectNoChineseText(markup, { allow: [TOGGLE_WORD] });
+    expect(markup).toContain(
+      "This account has no admin access or has been disabled. Contact an admin if you need help.",
+    );
   });
 
   test("is unchanged in Chinese", () => {

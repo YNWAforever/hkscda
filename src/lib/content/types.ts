@@ -49,6 +49,16 @@ export type SocialPlatform = (typeof socialPlatforms)[number];
 export type SocialCopyStatus = (typeof socialCopyStatuses)[number];
 export type NotificationDraftStatus = (typeof notificationDraftStatuses)[number];
 
+/**
+ * The editorial review recorded for one revision (`editorial_content_review`). The authoring read
+ * returns it for the current draft revision so the review panel can show the saved classification
+ * and evidence instead of reopening as `needs_review` (CMS-06).
+ */
+export type EditorialReview = {
+  classification: "approved" | "demo" | "needs_review";
+  evidence: string;
+};
+
 export type ContentLink = {
   id: string;
   contentItemId: string;
@@ -167,6 +177,11 @@ export type ContentDetail = ContentSummary & {
   publishedSlug?: string | null;
   version?: number;
   revisionId?: string | null;
+  /**
+   * The editorial review of `revisionId`, when one was recorded; only the admin authoring read
+   * sets it (CMS-06). `null` means the revision has no recorded review yet.
+   */
+  savedReview?: EditorialReview | null;
   body: string | null;
   seoTitle: string | null;
   seoDescription: string | null;

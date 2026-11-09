@@ -405,28 +405,109 @@ A read-only audit of the admin auth/session and operations surfaces
 database changes; this section records the SQL half of the branch series (the code half ships
 with it). The IDs keep the audit's AUTH-/OPS- prefixes so BUG-01…BUG-73 keep their numbers.
 
-| ID      | Sev | Fix                                                                                                                                                                                                                                                                          | Migration        |
-| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| AUTH-01 | Med | Browser roles lose `select` on `public.audit_log` and the three-role read policy is dropped. A direct staff/treasurer/admin PostgREST select now fails with permission denied; service-role API reads are unchanged; no rows are touched                                        | `20261109100000` |
-| OPS-01  | Med | Publishing a `cancelled` or `closed` volunteer activity through the legacy update RPC returns `invalid`/`activity_closed` instead of reviving it. Every other branch, the advisory lock, the privileges and the pinned `search_path` are unchanged                              | `20261109101000` |
-| OPS-02  | Med | Changing `is_active`/`is_closing`/`is_final` on an `is_system` coordinator status raises `23514`; labels, colour and sort order stay editable and every other RPC branch is unchanged                                                                                        | `20261109102000` |
+| ID      | Sev | Fix                                                                                                                                                                                                                                                                                                                   | Migration        |
+| ------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| AUTH-01 | Med | Browser roles lose `select` on `public.audit_log` and the three-role read policy is dropped. A direct staff/treasurer/admin PostgREST select now fails with permission denied; service-role API reads are unchanged; no rows are touched                                                                              | `20261109100000` |
+| OPS-01  | Med | Publishing a `cancelled` or `closed` volunteer activity through the legacy update RPC returns `invalid`/`activity_closed` instead of reviving it. Every other branch, the advisory lock, the privileges and the pinned `search_path` are unchanged                                                                    | `20261109101000` |
+| OPS-02  | Med | Changing `is_active`/`is_closing`/`is_final` on an `is_system` coordinator status raises `23514`; labels, colour and sort order stay editable and every other RPC branch is unchanged                                                                                                                                 | `20261109102000` |
+| OPS-03  | Low | The supporter record applies the API's HK$100-net receipt rule (`isReceiptEligible` on `amount_cents - refunded_cents`) before offering **Issue receipt**, so an ineligible donation no longer shows an action that always returns 422. No server, RPC or schema change; the API check stays the guard                | —                |
+| OPS-04  | Low | Manual intake's `supporter_email_key` 409 distinguishes an archived supporter: a new service-role lookup including deleted rows returns 409 code `supporter_archived` with actionable staff copy; an active or unknown email keeps the existing 409 and a failed lookup falls back to it. The intake RPC is unchanged | —                |
 
 **Deploy:** all three are `latest-definition-wins` migrations with no data rewrite, so any order
 after `20261105101000` works; AUTH-01 can go first on its own because no admin browser read
 exists. OPS-01/OPS-02 refuse edits that are possible today, so ship them with the code half that
-removes the affected controls.
+removes the affected controls. OPS-03/OPS-04 change no SQL: they are code-only and add no
+deploy step.
 
 **Behaviour to know.** A staff/treasurer/admin JWT selecting `audit_log` over PostgREST now gets
 a permission error instead of rows, so a report built on that direct access must move to the API.
 The legacy volunteers page gets the `activity_closed` refusal on terminal rows instead of
 reviving them. The status editor must disable the three semantic switches for system rows; if it
-does not, saving them is refused with `System status flags cannot be changed`.
+does not, saving them is refused with `System status flags cannot be changed`. The supporter
+record no longer offers **Issue receipt** for a donation below HK$100 retained or for one an
+issued receipt already covers — the same rule the payments screen has applied since BUG-05. A
+manual intake whose email belongs to an archived supporter now says so and tells staff to ask a
+treasurer/admin to unarchive the supporter or record the intake without the email, instead of
+pointing at an identity the intake flow hides.
 
 **Verification.** Focused migration/RLS tests: 15 pass, 0 fail, 7 RLS tests skipped (no local
 Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`). `src/lib/supabaseMigrations.test.ts`:
 71 pass, 0 fail. `bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 56 warnings). No
 database was available, so the SQL is traced, not executed; the behavioural RLS test runs under
 `bun run test:rls` against a local stack.
+
+## Admin auth backlog — second batch (2026-11-09)
+
+The same audit's accepted Lows (AUTH-02…AUTH-05) plus the inherited AUD-02 RLS gap. Four fixes are
+code or test only; AUD-02 is a migration.
+
+| ID      | Sev | Fix                                                                                                                                                                                                                                                  | Where                                                                                       |
+| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| AUTH-02 | Low | A 403 from `/api/admin/me` now takes the lapsed-session path (clear identity, local sign-out) and lands on sign-in with the bilingual "no admin access" reason, instead of a dead-end load failure. Ordinary 403s keep their meaning and sign no one out. | `src/lib/admin/session.ts`, `src/routes/admin/login.tsx`                                    |
+| AUTH-03 | Low | An invite/resend whose row committed but whose email failed returns the user plus `emailDeliveryFailed` (201/200, not a 500) and the access page says to use Resend. The safe commit ordering is unchanged.                                          | `src/lib/admin/accessManagement.{server,http.server}.ts`, `src/components/admin/access/`    |
+| AUTH-04 | Low | On a real auth-user change the tab removes every non-identity cached query, then resets and refetches identity, so a cross-tab account switch leaves no previous admin's rows on screen.                                                              | `src/lib/admin/useLiveAdminActor.ts`                                                        |
+| AUTH-05 | Low | `volunteers/jobs/` is in the role sweep's admin-only list, with a case that fails if it admits staff; the sweep root is resolved with `fileURLToPath` so the guard runs on Windows too.                                                               | `tests/integration/admin/authorization.test.ts`                                             |
+| AUD-02  | Med | The five staff-wide supporter/supporter_role/consent policies are redefined to `array['treasurer', 'admin']`; grants, service-role access and the supporter portal paths are unchanged and no rows are touched.                                       | `20261109103000_tighten_supporter_staff_rls.sql`                                            |
+
+**Deploy:** AUD-02 is a `latest-definition-wins` policy migration with no data rewrite, so any
+order after `20261109102000` works and it can ship on its own. AUTH-02/AUTH-03/AUTH-04 are
+client/server code; AUTH-05 is test-only.
+
+**Behaviour to know.** An admin disabled or demoted mid-session is signed out on the next page load
+and told why; a forbidden-area 403 still shows as a normal failed action. If the mail provider is
+down, the invite is created and the page warns to press Resend instead of showing a save error.
+Staff can no longer read supporter/consent rows over PostgREST; every app read is a service-role
+API handler, so the UI is unchanged.
+
+**Verification.** Focused tests: 226 pass, 0 fail across 14 files. `moneyPii.rls.test.ts`: 45 tests
+skipped (no local Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`, they run under
+`bun run test:rls`). `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 warnings). No
+database was available, so the migration is traced, not executed; the AUTH-05 case was
+negative-checked by temporarily allowing staff and observing both the sweep and the new case fail.
+No full test suite was run.
+## Admin operations backlog — second batch (2026-11-09)
+
+**Verification (OPS-03/OPS-04 code-only follow-up).** `bunx tsc --noEmit` clean; `bun run lint`
+0 errors (the same 56 warnings); focused `bun test --isolate` over the changed files:
+331 pass, 0 fail. No database was available
+(`SUPABASE_LOCAL_URL=http://127.0.0.1:1`), so the new repository lookup is exercised through the
+fake service-role client, the error mapping through injected fakes, and the receipt rule through
+a logic/component test; the receipt API's 422 expectation still passes unchanged in
+`reconcile.lifecycle.test.ts`.
+## Content/CMS backlog (2026-11-09)
+
+The content side of the same read-only audit
+([`audit-20261109/`](../audit-20261109/findings-cms.md)) left five incomplete fixes of BUG-66/67/68/73
+plus the quality gaps around them. CMS-01 (stale animal-draft save) and CMS-04 (content-list
+summary cards counted the current page) were closed with the admin P0 batch; CMS-07 (withdrawn
+images stay public until the daily withdrawal job) is a recorded accepted product decision. This
+batch closes the other five in code — **no migration** — and keeps the audit's CMS- IDs.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------ | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CMS-02 | Med | Social copy for a specific story update now quotes the update from the published snapshot (the same read that supplies the link), not the authoring `story_update` row; that read is kept only to validate ownership/visibility. An id the published revision does not contain is a coded 409 `update_not_published`, explained in both admin languages                                             |
+| CMS-03 | Med | The publication-metadata handler returns the structured `{error:{code,message,fields}}` shape: zod issue paths now name `sourceReference`/`contentOwner`/`effectiveUntil` (verified provenance, inverted range), 40001 maps to `conflict`, known failures to `not_found`/`internal`. `editorFieldLabels` and the copy modules cover the five metadata fields, and the inverted-range reason is bilingual |
+| CMS-05 | Low | Publish, archive and restore send the version the editor's own saves advanced the `editorVersions` fence to (with the cached row only as the pre-fence fallback), so a click during the post-save refetch window no longer sends a stale `expectedVersion` and self-inflicts a 409                                                   |
+| CMS-06 | Low | The content authoring read returns the current draft revision's saved editorial review (and the animal publication read returns the draft revision's review), so `ContentReviewPanel` shows the collapsed verified summary for an approved revision and the saved classification/evidence otherwise, instead of reopening as `needs_review` and overwriting the earlier review               |
+| CMS-08 | Low | `CONTENT_CHILD_TEXT_MAX` bounds the authoring rows every save copies into both revision snapshots: story-update body 20,000, media caption and story-profile internal address/location notes 500, mirrored as `maxLength` on the editor inputs. Server and input limits come from the same constants; no DB column constraint exists, so no migration |
+
+**Deploy:** code-only on the existing lifecycle routes and reads; no migration, no new environment
+variable, no cron change. The animal read response gains a nullable `review` field and the content
+detail gains a nullable `savedReview`, both additive.
+
+**Behaviour to know.** Generating copy for an update that has not been published yet (added or
+edited since the last publish) is now refused with "publish the story update first" instead of
+quoting text the public page does not show. Content already longer than the new CMS-08 limits
+still displays; its next save is refused naming the field until it is shortened. Editing an update
+body, media caption or internal address/notes in the editor is stopped at the same limit the
+server enforces.
+
+**Verification.** `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 pre-existing
+warnings). Focused suite (content schemas/service/http/publication-metadata/repository/social
+copy/lifecycle/media mapping, editor copy + version fence + editor + review panels, animal
+publication route): 337 pass, 0 fail across 20 files
+(`SUPABASE_LOCAL_URL=http://127.0.0.1:1`; no local Supabase stack, so DB-gated RLS/integration
+files were skipped and no database was touched).
 
 ## Manual QA checklist (staging or local, never production data)
 
@@ -483,3 +564,25 @@ database was available, so the SQL is traced, not executed; the behavioural RLS 
 - [ ] **OPS-02 (after the migration runs):** a system status's Active/Closing/Final switches are
       disabled (or saving them is refused with "flags cannot be changed"); its label, colour and
       sort order still save, and finalising, task completion and case closing still work.
+- [ ] **OPS-03:** a supporter's donation with HK$99 net retained (a HK$99 gift, or HK$150
+      refunded HK$51) and "receipt requested" shows no **Issue receipt** button; a HK$100 net
+      one does, and issuing it succeeds.
+- [ ] **OPS-04:** soft-delete a supporter in CRM, then create a manual intake with that email:
+      the error says the email belongs to an archived supporter and to ask a treasurer/admin to
+      unarchive it or record the intake without the email. An active supporter's email still
+      shows the existing "choose the existing supporter" message.
+- [ ] **CMS-02:** publish a story, then add a public update without publishing again. Through the
+      API, generate social copy for that update: it is refused with "publish the story update
+      first". Publish again, then generate: the copy quotes the update text the public page shows.
+- [ ] **CMS-03:** in Publication metadata choose "verified" and clear the source/owner → the banner
+      names those fields in zh-HK. Set an end time before the start time → the banner names the end
+      time. Save while a second tab has published → the conflict banner, not an English string.
+- [ ] **CMS-05:** throttle the network, save Publication metadata, then immediately click Publish:
+      it publishes instead of showing a conflict banner. A change really made by someone else
+      still shows the conflict banner.
+- [ ] **CMS-06:** approve a content revision, reload its editor → the source review is collapsed as
+      "已核實可發布 · <evidence>". A needs-review revision opens the form with its saved evidence.
+      The same for an approved animal draft in the animal form.
+- [ ] **CMS-08:** try to type more than 20,000 characters into a story-update body or more than
+      500 into a media caption / the internal address or notes → the input stops at the limit, and
+      the API refuses anything longer with the field named.

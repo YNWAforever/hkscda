@@ -6,6 +6,7 @@ import {
   accessConfirmationText,
   accessMutationSuccess,
   disabledRowAction,
+  inviteDeliveryNotice,
   isOwnAccessRow,
 } from "./accessActions";
 import { accessCopy } from "./copy";
@@ -65,6 +66,19 @@ describe("access page actions", () => {
     });
     await accessMutationSuccess({ setError, invalidate })();
     expect(order).toEqual(["error:null", "invalidate"]);
+  });
+
+  test("AUTH-03: a delivery failure reads as an actionable warning naming Resend in both languages", () => {
+    expect(inviteDeliveryNotice({ emailDeliveryFailed: true }, accessCopy.en)).toBe(
+      accessCopy.en.emailDeliveryFailed,
+    );
+    expect(inviteDeliveryNotice({ emailDeliveryFailed: true }, accessCopy.zh)).toBe(
+      accessCopy.zh.emailDeliveryFailed,
+    );
+    expect(inviteDeliveryNotice({ emailDeliveryFailed: false }, accessCopy.en)).toBeNull();
+    expect(inviteDeliveryNotice({}, accessCopy.zh)).toBeNull();
+    expect(accessCopy.en.emailDeliveryFailed).toContain("Resend");
+    expectNoChineseText(accessCopy.en.emailDeliveryFailed);
   });
 });
 

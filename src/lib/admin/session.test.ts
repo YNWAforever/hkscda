@@ -402,6 +402,32 @@ describe("requireSignedInAdminIdentity", () => {
     const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
 
     expect(thrown).toMatchObject({ options: { to: "/admin/login" } });
+    // A lapsed session needs a plain sign-in; only a refused account gets the reason.
+    expect((thrown as { options?: { search?: unknown } }).options?.search).toBeUndefined();
+    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
+  });
+
+  test("AUTH-02: a 403 identity fetch signs the account out and says why, instead of a dead-end load failure", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "Admin access revoked" }, { status: 403 }),
+    ) as unknown as typeof fetch;
+    signOut.mockClear();
+    const queryClient = new QueryClient();
+    // A cached identity for another account is evicted first, so the identity is re-read from
+    // the server, as it is on a page load after the admin was disabled or demoted (AUTH-02).
+    queryClient.setQueryData(["admin-me"], {
+      admin: { id: "old-row", authUserId: "auth-old", email: "old@example.com", role: "admin" },
+    });
+
+    const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
+
+    expect(thrown).toMatchObject({
+      options: {
+        to: "/admin/login",
+        search: { reason: "no_admin_access" },
+      },
+    });
     expect(signOut).toHaveBeenCalledWith({ scope: "local" });
     expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
   });

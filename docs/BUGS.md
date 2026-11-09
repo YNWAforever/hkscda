@@ -910,6 +910,226 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   other branch, `search_path = ''` and the grants are unchanged. The companion admin-code change
   disables the switches for system rows.
 
+## Admin auth backlog — second batch (2026-11-09)
+
+The audit's accepted Lows (AUTH-02…AUTH-05) plus the inherited AUD-02 RLS gap. The IDs keep the
+audit's prefixes so BUG-01…BUG-73 keep their numbers. Four fixes are code/test-only; AUD-02 is a
+migration.
+
+### AUTH-02 — Low — An admin disabled or demoted mid-session reloads into a dead-end load failure
+
+- **Where:** `requireSignedInAdminIdentity` (`src/lib/admin/session.ts`) only treated a 401 as a
+  lapsed session, so a 403 from the identity fetch (`/api/admin/me`) fell through as a generic
+  load failure. `docs/BUGS.md` BUG-31 fixed the 401 case and BUG-57 the sign-in 403; neither
+  covered an admin disabled while already signed in.
+- **Effect:** after an admin is disabled, has its row removed, or is demoted mid-session, a reload
+  of `/admin` renders the load-failure screen whose retry always fails — no message, no sign-out —
+  and the identity cache keeps answering with the old role for up to 60 s.
+- **Fix (code):** a 403 from the identity fetch now takes the lapsed-session path: cached identity
+  removed, `supabase.auth.signOut({scope:"local"})`, and a redirect to
+  `/admin/login?reason=no_admin_access`, where the sign-in page shows the existing bilingual
+  `login.noAdminAccess` refusal copy. Ordinary mutation 403s keep their `forbidden` class in
+  `failureClass`, so one forbidden-area call does not sign anyone out.
+- **Tests:** `src/lib/admin/session.test.ts` (401 without the reason vs 403 with it, identity
+  cleared, local sign-out), `src/components/admin/useSessionExpiryRedirect.test.ts` (a 403
+  mutation is not a lapse), `src/routes/admin/login.test.tsx` and `-authPagesEnglish.test.tsx`
+  (zh-HK and English notices).
+
+### AUTH-03 — Low — Invite/resend commits the row before the email; a delivery failure is a 500 and a retry is a 409
+
+- **Where:** `src/lib/admin/accessManagement.server.ts` (`inviteUser`, `resendInvite`) commits the
+  pending `admin_user` row and its audit row before `sendInviteEmail`; the mail error escaped as a
+  500 (`accessManagement.http.server.ts`), while the duplicate pre-check makes an immediate retry
+  a 409 `duplicate_admin_user`.
+- **Effect:** with Resend down or miskeyed, the invitation is recorded and audited as sent but
+  nobody receives it, and the operator's natural retry is refused. The only recovery is knowing
+  that "Resend" on the pending row is a different button.
+- **Fix (code):** the safe commit ordering stays. A mail-provider failure is caught and reported
+  instead of thrown: the service returns `{ user, emailDeliveryFailed }`, the invite/resend
+  handlers answer 201/200 with that flag (no 500), and the access page shows a bilingual warning
+  saying the invite was created but the email was not delivered and to use Resend.
+- **Tests:** `src/lib/admin/accessManagement.test.ts` (provider throw → row committed once, flag
+  set, handler 201 not 500; success unchanged), `accessManagement.http.test.ts`, and
+  `src/components/admin/access/accessActions.test.ts` (bilingual warning).
+
+### AUTH-04 — Low — A cross-tab account switch leaves the previous admin's cached data in the old tab
+
+- **Where:** `src/lib/admin/useLiveAdminActor.ts` reset only the identity query on an auth-user
+  change; `completeSignIn` clears the whole cache but only in the tab that signs in.
+- **Effect (suspected):** admin A leaves tab 1 on `/admin/supporters`; admin B signs in from tab 2.
+  Tab 1 receives the auth event but keeps rendering A's cached (possibly higher-privilege) rows;
+  only the identity query was reset. Most admin query keys are not actor-scoped.
+- **Fix (code):** on an actual auth-user change (including sign-out) the hook now removes every
+  cached query except the identity entry, then resets and refetches the identity query, so the new
+  account's role is loaded and no previous-account data stays on screen. The first read after
+  mounting is not treated as a switch.
+- **Tests:** `src/lib/admin/useLiveAdminActor.test.tsx` (a non-identity cached key is removed; the
+  identity entry is refetched for the new account; the existing generation/unmount cases hold).
+
+### AUTH-05 — Low — The authorization sweep's admin-only list omits `volunteers/jobs/`
+
+- **Where:** `tests/integration/admin/authorization.test.ts` `ADMIN_ONLY_PREFIXES` listed the other
+  admin-only volunteer endpoints but not `volunteers/jobs/`, although
+  `src/routes/api/admin/volunteers/jobs/index.ts` calls `requireAdmin(request, ["admin"], c)`.
+- **Effect:** the sweep derived the route's permitted roles from its staff-visible `volunteers/`
+  area, so if the route ever admitted `staff` the sweep would not report it (the BUG-63 drift
+  surface).
+- **Fix (test):** add `volunteers/jobs/` to `ADMIN_ONLY_PREFIXES` and a focused case that fails if
+  the route ever admits staff (verified by temporarily allowing staff: both the sweep and the new
+  case fail). The sweep root now uses `fileURLToPath`, so the guard also runs on Windows, where
+  `URL.pathname`'s `/C:/…` form made `Bun.Glob`/import fail before any assertion.
+
+### AUD-02 — Med — Staff can still read/update supporters and consents over PostgREST
+
+- **Where:** `20260623160506_phase_2_donations_mvp.sql:280-305` — `staff can read supporters`,
+  `staff can update supporters`, `staff can read supporter roles`, `staff can read consents` and
+  `staff can update consents` all use
+  `private.has_admin_role(array['staff', 'treasurer', 'admin'])`. No later migration redefines
+  them (checked through `20261109102000`). The CRM APIs are `requireAdmin(…, ["treasurer","admin"])`
+  and `ROLE_ACCESS` gives `staff` no supporters area, so the database was wider than the app.
+- **Effect:** a staff JWT can ignore the API and read or update supporter PII and consent rows
+  directly (`/rest/v1/supporter`, `/rest/v1/consent`), defeating the "staff have no supporters
+  area" boundary; this was AUDIT.md R3, carried as an open item.
+- **Fix (migration):** `20261109103000_tighten_supporter_staff_rls.sql` drops each of the five
+  policies by name and recreates it with the same name and
+  `private.has_admin_role(array['treasurer', 'admin'])` (latest-definition-wins). Nothing else
+  changes: no insert policy exists on either table, there is no public/own-row supporter policy for
+  the supporter portal (its data is served by service-role repositories that bypass RLS), the
+  `authenticated` grants stay, and service_role keeps its grant. No rows are read or rewritten.
+- **Tests:** `src/lib/admin/supporterRlsAccess.migration.test.ts` pins the statements, the
+  policy/table set, absence of grant/revoke/data changes, and the migration order; the behavioural
+  half in `supabase/rls-tests/moneyPii.rls.test.ts` now asserts staff is denied and treasurer/admin
+  are allowed for supporter select/update, supporter_role select and consent select/update (runs
+  under `bun run test:rls` against a local stack).
+## Admin operations backlog — second batch (2026-11-09)
+
+### OPS-03 — Low — The supporter record offers "Issue receipt" for donations the API refuses
+
+- **Where:** `src/components/admin/crm/SupporterDetail.tsx:47-53` decided the action from
+  `status === "succeeded" && receiptRequested && !issuedReceipt`, without the IRD money rule the
+  receipt API applies: `src/lib/donations/reconcile.server.ts:951-956` checks
+  `isReceiptEligible` (`src/lib/donations/domain.ts:77-79`, HK$100 minimum) on the net amount and
+  returns 422. The supporter record is the only place CRM staff see individual donations.
+- **Repro:** treasurer/admin → `/admin/supporters/:id` → a succeeded HK$50 donation with
+  "receipt requested", or a HK$150 gift refunded HK$80 (net HK$70) → **Issue receipt** is shown →
+  click → 422 `Donation is not eligible for an IRD receipt`.
+- **Fix (code):** the predicate moved to `src/components/admin/crm/receiptActions.ts`
+  (`canIssueReceipt`) and now applies the shared `isReceiptEligible` rule to
+  `amountCents - (refundedCents ?? 0)`, the same rule and threshold as the server, so the action
+  is offered only when it can succeed. The server check stays the guard; no API or schema change.
+  This is the UI half of BUG-05 that its fix (`cb4ae53c`) did not update.
+
+### OPS-04 — Low — Coordinator manual intake dead-ends when the email belongs to a soft-deleted supporter
+
+- **Where:** `private.create_manual_adoption_case` (`20260628143000:96-111`) inserts a
+  `new_supporter` row, so the unconditional unique `supporter_email_key` rejects an email a
+  soft-deleted supporter still holds: `supporter.email` is `citext not null unique` and the
+  soft-delete only sets `deleted_at`. Both ways to attach the existing supporter hide deleted
+  rows (`existing_supporter` refuses them, `20260628143000:71`; `search_manual_case_identity`
+  filters `deleted_at is null`, `20260926110000:33`). The adoptions error mapper
+  (`src/lib/adoptions/http/shared.server.ts`) answered with the generic "choose the existing
+  supporter" 409, but staff have `manualIntake` and not `supporters`
+  (`src/lib/admin/access.ts:45-61`), so they cannot see or restore the record the advice names.
+- **Repro:** treasurer soft-deletes a supporter; staff → `/admin/coordinator/intake` → identity
+  search for that email returns nothing → **New supporter** with the email → 409 "A supporter
+  with this email already exists. Choose the existing supporter instead."; searching still
+  returns nothing and choosing `existing_supporter` is refused.
+- **Fix (code):** `withErrors` takes an optional manual-intake `lookupSupporterByEmail`,
+  wired only for `POST /api/admin/adoptions/intake/cases`
+  (`src/routes/api/admin/adoptions/-handlers.ts`). On a `supporter_email_key` violation the
+  mapper extracts the email from the PostgREST detail (never echoed) and looks it up through
+  the new service-role repository function `findSupporterByEmailIncludingDeleted`
+  (`src/lib/adoptions/repository.server.ts`), which has no `deleted_at` filter. A soft-deleted
+  row returns 409 code `supporter_archived` with a message naming the archived supporter and
+  telling staff to ask a treasurer/admin to unarchive it or record the intake without the
+  email. An active supporter keeps the existing "choose the existing supporter" 409 and an
+  unknown email keeps the generic 409; a failed lookup falls back to the generic 409 rather
+  than a 500. The database function is unchanged. The intake screen maps the code to bilingual
+  copy (`manualIntake.serverErrors.supporter_archived` in `pageCopy/caseCopy.ts`).
+## Content/CMS backlog (2026-11-09)
+
+A read-only audit of the content CMS surfaces
+([`audit-20261109/`](../audit-20261109/findings-cms.md)) found eight findings. CMS-01 (the stale
+animal-draft save dead end) and CMS-04 (content-list summary cards counted only the current page)
+were fixed with the admin P0 batch. CMS-07 (withdrawn images stay reachable until the daily
+withdrawal job) is a recorded accepted product decision. The other five are fixed here, all in
+code; no migration is needed. The IDs keep the audit's CMS- prefix so BUG-01–BUG-73 keep their
+numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
+
+### CMS-02 — Med — Social copy for a story update still quotes the unreviewed authoring text
+
+- **Where:** `src/lib/content/service.ts` `generateSocialCopy` read the update with
+  `repo.getStoryUpdate(storyUpdateId)` (the authoring `story_update` row) while the link and the
+  story wording came from the published snapshot; `src/lib/content/socialCopy.ts:31-32` embeds
+  that update's title and body verbatim.
+- **Why wrong:** the authoring row can be a draft edit newer than the published revision, so the
+  generated Facebook/WhatsApp copy announced text that is not on the page its link opens — the
+  same class BUG-66 closed for the item itself.
+- **Repro (fake repository):** publish a story; add a public update; don't publish again;
+  `POST /api/admin/content/<id>/social-copy {"storyUpdateId":"<update>"}` → the copy contains the
+  unpublished update text next to the published slug.
+- **Fix (code):** the authoring read now only validates ownership and visibility; the update is
+  resolved from the published snapshot's `updates` and its published title/body are quoted. An id
+  the published revision does not contain is refused as a coded 409 `update_not_published`,
+  explained in both admin languages.
+
+### CMS-03 — Med — Publication-metadata errors still lose the field and the language
+
+- **Where:** `src/lib/content/publicationMetadata.server.ts:49-59` answered every validation
+  failure as `{error:"Invalid publication metadata"}`, while the main content routes use the
+  structured shape BUG-68 introduced (`src/lib/content/http.server.ts:96-110`).
+- **Why wrong:** `structuredAdminApiError` returns null for a string body, so the zh-HK editor
+  printed the English string and named no field. Concrete triggers: marking content `verified`
+  without provenance/owner, or an inverted effective-date range.
+- **Repro:** editor → Publication metadata → choose "verified", clear source/owner, Save → banner
+  shows `Invalid publication metadata` in English.
+- **Fix (code):** the handler returns `{error:{code:"invalid",message,fields}}`; the superRefine
+  issues now carry `sourceReference`/`contentOwner`/`effectiveUntil` paths (with the `Required`
+  and inverted-range reasons), 40001 maps to `{code:"conflict"}`, known failures to
+  `not_found`/`internal`. `editorFieldLabels` gained the five metadata keys and the inverted-range
+  reason is written in both languages.
+
+### CMS-05 — Low — BUG-67's version fence covered saves but not publish/archive/restore
+
+- **Where:** `src/components/admin/content/ContentEditor.tsx` publish, archive and restore sent
+  `content?.version` from the detail query cache; only panel saves went through `saveAgainst`.
+- **Why wrong:** publication metadata, media and link saves only invalidate the detail query, so
+  between a successful save and the refetch landing the cached version is one behind. Publishing
+  in that window sent a stale `expectedVersion` and the editor raised its own conflict banner for
+  a conflict it caused itself.
+- **Repro (suspected timing):** throttle the network, save Publication metadata, immediately click
+  Publish → 409 conflict banner until "Reload latest version".
+- **Fix (code):** a `lifecycleExpectedVersion` helper returns the fence's latest version (the one
+  this editor's own saves advanced synchronously) and falls back to the cached row only before
+  the fence knows a version; publish, archive and restore use it. Tests cover
+  save-then-immediate-publish sending the saved version.
+
+### CMS-06 — Low — The "verified ready" collapsed review summary was unreachable
+
+- **Where:** `src/components/admin/content/ContentReview.tsx:59-83` folds the panel when
+  `savedClassification`/`savedEvidence` say the revision is approved, but no production caller
+  passed them (`ContentEditor.tsx`, `AnimalForm.tsx` passed neither).
+- **Why wrong:** on every load and every revision change the panel reopened as `needs_review` with
+  empty evidence even for an already approved revision; re-submitting overwrote the recorded
+  evidence, and an approver could not see which preset had been recorded.
+- **Fix (code):** the content authoring read returns the current draft revision's saved review
+  (`editorial_content_review`, queried in `repository.server.ts`; no migration) and the animal
+  publication read returns the draft revision's review. `ContentEditor` and `AnimalForm` pass them
+  to `ContentReviewPanel`, so an approved revision renders the collapsed verified summary and a
+  needs-review revision opens the form with its saved evidence.
+
+### CMS-08 — Low — BUG-73's length limits skipped story-update text and media caption
+
+- **Where:** `src/lib/content/schemas.ts:133,159` (`body`, `caption` with no `.max`) and
+  `storyProfileInputSchema.internalAddress`/`internalLocationNotes`; the only bound was the 8 MB
+  admin JSON cap.
+- **Why wrong:** every save copies all `story_update` rows and `content_media` rows into two
+  revision snapshots, so one long update body or media caption was stored verbatim twice on every
+  later save — exactly the unbounded-copy problem BUG-73 fixed for the item fields.
+- **Fix (code):** `CONTENT_CHILD_TEXT_MAX` (update body 20,000; caption, internal address and
+  location notes 500) applied to the three schemas, with matching `maxLength` on the editor
+  inputs. No migration: the columns have no DB length constraint, so this is a validation rule.
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
@@ -918,8 +1138,9 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   by anyone who has its random UUID URL.
 - **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
   Removing `'unsafe-inline'` needs nonce support in SSR, so it is out of scope.
-- **Prior open items** AUD-02 (staff RLS on supporters), AUD-04 (non-blocking RLS CI
-  job) and AUD-06 (GA on admin pages) are unchanged.
+- **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
+  unchanged. AUD-02 (staff RLS on supporters) is fixed by
+  `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.
 - **Content datetimes** convert in the browser's timezone. That is correct for staff in
   Hong Kong; HKT is not forced.
 
