@@ -79,6 +79,21 @@ describe("CRM receipt needed", () => {
     });
   }
 
+  // BUG-46 (remainder), fixed by 20261110100000: both donation export paths removed the key
+  // from the supporter match, because a supporter who is owed a receipt on one donation was
+  // excluded whole -- taking their receipt-not-needed donations with them.
+  test("BUG-46: donation exports match supporters without the supporter-level receiptNeeded filter", () => {
+    for (const name of ["public.crm_export_donations", "public.enqueue_crm_export_job"]) {
+      const body = latestBody(name);
+      expect(body).toContain("crm_matching_supporters(p_filters - 'receiptneeded')");
+    }
+    // The supporter list and its filter are per supporter, so they keep the supporter-level
+    // meaning and still apply receiptNeeded to crm_matching_supporters.
+    expect(latestBody("private.crm_matching_supporters")).toContain(
+      "(p_filters->>'receiptneeded')::boolean",
+    );
+  });
+
   test("BUG-46: no latest migration still filters receiptNeeded on receipt_requested alone", () => {
     const stale = /receipt_requested\s*=\s*\(p_filters->>'receiptNeeded'\)::boolean/i;
     const files = readdirSync(MIGRATIONS)
