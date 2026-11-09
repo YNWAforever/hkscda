@@ -1,15 +1,11 @@
-import { afterAll, expect, mock, test } from "bun:test";
+import { expect, mock, test } from "bun:test";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 import { createContentHandlers } from "./http.server";
 import { ContentLifecycleError } from "./lifecycle";
 import type { createContentService } from "./service";
-const realSupabase = { ...(await import("../supabase")) };
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: { getSession: async () => ({ data: { session: { access_token: "synthetic" } } }) },
-  },
-}));
+// The admin fetch seam is the in-memory session store now (the BFF owns the persistent one).
+seedAdminSessionForTests({ accessToken: "synthetic", authUserId: "auth-1" });
 const { fetchAdminJson } = await import("../admin/session");
-afterAll(() => mock.module("../supabase", () => realSupabase));
 test("lifecycle HTTP409 survives the real browser client parser", async () => {
   const handlers = createContentHandlers({
     requireContentAdmin: async () => ({

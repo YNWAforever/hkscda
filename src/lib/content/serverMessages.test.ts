@@ -1,27 +1,20 @@
-import { afterAll, afterEach, beforeEach, describe, expect, mock, spyOn, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { expectNoChineseText } from "../../components/admin/i18n/testing";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 import { createContentReviewHttp } from "../contentReview/http.server";
 import { createContentReviewService } from "../contentReview/service";
 
-// `mock.module` outlives this file, so the real module is captured first and put back afterwards.
 // The service logs the errors it turns into a warning. They are expected here, so they are silenced.
 const consoleError = spyOn(console, "error");
 beforeEach(() => consoleError.mockImplementation(() => undefined));
 afterAll(() => consoleError.mockRestore());
 
-const realSupabase = { ...(await import("../supabase")) };
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({
-        data: { session: { access_token: "session-token", user: { id: "auth-1" } } },
-      }),
-    },
-  },
-}));
-afterAll(() => mock.module("../supabase", () => realSupabase));
+// The admin fetch seam is the in-memory session store now; seed the account the fixture names.
+seedAdminSessionForTests({ accessToken: "session-token", authUserId: "auth-1" });
+// The admin fetch seam is the in-memory session store now; seed the account the fixture names.
+seedAdminSessionForTests({ accessToken: "session-token", authUserId: "auth-1" });
 
 const { fetchAdminJson } = await import("../admin/session");
 const { createContentHandlers } = await import("./http.server");

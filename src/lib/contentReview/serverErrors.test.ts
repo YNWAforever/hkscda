@@ -1,24 +1,15 @@
-import { afterAll, afterEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 
 import { expectNoChineseText } from "../../components/admin/i18n/testing";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 import { reviewCopy } from "../../components/admin/content/reviewCopy";
 import {
   selectionErrorFrom,
   selectionErrorText,
 } from "../../components/admin/content/reviewSelectionLogic";
 
-// `mock.module` outlives this file, so the real module is captured first and put back afterwards.
-const realSupabase = { ...(await import("../supabase")) };
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({
-        data: { session: { access_token: "session-token", user: { id: "auth-1" } } },
-      }),
-    },
-  },
-}));
-afterAll(() => mock.module("../supabase", () => realSupabase));
+// The admin fetch seam is the in-memory session store now; seed the account the fixture names.
+seedAdminSessionForTests({ accessToken: "session-token", authUserId: "auth-1" });
 
 const { fetchAdminJson } = await import("../admin/session");
 const { createContentReviewHttp } = await import("./http.server");

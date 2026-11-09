@@ -1,15 +1,11 @@
-import { expect, mock, test } from "bun:test";
+import { expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 import { createSupabaseVolunteerRepository } from "./repository.server";
 import { createVolunteerService } from "./service";
 import { createVolunteerHandlers } from "./http.server";
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({ data: { session: { access_token: "local-fixture-token" } } }),
-    },
-  },
-}));
+// The admin fetch seam is the in-memory session store now (the BFF owns the persistent one).
+seedAdminSessionForTests({ accessToken: "local-fixture-token", authUserId: "auth-1" });
 const { fetchAdminJson, AdminApiError } = await import("../admin/session");
 test.each(["conflict", "capacity_full"])(
   "%s survives handler and fetchAdminJson as a409 AdminApiError",
