@@ -111,10 +111,7 @@ function createClient(
         error: null,
       },
   );
-  const getPublicUrl = mock((objectPath: string) => ({
-    data: { publicUrl: `https://public.example/${objectPath}` },
-  }));
-  const storageFrom = mock(() => ({ exists, createSignedUrl, getPublicUrl }));
+  const storageFrom = mock(() => ({ exists, createSignedUrl }));
   const from = mock(() => query);
   const rpc = mock(async () => options.rpcResult ?? { data: releaseRow, error: null });
   const client = {
@@ -228,7 +225,7 @@ describe("createSupabaseAdoptionGuideReleaseRepository", () => {
 
     const assets = await repository.getAssets(zhAssetId, enAssetId);
 
-    expect(assets.zhHk?.asset.fileUrl).toBe("https://public.example/adoption-guides/cat-zh.pdf");
+    expect(assets.zhHk?.asset.fileUrl).toBe(`/api/documents/${zhAssetId}`);
     expect(assets.zhHk?.objectVerified).toBe(false);
     expect(assets.en?.objectVerified).toBe(true);
     expect(exists).toHaveBeenCalledTimes(2);
