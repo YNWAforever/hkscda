@@ -21,6 +21,8 @@ export const contentApiErrorsCopy = defineAdminCopy({
       ctaUrl: "請填寫 http(s) 網址，或以 / 開頭的站內路徑。",
       invalidChoice: "選項無效，請重新選擇。",
       invalid: "格式不正確。",
+      /** The publication-metadata panel's inverted effective-date range (CMS-03). */
+      effectiveRange: "結束時間必須遲於生效時間。",
       /** A reason the server wrote in English that has no Chinese text here. */
       unknown: "內容不正確。",
     },
@@ -40,6 +42,8 @@ export const contentApiErrorsCopy = defineAdminCopy({
       ctaUrl: "Enter an http(s) URL or a site path starting with /.",
       invalidChoice: "Not a valid choice. Choose again.",
       invalid: "Invalid format.",
+      /** The publication-metadata panel's inverted effective-date range (CMS-03). */
+      effectiveRange: "The end time must be after the start time.",
       unknown: "Invalid value.",
     },
   },

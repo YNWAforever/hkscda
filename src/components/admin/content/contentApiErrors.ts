@@ -7,7 +7,9 @@ type Reasons = (typeof contentApiErrorsCopy)["zh"]["reasons"];
 
 /** The label of each content field, as the editor's basic content form names it. */
 export function editorFieldLabels(language: AdminLanguage): Record<string, string> {
-  const form = pickAdminCopy(editorCopy, language).form;
+  const copy = pickAdminCopy(editorCopy, language);
+  const form = copy.form;
+  const metadata = copy.metadata;
   return {
     type: form.type,
     slug: form.slug,
@@ -21,6 +23,12 @@ export function editorFieldLabels(language: AdminLanguage): Record<string, strin
     seoDescription: form.seoDescription,
     ogTitle: form.ogTitle,
     ogDescription: form.ogDescription,
+    // The publication-metadata panel's fields (CMS-03): its zod issue paths are these keys.
+    contentClass: metadata.classification,
+    sourceReference: metadata.source,
+    contentOwner: metadata.owner,
+    effectiveFrom: metadata.effectiveFrom,
+    effectiveUntil: metadata.effectiveUntil,
   };
 }
 
@@ -42,6 +50,7 @@ function fieldReason(
   const tooLong = /at most (\d+) character/.exec(message);
   if (tooLong) return reasons.tooLong(tooLong[1]);
   if (message === "Required" || /at least 1 character/.test(message)) return reasons.required;
+  if (message === "Effective until must be after effective from") return reasons.effectiveRange;
   const tooShort = /at least (\d+) character/.exec(message);
   if (tooShort) return reasons.tooShort(tooShort[1]);
   const tooLarge = /less than or equal to (-?[\d.]+)/.exec(message);

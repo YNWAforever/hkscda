@@ -14,15 +14,28 @@ const metadataSchema = z
   })
   .strict()
   .superRefine((value, context) => {
-    if (value.contentClass === "verified" && (!value.sourceReference || !value.contentOwner)) {
-      context.addIssue({ code: "custom", message: "Verified content needs provenance and owner" });
+    // Each refusal names the field the admin has to fix, so the editor can say which one
+    // (CMS-03, the same structured shape BUG-68 gave the main content routes).
+    if (value.contentClass === "verified" && !value.sourceReference) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["sourceReference"],
+        message: "Required",
+      });
+    }
+    if (value.contentClass === "verified" && !value.contentOwner) {
+      context.addIssue({ code: z.ZodIssueCode.custom, path: ["contentOwner"], message: "Required" });
     }
     if (
       value.effectiveFrom &&
       value.effectiveUntil &&
       Date.parse(value.effectiveFrom) > Date.parse(value.effectiveUntil)
     ) {
-      context.addIssue({ code: "custom", message: "Effective date range is invalid" });
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["effectiveUntil"],
+        message: "Effective until must be after effective from",
+      });
     }
   });
 
@@ -31,8 +44,33 @@ type HandlerPorts = {
   requireAdmin: (request: Request) => Promise<{ authUserId: string }>;
   update: (input: MetadataInput) => Promise<unknown>;
 };
+
+/**
+ * The admin client reads `{error:{code,message,fields}}` (`structuredAdminApiError`), so the
+ * publication metadata panel names the fields and writes the reason in the admin's language
+ * instead of showing an English string with no field (CMS-03, the shape BUG-68 introduced).
+ */
+type ErrorCode = "invalid" | "conflict" | "not_found" | "internal";
+
 const json = (value: unknown, status: number) =>
   Response.json(value, { status, headers: { "cache-control": "no-store" } });
+
+function errorResponse(
+  status: number,
+  code: ErrorCode,
+  message: string,
+  fields?: Record<string, string[]>,
+) {
+  return json({ error: { code, message, ...(fields ? { fields } : {}) } }, status);
+}
+
+function validationFields(error: z.ZodError): Record<string, string[]> {
+  return error.issues.reduce<Record<string, string[]>>((fields, issue) => {
+    const key = issue.path.join(".") || "form";
+    (fields[key] ??= []).push(issue.message);
+    return fields;
+  }, {});
+}
 
 export function createPublicationMetadataHandler(ports: HandlerPorts) {
   return async (request: Request, contentId: string): Promise<Response> => {
@@ -45,18 +83,22 @@ export function createPublicationMetadataHandler(ports: HandlerPorts) {
     } catch (error) {
       if (error instanceof Response) return error;
       if (error instanceof RequestBodyTooLargeError)
-        return json({ error: "Request body too large" }, 413);
-      if (
-        error instanceof InvalidRequestJsonError ||
-        error instanceof z.ZodError ||
-        (error as { code?: string })?.code === "23514" ||
-        (error as { code?: string })?.code === "22023"
-      )
-        return json({ error: "Invalid publication metadata" }, 400);
+        return errorResponse(413, "invalid", "Request body too large");
+      if (error instanceof z.ZodError)
+        return errorResponse(
+          400,
+          "invalid",
+          "Invalid publication metadata",
+          validationFields(error),
+        );
+      if (error instanceof InvalidRequestJsonError)
+        return errorResponse(400, "invalid", "Invalid publication metadata");
       const code = (error as { code?: string })?.code;
-      if (code === "40001") return json({ error: "Content changed; reload before saving" }, 409);
-      if (code === "P0002") return json({ error: "Content not found" }, 404);
-      return json({ error: "Could not save publication metadata" }, 500);
+      if (code === "23514" || code === "22023")
+        return errorResponse(400, "invalid", "Invalid publication metadata");
+      if (code === "40001") return errorResponse(409, "conflict", "Content changed; reload before saving");
+      if (code === "P0002") return errorResponse(404, "not_found", "Content not found");
+      return errorResponse(500, "internal", "Could not save publication metadata");
     }
   };
 }

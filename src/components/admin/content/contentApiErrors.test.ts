@@ -2,8 +2,9 @@ import { describe, expect, test } from "bun:test";
 
 import { AdminApiError, AdminSessionError } from "../../../lib/admin/session";
 import { expectNoChineseText } from "../i18n/testing";
-import { contentApiErrorLines, contentFieldErrorLines } from "./contentApiErrors";
+import { contentApiErrorLines, contentFieldErrorLines, editorFieldLabels } from "./contentApiErrors";
 import { contentApiErrorsCopy } from "./contentApiErrorsCopy";
+import { contentLifecycleErrorMessage } from "./contentErrors";
 
 describe("contentApiErrorLines", () => {
   const notPublished = new AdminApiError({
@@ -77,5 +78,64 @@ describe("contentApiErrorLines", () => {
     expect(
       contentApiErrorLines(new AdminApiError({ status: 422, code: "invalid", message: "x" })),
     ).toBeNull();
+  });
+});
+
+describe("CMS-03: publication-metadata refusals name the field in the admin's language", () => {
+  const metadataError = new AdminApiError({
+    status: 400,
+    code: "invalid",
+    message: "Invalid publication metadata",
+    fields: {
+      sourceReference: ["Required"],
+      contentOwner: ["Required"],
+      effectiveUntil: ["Effective until must be after effective from"],
+    },
+  });
+
+  test("CMS-03: the three fields are labelled by the publication-metadata panel and the reasons are Chinese", () => {
+    expect(contentApiErrorLines(metadataError)).toEqual([
+      "以下欄位需要修改：",
+      "資料來源／批准記錄：必須填寫。",
+      "內容負責人：必須填寫。",
+      "結束時間：結束時間必須遲於生效時間。",
+    ]);
+  });
+
+  test("CMS-03: the English screen gets the same lines with no server English leaked", () => {
+    const english = contentApiErrorLines(metadataError, "en");
+    expect(english).toEqual([
+      "Fix these fields:",
+      "Data source / approval record: Required.",
+      "Content owner: Required.",
+      "Effective until: The end time must be after the start time.",
+    ]);
+    expectNoChineseText(english?.join("\n") ?? "");
+  });
+
+  test("CMS-03: every metadata field has an editor label", () => {
+    const labels = editorFieldLabels("zh");
+    for (const key of [
+      "contentClass",
+      "sourceReference",
+      "contentOwner",
+      "effectiveFrom",
+      "effectiveUntil",
+    ]) {
+      expect(labels[key]?.length ?? 0).toBeGreaterThan(0);
+    }
+  });
+
+  test("CMS-03: the version conflict is left to the lifecycle copy, which is Chinese", () => {
+    const conflict = new AdminApiError({
+      status: 409,
+      code: "conflict",
+      message: "Content changed; reload before saving",
+    });
+    expect(contentApiErrorLines(conflict)).toBeNull();
+    expect(contentLifecycleErrorMessage(conflict)).toContain("儲存衝突");
+    expect(contentLifecycleErrorMessage(conflict)).not.toContain("Content changed");
+    expectNoChineseText(contentLifecycleErrorMessage(conflict, "en") ?? "");
+    expect(contentLifecycleErrorMessage(conflict, "en")).toContain("Save conflict");
   });
 });
