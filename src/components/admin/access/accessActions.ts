@@ -62,6 +62,18 @@ export function accessMutationSuccess({
 }
 
 /**
+ * The notice after an invite or resend whose pending row committed but whose email did not
+ * reach the provider: the invite exists, so this is an actionable warning, not a save failure
+ * (AUTH-03). `null` when delivery succeeded.
+ */
+export function inviteDeliveryNotice(
+  outcome: { emailDeliveryFailed?: boolean },
+  t: AccessCopy,
+): string | null {
+  return outcome.emailDeliveryFailed ? t.emailDeliveryFailed : null;
+}
+
+/**
  * What a disabled row offers. A user who never accepted their invite is re-invited through
  * the invite endpoint (which re-opens a disabled row as pending), because the server refuses
  * to reactivate them (`invite_not_accepted`, BUG-55).

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { readAdminJson } from "../http/adminJson.server";
 import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
-import type { AdminAccessActor } from "./accessManagement.server";
+import type { AdminAccessActor, AdminInviteOutcome } from "./accessManagement.server";
 import { AdminAccessError } from "./accessManagement.server";
 
 type HandlerContext = {
@@ -12,8 +12,8 @@ type HandlerContext = {
 
 type AccessService = {
   listUsers(): Promise<unknown>;
-  inviteUser(args: { actor: AdminAccessActor; input: unknown }): Promise<unknown>;
-  resendInvite(args: { actor: AdminAccessActor; userId: string }): Promise<unknown>;
+  inviteUser(args: { actor: AdminAccessActor; input: unknown }): Promise<AdminInviteOutcome>;
+  resendInvite(args: { actor: AdminAccessActor; userId: string }): Promise<AdminInviteOutcome>;
   updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }): Promise<unknown>;
   listAudit(page?: number): Promise<unknown>;
 };
@@ -89,8 +89,14 @@ export function createAdminAccessHandlers({
     inviteUser({ request }: HandlerContext) {
       return withAccessErrors(async () => {
         const actor = await requireAccessAdmin(request);
-        const user = await service.inviteUser({ actor, input: await jsonBody(request) });
-        return jsonResponse({ user }, { status: 201 });
+        const outcome = await service.inviteUser({ actor, input: await jsonBody(request) });
+        // 201 even when the email provider failed: the pending row and its audit record exist,
+        // and the flag tells the admin UI to offer Resend instead of a generic save error
+        // (AUTH-03).
+        return jsonResponse(
+          { user: outcome.user, emailDeliveryFailed: outcome.emailDeliveryFailed },
+          { status: 201 },
+        );
       });
     },
 
@@ -98,8 +104,11 @@ export function createAdminAccessHandlers({
       return withAccessErrors(async () => {
         const userId = requiredId(params);
         const actor = await requireAccessAdmin(request);
-        const user = await service.resendInvite({ actor, userId });
-        return jsonResponse({ user });
+        const outcome = await service.resendInvite({ actor, userId });
+        return jsonResponse({
+          user: outcome.user,
+          emailDeliveryFailed: outcome.emailDeliveryFailed,
+        });
       });
     },
 
