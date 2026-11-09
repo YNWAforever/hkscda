@@ -477,8 +477,8 @@ database was available, so the SQL is traced, not executed; the behavioural RLS 
 - [ ] **AUTH-01 (after the migration runs):** with a staff JWT, a direct
       `GET /rest/v1/audit_log?select=id` returns permission denied; the Access page history and
       the Finance activity page still load through the API.
-- [ ] **OPS-01 (after the migration runs):** a cancelled activity cannot be published from
-      `/admin/volunteers` (the action is gone or returns the closed-activity message), while a
+- [ ] **OPS-01 (after the migration runs):** a cancelled or closed activity cannot be published
+      from `/admin/volunteers` (the action is gone or returns the closed-activity message), while a
       draft or published activity still saves.
 - [ ] **OPS-02 (after the migration runs):** a system status's Active/Closing/Final switches are
       disabled (or saving them is refused with "flags cannot be changed"); its label, colour and

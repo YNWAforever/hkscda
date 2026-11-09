@@ -138,13 +138,13 @@ describe("attendance marking", () => {
 });
 
 describe("OPS-01: activity publication transitions", () => {
-  test("a cancelled session offers no publish or close button", () => {
+  test("cancelled and closed sessions offer no publish or close button", () => {
     expect(activityPublicationAction("cancelled")).toBeNull();
+    expect(activityPublicationAction("closed")).toBeNull();
   });
 
-  test("draft, published and closed keep the publish/close toggle", () => {
+  test("draft keeps Publish and published keeps Close", () => {
     expect(activityPublicationAction("draft")).toBe("published");
     expect(activityPublicationAction("published")).toBe("closed");
-    expect(activityPublicationAction("closed")).toBe("published");
   });
 });

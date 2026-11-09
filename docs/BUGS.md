@@ -875,15 +875,16 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   timeline, coordinator workspace); `service_role` keeps its grant and bypasses RLS. No admin
   browser module reads the table (`adminBrowserDataGuard.test.ts`).
 
-### OPS-01 — Med — The legacy "Publish" toggle resurrects a cancelled activity
+### OPS-01 — Med — The legacy "Publish" toggle resurrects a cancelled or closed activity
 
 - **Where:** `src/components/admin/volunteers/VolunteerManagement.tsx:377-388` toggles any
   activity to `published`; the wrapper `update_volunteer_activity_with_audit`
   (`20260914160736:240-247`) only refused an unbound legacy draft, and the base update
   (`20260913062837:501`) has no status machine at all.
-- **Repro:** staff → `/admin/volunteers` → status filter "all" → a `cancelled` activity with a
-  future `starts_at` → **Publish** → 200 `{"ok":true}`; the session is listed publicly again
-  while its registrations stay cancelled, and no cancellation-specific audit or reason exists.
+- **Repro:** staff → `/admin/volunteers` → status filter "all" → a `cancelled` or `closed`
+  activity with a future `starts_at` → **Publish** → 200 `{"ok":true}`; the session is listed
+  publicly again while its registrations stay cancelled/closed, and no cancellation-specific
+  audit or reason exists.
 - **Fix (migration):** `20261109101000_volunteer_activity_publish_respects_terminal_state.sql`
   redefines the wrapper: publishing while the stored status is `cancelled` or `closed` returns
   `{"kind":"invalid","reason":"activity_closed"}` (the code the rebind command already uses)

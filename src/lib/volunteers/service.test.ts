@@ -498,6 +498,26 @@ describe("OPS-01: terminal activity status", () => {
     expect(updates).toEqual([]);
   });
 
+  test("refuses closed -> published before the repository mutation", async () => {
+    const updates: unknown[] = [];
+    const { repo } = createRepo({
+      getActivityDetail: async () => ({ ...activity, status: "closed" }),
+      updateActivity: async (id, input) => {
+        updates.push({ id, input });
+      },
+    });
+    const service = createVolunteerService({ repo });
+
+    await expect(
+      service.updateActivity({
+        actorUserId: "actor-1",
+        activityId: activity.id,
+        input: { status: "published", expectedUpdatedAt },
+      }),
+    ).rejects.toThrow(VolunteerActivityTransitionError);
+    expect(updates).toEqual([]);
+  });
+
   test("keeps closing a cancelled activity, so the guard only blocks the terminal escape", async () => {
     const updates: unknown[] = [];
     const { repo } = createRepo({

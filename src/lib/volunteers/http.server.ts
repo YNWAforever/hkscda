@@ -100,8 +100,8 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
         },
         { status: triggerRefusal.status },
       );
-    // OPS-01: a terminal-state escape (cancelled → published) is a business refusal, not a
-    // fault. The admin reads the message by code, in either language.
+    // OPS-01: a terminal-state escape (cancelled/closed → published) is a business refusal,
+    // not a fault. The admin reads the message by code, in either language.
     if (error instanceof VolunteerActivityTransitionError) {
       return jsonResponse(
         {

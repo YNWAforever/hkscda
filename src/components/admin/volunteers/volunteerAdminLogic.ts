@@ -68,10 +68,10 @@ export function isDestructiveTransition(status: VolunteerRegistrationStatus) {
  * The status the legacy activity table's publish/close button should send next, or `null` when
  * the row has no safe transition.
  *
- * `cancelled` is terminal: the bulk cancel flow recorded a required reason, cancelled the
- * registrations and audited them. The legacy button used to read "Publish" on such a row and
- * send `published`, putting the cancelled session back on the public list (OPS-01). Draft,
- * published and closed keep the toggle — closing and reopening are normal.
+ * `cancelled` and `closed` are terminal for republish (OPS-01): the legacy button used to
+ * read "Publish" on those rows and send `published`, putting the session back on the public
+ * list. Draft keeps Publish; published keeps Close. Closed and cancelled offer no toggle —
+ * the RPC refuses both with `activity_closed`.
  */
 export function activityPublicationAction(
   current: VolunteerActivityStatus,
@@ -82,7 +82,6 @@ export function activityPublicationAction(
     case "published":
       return "closed";
     case "closed":
-      return "published";
     case "cancelled":
       return null;
   }
