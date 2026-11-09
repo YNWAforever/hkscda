@@ -74,6 +74,7 @@ import {
   applyOwnSave,
   createEditorVersions,
   expectedVersionFor,
+  lifecycleExpectedVersion,
   markPanelClean,
   markPanelDirty,
   observeServerVersion,
@@ -317,7 +318,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: (revisionId: string) =>
       fetchAdminJson(`/api/admin/content/${contentId}/revisions/${revisionId}/restore`, {
         method: "POST",
-        body: JSON.stringify({ expectedVersion: content?.version }),
+        // Archive and restore are not panel saves: send the version this editor's own saves
+        // advanced the fence to, never the cached row that is behind until its refetch lands
+        // (CMS-05).
+        body: JSON.stringify({
+          expectedVersion: lifecycleExpectedVersion(versions.current, content?.version),
+        }),
       }),
     onSuccess: async () => {
       await requestReload();
@@ -366,7 +372,12 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
   });
 
   const publishContent = useMutation({
-    mutationFn: () => publishWithValidation(contentId, content?.version, content?.revisionId),
+    mutationFn: () =>
+      publishWithValidation(
+        contentId,
+        lifecycleExpectedVersion(versions.current, content?.version),
+        content?.revisionId,
+      ),
     onSuccess: (data) => {
       setValidationIssues([]);
       setPendingPublishedMedia(data.content.mediaPending ?? 0);
@@ -382,7 +393,9 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
     mutationFn: () =>
       fetchAdminJson<ContentDetailResponse>(`/api/admin/content/${contentId}/archive`, {
         method: "POST",
-        body: JSON.stringify({ expectedVersion: content?.version }),
+        body: JSON.stringify({
+          expectedVersion: lifecycleExpectedVersion(versions.current, content?.version),
+        }),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-content-detail", contentId] });
