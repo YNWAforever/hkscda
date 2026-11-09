@@ -910,6 +910,90 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   other branch, `search_path = ''` and the grants are unchanged. The companion admin-code change
   disables the switches for system rows.
 
+## Content/CMS backlog (2026-11-09)
+
+A read-only audit of the content CMS surfaces
+([`audit-20261109/`](../audit-20261109/findings-cms.md)) found eight findings. CMS-01 (the stale
+animal-draft save dead end) and CMS-04 (content-list summary cards counted only the current page)
+were fixed with the admin P0 batch. CMS-07 (withdrawn images stay reachable until the daily
+withdrawal job) is a recorded accepted product decision. The other five are fixed here, all in
+code; no migration is needed. The IDs keep the audit's CMS- prefix so BUG-01–BUG-73 keep their
+numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
+
+### CMS-02 — Med — Social copy for a story update still quotes the unreviewed authoring text
+
+- **Where:** `src/lib/content/service.ts` `generateSocialCopy` read the update with
+  `repo.getStoryUpdate(storyUpdateId)` (the authoring `story_update` row) while the link and the
+  story wording came from the published snapshot; `src/lib/content/socialCopy.ts:31-32` embeds
+  that update's title and body verbatim.
+- **Why wrong:** the authoring row can be a draft edit newer than the published revision, so the
+  generated Facebook/WhatsApp copy announced text that is not on the page its link opens — the
+  same class BUG-66 closed for the item itself.
+- **Repro (fake repository):** publish a story; add a public update; don't publish again;
+  `POST /api/admin/content/<id>/social-copy {"storyUpdateId":"<update>"}` → the copy contains the
+  unpublished update text next to the published slug.
+- **Fix (code):** the authoring read now only validates ownership and visibility; the update is
+  resolved from the published snapshot's `updates` and its published title/body are quoted. An id
+  the published revision does not contain is refused as a coded 409 `update_not_published`,
+  explained in both admin languages.
+
+### CMS-03 — Med — Publication-metadata errors still lose the field and the language
+
+- **Where:** `src/lib/content/publicationMetadata.server.ts:49-59` answered every validation
+  failure as `{error:"Invalid publication metadata"}`, while the main content routes use the
+  structured shape BUG-68 introduced (`src/lib/content/http.server.ts:96-110`).
+- **Why wrong:** `structuredAdminApiError` returns null for a string body, so the zh-HK editor
+  printed the English string and named no field. Concrete triggers: marking content `verified`
+  without provenance/owner, or an inverted effective-date range.
+- **Repro:** editor → Publication metadata → choose "verified", clear source/owner, Save → banner
+  shows `Invalid publication metadata` in English.
+- **Fix (code):** the handler returns `{error:{code:"invalid",message,fields}}`; the superRefine
+  issues now carry `sourceReference`/`contentOwner`/`effectiveUntil` paths (with the `Required`
+  and inverted-range reasons), 40001 maps to `{code:"conflict"}`, known failures to
+  `not_found`/`internal`. `editorFieldLabels` gained the five metadata keys and the inverted-range
+  reason is written in both languages.
+
+### CMS-05 — Low — BUG-67's version fence covered saves but not publish/archive/restore
+
+- **Where:** `src/components/admin/content/ContentEditor.tsx` publish, archive and restore sent
+  `content?.version` from the detail query cache; only panel saves went through `saveAgainst`.
+- **Why wrong:** publication metadata, media and link saves only invalidate the detail query, so
+  between a successful save and the refetch landing the cached version is one behind. Publishing
+  in that window sent a stale `expectedVersion` and the editor raised its own conflict banner for
+  a conflict it caused itself.
+- **Repro (suspected timing):** throttle the network, save Publication metadata, immediately click
+  Publish → 409 conflict banner until "Reload latest version".
+- **Fix (code):** a `lifecycleExpectedVersion` helper returns the fence's latest version (the one
+  this editor's own saves advanced synchronously) and falls back to the cached row only before
+  the fence knows a version; publish, archive and restore use it. Tests cover
+  save-then-immediate-publish sending the saved version.
+
+### CMS-06 — Low — The "verified ready" collapsed review summary was unreachable
+
+- **Where:** `src/components/admin/content/ContentReview.tsx:59-83` folds the panel when
+  `savedClassification`/`savedEvidence` say the revision is approved, but no production caller
+  passed them (`ContentEditor.tsx`, `AnimalForm.tsx` passed neither).
+- **Why wrong:** on every load and every revision change the panel reopened as `needs_review` with
+  empty evidence even for an already approved revision; re-submitting overwrote the recorded
+  evidence, and an approver could not see which preset had been recorded.
+- **Fix (code):** the content authoring read returns the current draft revision's saved review
+  (`editorial_content_review`, queried in `repository.server.ts`; no migration) and the animal
+  publication read returns the draft revision's review. `ContentEditor` and `AnimalForm` pass them
+  to `ContentReviewPanel`, so an approved revision renders the collapsed verified summary and a
+  needs-review revision opens the form with its saved evidence.
+
+### CMS-08 — Low — BUG-73's length limits skipped story-update text and media caption
+
+- **Where:** `src/lib/content/schemas.ts:133,159` (`body`, `caption` with no `.max`) and
+  `storyProfileInputSchema.internalAddress`/`internalLocationNotes`; the only bound was the 8 MB
+  admin JSON cap.
+- **Why wrong:** every save copies all `story_update` rows and `content_media` rows into two
+  revision snapshots, so one long update body or media caption was stored verbatim twice on every
+  later save — exactly the unbounded-copy problem BUG-73 fixed for the item fields.
+- **Fix (code):** `CONTENT_CHILD_TEXT_MAX` (update body 20,000; caption, internal address and
+  location notes 500) applied to the three schemas, with matching `maxLength` on the editor
+  inputs. No migration: the columns have no DB length constraint, so this is a validation rule.
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
