@@ -2,22 +2,29 @@
 
 **Date:** 2026-11-10
 **Source:** 2026-11-09 audit (AUDIT R4 / REPORT §3 item 3), task backlog-security-20261110.
-**Status:** decision recorded, no behaviour changed. The two changes below are deliberately _not_
-implemented in this batch; this note is the artefact a follow-up task works from.
+**Status:** the CSP half is **implemented** in the 2026-11-10 nonce task (Option B below), enforcing
+with a per-request nonce and no `'unsafe-inline'` in `script-src`. The admin-token half (Option C)
+is still only a decision: the session remains in web storage.
 
 ## What exists today
 
 - The enforcing CSP is built in [`src/lib/security-headers.ts`](../src/lib/security-headers.ts)
   and applied to every SSR and API response by the wrapper in
-  [`src/server.ts`](../src/server.ts). The script directive is:
+  [`src/server.ts`](../src/server.ts). The script directive was:
 
   ```
   script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com https://challenges.cloudflare.com
   ```
 
-  `style-src` also carries `'unsafe-inline'`; `object-src 'none'`, `frame-ancestors 'none'`,
-  `base-uri 'self'` and a report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are
-  already there.
+  and is now:
+
+  ```
+  script-src 'self' 'nonce-<per-request base64 nonce>' 'strict-dynamic' https://www.googletagmanager.com https://maps.googleapis.com https://challenges.cloudflare.com
+  ```
+
+  `style-src` still carries `'unsafe-inline'` on purpose (React style attributes, which a style
+  nonce cannot cover); `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'` and the
+  report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are unchanged.
 - The browser Supabase client keeps the session in `localStorage` through a coordinated
   storage adapter ([`src/lib/supabase.ts`](../src/lib/supabase.ts)); every admin API call
   sends `Authorization: Bearer <access token>` from [`src/lib/admin/session.ts`](../src/lib/admin/session.ts).
@@ -31,7 +38,7 @@ implemented in this batch; this note is the artefact a follow-up task works from
   are localised to the back office, and public request bodies are capped at 1 MB (admin 8 MB,
   which is what bounds the zod advisory too).
 
-## Option A — hardened status quo (recommended now)
+## Option A — hardened status quo (historical: chosen on 2026-11-10, superseded by Option B)
 
 Keep the Supabase SDK storage model and `'unsafe-inline'`; add cheap, low-risk layers:
 
@@ -47,36 +54,50 @@ Keep the Supabase SDK storage model and `'unsafe-inline'`; add cheap, low-risk l
 **Effort:** S (hours, config + one report-only header). **Risk:** low. **Limits:** does not
 remove the token from `localStorage`, so XSS still equals full session theft.
 
-## Option B — nonce CSP (`script-src 'nonce-…' 'strict-dynamic'`)
+## Option B — nonce CSP (`script-src 'nonce-…' 'strict-dynamic'`) — **implemented 2026-11-10**
 
-TanStack Router does support a router-level script nonce: `createRouter({ ssr: { nonce } })`
-propagates to its inline `<Scripts>` / `ScriptOnce` tags
-(`@tanstack/react-router` `router.options.ssr?.nonce`; verified in the installed 1.170.41
-package). The blocker is plumbing the per-request value into `getRouter()`:
-[`src/router.tsx`](../src/router.tsx) is called with no arguments by TanStack Start's server
-handler (`start-server-core` calls `entries.routerEntry.getRouter()` per request and caches the
-promise), so the request is not in scope there. Two viable implementations, both needing an
-integration test against a real SSR render:
+**Implementation.** `src/server.ts` generates 16 random bytes (Web Crypto) as a base64 nonce for
+every request and runs the Start handler inside an `AsyncLocalStorage` store
+([`src/lib/csp-nonce.server.ts`](../src/lib/csp-nonce.server.ts); the isomorphic helper is
+[`src/lib/csp-nonce.ts`](../src/lib/csp-nonce.ts)). `src/router.tsx` `getRouter()` reads the
+request's nonce through `currentCspNonce()` and passes it as `ssr: { nonce }`; TanStack Router
+(1.170.41) stamps it on the hydration `<Scripts>` chunks, `ScriptOnce` and route `head.scripts`.
+The same nonce is passed to `applySecurityHeaders()` so the response's `script-src` matches the
+markup. `'strict-dynamic'` keeps the runtime loaders working: GA4's `gtag/js` script, the Google
+Maps loader and Turnstile are inserted by our own nonced hydration code, so the trust propagates;
+the existing host sources remain in the directive for browsers without `'strict-dynamic'`.
 
-1. **Request-middleware + start context:** generate a nonce in a `requestMiddleware`
-   ([`src/start.ts`](../src/start.ts)), then read the in-flight request from
-   `@tanstack/start-storage-context` (`getStartContext().request`) inside `getRouter` and set
-   `ssr: { nonce }`. That package is currently a transitive dependency (not in
-   `package.json`), so this means adding an explicit dependency on an internal package.
-2. **Single-pass document render hook:** keep a module-scoped request store keyed by an
-   `AsyncLocalStorage`, set it in `server.ts` before delegating to the start handler, read it in
-   `getRouter`. Works on Node/Vercel but is bespoke plumbing.
+**What had to change for it to be safe:**
 
-Everything inline must be covered at once or the app breaks in production: TanStack hydration
-scripts (handled by the nonce option), the JSON-LD `<script type="application/ld+json">` blocks
-emitted by `renderJsonLd` (data blocks, normally exempt, but must be checked), and any inline
-handler added later. `'unsafe-inline'` can stay in a Report-Only policy during rollout.
+- JSON-LD data blocks that were rendered inline by `renderJsonLd` (annual-report and adoption-impact
+  pages) moved into route `head.scripts` (`jsonLdScript()` in `src/lib/schema.tsx`), which is
+  nonce-stamped by the router. No component emits a raw `<script>` any more.
+- The static 500 page in [`src/lib/error-page.ts`](../src/lib/error-page.ts) had an inline
+  `onclick="location.reload()"`. Event-handler attributes cannot carry a nonce, so "Try again" is
+  now a plain same-URL link; the page contains no script at all and its inline `<style>` is still
+  covered by `style-src 'unsafe-inline'`.
+- The small `getRouter()` plumbing blocker noted in the first version of this note was solved with
+  the bespoke `AsyncLocalStorage` option, avoiding a dependency on the internal
+  `@tanstack/start-storage-context` package (Option B.2 in the earlier draft).
 
-**Effort:** M (1–2 days including a browser-verified report-only phase and a test that renders a
-page and asserts header nonce == every inline script nonce). **Risk:** medium — an un-nonced
-inline script silently blocks hydration or analytics; requires deployment observation.
-**Recommendation:** approve as a separate, CSP-only task after the current backlog. It does not
-fix the login risk on its own but removes the "injected inline script" class.
+**Tests:** `src/lib/security-headers.nonce.test.ts` (exact directive, no `'unsafe-inline'`,
+`style-src` unchanged, reporting kept, nonce injection ignored, per-response header),
+`src/lib/csp-nonce.test.ts`, `src/lib/csp-nonce.server.test.ts` (generation, per-request isolation
+across concurrent awaits) and `src/lib/csp-nonce-wiring.test.ts` (server → router propagation,
+server-only store, error page has no inline handler, no un-nonced `<script>` remains).
+
+**Residual risk / follow-ups:**
+
+- A real SSR render was not available in this sandbox (no build/spawn), so the end-to-end markup
+  assertion is static (the wiring test) plus TanStack Router's documented `ssr.nonce` path; browser
+  QA on staging should confirm the header nonce equals every inline script's `nonce` before a
+  production release.
+- A nonce CSP removes the "injected inline script" class but does not stop an injected *external*
+  script loaded by an already-nonced script (that is what `'strict-dynamic'` trades for loader
+  compatibility); Trusted Types would be the next layer.
+- `style-src 'unsafe-inline'` remains until React style attributes are migrated to classes.
+- AUDIT R4's other half — the admin bearer token in `localStorage` — is unchanged; Option C below
+  is still the only fix and is not approved.
 
 ## Option C — HttpOnly SameSite cookie sessions through a server-side auth boundary
 
@@ -104,15 +125,17 @@ mitigation at best, not a replacement for Option C.
 
 ## Recommendation
 
-1. **Now:** Option A, with the Report-Only Trusted Types header and a ticket for Option B. Keep
-   `'unsafe-inline'` until Option B lands; removing it without nonces breaks TanStack Start
-   hydration.
-2. **Next hardening task:** Option B as a CSP-only change with a report-only soak.
-3. **Only if the admin threat model requires it:** Option C as a separately approved migration,
-   because it rewrites the whole admin authentication boundary.
+1. **CSP half — done (2026-11-10):** Option B is implemented and enforcing; browser QA on staging
+   should confirm the header nonce matches the rendered scripts before release.
+2. **Token half:** Option C remains the only fix for the `localStorage` exposure; do it only if
+   the admin threat model justifies a cookie/BFF session rewrite, as a separately approved migration
+   with its own security review.
+3. Trusted Types in Report-Only (Chromium-only) is the natural next CSP layer once the nonce
+   rollout is observed in production.
 
-No behaviour was changed in this batch beyond the private document bucket fix recorded in
-[`BUGS.md`](BUGS.md) and [`FIX_REPORT.md`](FIX_REPORT.md).
+No behaviour was changed in the batch that wrote this note beyond the private document bucket fix
+recorded in [`BUGS.md`](BUGS.md) and [`FIX_REPORT.md`](FIX_REPORT.md). The CSP half was implemented
+afterwards, on 2026-11-10, by the nonce task described under Option B.
 
 ## Appendix — zod 3 → 4 assessment (GHSA-mrhx-c7xc-m3w5)
 
