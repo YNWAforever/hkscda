@@ -117,7 +117,9 @@ create index if not exists animal_draft_image_upload_cleanup_idx
   on public.animal_draft_image_upload_intent (expires_at)
   where attached_at is null;
 
-create or replace function public.activate_admin_invite_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'activate_admin_invite_with_audit') then
+    create function public.activate_admin_invite_with_audit(
   p_auth_user_id uuid
 )
 returns public.admin_user
@@ -132,8 +134,6 @@ begin
   if p_auth_user_id is null then
     raise exception 'admin_user_not_found' using errcode = 'P0001';
   end if;
-
-  -- Match the lock order used by the admin access mutation RPCs.
   perform pg_advisory_xact_lock(hashtextextended('public.admin_user.active_admin', 0));
 
   select * into admin_row
@@ -177,6 +177,8 @@ begin
   return admin_row;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.activate_admin_invite_with_audit(uuid)
   from public, anon, authenticated;
@@ -184,7 +186,9 @@ revoke all on function public.activate_admin_invite_with_audit(uuid)
 grant execute on function public.activate_admin_invite_with_audit(uuid)
   to service_role;
 
-create or replace function public.append_crm_consents_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'append_crm_consents_with_audit') then
+    create function public.append_crm_consents_with_audit(
   p_rows jsonb,
   p_actor_user_id uuid,
   p_supporter_id uuid,
@@ -212,12 +216,16 @@ begin
   values (p_actor_user_id, 'consent.append', 'supporter', p_supporter_id::text, p_at, coalesce(p_detail, '{}'::jsonb));
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) from public, anon, authenticated;
 
 grant execute on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) to service_role;
 
-create or replace function public.claim_expired_animal_draft_image_uploads(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_expired_animal_draft_image_uploads') then
+    create function public.claim_expired_animal_draft_image_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -245,6 +253,8 @@ as $$
   where intent.storage_path = candidates.storage_path
   returning intent.animal_id, intent.storage_path, intent.cleanup_claimed_at;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.claim_expired_animal_draft_image_uploads(timestamptz, integer)
   from public, anon, authenticated;
@@ -252,7 +262,9 @@ revoke all on function public.claim_expired_animal_draft_image_uploads(timestamp
 grant execute on function public.claim_expired_animal_draft_image_uploads(timestamptz, integer)
   to service_role;
 
-create or replace function public.claim_expired_internship_attachment_uploads(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_expired_internship_attachment_uploads') then
+    create function public.claim_expired_internship_attachment_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -280,6 +292,8 @@ as $$
   where intent.storage_path = candidates.storage_path
   returning intent.storage_path, intent.cleanup_claimed_at;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.claim_expired_internship_attachment_uploads(timestamptz, integer)
   from public, anon, authenticated;
@@ -287,7 +301,9 @@ revoke all on function public.claim_expired_internship_attachment_uploads(timest
 grant execute on function public.claim_expired_internship_attachment_uploads(timestamptz, integer)
   to service_role;
 
-create or replace function public.claim_expired_sponsorship_proof_uploads(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_expired_sponsorship_proof_uploads') then
+    create function public.claim_expired_sponsorship_proof_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -314,6 +330,8 @@ as $$
   where intent.pledge_id = candidates.pledge_id
   returning intent.pledge_id, intent.storage_path, intent.cleanup_claimed_at;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.claim_expired_sponsorship_proof_uploads(timestamptz, integer)
   from public, anon, authenticated;
@@ -321,7 +339,9 @@ revoke all on function public.claim_expired_sponsorship_proof_uploads(timestampt
 grant execute on function public.claim_expired_sponsorship_proof_uploads(timestamptz, integer)
   to service_role;
 
-create or replace function public.claim_expired_staff_sponsorship_proof_uploads(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'claim_expired_staff_sponsorship_proof_uploads') then
+    create function public.claim_expired_staff_sponsorship_proof_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -349,6 +369,8 @@ as $$
   where intent.storage_path = candidates.storage_path
   returning intent.pledge_id, intent.storage_path, intent.cleanup_claimed_at;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.claim_expired_staff_sponsorship_proof_uploads(timestamptz, integer)
   from public, anon, authenticated;
@@ -356,7 +378,9 @@ revoke all on function public.claim_expired_staff_sponsorship_proof_uploads(time
 grant execute on function public.claim_expired_staff_sponsorship_proof_uploads(timestamptz, integer)
   to service_role;
 
-create or replace function public.cleanup_expired_adoption_application(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'cleanup_expired_adoption_application') then
+    create function public.cleanup_expired_adoption_application(
   p_application_id uuid
 ) returns text
 language plpgsql
@@ -375,9 +399,6 @@ begin
     or v_intent.expires_at >= clock_timestamp() - interval '1 hour' then
     return 'defer';
   end if;
-
-  -- Lock the parent before testing for a committed case. A concurrent case
-  -- insert needs a foreign-key key-share lock on this row.
   perform 1
   from public.adoption_applications
   where id = p_application_id
@@ -397,6 +418,8 @@ begin
   return 'purged';
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.cleanup_expired_adoption_application(uuid)
   from public, anon, authenticated;
@@ -404,7 +427,9 @@ revoke all on function public.cleanup_expired_adoption_application(uuid)
 grant execute on function public.cleanup_expired_adoption_application(uuid)
   to service_role;
 
-create or replace function public.clone_volunteer_activity_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'clone_volunteer_activity_with_audit') then
+    create function public.clone_volunteer_activity_with_audit(
   p_source_activity_id uuid,
   p_actor_user_id uuid,
   p_starts_at timestamptz
@@ -460,6 +485,8 @@ begin
   return v_cloned_id;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.clone_volunteer_activity_with_audit(
   uuid, uuid, timestamptz
@@ -469,7 +496,9 @@ grant execute on function public.clone_volunteer_activity_with_audit(
   uuid, uuid, timestamptz
 ) to service_role;
 
-create or replace function public.cms_promotion_command(p_actor uuid, p_command jsonb)
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'cms_promotion_command') then
+    create function public.cms_promotion_command(p_actor uuid, p_command jsonb)
 returns jsonb
 language plpgsql
 security definer
@@ -625,12 +654,16 @@ begin
   raise exception 'invalid CMS promotion command' using errcode = '22023';
 end
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.cms_promotion_command(uuid, jsonb) from public, anon, authenticated;
 
 grant execute on function public.cms_promotion_command(uuid, jsonb) to service_role;
 
-create or replace function public.create_public_sponsorship_pledge(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'create_public_sponsorship_pledge') then
+    create function public.create_public_sponsorship_pledge(
   p_pledge_id uuid,
   p_pledge jsonb,
   p_preferences jsonb,
@@ -700,6 +733,8 @@ begin
   );
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.create_public_sponsorship_pledge(uuid, jsonb, jsonb, jsonb, jsonb)
   from public, anon, authenticated;
@@ -707,7 +742,9 @@ revoke all on function public.create_public_sponsorship_pledge(uuid, jsonb, json
 grant execute on function public.create_public_sponsorship_pledge(uuid, jsonb, jsonb, jsonb, jsonb)
   to service_role;
 
-create or replace function public.create_volunteer_registration_idempotent(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'create_volunteer_registration_idempotent') then
+    create function public.create_volunteer_registration_idempotent(
   p_activity_id uuid,
   p_supporter_id uuid,
   p_registration_type text,
@@ -738,9 +775,6 @@ begin
   if p_status_token_hash is null or p_status_token_hash !~ '^[0-9a-f]{64}$' then
     raise exception 'invalid_volunteer_submission_token' using errcode = '22023';
   end if;
-
-  -- The underlying booking RPC uses the same domain lock. Take it first so
-  -- two different submission tokens for one supporter cannot race.
   perform pg_advisory_xact_lock(hashtextextended('volunteer-domain', 0));
   perform pg_advisory_xact_lock(
     hashtextextended('volunteer-public-submission:' || p_status_token_hash, 0)
@@ -774,9 +808,6 @@ begin
     end if;
     return jsonb_build_object('created', false, 'registration', to_jsonb(v_previous));
   end if;
-
-  -- A fresh token must not create a second active registration for the same
-  -- supporter and activity, including after the original token has expired.
   if p_supporter_id is not null and exists (
     select 1 from public.volunteer_registration
      where activity_id = p_activity_id
@@ -796,6 +827,8 @@ begin
   return jsonb_build_object('created', true, 'registration', to_jsonb(v_registration));
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.create_volunteer_registration_idempotent(
   uuid, uuid, text, integer, text, text, text, text, text, integer, integer,
@@ -807,7 +840,9 @@ grant execute on function public.create_volunteer_registration_idempotent(
   text, text, text, text, timestamptz, boolean, boolean
 ) to service_role;
 
-create or replace function private.enforce_published_knowledge_document_assets()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'enforce_published_knowledge_document_assets') then
+    create function private.enforce_published_knowledge_document_assets()
 returns trigger
 language plpgsql
 security definer
@@ -842,8 +877,12 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
-create or replace function private.enforce_published_site_document_slot_asset()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'enforce_published_site_document_slot_asset') then
+    create function private.enforce_published_site_document_slot_asset()
 returns trigger
 language plpgsql
 security definer
@@ -865,8 +904,12 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
-create or replace function public.fail_pending_provider_payment(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'fail_pending_provider_payment') then
+    create function public.fail_pending_provider_payment(
   p_payment_id uuid,
   p_donation_id uuid
 )
@@ -925,12 +968,16 @@ begin
   return jsonb_build_object('kind', 'failed');
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.fail_pending_provider_payment(uuid, uuid) from public, anon, authenticated;
 
 grant execute on function public.fail_pending_provider_payment(uuid, uuid) to service_role;
 
-create or replace function public.invite_admin_user_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'invite_admin_user_with_audit') then
+    create function public.invite_admin_user_with_audit(
   p_actor_user_id uuid,
   p_auth_user_id uuid,
   p_email text,
@@ -1013,6 +1060,8 @@ begin
   return invited_user_row;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.invite_admin_user_with_audit(uuid, uuid, text, text, timestamptz)
   from public, anon, authenticated;
@@ -1020,7 +1069,9 @@ revoke all on function public.invite_admin_user_with_audit(uuid, uuid, text, tex
 grant execute on function public.invite_admin_user_with_audit(uuid, uuid, text, text, timestamptz)
   to service_role;
 
-create or replace function private.lock_admin_user_mutation()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'lock_admin_user_mutation') then
+    create function private.lock_admin_user_mutation()
 returns trigger
 language plpgsql
 security definer
@@ -1031,8 +1082,12 @@ begin
   return null;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
-create or replace function public.mark_animal_draft_image_attached()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'mark_animal_draft_image_attached') then
+    create function public.mark_animal_draft_image_attached()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1075,6 +1130,8 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.mark_animal_draft_image_attached()
   from public, anon, authenticated;
@@ -1082,7 +1139,9 @@ revoke all on function public.mark_animal_draft_image_attached()
 grant execute on function public.mark_animal_draft_image_attached()
   to service_role;
 
-create or replace function public.mark_internship_attachment_uploaded()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'mark_internship_attachment_uploaded') then
+    create function public.mark_internship_attachment_uploaded()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1107,6 +1166,8 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.mark_internship_attachment_uploaded()
   from public, anon, authenticated;
@@ -1114,7 +1175,9 @@ revoke all on function public.mark_internship_attachment_uploaded()
 grant execute on function public.mark_internship_attachment_uploaded()
   to service_role;
 
-create or replace function public.mark_sponsorship_proof_upload_submitted()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'mark_sponsorship_proof_upload_submitted') then
+    create function public.mark_sponsorship_proof_upload_submitted()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1140,6 +1203,8 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.mark_sponsorship_proof_upload_submitted()
   from public, anon, authenticated;
@@ -1147,7 +1212,9 @@ revoke all on function public.mark_sponsorship_proof_upload_submitted()
 grant execute on function public.mark_sponsorship_proof_upload_submitted()
   to service_role;
 
-create or replace function public.mark_staff_sponsorship_proof_attached()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'mark_staff_sponsorship_proof_attached') then
+    create function public.mark_staff_sponsorship_proof_attached()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1177,6 +1244,8 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.mark_staff_sponsorship_proof_attached()
   from public, anon, authenticated;
@@ -1184,7 +1253,9 @@ revoke all on function public.mark_staff_sponsorship_proof_attached()
 grant execute on function public.mark_staff_sponsorship_proof_attached()
   to service_role;
 
-create or replace function private.protect_published_document_references()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'protect_published_document_references') then
+    create function private.protect_published_document_references()
 returns trigger
 language plpgsql
 security definer
@@ -1217,8 +1288,12 @@ begin
   return new;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
-create or replace function public.refund_provider_payment_atomically(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'refund_provider_payment_atomically') then
+    create function public.refund_provider_payment_atomically(
   p_payment_id uuid,
   p_donation_id uuid
 )
@@ -1277,12 +1352,16 @@ begin
   return jsonb_build_object('kind', 'refunded');
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.refund_provider_payment_atomically(uuid, uuid) from public, anon, authenticated;
 
 grant execute on function public.refund_provider_payment_atomically(uuid, uuid) to service_role;
 
-create or replace function public.replace_supporter_roles_atomic(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'replace_supporter_roles_atomic') then
+    create function public.replace_supporter_roles_atomic(
   p_supporter_id uuid,
   p_roles jsonb
 )
@@ -1304,12 +1383,16 @@ begin
   select p_supporter_id, role from jsonb_array_elements_text(p_roles) as role;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.replace_supporter_roles_atomic(uuid,jsonb) from public, anon, authenticated;
 
 grant execute on function public.replace_supporter_roles_atomic(uuid,jsonb) to service_role;
 
-create or replace function private.require_active_admin_user()
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'private' and p.proname = 'require_active_admin_user') then
+    create function private.require_active_admin_user()
 returns trigger
 language plpgsql
 security definer
@@ -1334,8 +1417,12 @@ begin
   return null;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
-create or replace function public.resend_admin_invite_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'resend_admin_invite_with_audit') then
+    create function public.resend_admin_invite_with_audit(
   p_actor_user_id uuid,
   p_target_id uuid,
   p_sent_at timestamptz
@@ -1396,6 +1483,8 @@ begin
   return resent_user_row;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.resend_admin_invite_with_audit(uuid, uuid, timestamptz)
   from public, anon, authenticated;
@@ -1403,7 +1492,9 @@ revoke all on function public.resend_admin_invite_with_audit(uuid, uuid, timesta
 grant execute on function public.resend_admin_invite_with_audit(uuid, uuid, timestamptz)
   to service_role;
 
-create or replace function public.reserve_animal_draft_image_upload(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'reserve_animal_draft_image_upload') then
+    create function public.reserve_animal_draft_image_upload(
   p_animal_id uuid,
   p_storage_path text
 ) returns void
@@ -1437,6 +1528,8 @@ begin
   end if;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.reserve_animal_draft_image_upload(uuid, text)
   from public, anon, authenticated;
@@ -1444,7 +1537,9 @@ revoke all on function public.reserve_animal_draft_image_upload(uuid, text)
 grant execute on function public.reserve_animal_draft_image_upload(uuid, text)
   to service_role;
 
-create or replace function public.reserve_staff_sponsorship_proof_upload(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'reserve_staff_sponsorship_proof_upload') then
+    create function public.reserve_staff_sponsorship_proof_upload(
   p_pledge_id uuid,
   p_storage_path text
 ) returns void
@@ -1478,6 +1573,8 @@ begin
   end if;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.reserve_staff_sponsorship_proof_upload(uuid, text)
   from public, anon, authenticated;
@@ -1485,7 +1582,9 @@ revoke all on function public.reserve_staff_sponsorship_proof_upload(uuid, text)
 grant execute on function public.reserve_staff_sponsorship_proof_upload(uuid, text)
   to service_role;
 
-create or replace function public.set_animal_archived_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'set_animal_archived_with_audit') then
+    create function public.set_animal_archived_with_audit(
   p_actor_user_id uuid,
   p_animal_id uuid,
   p_archived boolean
@@ -1511,8 +1610,6 @@ begin
   if not found then
     return jsonb_build_object('kind', 'not_found');
   end if;
-
-  -- A retry must preserve the original retirement date and avoid a second audit.
   if (v_previous is not null) = p_archived then
     return jsonb_build_object(
       'kind', 'unchanged', 'id', p_animal_id, 'retired_at', v_previous
@@ -1545,12 +1642,16 @@ begin
   );
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.set_animal_archived_with_audit(uuid, uuid, boolean) from public, anon, authenticated;
 
 grant execute on function public.set_animal_archived_with_audit(uuid, uuid, boolean) to service_role;
 
-create or replace function public.update_group_enquiry_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'update_group_enquiry_with_audit') then
+    create function public.update_group_enquiry_with_audit(
   p_enquiry_id uuid,
   p_actor_user_id uuid,
   p_expected_updated_at timestamptz,
@@ -1619,6 +1720,8 @@ begin
   return jsonb_build_object('kind', 'updated', 'enquiry', to_jsonb(v_enquiry));
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.update_group_enquiry_with_audit(uuid, uuid, timestamptz, jsonb)
   from public, anon, authenticated;
@@ -1626,7 +1729,9 @@ revoke all on function public.update_group_enquiry_with_audit(uuid, uuid, timest
 grant execute on function public.update_group_enquiry_with_audit(uuid, uuid, timestamptz, jsonb)
   to service_role;
 
-create or replace function public.void_donation_receipts_with_audit(
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'void_donation_receipts_with_audit') then
+    create function public.void_donation_receipts_with_audit(
   p_donation_id uuid,
   p_reason text default 'refund'
 )
@@ -1669,6 +1774,8 @@ begin
   end loop;
 end;
 $$;
+  end if;
+end $catchup_guard$;
 
 revoke all on function public.void_donation_receipts_with_audit(uuid, text)
   from public, anon, authenticated;
@@ -1676,42 +1783,53 @@ revoke all on function public.void_donation_receipts_with_audit(uuid, text)
 grant execute on function public.void_donation_receipts_with_audit(uuid, text)
   to service_role;
 
-drop trigger if exists lock_admin_user_mutation on public.admin_user;
-
-create trigger lock_admin_user_mutation
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'lock_admin_user_mutation' and not t.tgisinternal) then
+    create trigger lock_admin_user_mutation
   before update or delete on public.admin_user
   for each statement execute function private.lock_admin_user_mutation();
+  end if;
+end $catchup_guard$;
 
-drop trigger if exists require_active_admin_user on public.admin_user;
-
-create trigger require_active_admin_user
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'require_active_admin_user' and not t.tgisinternal) then
+    create trigger require_active_admin_user
   after update or delete on public.admin_user
   for each row execute function private.require_active_admin_user();
+  end if;
+end $catchup_guard$;
 
-drop trigger if exists sponsorship_proof_upload_submitted on public.sponsorship_payment_proof;
-
-create trigger sponsorship_proof_upload_submitted
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'sponsorship_proof_upload_submitted' and not t.tgisinternal) then
+    create trigger sponsorship_proof_upload_submitted
 after insert on public.sponsorship_payment_proof
 for each row execute function public.mark_sponsorship_proof_upload_submitted();
+  end if;
+end $catchup_guard$;
 
-drop trigger if exists internship_attachment_uploaded on public.internship_attachment;
-
-create trigger internship_attachment_uploaded
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'internship_attachment_uploaded' and not t.tgisinternal) then
+    create trigger internship_attachment_uploaded
 after insert on public.internship_attachment
 for each row execute function public.mark_internship_attachment_uploaded();
+  end if;
+end $catchup_guard$;
 
-drop trigger if exists sponsorship_staff_proof_attached on public.sponsorship_payment_proof;
-
-create trigger sponsorship_staff_proof_attached
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'sponsorship_staff_proof_attached' and not t.tgisinternal) then
+    create trigger sponsorship_staff_proof_attached
   after insert on public.sponsorship_payment_proof
   for each row execute function public.mark_staff_sponsorship_proof_attached();
+  end if;
+end $catchup_guard$;
 
-drop trigger if exists animal_draft_image_attached on public.animal_draft;
-
-create trigger animal_draft_image_attached
+do $catchup_guard$ begin
+  if not exists (select 1 from pg_catalog.pg_trigger t join pg_catalog.pg_class c on c.oid = t.tgrelid join pg_catalog.pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and t.tgname = 'animal_draft_image_attached' and not t.tgisinternal) then
+    create trigger animal_draft_image_attached
   after insert or update of body on public.animal_draft
   for each row execute function public.mark_animal_draft_image_attached();
-
+  end if;
+end $catchup_guard$;
 
 -- ---- RLS / privileges for the restored tables (from the defining migrations) ----
 -- 20260925123000_adoption_upload_intents.sql: adoption_upload_intent
