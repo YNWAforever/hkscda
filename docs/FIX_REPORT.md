@@ -405,28 +405,44 @@ A read-only audit of the admin auth/session and operations surfaces
 database changes; this section records the SQL half of the branch series (the code half ships
 with it). The IDs keep the audit's AUTH-/OPS- prefixes so BUG-01…BUG-73 keep their numbers.
 
-| ID      | Sev | Fix                                                                                                                                                                                                                                                                          | Migration        |
-| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| AUTH-01 | Med | Browser roles lose `select` on `public.audit_log` and the three-role read policy is dropped. A direct staff/treasurer/admin PostgREST select now fails with permission denied; service-role API reads are unchanged; no rows are touched                                        | `20261109100000` |
-| OPS-01  | Med | Publishing a `cancelled` or `closed` volunteer activity through the legacy update RPC returns `invalid`/`activity_closed` instead of reviving it. Every other branch, the advisory lock, the privileges and the pinned `search_path` are unchanged                              | `20261109101000` |
-| OPS-02  | Med | Changing `is_active`/`is_closing`/`is_final` on an `is_system` coordinator status raises `23514`; labels, colour and sort order stay editable and every other RPC branch is unchanged                                                                                        | `20261109102000` |
+| ID      | Sev | Fix                                                                                                                                                                                                                                                                                                                   | Migration        |
+| ------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| AUTH-01 | Med | Browser roles lose `select` on `public.audit_log` and the three-role read policy is dropped. A direct staff/treasurer/admin PostgREST select now fails with permission denied; service-role API reads are unchanged; no rows are touched                                                                              | `20261109100000` |
+| OPS-01  | Med | Publishing a `cancelled` or `closed` volunteer activity through the legacy update RPC returns `invalid`/`activity_closed` instead of reviving it. Every other branch, the advisory lock, the privileges and the pinned `search_path` are unchanged                                                                    | `20261109101000` |
+| OPS-02  | Med | Changing `is_active`/`is_closing`/`is_final` on an `is_system` coordinator status raises `23514`; labels, colour and sort order stay editable and every other RPC branch is unchanged                                                                                                                                 | `20261109102000` |
+| OPS-03  | Low | The supporter record applies the API's HK$100-net receipt rule (`isReceiptEligible` on `amount_cents - refunded_cents`) before offering **Issue receipt**, so an ineligible donation no longer shows an action that always returns 422. No server, RPC or schema change; the API check stays the guard                | —                |
+| OPS-04  | Low | Manual intake's `supporter_email_key` 409 distinguishes an archived supporter: a new service-role lookup including deleted rows returns 409 code `supporter_archived` with actionable staff copy; an active or unknown email keeps the existing 409 and a failed lookup falls back to it. The intake RPC is unchanged | —                |
 
 **Deploy:** all three are `latest-definition-wins` migrations with no data rewrite, so any order
 after `20261105101000` works; AUTH-01 can go first on its own because no admin browser read
 exists. OPS-01/OPS-02 refuse edits that are possible today, so ship them with the code half that
-removes the affected controls.
+removes the affected controls. OPS-03/OPS-04 change no SQL: they are code-only and add no
+deploy step.
 
 **Behaviour to know.** A staff/treasurer/admin JWT selecting `audit_log` over PostgREST now gets
 a permission error instead of rows, so a report built on that direct access must move to the API.
 The legacy volunteers page gets the `activity_closed` refusal on terminal rows instead of
 reviving them. The status editor must disable the three semantic switches for system rows; if it
-does not, saving them is refused with `System status flags cannot be changed`.
+does not, saving them is refused with `System status flags cannot be changed`. The supporter
+record no longer offers **Issue receipt** for a donation below HK$100 retained or for one an
+issued receipt already covers — the same rule the payments screen has applied since BUG-05. A
+manual intake whose email belongs to an archived supporter now says so and tells staff to ask a
+treasurer/admin to unarchive the supporter or record the intake without the email, instead of
+pointing at an identity the intake flow hides.
 
 **Verification.** Focused migration/RLS tests: 15 pass, 0 fail, 7 RLS tests skipped (no local
 Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`). `src/lib/supabaseMigrations.test.ts`:
 71 pass, 0 fail. `bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 56 warnings). No
 database was available, so the SQL is traced, not executed; the behavioural RLS test runs under
 `bun run test:rls` against a local stack.
+
+**Verification (OPS-03/OPS-04 code-only follow-up).** `bunx tsc --noEmit` clean; `bun run lint`
+0 errors (the same 56 warnings); focused `bun test --isolate` over the changed files:
+331 pass, 0 fail. No database was available
+(`SUPABASE_LOCAL_URL=http://127.0.0.1:1`), so the new repository lookup is exercised through the
+fake service-role client, the error mapping through injected fakes, and the receipt rule through
+a logic/component test; the receipt API's 422 expectation still passes unchanged in
+`reconcile.lifecycle.test.ts`.
 
 ## Manual QA checklist (staging or local, never production data)
 
@@ -483,3 +499,10 @@ database was available, so the SQL is traced, not executed; the behavioural RLS 
 - [ ] **OPS-02 (after the migration runs):** a system status's Active/Closing/Final switches are
       disabled (or saving them is refused with "flags cannot be changed"); its label, colour and
       sort order still save, and finalising, task completion and case closing still work.
+- [ ] **OPS-03:** a supporter's donation with HK$99 net retained (a HK$99 gift, or HK$150
+      refunded HK$51) and "receipt requested" shows no **Issue receipt** button; a HK$100 net
+      one does, and issuing it succeeds.
+- [ ] **OPS-04:** soft-delete a supporter in CRM, then create a manual intake with that email:
+      the error says the email belongs to an archived supporter and to ask a treasurer/admin to
+      unarchive it or record the intake without the email. An active supporter's email still
+      shows the existing "choose the existing supporter" message.

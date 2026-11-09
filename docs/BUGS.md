@@ -910,6 +910,50 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   other branch, `search_path = ''` and the grants are unchanged. The companion admin-code change
   disables the switches for system rows.
 
+### OPS-03 — Low — The supporter record offers "Issue receipt" for donations the API refuses
+
+- **Where:** `src/components/admin/crm/SupporterDetail.tsx:47-53` decided the action from
+  `status === "succeeded" && receiptRequested && !issuedReceipt`, without the IRD money rule the
+  receipt API applies: `src/lib/donations/reconcile.server.ts:951-956` checks
+  `isReceiptEligible` (`src/lib/donations/domain.ts:77-79`, HK$100 minimum) on the net amount and
+  returns 422. The supporter record is the only place CRM staff see individual donations.
+- **Repro:** treasurer/admin → `/admin/supporters/:id` → a succeeded HK$50 donation with
+  "receipt requested", or a HK$150 gift refunded HK$80 (net HK$70) → **Issue receipt** is shown →
+  click → 422 `Donation is not eligible for an IRD receipt`.
+- **Fix (code):** the predicate moved to `src/components/admin/crm/receiptActions.ts`
+  (`canIssueReceipt`) and now applies the shared `isReceiptEligible` rule to
+  `amountCents - (refundedCents ?? 0)`, the same rule and threshold as the server, so the action
+  is offered only when it can succeed. The server check stays the guard; no API or schema change.
+  This is the UI half of BUG-05 that its fix (`cb4ae53c`) did not update.
+
+### OPS-04 — Low — Coordinator manual intake dead-ends when the email belongs to a soft-deleted supporter
+
+- **Where:** `private.create_manual_adoption_case` (`20260628143000:96-111`) inserts a
+  `new_supporter` row, so the unconditional unique `supporter_email_key` rejects an email a
+  soft-deleted supporter still holds: `supporter.email` is `citext not null unique` and the
+  soft-delete only sets `deleted_at`. Both ways to attach the existing supporter hide deleted
+  rows (`existing_supporter` refuses them, `20260628143000:71`; `search_manual_case_identity`
+  filters `deleted_at is null`, `20260926110000:33`). The adoptions error mapper
+  (`src/lib/adoptions/http/shared.server.ts`) answered with the generic "choose the existing
+  supporter" 409, but staff have `manualIntake` and not `supporters`
+  (`src/lib/admin/access.ts:45-61`), so they cannot see or restore the record the advice names.
+- **Repro:** treasurer soft-deletes a supporter; staff → `/admin/coordinator/intake` → identity
+  search for that email returns nothing → **New supporter** with the email → 409 "A supporter
+  with this email already exists. Choose the existing supporter instead."; searching still
+  returns nothing and choosing `existing_supporter` is refused.
+- **Fix (code):** `withErrors` takes an optional manual-intake `lookupSupporterByEmail`,
+  wired only for `POST /api/admin/adoptions/intake/cases`
+  (`src/routes/api/admin/adoptions/-handlers.ts`). On a `supporter_email_key` violation the
+  mapper extracts the email from the PostgREST detail (never echoed) and looks it up through
+  the new service-role repository function `findSupporterByEmailIncludingDeleted`
+  (`src/lib/adoptions/repository.server.ts`), which has no `deleted_at` filter. A soft-deleted
+  row returns 409 code `supporter_archived` with a message naming the archived supporter and
+  telling staff to ask a treasurer/admin to unarchive it or record the intake without the
+  email. An active supporter keeps the existing "choose the existing supporter" 409 and an
+  unknown email keeps the generic 409; a failed lookup falls back to the generic 409 rather
+  than a 500. The database function is unchanged. The intake screen maps the code to bilingual
+  copy (`manualIntake.serverErrors.supporter_archived` in `pageCopy/caseCopy.ts`).
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
