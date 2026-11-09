@@ -465,6 +465,8 @@ skipped (no local Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`, they 
 database was available, so the migration is traced, not executed; the AUTH-05 case was
 negative-checked by temporarily allowing staff and observing both the sweep and the new case fail.
 No full test suite was run.
+## Admin operations backlog — second batch (2026-11-09)
+
 **Verification (OPS-03/OPS-04 code-only follow-up).** `bunx tsc --noEmit` clean; `bun run lint`
 0 errors (the same 56 warnings); focused `bun test --isolate` over the changed files:
 331 pass, 0 fail. No database was available

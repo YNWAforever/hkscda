@@ -1001,6 +1001,8 @@ migration.
   half in `supabase/rls-tests/moneyPii.rls.test.ts` now asserts staff is denied and treasurer/admin
   are allowed for supporter select/update, supporter_role select and consent select/update (runs
   under `bun run test:rls` against a local stack).
+## Admin operations backlog — second batch (2026-11-09)
+
 ### OPS-03 — Low — The supporter record offers "Issue receipt" for donations the API refuses
 
 - **Where:** `src/components/admin/crm/SupporterDetail.tsx:47-53` decided the action from
