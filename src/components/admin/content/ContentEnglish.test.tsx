@@ -562,6 +562,10 @@ mock.module("@tanstack/react-query", () => ({
               pagination: { page: 2, pageSize: 25, total: 60, pageCount: 3 },
             },
           };
+    if (key === "admin-content-summary")
+      return state.listFails
+        ? { ...failed, error: state.listError ?? failed.error }
+        : { ...base, data: { published: 40, drafts: 20, rescueStories: 30 } };
     if (key === "admin-content-detail") {
       if (state.editor === "loading") return { ...base, data: undefined, isLoading: true };
       if (state.editor === "missing") return { ...base, data: undefined };
@@ -699,9 +703,9 @@ describe("content list in English", () => {
       // cards
       "All content",
       ">60</p>",
-      "Published on this page",
-      "Drafts on this page",
-      "Rescue stories on this page",
+      ">Published</p>",
+      ">Drafts</p>",
+      ">Rescue stories</p>",
       // eligibility
       "Content on this page that needs an eligibility check",
       "This list is read-only.",

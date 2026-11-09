@@ -20,14 +20,16 @@ import {
 import { useAdminLanguage } from "../adminI18n";
 import { DataTable, type DataTableColumn } from "../DataTable";
 import { useAdminCopy } from "../i18n/copy";
-import { STAT_UNAVAILABLE } from "../LoadFailure";
+import { STAT_UNAVAILABLE, StatFigure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { StatusPill, type StatusTone } from "../StatusBadge";
 import {
   buildContentSearchParams,
+  buildContentSummarySearches,
   contentStatusTone,
+  contentSummaryTotals,
   formatContentTypeLabel,
-  summarizeContentRows,
+  type ContentSummaryTotals,
 } from "./contentAdminLogic";
 import { contentCommonCopy } from "./contentCommonCopy";
 import { managementCopy } from "./managementCopy";
@@ -239,6 +241,60 @@ function ContentManagementRuntime() {
     placeholderData: keepPreviousData,
   });
 
+  // CMS-04: each card is a filtered list request that reads `total`, not a count of this page's
+  // rows. The searches are pinned to page 1 and exclude `page`, so paging cannot change them.
+  const summarySearches = useMemo(
+    () =>
+      buildContentSummarySearches({
+        q: query,
+        type,
+        status,
+        rescueRegion,
+        publishedFrom,
+        publishedTo,
+        mapVisibility,
+        hasUpdate,
+        draftState,
+      }),
+    [
+      query,
+      type,
+      status,
+      rescueRegion,
+      publishedFrom,
+      publishedTo,
+      mapVisibility,
+      hasUpdate,
+      draftState,
+    ],
+  );
+  const summaryQuery = useQuery({
+    queryKey: [
+      "admin-content-summary",
+      summarySearches.published,
+      summarySearches.drafts,
+      summarySearches.rescueStories,
+    ],
+    queryFn: async ({ signal }) => {
+      const [published, drafts, rescueStories] = await Promise.all([
+        fetchAdminJson<AdminContentListApiResponse>(
+          "/api/admin/content?" + summarySearches.published,
+          { signal },
+        ),
+        fetchAdminJson<AdminContentListApiResponse>(
+          "/api/admin/content?" + summarySearches.drafts,
+          { signal },
+        ),
+        fetchAdminJson<AdminContentListApiResponse>(
+          "/api/admin/content?" + summarySearches.rescueStories,
+          { signal },
+        ),
+      ]);
+      return contentSummaryTotals({ published, drafts, rescueStories });
+    },
+    enabled: listState.hydrated,
+  });
+
   return (
     <>
       <ContentReviewQueue key={initialQuality} initialQuality={initialQuality} />
@@ -246,6 +302,14 @@ function ContentManagementRuntime() {
       <ContentManagementView
         data={contentQuery.data}
         loading={contentQuery.isLoading || !listState.hydrated}
+        summary={summaryQuery.data}
+        // A filter change keeps the previous page's rows on screen, but a total from the
+        // previous filters (or the previous page's row count) must not be shown as this list's
+        // total. While either query is settling for the new filters the cards show loading.
+        summaryLoading={
+          summaryQuery.isLoading || contentQuery.isPlaceholderData || !listState.hydrated
+        }
+        summaryFailed={Boolean(summaryQuery.error)}
         query={listState.draftQuery}
         queryInput={listState.queryInput}
         type={type}
@@ -278,6 +342,10 @@ function ContentManagementRuntime() {
 type ContentManagementViewProps = {
   data?: ContentListResponse;
   loading: boolean;
+  /** Filtered totals for the published/drafts/rescue-story cards (CMS-04). */
+  summary?: ContentSummaryTotals;
+  summaryLoading?: boolean;
+  summaryFailed?: boolean;
   query?: string;
   queryInput?: InputHTMLAttributes<HTMLInputElement>;
   type?: ContentType | "all";
@@ -306,6 +374,9 @@ type ContentManagementViewProps = {
 function ContentManagementView({
   data,
   loading,
+  summary,
+  summaryLoading = false,
+  summaryFailed = false,
   query = "",
   queryInput,
   type = "all",
@@ -334,11 +405,12 @@ function ContentManagementView({
   const common = useAdminCopy(contentCommonCopy);
   const { language } = useAdminLanguage();
   const rows = data?.content ?? [];
-  const summary = summarizeContentRows(rows);
-  // A rejected query leaves `data` (and so `rows`) empty, and summary counts
-  // computed from an empty array are real zeros -- not a signal that nothing
-  // could be loaded. Show the cards as unavailable, not as "all clear".
+  // A rejected query leaves `data` (and so `rows`) empty, and a summary computed from an
+  // empty array would read as real zeros -- not a signal that nothing could be loaded.
+  // Show the cards as unavailable/loading instead, never as "all clear" (CMS-04).
   const failed = Boolean(error);
+  const cardsFailed = failed || summaryFailed;
+  const cardsLoading = loading || summaryLoading;
   const columns = useMemo<DataTableColumn<ContentSummary>[]>(
     () => [
       {
@@ -449,15 +521,27 @@ function ContentManagementView({
       <div className="grid gap-3 md:grid-cols-4">
         <SummaryCard
           label={copy.cards.all}
-          value={data?.pagination.total ?? summary.total}
+          value={data?.pagination.total}
           failed={failed}
+          loading={cardsLoading}
         />
-        <SummaryCard label={copy.cards.published} value={summary.published} failed={failed} />
-        <SummaryCard label={copy.cards.drafts} value={summary.drafts} failed={failed} />
+        <SummaryCard
+          label={copy.cards.published}
+          value={summary?.published}
+          failed={cardsFailed}
+          loading={cardsLoading}
+        />
+        <SummaryCard
+          label={copy.cards.drafts}
+          value={summary?.drafts}
+          failed={cardsFailed}
+          loading={cardsLoading}
+        />
         <SummaryCard
           label={copy.cards.rescueStories}
-          value={summary.rescueStories}
-          failed={failed}
+          value={summary?.rescueStories}
+          failed={cardsFailed}
+          loading={cardsLoading}
         />
       </div>
 
@@ -671,13 +755,27 @@ function ContentManagementView({
   );
 }
 
-function SummaryCard({ label, value, failed }: { label: string; value: number; failed?: boolean }) {
+function SummaryCard({
+  label,
+  value,
+  failed = false,
+  loading = false,
+}: {
+  label: string;
+  value: number | undefined;
+  failed?: boolean;
+  loading?: boolean;
+}) {
   const copy = useAdminCopy(managementCopy).cards;
   return (
     <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <p className="text-sm font-semibold text-[var(--color-text-muted)]">{label}</p>
       <p className="mt-1 text-2xl font-bold text-[var(--color-panel)]">
-        {failed ? STAT_UNAVAILABLE : copy.count(value)}
+        <StatFigure
+          value={value === undefined ? STAT_UNAVAILABLE : copy.count(value)}
+          failed={failed}
+          loading={loading}
+        />
       </p>
     </div>
   );

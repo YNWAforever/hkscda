@@ -36,11 +36,6 @@ export type ContentSearchInput = {
 
 export type ContentStatusTone = "success" | "warning" | "muted";
 
-export type ContentSummaryRow = {
-  type: ContentType;
-  status: ContentStatus;
-};
-
 export type ClipboardWriter = {
   writeText: (text: string) => Promise<void>;
 };
@@ -94,16 +89,51 @@ export function suggestSlug(title: string) {
     .replace(/-+$/g, "");
 }
 
-export function summarizeContentRows(rows: ContentSummaryRow[]) {
-  return rows.reduce(
-    (summary, row) => ({
-      total: summary.total + 1,
-      published: summary.published + (row.status === "published" ? 1 : 0),
-      drafts: summary.drafts + (row.status === "draft" ? 1 : 0),
-      rescueStories: summary.rescueStories + (row.type === "rescue_story" ? 1 : 0),
-    }),
-    { total: 0, published: 0, drafts: 0, rescueStories: 0 },
-  );
+/**
+ * The three filtered list requests behind the summary cards (CMS-04).
+ *
+ * The cards used to count the rows of the current page (at most 25), so "Published" changed
+ * as staff paged through identical filters. Each request below asks for one row and reads the
+ * response's `total` — the filtered count over the whole list. `page` is pinned to 1 so
+ * paging can never change a total, and the other active filters (search, region, dates, map,
+ * updates, drafts) are kept so the card still describes the list being shown.
+ */
+export function buildContentSummarySearches(input: ContentSearchInput = {}) {
+  const base = { ...input, page: 1, pageSize: 1 };
+  return {
+    published: buildContentSearchParams({ ...base, status: "published" }).toString(),
+    drafts: buildContentSearchParams({ ...base, status: "draft" }).toString(),
+    rescueStories: buildContentSearchParams({ ...base, type: "rescue_story" }).toString(),
+  };
+}
+
+/** A list response as far as the summary cards are concerned: only `total` may be read. */
+export type ContentListTotalResponse = { total: number; items?: readonly unknown[] };
+
+export type ContentSummaryTotals = {
+  published: number;
+  drafts: number;
+  rescueStories: number;
+};
+
+/**
+ * The card figures from the three filtered responses. Only `total` is used — the `items`
+ * array is at most one row (`pageSize=1`) and must never become a card figure. When any
+ * response is missing the totals are unknown, so the view renders the unavailable marker
+ * instead of a page-derived number (CMS-04).
+ */
+export function contentSummaryTotals(responses: {
+  published?: ContentListTotalResponse;
+  drafts?: ContentListTotalResponse;
+  rescueStories?: ContentListTotalResponse;
+}): ContentSummaryTotals | undefined {
+  const { published, drafts, rescueStories } = responses;
+  if (!published || !drafts || !rescueStories) return undefined;
+  return {
+    published: published.total,
+    drafts: drafts.total,
+    rescueStories: rescueStories.total,
+  };
 }
 
 export function formatIsoForDatetimeLocal(value: string) {

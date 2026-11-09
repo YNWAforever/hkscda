@@ -2,6 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 import type { ReactNode } from "react";
 
 import { renderAdminInChinese } from "../i18n/testing";
+import type { ContentSummary } from "../../../lib/content/types";
 import type { ContentListResponse } from "./ContentManagement";
 
 const realReactRouter = await import("@tanstack/react-router");
@@ -29,20 +30,55 @@ mock.module("@tanstack/react-router", () => ({
   },
 }));
 
+function contentSummaryRow(overrides: Partial<ContentSummary> = {}): ContentSummary {
+  return {
+    id: "content-1",
+    slug: "siu-bak-recovering",
+    type: "rescue_story",
+    title: "小白康復中",
+    subtitle: null,
+    summary: "小白正在寄養家庭休養。",
+    coverMediaId: null,
+    coverImageUrl: null,
+    status: "published",
+    publishedAt: "2026-06-20T08:00:00.000Z",
+    ctaLabel: null,
+    ctaUrl: null,
+    storyProfile: null,
+    latestPublicUpdate: null,
+    createdAt: "2026-06-01T08:00:00.000Z",
+    updatedAt: "2026-06-20T08:00:00.000Z",
+    ...overrides,
+  };
+}
+
+/** The list response the runtime query answers with; the initialData tests do not use it. */
+let listResponse: ContentListResponse = {
+  content: [],
+  pagination: { page: 1, pageSize: 25, total: 0, pageCount: 1 },
+};
 let contentError: Error | null = null;
 
 mock.module("@tanstack/react-query", () => ({
   ...realReactQuery,
   useQueryClient: () => ({ invalidateQueries: () => {} }),
-  useQuery: () => ({
-    data: contentError
-      ? undefined
-      : { content: [], pagination: { page: 1, pageSize: 25, total: 0, pageCount: 1 } },
-    error: contentError,
-    isLoading: false,
-    isFetching: false,
-    refetch: () => {},
-  }),
+  useQuery: ({ queryKey }: { queryKey: readonly unknown[] }) => {
+    const base = {
+      isLoading: false,
+      isFetching: false,
+      isPlaceholderData: false,
+      error: null,
+      refetch: () => {},
+    };
+    if (contentError) return { ...base, data: undefined, error: contentError };
+    const key = String(queryKey[0]);
+    if (key === "admin-me") return { ...base, data: { admin: { role: "admin" } } };
+    if (key === "editorial-review") return { ...base, data: { items: [], total: 0 } };
+    if (key === "admin-content-summary") {
+      return { ...base, data: { published: 40, drafts: 20, rescueStories: 30 } };
+    }
+    return { ...base, data: listResponse };
+  },
 }));
 
 async function renderContentManagement(initialData: ContentListResponse) {
@@ -125,6 +161,29 @@ describe("ContentManagement", () => {
 
     expect(markup).toContain("全部內容");
     expect(markup).toContain(">42</p>");
+  });
+
+  test("CMS-04: summary cards show the filtered totals, not the current page's rows", async () => {
+    // The API answers page 1 with 25 published rows of a 60-item list. The three stat cards
+    // must read the filtered totals (40/20/30), never the 25 rows on screen, so the figures
+    // stay put as staff page through the same filters.
+    listResponse = {
+      content: Array.from({ length: 25 }, (_, index) =>
+        contentSummaryRow({ id: `content-${index}`, slug: `story-${index}` }),
+      ),
+      pagination: { page: 1, pageSize: 25, total: 60, pageCount: 3 },
+    };
+    const { ContentManagement } = await import("./ContentManagement");
+    try {
+      const markup = renderAdminInChinese(<ContentManagement />);
+      expect(markup).toContain(">60</p>");
+      expect(markup).toContain(">40</p>");
+      expect(markup).toContain(">20</p>");
+      expect(markup).toContain(">30</p>");
+      expect(markup).not.toContain(">25</p>");
+    } finally {
+      listResponse = { content: [], pagination: { page: 1, pageSize: 25, total: 0, pageCount: 1 } };
+    }
   });
 
   test("uses router links for edit navigation so admin sessions stay client-side", async () => {

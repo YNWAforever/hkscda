@@ -2,14 +2,15 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildContentSearchParams,
+  buildContentSummarySearches,
   canSetMediaAsCover,
   contentStatusTone,
+  contentSummaryTotals,
   copyTextToClipboard,
   formatContentTypeLabel,
   formatIsoForDatetimeLocal,
   parseDatetimeLocalToIso,
   suggestSlug,
-  summarizeContentRows,
 } from "./contentAdminLogic";
 import { CONTENT_SLUG_MAX } from "../../../lib/content/limits";
 import { publicStorySlugInputSchema } from "../../../lib/content/schemas";
@@ -60,14 +61,57 @@ describe("contentAdminLogic", () => {
     expect(formatContentTypeLabel("charity_market", "en")).toBe("Charity market");
   });
 
-  test("summarizes content rows", () => {
+  test("CMS-04: each summary card asks for its own filtered total, never the current page", () => {
+    const searches = buildContentSummarySearches({
+      q: "  小白 ",
+      type: "event",
+      status: "archived",
+      rescueRegion: "灣仔",
+      publishedFrom: "2026-01-01",
+      mapVisibility: "on",
+      page: 3,
+    });
+    const published = new URLSearchParams(searches.published);
+    const drafts = new URLSearchParams(searches.drafts);
+    const rescueStories = new URLSearchParams(searches.rescueStories);
+
+    // One row per request: the response is cheap and only its `total` is read.
+    for (const params of [published, drafts, rescueStories]) {
+      expect(params.get("page")).toBe("1");
+      expect(params.get("pageSize")).toBe("1");
+      // The other active filters stay, so the card describes the list being shown.
+      expect(params.get("q")).toBe("小白");
+      expect(params.get("rescueRegion")).toBe("灣仔");
+      expect(params.get("publishedFrom")).toBe("2026-01-01");
+      expect(params.get("mapVisibility")).toBe("on");
+    }
+    expect(published.get("status")).toBe("published");
+    expect(published.get("type")).toBe("event");
+    expect(drafts.get("status")).toBe("draft");
+    expect(rescueStories.get("type")).toBe("rescue_story");
+    expect(rescueStories.get("status")).toBe("archived");
+  });
+
+  test("CMS-04: the cards show filtered totals even when the response page holds 25 rows", () => {
+    // Two pages of data behind a 25-row page: the old code counted page 1 (25 published, 0
+    // drafts) and the number changed as staff paged. The total is independent of the page.
+    const pageOne = Array.from({ length: 25 }, () => ({ id: "x" }));
     expect(
-      summarizeContentRows([
-        { type: "rescue_story", status: "published" },
-        { type: "rescue_story", status: "draft" },
-        { type: "event", status: "published" },
-      ]),
-    ).toEqual({ total: 3, published: 2, drafts: 1, rescueStories: 2 });
+      contentSummaryTotals({
+        published: { total: 40, items: pageOne },
+        drafts: { total: 20, items: [] },
+        rescueStories: { total: 30, items: pageOne },
+      }),
+    ).toEqual({ published: 40, drafts: 20, rescueStories: 30 });
+  });
+
+  test("CMS-04: a missing response is unknown totals, not a page-derived number", () => {
+    expect(
+      contentSummaryTotals({
+        published: { total: 40 },
+        drafts: { total: 20 },
+      }),
+    ).toBeUndefined();
   });
 
   test("converts ISO timestamps to datetime-local values without UTC display drift", () => {

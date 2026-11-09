@@ -21,9 +21,9 @@ export const managementCopy = defineAdminCopy({
     },
     cards: {
       all: "全部內容",
-      published: "本頁已發布",
-      drafts: "本頁草稿",
-      rescueStories: "本頁救援故事",
+      published: "已發布",
+      drafts: "草稿",
+      rescueStories: "救援故事",
       /** The figure on a card: the plain number, as Chinese has always shown it. */
       count: (value: number) => String(value),
     },
@@ -125,9 +125,9 @@ export const managementCopy = defineAdminCopy({
     },
     cards: {
       all: "All content",
-      published: "Published on this page",
-      drafts: "Drafts on this page",
-      rescueStories: "Rescue stories on this page",
+      published: "Published",
+      drafts: "Drafts",
+      rescueStories: "Rescue stories",
       count: (value: number) => formatAdminNumber(value, "en"),
     },
     eligibility: {
