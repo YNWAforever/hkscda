@@ -109,6 +109,49 @@ export const SECURITY_HEADERS: Record<string, string> = {
   "Content-Security-Policy": CONTENT_SECURITY_POLICY,
 };
 
+const SAFE_NONCE = /^[A-Za-z0-9+/]+={0,2}$/;
+
+/**
+ * Put the request nonce on every `<script>` tag that does not already have one.
+ * TanStack/Nitro may emit hydration scripts before this request's nonce exists
+ * (a reused router, or HTML rendered at build time). The CSP header always
+ * carries a fresh nonce, so those tags must be stamped here or the browser
+ * blocks them. The nonce charset cannot break out of the double-quoted attribute.
+ */
+export function stampHtmlScriptNonces(html: string, nonce: string): string {
+  if (!SAFE_NONCE.test(nonce)) return html;
+  return html.replace(/<script\b(?![^>]*\bnonce\s*=)/gi, `<script nonce="${nonce}"`);
+}
+
+/**
+ * For HTML responses, stamp the request nonce onto script tags, then return a
+ * new body. Non-HTML responses (JSON APIs) are left unread and unchanged.
+ */
+export async function withNonceStampedScripts(
+  response: Response,
+  nonce?: string,
+): Promise<Response> {
+  if (!nonce || !SAFE_NONCE.test(nonce)) return response;
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType && !contentType.toLowerCase().includes("text/html")) return response;
+  const html = await response.text();
+  const stamped = stampHtmlScriptNonces(html, nonce);
+  if (stamped === html) {
+    return new Response(html, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  }
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(stamped, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 /**
  * Add the security headers to a response without clobbering any the handler
  * already set. Mutates in place when possible (preserves SSR streaming bodies);

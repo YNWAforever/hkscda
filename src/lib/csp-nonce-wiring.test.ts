@@ -10,6 +10,7 @@ describe("CSP nonce propagation wiring", () => {
     const server = read("src/server.ts");
     expect(server).toContain("const nonce = createCspNonce();");
     expect(server).toContain("runWithCspNonce(nonce,");
+    expect(server).toContain("withNonceStampedScripts");
     // Both the normal response and the 500 fallback carry the same request nonce.
     expect(server.match(/applySecurityHeaders\(/g)?.length).toBe(2);
     expect(server.match(/applySecurityHeaders\([\s\S]*?nonce[),]/g)?.length).toBe(2);

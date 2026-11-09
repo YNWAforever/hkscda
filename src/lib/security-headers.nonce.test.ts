@@ -6,6 +6,8 @@ import {
   CSP_REPORT_GROUP,
   CSP_REPORT_PATH,
   SECURITY_HEADERS,
+  stampHtmlScriptNonces,
+  withNonceStampedScripts,
 } from "./security-headers";
 
 const directive = (policy: string, name: string) =>
@@ -79,5 +81,34 @@ describe("nonce-based script-src", () => {
     });
     const result = applySecurityHeaders(original, "bm9uY2U");
     expect(result.headers.get("Content-Security-Policy")).toBe("default-src 'none'");
+  });
+
+  test("stampHtmlScriptNonces adds the nonce to script tags that lack one", () => {
+    const html =
+      '<script type="module" src="/app.js"></script><script>window.x=1</script><script nonce="already">ok</script>';
+    expect(stampHtmlScriptNonces(html, "Zmlyc3Qtbm9uY2U=")).toBe(
+      '<script nonce="Zmlyc3Qtbm9uY2U=" type="module" src="/app.js"></script><script nonce="Zmlyc3Qtbm9uY2U=">window.x=1</script><script nonce="already">ok</script>',
+    );
+  });
+
+  test("stampHtmlScriptNonces ignores a nonce that is not safe to interpolate", () => {
+    const html = "<script>window.x=1</script>";
+    expect(stampHtmlScriptNonces(html, 'x"><script>')).toBe(html);
+  });
+
+  test("withNonceStampedScripts stamps HTML and leaves JSON unread as-is", async () => {
+    const html = await withNonceStampedScripts(
+      new Response("<script>window.x=1</script>", {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      }),
+      "Zmlyc3Qtbm9uY2U=",
+    );
+    expect(await html.text()).toBe('<script nonce="Zmlyc3Qtbm9uY2U=">window.x=1</script>');
+    const json = new Response(JSON.stringify({ ok: true }), {
+      headers: { "content-type": "application/json" },
+    });
+    const untouched = await withNonceStampedScripts(json, "Zmlyc3Qtbm9uY2U=");
+    expect(untouched).toBe(json);
+    expect(await untouched.json()).toEqual({ ok: true });
   });
 });
