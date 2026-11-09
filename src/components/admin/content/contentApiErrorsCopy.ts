@@ -8,6 +8,9 @@ import { defineAdminCopy } from "../i18n/copy";
 export const contentApiErrorsCopy = defineAdminCopy({
   zh: {
     notPublished: "故事尚未發布，未能產生文案或通知草稿。請先發布故事，連結才會指向公開頁面。",
+    /** The requested story update itself is not in the published revision (CMS-02). */
+    updateNotPublished:
+      "此故事更新尚未發布。請先發布故事，文案才會與公開頁面顯示的更新一致。",
     invalidHeading: "以下欄位需要修改：",
     /** One field's line: its label, then the reason. */
     fieldLine: (label: string, reason: string) => `${label}：${reason}`,
@@ -30,6 +33,9 @@ export const contentApiErrorsCopy = defineAdminCopy({
   en: {
     notPublished:
       "This story isn’t published yet, so there is no public page to link to. Publish the story, then generate the copy or notification drafts.",
+    /** The requested story update itself is not in the published revision (CMS-02). */
+    updateNotPublished:
+      "That story update isn’t in the published revision. Publish the story so the copy matches the public page.",
     invalidHeading: "Fix these fields:",
     fieldLine: (label: string, reason: string) => `${label}: ${reason}`,
     reasons: {

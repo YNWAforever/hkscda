@@ -21,6 +21,21 @@ describe("contentApiErrorLines", () => {
     expect(english?.join("\n")).not.toContain("generating outbound copy");
   });
 
+  test("CMS-02: explains an update outside the published revision in the admin's language", () => {
+    const updateNotPublished = new AdminApiError({
+      status: 409,
+      code: "update_not_published",
+      message: "Publish the story update before generating outbound copy",
+    });
+    expect(contentApiErrorLines(updateNotPublished)).toEqual([
+      contentApiErrorsCopy.zh.updateNotPublished,
+    ]);
+    const english = contentApiErrorLines(updateNotPublished, "en");
+    expect(english).toEqual([contentApiErrorsCopy.en.updateNotPublished]);
+    expectNoChineseText(english?.join("\n") ?? "");
+    expect(english?.join("\n")).not.toContain("Publish the story update before");
+  });
+
   test("leaves any other error to the caller", () => {
     expect(
       contentApiErrorLines(new AdminApiError({ status: 409, code: "conflict", message: "x" })),

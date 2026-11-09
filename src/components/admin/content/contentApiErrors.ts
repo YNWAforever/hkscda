@@ -90,6 +90,8 @@ export function contentFieldErrorLines(
  *
  * - `not_published` (409): social copy and adopter notification drafts link to the public story
  *   page, so the server refuses them until the story is published (BUG-66).
+ * - `update_not_published` (409): the requested story update is not in the published revision, so
+ *   the link would open a page that does not show it (CMS-02).
  * - `invalid` with `fields` (400): a validation failure, named field by field with the editor's
  *   labels (BUG-68). Without fields it is left to the lifecycle text.
  */
@@ -100,6 +102,7 @@ export function contentApiErrorLines(
   if (!(error instanceof AdminApiError)) return null;
   const copy = pickAdminCopy(contentApiErrorsCopy, language);
   if (error.code === "not_published") return [copy.notPublished];
+  if (error.code === "update_not_published") return [copy.updateNotPublished];
   if (error.code === "invalid" && error.fields && Object.keys(error.fields).length > 0) {
     return [copy.invalidHeading, ...contentFieldErrorLines(error.fields, language)];
   }

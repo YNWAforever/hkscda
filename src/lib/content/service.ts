@@ -68,6 +68,21 @@ export class ContentNotPublishedError extends Error {
   }
 }
 
+/**
+ * Social copy for one story update is quoted from the published snapshot, so an update the
+ * published revision does not contain (added or changed since it was published) has nothing on
+ * the linked page to quote, and the request is refused as a 409 with this code (CMS-02).
+ */
+export class ContentUpdateNotPublishedError extends Error {
+  name = "ContentUpdateNotPublishedError";
+  readonly code = "update_not_published";
+  readonly status = 409;
+
+  constructor() {
+    super("Publish the story update before generating outbound copy");
+  }
+}
+
 export type ContentAuditLogInsert = {
   actor_user_id: string | null;
   action: string;
@@ -664,17 +679,28 @@ export function createContentService({
       const content = await repo.getAdminContent(contentId);
       if (!content) throw new Error("Content item not found");
 
-      const storyUpdate = parsed.storyUpdateId
-        ? await repo.getStoryUpdate(parsed.storyUpdateId)
-        : null;
-      if (parsed.storyUpdateId && !storyUpdate) throw new Error("Story update not found");
-      if (storyUpdate && storyUpdate.contentItemId !== content.id) {
-        throw new Error("Story update does not belong to this content item");
+      // The authoring read validates the id the admin sent: it owns the update and says whether
+      // the update is public at all. Its title and body are never copied into the outbound text.
+      if (parsed.storyUpdateId) {
+        const authored = await repo.getStoryUpdate(parsed.storyUpdateId);
+        if (!authored) throw new Error("Story update not found");
+        if (authored.contentItemId !== content.id) {
+          throw new Error("Story update does not belong to this content item");
+        }
+        assertPublicOutboundStoryUpdate(authored);
       }
-      if (storyUpdate) assertPublicOutboundStoryUpdate(storyUpdate);
 
       // The link and the story's wording come from the published story, not the draft row.
       const story = await publishedStory(content);
+      // The update is quoted from the published revision's snapshot: a newer unpublished edit to
+      // the same update is not on the page the copy links to, so it must not be announced
+      // (BUG-66's class, closed for the update text by CMS-02).
+      const storyUpdate = parsed.storyUpdateId
+        ? (story.updates.find((update) => update.id === parsed.storyUpdateId) ?? null)
+        : null;
+      if (parsed.storyUpdateId && !storyUpdate) throw new ContentUpdateNotPublishedError();
+      if (storyUpdate) assertPublicOutboundStoryUpdate(storyUpdate);
+
       const publicUrl = publicStoryUrl(publicBaseUrl, story.slug);
       const variants = generateSocialCopyVariants({
         content: story,
