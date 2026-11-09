@@ -62,6 +62,26 @@ export function clearAdminSession() {
   notify();
 }
 
+/**
+ * Test seam: stand in for a completed sign-in without running the BFF or touching storage.
+ * The admin fetch tests (and the browser fixtures) use this to seed the in-memory token that
+ * production gets from `/api/admin/session/login`; nothing is written to localStorage.
+ */
+export function seedAdminSessionForTests(
+  input: { accessToken?: string; authUserId?: string; expiresAt?: number } = {},
+) {
+  setAdminSession({
+    accessToken: input.accessToken ?? "test-admin-access-token",
+    authUserId: input.authUserId ?? "test-admin-auth-user",
+    expiresAt: input.expiresAt ?? Date.now() + 3_600_000,
+  });
+}
+
+/** Test seam: forget a seeded or real session between cases. */
+export function resetAdminSessionForTests() {
+  clearAdminSession();
+}
+
 /** Notifies on every session change (token set, refreshed token, cleared session). */
 export function subscribeAdminSession(listener: () => void) {
   listeners.add(listener);
