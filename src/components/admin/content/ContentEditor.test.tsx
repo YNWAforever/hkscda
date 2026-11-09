@@ -284,6 +284,43 @@ describe("ContentEditor", () => {
     expect(markup.match(/maxLength="500"/g)).toHaveLength(3);
   });
 
+  test("CMS-06: an approved revision renders the collapsed verified summary", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const reviewed: ContentDetail = {
+      ...content,
+      revisionId: "55555555-5555-4555-8555-555555555555",
+      savedReview: { classification: "approved", evidence: "職員現場紀錄" },
+    };
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentEditor contentId={reviewed.id} initialContent={reviewed} />
+      </QueryClientProvider>,
+    );
+
+    expect(markup).toContain("已核實可發布 · 職員現場紀錄");
+    expect(markup).toContain("展開來源審核");
+  });
+
+  test("CMS-06: a needs-review revision opens the form with its saved evidence", async () => {
+    const { ContentEditor } = await import("./ContentEditor");
+    const reviewed: ContentDetail = {
+      ...content,
+      revisionId: "55555555-5555-4555-8555-555555555555",
+      savedReview: { classification: "needs_review", evidence: "待補來源" },
+    };
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentEditor contentId={reviewed.id} initialContent={reviewed} />
+      </QueryClientProvider>,
+    );
+
+    expect(markup).not.toContain("展開來源審核");
+    expect(markup).toContain("待補來源");
+    expect(markup).toContain("來源審核");
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();

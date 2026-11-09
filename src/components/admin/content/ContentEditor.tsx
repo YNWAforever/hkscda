@@ -723,6 +723,8 @@ export function ContentEditor({ contentId, initialContent }: ContentEditorProps)
             id={contentId}
             revision={content.revisionId}
             disabled={hasDirty}
+            savedClassification={content.savedReview?.classification}
+            savedEvidence={content.savedReview?.evidence ?? null}
           />
         </div>
       )}

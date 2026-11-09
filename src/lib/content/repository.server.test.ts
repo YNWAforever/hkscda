@@ -231,6 +231,57 @@ test("BUG-66: the authoring detail maps content_item.published_slug apart from t
   expect(unpublished?.publishedSlug).toBeNull();
 });
 
+test("CMS-06: the authoring read returns the current revision's saved review", async () => {
+  const content = {
+    id: "content",
+    title: "Synthetic",
+    slug: "synthetic",
+    type: "event",
+    summary: "Summary",
+    status: "draft",
+    cover_media_id: null,
+    draft_revision_id: "55555555-5555-4555-8555-555555555555",
+  };
+  const snapshot = {
+    content,
+    profile: null,
+    cover: null,
+    latest: null,
+    links: [],
+    media: [],
+    updates: [],
+    socialCopies: [],
+    notificationDrafts: [],
+  };
+  for (const [review, expected] of [
+    [{ classification: "approved", evidence: "職員現場紀錄" }, { classification: "approved", evidence: "職員現場紀錄" }],
+    [{ classification: "needs_review", evidence: "待補來源" }, { classification: "needs_review", evidence: "待補來源" }],
+    [null, null],
+  ] as const) {
+    const query = {
+      select: () => query,
+      eq: () => query,
+      maybeSingle: async () => ({ data: review, error: null }),
+    };
+    const client = {
+      from: (table: string) => (table === "editorial_content_review" ? query : queryRowWithData(content)),
+      rpc: async () => ({ data: snapshot, error: null }),
+    } as unknown as SupabaseClient;
+
+    const detail = await createSupabaseContentRepository(client).getAdminContent("content");
+    expect(detail?.savedReview).toEqual(expected);
+  }
+});
+
+function queryRowWithData(data: unknown) {
+  const query = {
+    select: () => query,
+    eq: () => query,
+    maybeSingle: async () => ({ data, error: null }),
+  };
+  return query;
+}
+
 test("detail page and its separate private cover share one signing batch", async () => {
   const content = {
     id: "content",

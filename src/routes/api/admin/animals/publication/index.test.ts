@@ -94,6 +94,73 @@ test("CMS-01: a stale draft save answers 409 with the actionable stale_draft cod
   expect(body.error.message.length).toBeGreaterThan(0);
 });
 
+test("CMS-06: an authoring read returns the current revision's saved review", async () => {
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+
+  for (const [classification, evidence] of [
+    ["approved", "獸醫報告"],
+    ["needs_review", "待補來源"],
+  ] as const) {
+    activeClient = {
+      rpc: async () => ({
+        data: { kind: "read", draft: { revision: 3 }, versions: [] },
+        error: null,
+      }),
+      from: (table: string) =>
+        queryRow(
+          table === "animals"
+            ? { id: "animal-1", name: "Synthetic" }
+            : table === "editorial_content_review"
+              ? { classification, evidence }
+              : null,
+        ),
+    };
+
+    const response = await handler({
+      request: new Request("http://localhost/api/admin/animals/publication/", {
+        method: "POST",
+        body: JSON.stringify({
+          kind: "read",
+          animal_id: "11111111-1111-4111-8111-111111111111",
+        }),
+      }),
+    } as never);
+
+    if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      review: { classification: string; evidence: string } | null;
+      animal: { id: string } | null;
+    };
+    expect(body.review).toEqual({ classification, evidence });
+    expect(body.animal?.id).toBe("animal-1");
+  }
+});
+
+test("CMS-06: a read with no review for the revision returns review null", async () => {
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  activeClient = {
+    rpc: async () => ({ data: { kind: "read", draft: { revision: 4 }, versions: [] }, error: null }),
+    from: (table: string) =>
+      queryRow(table === "editorial_content_review" ? null : { id: "animal-1" }),
+  };
+
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "read", animal_id: "11111111-1111-4111-8111-111111111111" }),
+    }),
+  } as never);
+
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(200);
+  expect((await response.json()).review).toBeNull();
+});
+
 test("BUG-22: version restores require an explicit revision and answer a stale one with 409", async () => {
   const handlers = Route.options.server?.handlers;
   const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;

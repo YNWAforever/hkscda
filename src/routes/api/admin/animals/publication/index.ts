@@ -208,6 +208,26 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             .maybeSingle();
           if (canonical.error) throw canonical.error;
           if (data && typeof data === "object") data.animal = canonical.data;
+          // The current draft revision's saved review, so the review panel shows a verified
+          // revision collapsed instead of reopening as needs_review on every load (CMS-06). The
+          // revision key is the same one editorial_review_command writes and publish checks.
+          const draft = (data as { draft?: { revision?: unknown } } | null)?.draft;
+          if (data && typeof data === "object" && typeof draft?.revision === "number") {
+            const { data: review, error: reviewError } = await c
+              .from("editorial_content_review")
+              .select("classification,evidence")
+              .eq("entity_kind", "animal")
+              .eq("entity_id", command.animal_id)
+              .eq("revision_key", String(draft.revision))
+              .maybeSingle();
+            if (reviewError) throw reviewError;
+            data.review =
+              review &&
+              typeof review.classification === "string" &&
+              typeof review.evidence === "string"
+                ? { classification: review.classification, evidence: review.evidence }
+                : null;
+          }
         }
         if (error) {
           // enforce_editorial_review raises 22023 with this text when the
