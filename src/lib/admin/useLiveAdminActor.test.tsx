@@ -19,10 +19,14 @@ mock.module("react", () => ({
 }));
 let cachedActor = "A",
   resets = 0,
+  removals = 0,
   callback: (_event: string, session: { user: { id: string } } | null) => void,
   unsubscribed = 0;
 const fakeClient = {
   getQueryData: () => ({ admin: { authUserId: cachedActor } }),
+  removeQueries: async () => {
+    removals++;
+  },
   resetQueries: async () => {
     resets++;
   },
@@ -54,6 +58,7 @@ beforeEach(() => {
   writes = 0;
   cachedActor = "A";
   resets = 0;
+  removals = 0;
   unsubscribed = 0;
   initial = Promise.resolve({ data: { session: { user: { id: "A" } } } });
 });
@@ -66,6 +71,7 @@ test("live account changes immediately invalidate visible actor and defer cached
   expect(resets).toBe(0);
   await flush();
   expect(resets).toBe(1);
+  expect(removals).toBe(1);
   cleanup!();
   expect(unsubscribed).toBe(1);
 });
@@ -143,3 +149,41 @@ for (const refresh of [false, true])
     unsubscribe();
     client.clear();
   });
+
+test("AUTH-04: a different account signing in clears every non-identity cached query", async () => {
+  const client = new realQuery.QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient = client;
+  client.setQueryData(["supporters"], [{ name: "Previous admin's supporter" }]);
+  client.setQueryData(["admin-me"], { admin: { authUserId: "A" } });
+  useLiveAdminActor();
+  await flush();
+  callback("SIGNED_IN", { user: { id: "B" } });
+  await flush();
+  expect(client.getQueryData(["supporters"])).toBeUndefined();
+  cleanup!();
+  client.clear();
+});
+
+test("AUTH-04: the identity entry survives the clear so it is refetched for the new account", async () => {
+  const client = new realQuery.QueryClient({ defaultOptions: { queries: { retry: false } } });
+  queryClient = client;
+  let served = "A";
+  const observer = new realQuery.QueryObserver(client, {
+    queryKey: ["admin-me"],
+    staleTime: Infinity,
+    queryFn: () => Promise.resolve({ admin: { authUserId: served } }),
+  });
+  const unsubscribe = observer.subscribe(() => {});
+  client.setQueryData(["admin-me"], { admin: { authUserId: "A" } });
+  useLiveAdminActor();
+  await flush();
+  served = "B";
+  callback("SIGNED_IN", { user: { id: "B" } });
+  await flush();
+  expect(client.getQueryData<{ admin: { authUserId: string } }>(["admin-me"])).toEqual({
+    admin: { authUserId: "B" },
+  });
+  cleanup!();
+  unsubscribe();
+  client.clear();
+});
