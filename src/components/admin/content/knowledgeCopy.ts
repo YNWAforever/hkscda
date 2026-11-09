@@ -26,6 +26,8 @@ export const knowledgeCopy = defineAdminCopy({
     },
     loading: "Loading knowledge posts...",
     ownershipUnknown: "無法核實擁有權。",
+    revisionConflict: "另一位管理員已修改此文章。請重新載入最新版本，再套用你的修改。",
+    reloadLatest: "重新載入最新版本",
     empty: "尚未有知識庫文章。",
     pager: "知識文章",
     managed: {
@@ -76,6 +78,9 @@ export const knowledgeCopy = defineAdminCopy({
     },
     loading: "Loading knowledge posts...",
     ownershipUnknown: "Could not verify ownership. Refresh the page or try again later.",
+    revisionConflict:
+      "Another admin changed this article. Reload the latest version, then apply your edits again.",
+    reloadLatest: "Reload latest version",
     empty: "No knowledge base articles yet.",
     pager: "Knowledge articles",
     managed: {
