@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { listAdminPaymentExportRows, listAdminPaymentPage } from "./adminPayments.server";
+import { PAYMENT_EXPORT_ROW_CAP } from "./adminPayments.server";
 
 type QueryCall = { table: string; method: string; payload?: unknown; options?: unknown };
 
@@ -403,6 +404,42 @@ describe("listAdminPaymentExportRows", () => {
 
     expect(rows).toHaveLength(1001);
     expect(new Set(rows.map((row) => row.paymentId)).size).toBe(1001);
+  });
+});
+
+describe("listAdminPaymentExportRows row cap (BUG-19)", () => {
+  const payments = (count: number) =>
+    Array.from({ length: count }, (_, index) => paymentRow(`p${String(index).padStart(5, "0")}`));
+
+  test("exports exactly the documented cap", async () => {
+    const { client } = createClient(payments(PAYMENT_EXPORT_ROW_CAP));
+
+    const rows = await listAdminPaymentExportRows(client, {});
+
+    expect(rows).toHaveLength(PAYMENT_EXPORT_ROW_CAP);
+  });
+
+  test("refuses one row past the cap with a 413 naming the limit", async () => {
+    const { client } = createClient(payments(PAYMENT_EXPORT_ROW_CAP + 1));
+
+    let failure: unknown;
+    try {
+      await listAdminPaymentExportRows(client, {});
+    } catch (error) {
+      failure = error;
+    }
+
+    expect(failure).toBeInstanceOf(Response);
+    const response = failure as Response;
+    expect(response.status).toBe(413);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const body = (await response.json()) as { error: string; total: number; limit: number };
+    expect(body).toMatchObject({
+      limit: PAYMENT_EXPORT_ROW_CAP,
+      total: PAYMENT_EXPORT_ROW_CAP + 1,
+    });
+    expect(body.error).toContain(`${PAYMENT_EXPORT_ROW_CAP}`);
+    expect(body.error).toContain("Narrow");
   });
 });
 

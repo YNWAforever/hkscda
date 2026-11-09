@@ -33,7 +33,7 @@ const paymentRow = {
 
 /** A query builder that answers every read with the rows of its table and records writes. */
 function query(table: string) {
-  const rows = table === "payment" ? [paymentRow] : [];
+  const rows = table === "payment" ? paymentRows : [];
   const result = { data: rows, error: null, count: rows.length };
   const builder: Record<string, unknown> = {};
   for (const method of ["select", "eq", "in", "or", "order", "range", "limit", "overlaps"]) {
@@ -49,6 +49,8 @@ function query(table: string) {
   ) => Promise.resolve(result).then(onfulfilled, onrejected);
   return builder;
 }
+
+let paymentRows = [paymentRow];
 
 const client = {
   from: (table: string) => query(table),
@@ -102,4 +104,25 @@ test("BUG-19: the payments CSV export is sent with cache-control no-store", asyn
   const response = await exportPayments();
   expect(response.status).toBe(200);
   expect(response.headers.get("cache-control")).toBe("no-store");
+});
+
+test("BUG-19: an export past the row cap is a no-store 413 that writes no audit row", async () => {
+  const { PAYMENT_EXPORT_ROW_CAP } = await import("../../../../lib/donations/adminPayments.server");
+  writes.length = 0;
+  paymentRows = Array.from({ length: PAYMENT_EXPORT_ROW_CAP + 1 }, (_, index) => ({
+    ...paymentRow,
+    id: `pay-${index}`,
+  }));
+  try {
+    const response = await exportPayments();
+    expect(response.status).toBe(413);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.json()).toMatchObject({ limit: PAYMENT_EXPORT_ROW_CAP });
+    expect(
+      writes.some((write) => JSON.stringify(write.payload).includes("export.payments")),
+      "a refused export must not be audited as an export",
+    ).toBe(false);
+  } finally {
+    paymentRows = [paymentRow];
+  }
 });
