@@ -24,7 +24,11 @@ const metadataSchema = z
       });
     }
     if (value.contentClass === "verified" && !value.contentOwner) {
-      context.addIssue({ code: z.ZodIssueCode.custom, path: ["contentOwner"], message: "Required" });
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["contentOwner"],
+        message: "Required",
+      });
     }
     if (
       value.effectiveFrom &&
@@ -96,7 +100,8 @@ export function createPublicationMetadataHandler(ports: HandlerPorts) {
       const code = (error as { code?: string })?.code;
       if (code === "23514" || code === "22023")
         return errorResponse(400, "invalid", "Invalid publication metadata");
-      if (code === "40001") return errorResponse(409, "conflict", "Content changed; reload before saving");
+      if (code === "40001")
+        return errorResponse(409, "conflict", "Content changed; reload before saving");
       if (code === "P0002") return errorResponse(404, "not_found", "Content not found");
       return errorResponse(500, "internal", "Could not save publication metadata");
     }

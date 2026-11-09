@@ -9,8 +9,7 @@ export const contentApiErrorsCopy = defineAdminCopy({
   zh: {
     notPublished: "故事尚未發布，未能產生文案或通知草稿。請先發布故事，連結才會指向公開頁面。",
     /** The requested story update itself is not in the published revision (CMS-02). */
-    updateNotPublished:
-      "此故事更新尚未發布。請先發布故事，文案才會與公開頁面顯示的更新一致。",
+    updateNotPublished: "此故事更新尚未發布。請先發布故事，文案才會與公開頁面顯示的更新一致。",
     invalidHeading: "以下欄位需要修改：",
     /** One field's line: its label, then the reason. */
     fieldLine: (label: string, reason: string) => `${label}：${reason}`,

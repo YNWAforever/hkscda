@@ -7,7 +7,8 @@ import {
   ContentUpdateNotPublishedError,
   createContentService,
   type ContentRepository,
-} from "./service";import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
+} from "./service";
+import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 type ContentService = ReturnType<typeof createContentService>;
 

@@ -205,7 +205,8 @@ describe("CMS-08: story-update, media-caption and story-profile text have length
     {
       name: "a media caption",
       max: CONTENT_CHILD_TEXT_MAX.mediaCaption,
-      parse: (value: string) => contentMediaInputSchema.safeParse({ ...mediaInput, caption: value }),
+      parse: (value: string) =>
+        contentMediaInputSchema.safeParse({ ...mediaInput, caption: value }),
       path: "caption",
     },
     {

@@ -144,7 +144,10 @@ test("CMS-06: a read with no review for the revision returns review null", async
   const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
   if (!handler) throw new Error("Animal publication POST handler missing");
   activeClient = {
-    rpc: async () => ({ data: { kind: "read", draft: { revision: 4 }, versions: [] }, error: null }),
+    rpc: async () => ({
+      data: { kind: "read", draft: { revision: 4 }, versions: [] },
+      error: null,
+    }),
     from: (table: string) =>
       queryRow(table === "editorial_content_review" ? null : { id: "animal-1" }),
   };

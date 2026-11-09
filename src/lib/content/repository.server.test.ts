@@ -254,8 +254,14 @@ test("CMS-06: the authoring read returns the current revision's saved review", a
     notificationDrafts: [],
   };
   for (const [review, expected] of [
-    [{ classification: "approved", evidence: "職員現場紀錄" }, { classification: "approved", evidence: "職員現場紀錄" }],
-    [{ classification: "needs_review", evidence: "待補來源" }, { classification: "needs_review", evidence: "待補來源" }],
+    [
+      { classification: "approved", evidence: "職員現場紀錄" },
+      { classification: "approved", evidence: "職員現場紀錄" },
+    ],
+    [
+      { classification: "needs_review", evidence: "待補來源" },
+      { classification: "needs_review", evidence: "待補來源" },
+    ],
     [null, null],
   ] as const) {
     const query = {
@@ -264,7 +270,8 @@ test("CMS-06: the authoring read returns the current revision's saved review", a
       maybeSingle: async () => ({ data: review, error: null }),
     };
     const client = {
-      from: (table: string) => (table === "editorial_content_review" ? query : queryRowWithData(content)),
+      from: (table: string) =>
+        table === "editorial_content_review" ? query : queryRowWithData(content),
       rpc: async () => ({ data: snapshot, error: null }),
     } as unknown as SupabaseClient;
 
