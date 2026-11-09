@@ -8,6 +8,7 @@ import {
 } from "../../components/admin/adminI18n";
 import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import { safeAdminRedirect } from "../../lib/admin/loginRedirect";
+import { NO_ADMIN_ACCESS_LOGIN_REASON, type AdminLoginReason } from "../../lib/admin/session";
 import { completeSignIn, type SignInRefusal } from "../../lib/admin/signInFlow";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
@@ -19,12 +20,15 @@ const serverNotReady = () => false;
 type AdminLoginSearch = {
   passwordReset?: "success";
   redirect?: string;
+  reason?: AdminLoginReason;
 };
 
 export const Route = createFileRoute("/admin/login")({
   validateSearch: (search: Record<string, unknown>): AdminLoginSearch => ({
     passwordReset: search.passwordReset === "success" ? "success" : undefined,
     redirect: safeAdminRedirect(search.redirect) ?? undefined,
+    reason:
+      search.reason === NO_ADMIN_ACCESS_LOGIN_REASON ? NO_ADMIN_ACCESS_LOGIN_REASON : undefined,
   }),
   component: AdminLoginPage,
 });
@@ -47,6 +51,7 @@ export function AdminLoginPage() {
     <AdminLanguageProvider>
       <AdminLoginContent
         passwordResetSuccess={search.passwordReset === "success"}
+        noAdminAccess={search.reason === NO_ADMIN_ACCESS_LOGIN_REASON}
         onSignedIn={goAfterSignIn}
       />
     </AdminLanguageProvider>
@@ -55,9 +60,12 @@ export function AdminLoginPage() {
 
 export function AdminLoginContent({
   passwordResetSuccess,
+  noAdminAccess = false,
   onSignedIn,
 }: {
   passwordResetSuccess: boolean;
+  /** The admin's access was refused mid-session, so the page says why (AUTH-02). */
+  noAdminAccess?: boolean;
   onSignedIn: () => void | Promise<SignInRefusal | undefined | void>;
 }) {
   const { copy, language } = useAdminLanguage();
@@ -137,6 +145,15 @@ export function AdminLoginContent({
             className="rounded-lg bg-[var(--color-success-highlight)] px-3 py-2 text-sm text-[var(--color-success)]"
           >
             {copy.login.passwordUpdated}
+          </p>
+        )}
+
+        {noAdminAccess && mode === "sign-in" && (
+          <p
+            role="alert"
+            className="rounded-lg bg-[var(--color-warning-highlight)] px-3 py-2 text-sm text-[var(--color-warning)]"
+          >
+            {copy.login.noAdminAccess}
           </p>
         )}
 
