@@ -82,7 +82,7 @@ applied** (statements + `created_by = 'baseline reconciliation 2026-11-10 …'`)
 
 ## Residual risks (read before the next schema change)
 
-1. **Five functions still run an older body than the repository's latest definition**
+1. **RESOLVED 2026-11-10:** four functions were replaced with their latest repository bodies (see `20261110140000_function_parity_and_guide_uniqueness.sql`); `upsert_about_page_content_with_audit` had already been redefined by the editor-fence migration. The baseline now matches the repository at the object level for every statically declared object. Original note: five functions ran an older body
    (`record_sponsorship_payment_proof`, `upsert_about_page_content_with_audit`,
    `read_content_admin_summaries`, `claim_volunteer_operation_outbox`,
    `volunteer_roster_attendance_result`). The differences are small but were not forced in this

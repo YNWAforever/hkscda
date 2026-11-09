@@ -1284,3 +1284,21 @@ re-decided in one batch. No production data is touched and no existing behaviour
   global middleware returns a generic 500 page. (Second pass: the sponsorship finance POST does return raw Postgres text, BUG-47.)
 - **Double submit.** Finalise, intake, case status, animal save and volunteer drafts
   disable their buttons and/or use idempotency keys.
+
+## Post-baseline parity and guide uniqueness (2026-11-10)
+
+The stale-schema catch-up restored the missing objects, but four functions still ran an older body
+than the repository's latest definition, and BUG-53's "one published guide per species" invariant
+was not enforced at the database level.
+
+- **Function parity** — `record_sponsorship_payment_proof`, `read_content_admin_summaries`,
+  `claim_volunteer_operation_outbox` and `volunteer_roster_attendance_result` are replaced with
+  their latest repository bodies (`20261110140000_function_parity_and_guide_uniqueness.sql`,
+  `create or replace`, privileges restated). Verified in production by comparing normalized
+  `prosrc` with the repository definitions: all four match.
+- **BUG-53 closed** — production data audit before the change: `public.adoption_guide_releases`
+  contained **0 rows**, so no duplicate published releases can exist. The migration adds
+  `adoption_guide_releases_one_published_per_species` (partial unique index on `species` where
+  `state = 'published'`). The publish path already serialises per species and archives older
+  releases; the index makes the invariant explicit. A future environment with duplicate published
+  rows would refuse the migration and must archive through the publish path first.
