@@ -4,6 +4,7 @@ import {
   copyPublishedAnimalMedia,
   type AnimalPublicationMediaCopy,
 } from "../../../../../lib/animals/publicationMedia.server";
+import { publicationCommandFailure } from "../../../../../lib/animals/publicationCommandFailure";
 import {
   InvalidRequestJsonError,
   RequestBodyTooLargeError,
@@ -229,17 +230,12 @@ export const Route = createFileRoute("/api/admin/animals/publication/")({
             { status, headers: { "cache-control": "no-store" } },
           );
         }
-        if (
-          command.kind === "publish" &&
-          (data?.kind === "conflict" || data?.kind === "not_found")
-        ) {
-          return Response.json(
-            { error: { code: "stale_preview", message: "草稿已變更，請重新預覽。" } },
-            {
-              status: data.kind === "conflict" ? 409 : 404,
-              headers: { "cache-control": "no-store" },
-            },
-          );
+        const commandFailure = publicationCommandFailure(command.kind, data);
+        if (commandFailure) {
+          return Response.json(commandFailure.body, {
+            status: commandFailure.status,
+            headers: { "cache-control": "no-store" },
+          });
         }
         if (data?.kind === "published" && data.replayed === true) {
           if (typeof data.version_id !== "string")

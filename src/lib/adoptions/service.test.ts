@@ -1713,3 +1713,35 @@ describe("createAdoptionCoordinatorService", () => {
     });
   });
 });
+
+test("OPS-02: rejects changing a system status's semantic flags before repository mutation", async () => {
+  const repo = createRepo();
+  const service = createAdoptionCoordinatorService({ repo });
+
+  for (const input of [{ isActive: false }, { isClosing: true }, { isFinal: true }]) {
+    await expect(service.updateStatus({ actorUserId: adminId, statusId, input })).rejects.toThrow(
+      "System status flags cannot be changed",
+    );
+  }
+
+  // One stored-status read per attempt; the repository mutation never runs.
+  expect(repo.calls.map((call) => call.name)).toEqual(["getStatus", "getStatus", "getStatus"]);
+});
+
+test("OPS-02: relabelling a system status is still allowed", async () => {
+  const repo = createRepo();
+  const service = createAdoptionCoordinatorService({ repo });
+
+  const updated = await service.updateStatus({
+    actorUserId: adminId,
+    statusId,
+    input: { labelEn: "New application" },
+  });
+
+  expect(updated.labelEn).toBe("New application");
+  expect(repo.calls.map((call) => call.name)).toEqual([
+    "getStatus",
+    "updateStatus",
+    "insertAuditLog",
+  ]);
+});

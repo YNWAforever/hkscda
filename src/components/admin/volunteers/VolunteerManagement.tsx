@@ -28,6 +28,7 @@ import { TablePager } from "../TablePager";
 import { ActivityCreateForm } from "./ActivityCreateForm";
 import { EMPTY_ACTIVITY_DRAFT, type ActivityDraft } from "./activityDraft";
 import {
+  activityPublicationAction,
   availableRegistrationTransitions,
   buildActivitySearchParams,
   buildRegistrationSearchParams,
@@ -374,24 +375,38 @@ export function VolunteerManagement() {
               <Users className="h-3.5 w-3.5" />
               {selected ? text.activities.showing : text.activities.viewRegistrations}
             </button>
-            <button
-              type="button"
-              disabled={patchActivity.isPending}
-              onClick={() =>
-                patchActivity.mutate({
-                  id: activity.id,
-                  body: {
-                    status: activity.status === "published" ? "closed" : "published",
-                    expectedUpdatedAt: activity.updatedAt,
-                  },
-                })
+            {(() => {
+              const publishAction = activityPublicationAction(activity.status);
+              if (!publishAction) {
+                // OPS-01: cancelled is terminal, so there is no publish/close transition to
+                // offer. Showing the status instead of a disabled button explains why.
+                return (
+                  <span className="self-center text-xs font-semibold text-[var(--color-text-muted)]">
+                    {common.activityStatus[activity.status]}
+                  </span>
+                );
               }
-              className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
-            >
-              {activity.status === "published"
-                ? text.activities.closeRegistration
-                : text.activities.publish}
-            </button>
+              return (
+                <button
+                  type="button"
+                  disabled={patchActivity.isPending}
+                  onClick={() =>
+                    patchActivity.mutate({
+                      id: activity.id,
+                      body: {
+                        status: publishAction,
+                        expectedUpdatedAt: activity.updatedAt,
+                      },
+                    })
+                  }
+                  className={`${buttonBase} border border-[var(--color-border)] hover:bg-[var(--color-surface-offset)]`}
+                >
+                  {publishAction === "published"
+                    ? text.activities.publish
+                    : text.activities.closeRegistration}
+                </button>
+              );
+            })()}
             <button
               type="button"
               disabled={cloneActivity.isPending}

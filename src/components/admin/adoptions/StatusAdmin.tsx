@@ -461,7 +461,10 @@ export function StatusAdmin() {
                 {isEditing ? copy.editStatus : copy.newStatus}
               </h2>
               {form.isSystem && (
-                <p className="text-xs text-[var(--color-text-muted)]">{copy.systemKeyLocked}</p>
+                <>
+                  <p className="text-xs text-[var(--color-text-muted)]">{copy.systemKeyLocked}</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">{copy.systemFlagsLocked}</p>
+                </>
               )}
             </div>
             {isEditing && (
@@ -592,6 +595,7 @@ export function StatusAdmin() {
               </span>
               <Switch
                 checked={form.isActive}
+                disabled={form.isSystem}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isActive: checked }))
                 }
@@ -604,6 +608,7 @@ export function StatusAdmin() {
               </span>
               <Switch
                 checked={form.isClosing}
+                disabled={form.isSystem}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isClosing: checked }))
                 }
@@ -616,6 +621,7 @@ export function StatusAdmin() {
               </span>
               <Switch
                 checked={form.isFinal}
+                disabled={form.isSystem}
                 onCheckedChange={(checked) =>
                   setForm((current) => ({ ...current, isFinal: checked }))
                 }

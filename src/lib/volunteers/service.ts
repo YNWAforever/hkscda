@@ -1,5 +1,6 @@
 import { getAppUrl } from "../appUrl.server";
 import { buildConsentRows } from "../donations/domain";
+import { assertActivityStatusTransition } from "./activityTransition";
 import type { IdentityResolution, PublicContact } from "../supporters/publicIdentity.server";
 import { hashStatusToken, statusTokenExpiry } from "../publicAdoption/statusToken.server";
 import { decideVolunteerRegistrationStatus, formatVolunteerReference } from "./rules";
@@ -152,6 +153,13 @@ export function createVolunteerService({
 
     async updateActivity(args: { actorUserId: string; activityId: string; input: unknown }) {
       const { expectedUpdatedAt, ...input } = adminActivityUpdateSchema.parse(args.input);
+      // OPS-01: the schema accepts any status, so the transition rule is checked here before
+      // the write. Only a publish attempt can escape a terminal state, so it is the only one
+      // that needs the stored status read.
+      if (input.status === "published") {
+        const current = await repo.getActivityDetail(args.activityId);
+        if (current) assertActivityStatusTransition(current.status, input.status);
+      }
       await repo.updateActivity(args.activityId, input, args.actorUserId, expectedUpdatedAt);
       return { ok: true };
     },

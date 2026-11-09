@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  activityPublicationAction,
   availableRegistrationTransitions,
   buildActivitySearchParams,
   buildRegistrationSearchParams,
@@ -133,5 +134,17 @@ describe("attendance marking", () => {
   test("refuses when the activity time is missing or unparseable", () => {
     expect(canMarkAttendance(approved, undefined, now)).toBe(false);
     expect(canMarkAttendance(approved, "not-a-date", now)).toBe(false);
+  });
+});
+
+describe("OPS-01: activity publication transitions", () => {
+  test("cancelled and closed sessions offer no publish or close button", () => {
+    expect(activityPublicationAction("cancelled")).toBeNull();
+    expect(activityPublicationAction("closed")).toBeNull();
+  });
+
+  test("draft keeps Publish and published keeps Close", () => {
+    expect(activityPublicationAction("draft")).toBe("published");
+    expect(activityPublicationAction("published")).toBe("closed");
   });
 });

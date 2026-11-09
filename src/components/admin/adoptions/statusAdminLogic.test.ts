@@ -112,4 +112,27 @@ describe("status admin form logic", () => {
       key: "Key must start with a lowercase letter and use only lowercase letters, numbers, and underscores.",
     });
   });
+
+  test("OPS-02: a system status edit never sends its locked semantic flags", () => {
+    const original = statusToStatusForm(status({ isSystem: true, isActive: true }));
+    // Even a form that somehow differs cannot send them: the switches are disabled and the
+    // server refuses the change, so the payload omits the flags entirely.
+    const form = {
+      ...original,
+      labelEn: "Screening done",
+      isActive: false,
+      isClosing: true,
+    };
+
+    expect(buildStatusMutationPayload(form, original)).toEqual({
+      labelEn: "Screening done",
+    });
+  });
+
+  test("a non-system status can still edit its semantic flags", () => {
+    const original = statusToStatusForm(status());
+    const form = { ...original, isClosing: true };
+
+    expect(buildStatusMutationPayload(form, original)).toEqual({ isClosing: true });
+  });
 });

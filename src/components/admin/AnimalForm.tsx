@@ -19,6 +19,7 @@ import { AnimalGalleryEditor, type EditableGalleryItem } from "./AnimalGalleryEd
 import { useAdminLanguage } from "./adminI18n";
 import { animalFormCopy } from "./animalFormCopy";
 import { animalPublishFailure } from "./animalPublishError";
+import { saveAnimalDraft } from "./animalDraftSaveRecovery";
 import { uploadAnimalPhoto } from "./animalPhotoUpload";
 import { useAdminCopy } from "./i18n/copy";
 import { useLeaveConfirm } from "./useLeaveConfirm";
@@ -87,12 +88,18 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   >([]);
   const [animalId] = useState(() => existing?.id ?? crypto.randomUUID());
   // One message at a time: a failure is announced as an alert in the error colour, a success as a status in the success colour.
-  const [message, setMessage] = useState<{ tone: "error" | "status"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    tone: "error" | "status" | "warning";
+    text: string;
+  } | null>(null);
   const setError = useCallback(
     (text: string | null) => setMessage(text === null ? null : { tone: "error", text }),
     [],
   );
   const setNotice = useCallback((text: string) => setMessage({ tone: "status", text }), []);
+  // Not a failure: the save was refused because another editor moved the draft, and the
+  // editor has already re-read it. The local edits are intact, so the next save can succeed.
+  const setWarning = useCallback((text: string) => setMessage({ tone: "warning", text }), []);
   const [draftLoad, setDraftLoad] = useState<"loading" | "ready" | "failed">(
     existing ? "loading" : "ready",
   );
@@ -327,10 +334,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
       gallery: preparedGallery,
     };
 
-    try {
-      const saved = await fetchAdminJson<{ kind: string; revision: number }>(
-        "/api/admin/animals/publication/",
-        {
+    const outcome = await saveAnimalDraft({
+      save: () =>
+        fetchAdminJson<{ kind: string; revision: number }>("/api/admin/animals/publication/", {
           method: "POST",
           body: JSON.stringify({
             kind: "save",
@@ -338,25 +344,40 @@ export function AnimalForm({ existing }: AnimalFormProps) {
             expected_revision: draftRevision,
             body: payload,
           }),
-        },
-      );
-      setDraftRevision(saved.revision);
-      setSavedDraftImage(uploadedPath ?? savedDraftImage);
-      if (editVersion.current === submittedVersion) {
-        setGallery(preparedGallery);
-        setImageFile(null);
-        setDirty(false);
-        reset(values);
-      }
-      setPreviewId(null);
-      setNotice(formCopy.draft.saved);
-      setSaving(false);
-      return;
-    } catch {
+        }),
+      // The save was refused because the draft revision moved (another tab, a preview copy or a
+      // coordinator status change). Re-read only the revision; the local edits stay in the form,
+      // so the next save is rebased on the stored draft instead of retrying the stale one.
+      readDraft: () =>
+        fetchAdminJson<{ draft: { revision: number } | null }>("/api/admin/animals/publication/", {
+          method: "POST",
+          body: JSON.stringify({ kind: "read", animal_id: animalId }),
+        }),
+    });
+    if (outcome.status === "failed") {
       setError(copy.form.saveError);
       setSaving(false);
       return;
     }
+    setDraftRevision(outcome.revision);
+    setPreviewId(null);
+    if (outcome.status === "rebased") {
+      // Nothing of the local edits was saved, so they stay dirty. Say so plainly instead of
+      // showing the generic save failure that made staff reload and lose the typed work (CMS-01).
+      setWarning(formCopy.draft.staleSave);
+      setSaving(false);
+      return;
+    }
+    setSavedDraftImage(uploadedPath ?? savedDraftImage);
+    if (editVersion.current === submittedVersion) {
+      setGallery(preparedGallery);
+      setImageFile(null);
+      setDirty(false);
+      reset(values);
+    }
+    setNotice(formCopy.draft.saved);
+    setSaving(false);
+    return;
   }
 
   async function previewDraft() {
@@ -878,6 +899,11 @@ export function AnimalForm({ existing }: AnimalFormProps) {
         )}
         {message?.tone === "error" && (
           <p role="alert" className="text-[var(--color-error)] text-sm">
+            {message.text}
+          </p>
+        )}
+        {message?.tone === "warning" && (
+          <p role="alert" className="text-[var(--color-warning)] text-sm">
             {message.text}
           </p>
         )}

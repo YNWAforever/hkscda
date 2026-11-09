@@ -1,5 +1,6 @@
 import { volunteerPolicyFailure } from "./policy/errors";
 import { volunteerCodeMessage } from "./apiResult";
+import { VolunteerActivityTransitionError } from "./activityTransition";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
@@ -99,6 +100,17 @@ async function withVolunteerErrors(operation: () => Promise<Response>, publicReq
         },
         { status: triggerRefusal.status },
       );
+    // OPS-01: a terminal-state escape (cancelled/closed → published) is a business refusal,
+    // not a fault. The admin reads the message by code, in either language.
+    if (error instanceof VolunteerActivityTransitionError) {
+      return jsonResponse(
+        {
+          error: volunteerCodeMessage(error.code) ?? error.message,
+          code: error.code,
+        },
+        { status: 409 },
+      );
+    }
     // A table check constraint (for example an update moving endsAt before the stored
     // startsAt) is invalid input, not a server fault (BUG-17).
     if (error && typeof error === "object" && "code" in error && error.code === "23514")

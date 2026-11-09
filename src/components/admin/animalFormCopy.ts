@@ -14,6 +14,7 @@ export const animalFormCopy = defineAdminCopy({
       reload: "重新載入草稿",
       loadError: "未能載入已儲存草稿。",
       saved: "草稿已儲存。請在發布前先預覽；公開資料尚未改動。",
+      staleSave: "草稿已在其他地方更新，已重新載入最新版本；你目前的修改仍然保留，請再次儲存。",
     },
     versions: {
       heading: "已發布版本",
@@ -110,6 +111,8 @@ export const animalFormCopy = defineAdminCopy({
       reload: "Reload draft",
       loadError: "Could not load the saved draft. Reload the page and try again.",
       saved: "Draft saved. Preview it before publishing; the public information has not changed.",
+      staleSave:
+        "The draft was updated elsewhere. The latest version is loaded and your edits are kept — save again.",
     },
     versions: {
       heading: "Published versions",

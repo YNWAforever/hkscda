@@ -47,4 +47,41 @@ describe("coordinator status helpers", () => {
   test("allows relabeling system statuses", () => {
     expect(() => assertCanMutateStatus(status(), { nextLabelZh: "新個案" })).not.toThrow();
   });
+
+  test("prevents changing a system status's semantic flags", () => {
+    // OPS-02: the seeded flags are load-bearing — turning off `active` on the match status
+    // `approved` blocks finalisation, and clearing `closing` on `rejected` leaves a rejected
+    // case open. They are part of the system identity.
+    for (const change of [
+      { nextIsActive: false },
+      { nextIsClosing: true },
+      { nextIsFinal: true },
+    ] as const) {
+      expect(() => assertCanMutateStatus(status(), change)).toThrow(
+        "System status flags cannot be changed",
+      );
+    }
+  });
+
+  test("allows a system status update that keeps its flags and changes only presentation", () => {
+    expect(() =>
+      assertCanMutateStatus(status(), {
+        nextIsActive: true,
+        nextIsClosing: false,
+        nextIsFinal: false,
+        nextLabelEn: "New application",
+        nextKey: "new",
+      }),
+    ).not.toThrow();
+  });
+
+  test("still allows a non-system status to set its semantic flags", () => {
+    expect(() =>
+      assertCanMutateStatus(status({ isSystem: false }), {
+        nextIsActive: false,
+        nextIsClosing: true,
+        nextIsFinal: true,
+      }),
+    ).not.toThrow();
+  });
 });

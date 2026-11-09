@@ -64,6 +64,29 @@ export function isDestructiveTransition(status: VolunteerRegistrationStatus) {
   return status === "rejected";
 }
 
+/**
+ * The status the legacy activity table's publish/close button should send next, or `null` when
+ * the row has no safe transition.
+ *
+ * `cancelled` and `closed` are terminal for republish (OPS-01): the legacy button used to
+ * read "Publish" on those rows and send `published`, putting the session back on the public
+ * list. Draft keeps Publish; published keeps Close. Closed and cancelled offer no toggle —
+ * the RPC refuses both with `activity_closed`.
+ */
+export function activityPublicationAction(
+  current: VolunteerActivityStatus,
+): Extract<VolunteerActivityStatus, "published" | "closed"> | null {
+  switch (current) {
+    case "draft":
+      return "published";
+    case "published":
+      return "closed";
+    case "closed":
+    case "cancelled":
+      return null;
+  }
+}
+
 export type RegistrationRejection = { status: VolunteerRegistrationStatus; reason: string };
 
 /**
