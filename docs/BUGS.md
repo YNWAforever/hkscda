@@ -851,6 +851,64 @@ BUG-71 and BUG-72 with approved migrations.
 - **Fix (code):** add limits (e.g. seoTitle 120, seoDescription 320, ogTitle 180,
   ogDescription 320, subtitle 180, ctaLabel 60, body ~50,000) and matching `maxLength`.
 
+## Admin auth & operations audit (2026-11-09)
+
+A read-only audit of the admin auth/session and operations surfaces
+([`audit-20261109/`](../audit-20261109/findings-auth.md)) found five new admin-panel defects.
+Three of them change the database layer; their fixes are migrations. The IDs below keep the
+audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchanged.
+
+### AUTH-01 — Med — Staff and treasurers can read the whole audit trail over PostgREST
+
+- **Where:** `staff can read audit log` (`20260623160506:351-354`) plus the blanket
+  `grant select, insert, update, delete on all tables in schema public to authenticated`
+  (`:262`). Every active staff, treasurer and admin JWT could therefore read every `audit_log`
+  row directly from `/rest/v1/audit_log`, although the access API that owns the `admin_user.*`
+  events (invited emails, role/status transitions) is admin-only.
+- **Repro:** sign in as staff, copy the access token from the `sb-<ref>-auth-token` local-storage
+  entry, `GET /rest/v1/audit_log?select=action,detail` with that JWT → admin-invite emails, role
+  and status transitions, and treasurer/admin finance events come back.
+- **Fix (migration):** `20261109100000_revoke_audit_log_browser_read.sql` revokes `select` on
+  `public.audit_log` from `anon, authenticated` and drops the three-role policy, so a direct
+  select fails with permission denied instead of returning rows. Audit history reaches the UI
+  only through the service-role API handlers (access history, finance activity, supporter
+  timeline, coordinator workspace); `service_role` keeps its grant and bypasses RLS. No admin
+  browser module reads the table (`adminBrowserDataGuard.test.ts`).
+
+### OPS-01 — Med — The legacy "Publish" toggle resurrects a cancelled activity
+
+- **Where:** `src/components/admin/volunteers/VolunteerManagement.tsx:377-388` toggles any
+  activity to `published`; the wrapper `update_volunteer_activity_with_audit`
+  (`20260914160736:240-247`) only refused an unbound legacy draft, and the base update
+  (`20260913062837:501`) has no status machine at all.
+- **Repro:** staff → `/admin/volunteers` → status filter "all" → a `cancelled` activity with a
+  future `starts_at` → **Publish** → 200 `{"ok":true}`; the session is listed publicly again
+  while its registrations stay cancelled, and no cancellation-specific audit or reason exists.
+- **Fix (migration):** `20261109101000_volunteer_activity_publish_respects_terminal_state.sql`
+  redefines the wrapper: publishing while the stored status is `cancelled` or `closed` returns
+  `{"kind":"invalid","reason":"activity_closed"}` (the code the rebind command already uses)
+  instead of delegating to the base update. The advisory lock, actor check, BUG-29
+  unbound-draft refusal, delegation, pinned `search_path` and service-role-only grants are
+  unchanged. The companion admin-code change stops offering the toggle on terminal rows.
+
+### OPS-02 — Med — A system status's semantic flags can be edited, breaking the adoption lifecycle
+
+- **Where:** `assertCanMutateStatus` (`src/lib/adoptions/status.ts:21-33`) and
+  `mutate_adoption_coordinator_with_audit` (`20261030103000:96-113`) guard only delete, key and
+  category of an `is_system` status; `is_active`, `is_closing` and `is_final` stay editable.
+  `createMatch`/`finalizeAdoption` read the system `approved` match status, task completion
+  reads `completed`, and case closing derives `closed_at`/reason from the target status's
+  `is_closing`.
+- **Repro:** admin → `/admin/coordinator/statuses` → edit the system status `approved` (match) →
+  turn **Active** off → Save → 200; every coordinator's **Finalise** now fails with
+  `Inactive match status`, and nothing points at the status catalogue.
+- **Fix (migration):** `20261109102000_adoption_system_status_flags_immutable.sql` redefines
+  the RPC (copying the latest body from `20261030103000`) with one guard after the identity
+  guard: for a system status, changing any of the three flags raises `23514`
+  `System status flags cannot be changed`. Labels, colour and sort order stay editable; every
+  other branch, `search_path = ''` and the grants are unchanged. The companion admin-code change
+  disables the switches for system rows.
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:

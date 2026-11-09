@@ -398,6 +398,36 @@ conflict banner (now with its own message).
 0 errors (the same 53 warnings); `bun run build` passes with the route tree unchanged;
 `verify:client-bundle` clean.
 
+## Admin auth & operations audit (2026-11-09)
+
+A read-only audit of the admin auth/session and operations surfaces
+([`audit-20261109/`](../audit-20261109/findings-ops.md)) found five new defects. Three need
+database changes; this section records the SQL half of the branch series (the code half ships
+with it). The IDs keep the audit's AUTH-/OPS- prefixes so BUG-01…BUG-73 keep their numbers.
+
+| ID      | Sev | Fix                                                                                                                                                                                                                                                                          | Migration        |
+| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| AUTH-01 | Med | Browser roles lose `select` on `public.audit_log` and the three-role read policy is dropped. A direct staff/treasurer/admin PostgREST select now fails with permission denied; service-role API reads are unchanged; no rows are touched                                        | `20261109100000` |
+| OPS-01  | Med | Publishing a `cancelled` or `closed` volunteer activity through the legacy update RPC returns `invalid`/`activity_closed` instead of reviving it. Every other branch, the advisory lock, the privileges and the pinned `search_path` are unchanged                              | `20261109101000` |
+| OPS-02  | Med | Changing `is_active`/`is_closing`/`is_final` on an `is_system` coordinator status raises `23514`; labels, colour and sort order stay editable and every other RPC branch is unchanged                                                                                        | `20261109102000` |
+
+**Deploy:** all three are `latest-definition-wins` migrations with no data rewrite, so any order
+after `20261105101000` works; AUTH-01 can go first on its own because no admin browser read
+exists. OPS-01/OPS-02 refuse edits that are possible today, so ship them with the code half that
+removes the affected controls.
+
+**Behaviour to know.** A staff/treasurer/admin JWT selecting `audit_log` over PostgREST now gets
+a permission error instead of rows, so a report built on that direct access must move to the API.
+The legacy volunteers page gets the `activity_closed` refusal on terminal rows instead of
+reviving them. The status editor must disable the three semantic switches for system rows; if it
+does not, saving them is refused with `System status flags cannot be changed`.
+
+**Verification.** Focused migration/RLS tests: 15 pass, 0 fail, 7 RLS tests skipped (no local
+Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`). `src/lib/supabaseMigrations.test.ts`:
+71 pass, 0 fail. `bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 56 warnings). No
+database was available, so the SQL is traced, not executed; the behavioural RLS test runs under
+`bun run test:rls` against a local stack.
+
 ## Manual QA checklist (staging or local, never production data)
 
 - [ ] Sign in as each role (staff, treasurer, admin). Each lands on its first allowed
@@ -444,3 +474,12 @@ conflict banner (now with its own message).
       inline supporter whose email (in any letter case) belongs to an existing supporter.
       The gift is linked to that supporter, and its name, phone, language and tags are
       unchanged.
+- [ ] **AUTH-01 (after the migration runs):** with a staff JWT, a direct
+      `GET /rest/v1/audit_log?select=id` returns permission denied; the Access page history and
+      the Finance activity page still load through the API.
+- [ ] **OPS-01 (after the migration runs):** a cancelled activity cannot be published from
+      `/admin/volunteers` (the action is gone or returns the closed-activity message), while a
+      draft or published activity still saves.
+- [ ] **OPS-02 (after the migration runs):** a system status's Active/Closing/Final switches are
+      disabled (or saving them is refused with "flags cannot be changed"); its label, colour and
+      sort order still save, and finalising, task completion and case closing still work.
