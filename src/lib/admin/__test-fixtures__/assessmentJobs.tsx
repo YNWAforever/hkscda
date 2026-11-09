@@ -5,10 +5,23 @@ import { createRoot } from "react-dom/client";
 import { AdminLanguageProvider } from "../../../components/admin/adminI18n";
 import { VolunteerAssessments } from "../../../components/admin/volunteers/VolunteerAssessments";
 import { clearVolunteerIdentityQueries } from "../../volunteers/queryKeys";
+import { seedAdminSessionForTests } from "../sessionMemory";
 
 type FixtureWindow = Window & {
   switchAssessmentActor?: () => Promise<void>;
 };
+
+/**
+ * The fixture server reads the acting admin from the bearer token (`token-a`/`token-b`). The
+ * session BFF keeps the token in memory, so seed it from the same switch the old
+ * `supabase.auth.getSession` stub read (the `fixture-assessment-actor` localStorage key).
+ */
+function seedAssessmentActor() {
+  const actor = window.localStorage.getItem("fixture-assessment-actor") || "a";
+  seedAdminSessionForTests({ accessToken: `token-${actor}`, authUserId: actor });
+}
+
+seedAssessmentActor();
 
 const client = new QueryClient({
   defaultOptions: {
@@ -37,6 +50,7 @@ export function Fixture() {
   (window as FixtureWindow).switchAssessmentActor = async () => {
     await clearVolunteerIdentityQueries(client);
     window.localStorage.setItem("fixture-assessment-actor", "b");
+    seedAssessmentActor();
     setGeneration((value) => value + 1);
   };
 

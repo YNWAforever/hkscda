@@ -5,6 +5,12 @@ import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-r
 import { AdminLanguageProvider } from "../../../components/admin/adminI18n";
 import { VolunteerOverview } from "../../../components/admin/volunteers/VolunteerOverview";
 import { clearVolunteerIdentityQueries, volunteerQueryKeys } from "../../volunteers/queryKeys";
+import { seedAdminSessionForTests } from "../sessionMemory";
+
+// The admin session BFF keeps the access token in memory; seed the account the old
+// `supabase.auth.getSession` fixture named so the page boots without a /refresh request.
+// (volunteerHourlyRetry shares this entry; its direct API call sets its own bearer token.)
+seedAdminSessionForTests({ accessToken: "synthetic-overview-only", authUserId: "synthetic-admin" });
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 export function OverviewFixture() {

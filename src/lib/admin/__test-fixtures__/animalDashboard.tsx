@@ -4,6 +4,11 @@ import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-r
 import { AdminLanguageProvider } from "../../../components/admin/adminI18n";
 import { AdminDashboardContent } from "../../../routes/admin/index";
 import { adminListSearchSchema } from "../../animals/adminListState";
+import { seedAdminSessionForTests } from "../sessionMemory";
+
+// The admin session BFF keeps the access token in memory; seed the account the old
+// `supabase.auth.getSession` fixture named so the dashboard boots without a /refresh request.
+seedAdminSessionForTests({ accessToken: "synthetic-only", authUserId: "synthetic-user" });
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 client.setQueryData(["admin-me"], {
