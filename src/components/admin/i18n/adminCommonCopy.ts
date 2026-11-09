@@ -78,6 +78,11 @@ export interface AdminCopy {
     passwordMismatch: string;
     invalidRecoveryLink: string;
     passwordUpdated: string;
+    setPasswordTitle: string;
+    setPasswordInstructions: string;
+    setPasswordSubmit: string;
+    setPasswordSaving: string;
+    invalidInviteLink: string;
   };
   dashboard: {
     title: Record<AdminSection, string>;
@@ -279,6 +284,11 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       passwordMismatch: "兩次輸入的密碼不相符。",
       invalidRecoveryLink: "重設連結無效或已過期，請重新申請。",
       passwordUpdated: "密碼已更新，請使用新密碼登入。",
+      setPasswordTitle: "設定密碼",
+      setPasswordInstructions: "為你的管理後台帳戶設定密碼，然後以電郵及新密碼登入。",
+      setPasswordSubmit: "設定密碼",
+      setPasswordSaving: "正在設定...",
+      invalidInviteLink: "邀請連結無效或已過期，請要求管理員重新發送邀請。",
     },
     dashboard: {
       title: {
@@ -450,6 +460,13 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       passwordMismatch: "The passwords do not match.",
       invalidRecoveryLink: "This reset link is invalid or has expired. Please request a new one.",
       passwordUpdated: "Your password has been updated. Sign in with your new password.",
+      setPasswordTitle: "Set your password",
+      setPasswordInstructions:
+        "Set a password for your admin account, then sign in with your email and the new password.",
+      setPasswordSubmit: "Set password",
+      setPasswordSaving: "Saving...",
+      invalidInviteLink:
+        "This invitation link is invalid or has expired. Ask an admin to resend the invitation.",
     },
     dashboard: {
       title: {

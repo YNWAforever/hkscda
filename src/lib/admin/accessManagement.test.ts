@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+﻿import { describe, expect, test } from "bun:test";
 
 import {
   AdminAccessError,
@@ -93,6 +93,8 @@ function makeRepo(overrides: Partial<AdminAccessRepository> = {}) {
   return { repo, calls };
 }
 
+const inviteRedirect = "https://admin.example.test/admin/reset-password?intent=invite";
+
 describe("createAdminAccessService", () => {
   test("does not deliver an invite when the pending row and audit cannot commit", async () => {
     const events: string[] = [];
@@ -133,7 +135,11 @@ describe("createAdminAccessService", () => {
     const service = createAdminAccessService({ repo, auth, now });
 
     await expect(
-      service.inviteUser({ actor, input: { email: "new@example.com", role: "staff" } }),
+      service.inviteUser({
+        redirectTo: inviteRedirect,
+        actor,
+        input: { email: "new@example.com", role: "staff" },
+      }),
     ).rejects.toThrow("database-failed");
     expect(events).not.toContain("delivered");
   });
@@ -178,6 +184,7 @@ describe("createAdminAccessService", () => {
     const service = createAdminAccessService({ repo, auth, now });
 
     const result = await service.inviteUser({
+      redirectTo: inviteRedirect,
       actor,
       input: { email: "new@example.com", role: "staff" },
     });
@@ -202,6 +209,7 @@ describe("createAdminAccessService", () => {
     });
 
     const result = await service.inviteUser({
+      redirectTo: inviteRedirect,
       actor,
       input: { email: " New.Admin@Example.COM ", role: "treasurer" },
     });
@@ -248,6 +256,7 @@ describe("createAdminAccessService", () => {
     });
 
     const result = await service.inviteUser({
+      redirectTo: inviteRedirect,
       actor,
       input: { email: "new@example.com", role: "treasurer" },
     });
@@ -298,9 +307,9 @@ describe("createAdminAccessService", () => {
     });
     const service = createAdminAccessService({ repo, auth, now });
 
-    await expect(service.resendInvite({ actor, userId: "target-row" })).rejects.toThrow(
-      "database-failed",
-    );
+    await expect(
+      service.resendInvite({ redirectTo: inviteRedirect, actor, userId: "target-row" }),
+    ).rejects.toThrow("database-failed");
     expect(events).not.toContain("delivered");
   });
   test("resends through an atomic row-and-audit operation", async () => {
@@ -336,7 +345,11 @@ describe("createAdminAccessService", () => {
       now,
     });
 
-    const result = await service.resendInvite({ actor, userId: "target-row" });
+    const result = await service.resendInvite({
+      redirectTo: inviteRedirect,
+      actor,
+      userId: "target-row",
+    });
 
     expect(result.user.status).toBe("pending");
     expect(calls).toEqual([
@@ -368,7 +381,11 @@ describe("createAdminAccessService", () => {
     });
 
     await expect(
-      service.inviteUser({ actor, input: { email: "target@example.com", role: "staff" } }),
+      service.inviteUser({
+        redirectTo: inviteRedirect,
+        actor,
+        input: { email: "target@example.com", role: "staff" },
+      }),
     ).rejects.toMatchObject({ status: 409, code: "duplicate_admin_user" });
   });
 
@@ -398,7 +415,7 @@ describe("createAdminAccessService", () => {
       now,
     });
 
-    await service.resendInvite({ actor, userId: "target-row" });
+    await service.resendInvite({ redirectTo: inviteRedirect, actor, userId: "target-row" });
 
     expect(resent).toEqual(["pending@example.com"]);
     expect(calls.resendInviteWithAudit[0]).toEqual({
@@ -430,7 +447,7 @@ describe("createAdminAccessService", () => {
       now,
     });
 
-    await service.resendInvite({ actor, userId: "target-row" });
+    await service.resendInvite({ redirectTo: inviteRedirect, actor, userId: "target-row" });
 
     expect(resent).toEqual(["pending@example.com"]);
     expect(calls.resendInviteWithAudit[0]).toEqual({
@@ -459,7 +476,9 @@ describe("createAdminAccessService", () => {
       now,
     });
 
-    await expect(service.resendInvite({ actor, userId: "target-row" })).rejects.toMatchObject({
+    await expect(
+      service.resendInvite({ redirectTo: inviteRedirect, actor, userId: "target-row" }),
+    ).rejects.toMatchObject({
       status: 422,
       code: "invite_not_pending",
     });
@@ -807,7 +826,11 @@ describe("createAdminAccessService", () => {
     const originalError = console.error;
     console.error = () => {};
     try {
-      const result = await service.resendInvite({ actor, userId: "target-row" });
+      const result = await service.resendInvite({
+        redirectTo: inviteRedirect,
+        actor,
+        userId: "target-row",
+      });
 
       expect(result.emailDeliveryFailed).toBe(true);
       expect(result.user.status).toBe("pending");

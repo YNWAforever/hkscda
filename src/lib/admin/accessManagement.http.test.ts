@@ -127,11 +127,13 @@ describe("createAdminAccessHandlers", () => {
   });
 
   test("returns 201 for successful invite creation", async () => {
+    const redirects: string[] = [];
     const handlers = createAdminAccessHandlers({
       requireAccessAdmin: async () => actor,
       service: {
         listUsers: async () => ({ users: [], summary: { active: 0, pending: 0, disabled: 0 } }),
-        inviteUser: async ({ input }) => {
+        inviteUser: async ({ input, redirectTo }) => {
+          redirects.push(redirectTo);
           const invite = input as { email: string; role: "staff" | "treasurer" | "admin" };
           return {
             user: {
@@ -172,6 +174,8 @@ describe("createAdminAccessHandlers", () => {
       user: { email: "new@example.com", role: "staff", status: "pending" },
       emailDeliveryFailed: false,
     });
+    // BUG-25: the invite link must land on this deployment's admin set-password page.
+    expect(redirects).toEqual(["https://example.test/admin/reset-password?intent=invite"]);
   });
 
   test("AUTH-03: a delivery failure is a normal 201 with the flag, not a 500", async () => {

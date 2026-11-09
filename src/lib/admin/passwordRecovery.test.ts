@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import {
   completeAdminPasswordReset,
+  getAdminInviteRedirect,
   getAdminPasswordResetRedirect,
+  parseAdminSetPasswordIntent,
   requestAdminPasswordReset,
   validateAdminPassword,
   type PasswordRecoveryAuth,
@@ -21,6 +23,20 @@ describe("admin password recovery", () => {
     expect(getAdminPasswordResetRedirect("https://hkscda.vercel.app/")).toBe(
       "https://hkscda.vercel.app/admin/reset-password",
     );
+  });
+
+  // BUG-25: the invite/resend link lands on the admin set-password page, marked as an invite.
+  test("builds the invite redirect on the admin set-password route", () => {
+    expect(getAdminInviteRedirect("https://hkscda.vercel.app/")).toBe(
+      "https://hkscda.vercel.app/admin/reset-password?intent=invite",
+    );
+  });
+
+  test("recognises only the invite intent, so a recovery link keeps recovery wording", () => {
+    expect(parseAdminSetPasswordIntent("invite")).toBe("invite");
+    expect(parseAdminSetPasswordIntent("recovery")).toBe("recovery");
+    expect(parseAdminSetPasswordIntent(undefined)).toBe("recovery");
+    expect(parseAdminSetPasswordIntent("other")).toBe("recovery");
   });
 
   test("normalizes email and requests a recovery link for the reset route", async () => {
