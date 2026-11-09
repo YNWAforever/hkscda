@@ -4,6 +4,14 @@ import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-r
 import { AdminLanguageProvider } from "../../../components/admin/adminI18n";
 import { VolunteerQualifications } from "../../../components/admin/volunteers/VolunteerQualifications";
 import { volunteerQueryKeys } from "../../volunteers/queryKeys";
+import { seedAdminSessionForTests } from "../sessionMemory";
+
+// The admin session BFF keeps the access token in memory; seed the account the old
+// `supabase.auth.getSession` fixture named so the page boots without a /refresh request.
+seedAdminSessionForTests({
+  accessToken: "synthetic-qualification-only",
+  authUserId: "synthetic-staff",
+});
 
 const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 export function QualificationsFixture() {
