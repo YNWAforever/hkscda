@@ -87,6 +87,9 @@ export const conflictDomainErrors = new Set([
   "System statuses cannot be deleted",
   "System status keys cannot be changed",
   "System status categories cannot be changed",
+  // A system status's semantic flags are part of its identity (OPS-02): changing them can
+  // block adoption finalisation or leave a closed case open.
+  "System status flags cannot be changed",
   "Match must be approved before finalization",
   "Adoption case is missing adopter profile",
   "Adoption case is missing supporter",
@@ -204,6 +207,12 @@ export async function withErrors(operation: () => Promise<Response>) {
       return jsonResponse({ error: "Linked record not found" }, { status: 404 });
     }
     if (error && typeof error === "object" && "code" in error && error.code === "23514") {
+      // A trigger may raise one of the known domain refusals as 23514 (a status identity
+      // guard, for example). Those carry a clear, fixed message and get their proper status;
+      // any other check-constraint text stays private.
+      const message = "message" in error && typeof error.message === "string" ? error.message : "";
+      const known = domainError({ message });
+      if (known) return known;
       return jsonResponse({ error: "Invalid coordinator request" }, { status: 400 });
     }
     if (error instanceof Error) {

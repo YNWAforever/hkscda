@@ -87,6 +87,7 @@ export const coordinatorPageCopy = defineAdminCopy({
       newStatus: "新增狀態",
       editStatus: "編輯狀態",
       systemKeyLocked: "系統 key 已鎖定",
+      systemFlagsLocked: "系統狀態的「啟用、結束、最終」標記已鎖定，只可修改標籤、顏色及排序。",
       tableEmpty: "沒有狀態",
       loadError: "無法載入狀態",
       deleteConfirm: (zh: string, en: string) => `刪除 ${zh} / ${en}？`,
@@ -218,6 +219,8 @@ export const coordinatorPageCopy = defineAdminCopy({
       newStatus: "New status",
       editStatus: "Edit status",
       systemKeyLocked: "System key locked",
+      systemFlagsLocked:
+        "The active, closing and final flags of a system status are locked. Edit its labels, colour and order instead.",
       tableEmpty: "No statuses",
       loadError: "Could not load statuses",
       deleteConfirm: (zh: string, en: string) => `Delete ${en.trim() || zh}?`,

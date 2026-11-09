@@ -748,6 +748,46 @@ describe("createAdoptionCoordinatorHandlers", () => {
     expect(await response.json()).toEqual({ error: "System statuses cannot be deleted" });
   });
 
+  test("OPS-02: changing a system status's semantic flags is a clear 409", async () => {
+    const { service } = createFakeService({
+      async updateStatus() {
+        throw new Error("System status flags cannot be changed");
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.updateStatus({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
+        isActive: false,
+      }),
+      params: { id: statusId },
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: "System status flags cannot be changed" });
+  });
+
+  test("OPS-02: the same refusal raised by the RPC as 23514 keeps the 409 and the message", async () => {
+    // The migration guard raises 23514; previously every 23514 became the generic
+    // "Invalid coordinator request" 400, hiding which rule was broken.
+    const { service } = createFakeService({
+      async updateStatus() {
+        throw { code: "23514", message: "System status flags cannot be changed" };
+      },
+    });
+    const handlers = createHandlers({ service });
+
+    const response = await handlers.updateStatus({
+      request: jsonRequest(`https://example.test/api/admin/adoptions/statuses/${statusId}`, {
+        isActive: false,
+      }),
+      params: { id: statusId },
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: "System status flags cannot be changed" });
+  });
+
   test("status delete uses admin-only auth callback", async () => {
     const { calls, service } = createFakeService();
     const authCalls: string[] = [];

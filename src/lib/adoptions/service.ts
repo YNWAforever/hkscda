@@ -367,6 +367,9 @@ export function createAdoptionCoordinatorService({
         nextCategory: input.category,
         nextLabelZh: input.labelZh,
         nextLabelEn: input.labelEn,
+        nextIsActive: input.isActive,
+        nextIsClosing: input.isClosing,
+        nextIsFinal: input.isFinal,
       });
 
       const status = await repo.updateStatus(args.statusId, input, args.actorUserId);

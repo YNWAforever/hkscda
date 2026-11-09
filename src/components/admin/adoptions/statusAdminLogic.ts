@@ -112,7 +112,15 @@ export function buildStatusMutationPayload(
   if (!originalPayload) return payload;
 
   const changedPayload: StatusMutationPayload = {};
-  for (const field of STATUS_MUTATION_FIELDS) {
+  // OPS-02: a system status's semantic flags are part of its identity and the server refuses
+  // to change them. Do not send them at all, so relabelling a system status is not refused
+  // with a flag field it never actually changed.
+  const mutableFields = original.isSystem
+    ? STATUS_MUTATION_FIELDS.filter(
+        (field) => field !== "isActive" && field !== "isClosing" && field !== "isFinal",
+      )
+    : STATUS_MUTATION_FIELDS;
+  for (const field of mutableFields) {
     if (payload[field] !== originalPayload[field]) {
       changedPayload[field] = payload[field] as never;
     }
