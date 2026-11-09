@@ -1178,6 +1178,17 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   other half of the finding, the admin JWT in web storage, was **fixed 2026-11-10** by the
   HttpOnly session BFF — see the "Admin session BFF" section of
   [`docs/FIX_REPORT.md`](FIX_REPORT.md).
+- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — **fixed 2026-11-10.** `script-src` is now
+  `'self' 'nonce-<per-request nonce>' 'strict-dynamic' <host sources>`; the nonce is generated in
+  `src/server.ts`, travels through an `AsyncLocalStorage` request store into `getRouter()`'s
+  `ssr.nonce`, and TanStack Router stamps it on the hydration/`ScriptOnce`/head JSON-LD scripts.
+  The app's JSON-LD data blocks moved into route `head.scripts` (nonce-stamped) and the static 500
+  page's inline `onclick` became a plain link; `style-src 'unsafe-inline'` stays deliberately for
+  React style attributes and is documented in `src/lib/security-headers.ts`. The remaining half of
+  AUDIT R4 — the admin bearer token in `localStorage` (Option C, cookie/BFF session) — is still
+  open; options, effort and risk are in [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **Admin bearer token in web storage** (AUDIT R4) — **still open**, unchanged: the admin session
+  stays in `localStorage`; see Option C in [`docs/csp-token-decision.md`](csp-token-decision.md).
 - **zod 3 (BUG-30)** — **assessed 2026-11-10**: the 3→4 bump produces 113 typecheck errors across
   18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
   `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
@@ -1191,6 +1202,10 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   [`docs/FIX_REPORT.md`](FIX_REPORT.md)).
 - **CSP `script-src 'unsafe-inline'`** (AUDIT R4). Nonce support in SSR is still the missing
   piece; the admin-token half of the finding is fixed by the session BFF (see above).
+- **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
+  by anyone who has its random UUID URL.
+- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — **fixed 2026-11-10**; see the nonce entry
+  above.
 - **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
   unchanged. AUD-02 (staff RLS on supporters) is fixed by
   `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.

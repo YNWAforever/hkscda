@@ -5,21 +5,24 @@ import { PublicPageFrame } from "../../components/site/PublicPageFrame";
 import { resilientPublicLoader } from "../../lib/routing/resilientLoader";
 import { getAdoptionImpactReport } from "../../lib/adoptions/publicImpact.functions";
 import type { AdoptionImpactReport } from "../../lib/adoptions/publicImpact";
-import { datasetSchema, renderJsonLd } from "@/lib/schema";
+import { jsonLdScript, datasetSchema } from "@/lib/schema";
 
 const pageDescription =
   "香港拯救貓狗協會累計成功領養總數及過去12個月數字，每月更新，統計口徑與資料截止日期於本頁公開。";
+const adoptionImpactSchema = datasetSchema("HKSCDA 領養工作成效", pageDescription);
 
 export const Route = createFileRoute("/report/adoption")({
   loader: resilientPublicLoader(() => getAdoptionImpactReport()),
   errorComponent: AdoptionImpactReportLoadError,
-  head: () =>
-    pageHead({
+  head: () => ({
+    ...pageHead({
       title: "領養工作成效",
       description: pageDescription,
       shareDescription: "累計成功領養總數及過去12個月數字，每月更新。",
       path: "/report/adoption",
     }),
+    scripts: [jsonLdScript(adoptionImpactSchema)],
+  }),
   component: AdoptionImpactReportRoute,
 });
 
@@ -70,8 +73,6 @@ export function AdoptionImpactReportPage({ report }: { report: AdoptionImpactRep
         action: { label: "查看年報及審計", to: "/report/audit" },
       }}
     >
-      {renderJsonLd(datasetSchema("HKSCDA 領養工作成效", pageDescription))}
-
       <section className="section">
         <div className="public-container">
           <div className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-offset)] p-6 text-center">

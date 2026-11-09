@@ -74,7 +74,9 @@ test("renders annual reports and removes all sensitive audit summaries", async (
   );
 
   expect(html).toContain("年度報告 Annual Report");
-  expect(html).toContain("我們每年發表協會年度報告電子書，分享救援成果與資金運用摘要。");
+  // The page description now travels in the route's JSON-LD head script (which TanStack Router
+  // stamps with the request CSP nonce) instead of inside the rendered body.
+  expect(html).not.toContain("我們每年發表協會年度報告電子書，分享救援成果與資金運用摘要。");
   expect(html).toContain("2025-2026 Annual Report");
   expect(html).toContain("2024-2025 Year-End Review Winter Edition");
   expect(html).not.toContain("Unavailable report");
@@ -89,4 +91,14 @@ test("renders annual reports and removes all sensitive audit summaries", async (
   );
   expect(html.match(/target="_blank"/g)).toHaveLength(2);
   expect(html.match(/rel="noopener noreferrer"/g)).toHaveLength(2);
+});
+
+test("the route head carries the JSON-LD data block for nonce-stamped rendering", async () => {
+  const { Route } = await import("./audit");
+  const head = (
+    Route as unknown as { head: () => { scripts?: Array<{ type: string; children: string }> } }
+  ).head();
+  expect(head.scripts).toHaveLength(1);
+  expect(head.scripts?.[0]?.type).toBe("application/ld+json");
+  expect(JSON.parse(head.scripts?.[0]?.children ?? "{}")["@type"]).toBe("Dataset");
 });

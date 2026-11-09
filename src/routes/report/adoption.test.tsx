@@ -62,3 +62,13 @@ test("shows a distinct temporarily-unavailable state on load failure", async () 
   expect(html).not.toContain("暫未發佈");
   expect(html).toContain('role="alert"');
 });
+
+test("the adoption report route head carries the JSON-LD data block", async () => {
+  const { Route } = await import("./adoption");
+  const head = (
+    Route as unknown as { head: () => { scripts?: Array<{ type: string; children: string }> } }
+  ).head();
+  expect(head.scripts).toHaveLength(1);
+  expect(head.scripts?.[0]?.type).toBe("application/ld+json");
+  expect(JSON.parse(head.scripts?.[0]?.children ?? "{}")["@type"]).toBe("Dataset");
+});
