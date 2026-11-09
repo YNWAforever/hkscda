@@ -378,3 +378,47 @@ describe("createAdminFaqHandlers with the real service — regression", () => {
     }
   });
 });
+
+describe("FAQ revision fence", () => {
+  test("passes the editor's expectedRevision through and answers a stale one with coded 409", async () => {
+    const upsert = mock(async (command: { actorUserId: string; input: unknown }) => {
+      const input = command.input as { expectedRevision?: number };
+      if (input.expectedRevision === 2) throw { code: "40001" };
+      return { id: "e1" };
+    });
+    const handlers = createAdminFaqHandlers({
+      requireFaqAdmin: async () => admin,
+      service: createService({ upsert: upsert as never }),
+    });
+
+    const fresh = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          id: "11111111-1111-4111-8111-111111111111",
+          expectedRevision: 3,
+          category: "sponsorship",
+        }),
+      }),
+    });
+    expect(fresh.status).toBe(200);
+    expect(
+      (upsert.mock.calls[0]?.[0] as { input: { expectedRevision?: number } }).input,
+    ).toMatchObject({ expectedRevision: 3 });
+
+    const stale = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "POST",
+        body: JSON.stringify({
+          id: "11111111-1111-4111-8111-111111111111",
+          expectedRevision: 2,
+          category: "sponsorship",
+        }),
+      }),
+    });
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toEqual({
+      error: { code: "conflict", message: "FAQ entry changed; reload before saving" },
+    });
+  });
+});

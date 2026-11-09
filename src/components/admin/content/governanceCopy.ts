@@ -29,6 +29,8 @@ export const governanceCopy = defineAdminCopy({
       sortOrder: "排序",
       effectiveDate: "生效日期",
       saveFailed: "儲存失敗，請檢查資料後再試一次。",
+      revisionConflict: "另一位管理員已修改此成員資料。請重新載入最新版本，再套用你的修改。",
+      reloadLatest: "重新載入最新版本",
       save: "儲存",
       cancel: "取消",
     },
@@ -59,6 +61,9 @@ export const governanceCopy = defineAdminCopy({
       sortOrder: "Sort order",
       effectiveDate: "Effective date",
       saveFailed: "Could not save. Check the details and try again.",
+      revisionConflict:
+        "Another admin changed this member. Reload the latest version, then apply your edits again.",
+      reloadLatest: "Reload latest version",
       save: "Save",
       cancel: "Cancel",
     },

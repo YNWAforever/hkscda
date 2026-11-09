@@ -1001,6 +1001,7 @@ migration.
   half in `supabase/rls-tests/moneyPii.rls.test.ts` now asserts staff is denied and treasurer/admin
   are allowed for supporter select/update, supporter_role select and consent select/update (runs
   under `bun run test:rls` against a local stack).
+
 ## Admin operations backlog — second batch (2026-11-09)
 
 ### OPS-03 — Low — The supporter record offers "Issue receipt" for donations the API refuses
@@ -1046,6 +1047,7 @@ migration.
   unknown email keeps the generic 409; a failed lookup falls back to the generic 409 rather
   than a 500. The database function is unchanged. The intake screen maps the code to bilingual
   copy (`manualIntake.serverErrors.supporter_archived` in `pageCopy/caseCopy.ts`).
+
 ## Content/CMS backlog (2026-11-09)
 
 A read-only audit of the content CMS surfaces
@@ -1130,10 +1132,60 @@ numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
   location notes 500) applied to the three schemas, with matching `maxLength` on the editor
   inputs. No migration: the columns have no DB length constraint, so this is a validation rule.
 
+## Editor revision fences (2026-11-09 design gap)
+
+The 2026-11-09 audit recorded, under "Not filed as bugs", that the About, FAQ, Governance and
+Knowledge editors had no revision fence: two tabs saving the same row kept the last write with no
+notice ([`audit-20261109/`](../audit-20261109/findings-cms.md)). Fixed here end to end; one new
+migration, `20261110100000_admin_editor_revision_fences.sql`. See
+[`FIX_REPORT.md`](FIX_REPORT.md#editor-revision-fences-2026-11-09).
+
+### About / FAQ / Governance / Knowledge — Low — two tabs saving the same row silently kept the last write
+
+- **Where:** `src/lib/aboutPages/*`, `src/lib/faq/*`, `src/lib/governance/*`,
+  `src/lib/knowledge/*` and their admin screens; the underlying tables `about_page_content`,
+  `faq_entry`, `board_member` and `knowledge_posts` had no version column, and the update RPCs
+  (`upsert_about_page_content_with_audit`, `upsert_faq_entry_with_audit`,
+  `mutate_admin_content_with_audit`) wrote unconditionally.
+- **Repro:** open the FAQ (or team, knowledge or about) screen in two tabs; save in tab A, then
+  save in tab B with its stale copy of the row. Both return 200 and B's text replaces A's with no
+  warning; A's change is lost.
+- **Fix (migration + code):** each of the four tables gains `revision integer not null default 0`
+  (existing rows start at 0), and their update RPCs take an optional `p_expected_revision`. An
+  update whose expected revision is set and stale is refused with `40001` (the content CMS's
+  stale-version convention) and every applied change bumps `revision`; callers that send no
+  expected revision keep working, so the deployed app is not broken between deploy and migration.
+  The admin API accepts `expectedRevision`, the list reads return `revision`, and each editor sends
+  the revision it loaded; on the resulting coded 409 it shows a bilingual "another admin changed
+  this — reload latest" notice with a reload action, keeping the unsaved local edits until the
+  admin chooses to reload. FAQ hide and board step-down also bump the revision so a stale editor
+  cannot undo them.
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
   when two tabs save, the last write silently wins. Each needs a version column, so a migration.
+- **`site-documents` was a public bucket** (2026-11-09 audit, "Not filed as bugs") — **fixed
+  2026-11-10.** Migration `20261109104000_private_site_documents_bucket.sql` makes the bucket
+  private and adds `public.read_public_document_asset(uuid)`. Every page now links
+  `/api/documents/<asset id>`; that route returns the asset only when it is published and
+  referenced by a published annual report, document slot or knowledge post, then redirects to a
+  60-second signed URL. No reader mints a public Storage URL any more; admin signed uploads and
+  previews are unchanged.
+- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4) — **decision
+  recorded 2026-11-10**, no behaviour changed. Removing `'unsafe-inline'` needs per-request nonce
+  plumbing that TanStack Start's `getRouter()` does not expose, and moving the admin token off
+  `localStorage` means a cookie/BFF rewrite of the whole admin auth boundary. Options, effort,
+  risk and the recommendation are in
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **zod 3 (BUG-30)** — **assessed 2026-11-10**: the 3→4 bump produces 113 typecheck errors across
+  18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
+  `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
+  migration plan are in the appendix of [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **Design gaps (closed 2026-11-09).** About, FAQ, governance and knowledge editors had no
+  revision fence: when two tabs saved, the last write silently won. Each table now has a revision
+  and its update RPC refuses a stale one; see
+  [Editor revision fences](#editor-revision-fences-2026-11-09-design-gap).
 - **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
   by anyone who has its random UUID URL.
 - **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
@@ -1143,6 +1195,70 @@ numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
   `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.
 - **Content datetimes** convert in the browser's timezone. That is correct for staff in
   Hong Kong; HKT is not forced.
+
+## Deferred backlog follow-up (2026-11-10)
+
+The deliberately deferred halves of BUG-19, BUG-25, BUG-28, BUG-46 and BUG-53, closed or
+re-decided in one batch. No production data is touched and no existing behaviour is narrowed.
+
+### BUG-19 — Payments CSV export row cap
+
+- **Where:** `src/routes/api/admin/exports/payments[.]csv.ts` and
+  `src/lib/donations/adminPayments.server.ts`. The audit row and `cache-control: no-store`
+  shipped with the first BUG-19 fix; the row cap was deferred as a product call.
+- **Fix:** `PAYMENT_EXPORT_ROW_CAP = 20_000` (named constant). The synchronous export reads at
+  most one row past the cap and answers **413** with
+  `{error, total, limit}`, no `no-store`-less body, and **no audit row** (nothing was exported),
+  telling the treasurer to narrow the status/provider/search filters. Exactly 20,000 rows still
+  export. The async CRM export jobs cover supporters/donations only, so the message does not
+  point at them for payments; see the FIX_REPORT note.
+
+### BUG-25 — Admin invite/resend land on the set-password page
+
+- **Where:** `src/lib/admin/accessManagement.{repository.server,server,http.server}.ts`,
+  `src/lib/admin/passwordRecovery.ts`, `src/routes/admin/reset-password.tsx`.
+- **Fix:** `generateLink({type:"invite"})` now sends
+  `options.redirectTo = <request origin>/admin/reset-password?intent=invite` for both a first
+  invite and a resend. The existing reset-password page recognises `intent=invite`, treats the
+  invite's `SIGNED_IN` session (or the restored session) as ready, and shows its own bilingual
+  wording (setting a password, invite-link failure); recovery keeps the reset wording. After
+  setting a password the invitee signs in at `/admin/login`, where the first `/me` call
+  activates the pending admin (`activate_admin_invite_with_audit`, unchanged).
+- **Deploy note:** the Supabase Auth redirect allow-list must include the deployment origin's
+  `/admin/reset-password` path; otherwise Supabase falls back to the Site URL.
+
+### BUG-28 — Refresh the payment row after a 409
+
+- **Where:** `src/components/admin/donations/{PaymentsReconcile,ReconcileDialog}.tsx`.
+- **Fix:** `paymentActionNeedsRefresh` (a 409 means the row is stale; a 422 does not) is applied
+  to the reconcile, issue-receipt and void-receipt failures, which now invalidate the payment
+  list/summary/activity queries on conflict instead of leaving the old action button until a
+  manual reload.
+
+### BUG-46 — "Receipt not needed" export filter was per supporter
+
+- **Where:** `20261110110000_crm_donation_export_receipt_needed_per_donation.sql` redefines
+  `public.crm_export_donations` and `public.enqueue_crm_export_job`.
+- **Fix:** both donation-export paths call `private.crm_matching_supporters(p_filters -
+'receiptNeeded')`, so a supporter who is still owed a receipt on one donation no longer
+  disappears whole; the existing per-donation predicate then selects each donation on its own
+  merits. The supporter list and its filter are unchanged (there the column is per supporter).
+  No data rewrite. Behaviour change: with `receiptNeeded=false`, already-receipted, failed,
+  refunded and below-threshold donations are now exported (they genuinely need no receipt).
+
+### BUG-53 — One published guide per species: index left out deliberately
+
+- **Decision:** **no** unique index or trigger is added in this batch. `publish_adoption_guide_release`
+  (`20261030121000`) already serialises publishes per species and archives every published
+  release of that species, so the only application write path cannot create a duplicate.
+  A partial unique index `unique (species) where state = 'published'` cannot be created safely
+  from here: the bug itself may have left duplicate published rows in production, the migration
+  is forbidden to rewrite data, and creating the index would then fail the deploy. A conditional
+  `DO` block would make the schema differ between environments; a trigger guard is possible but
+  is a new invariant that needs a data audit first.
+- **Follow-up:** after a read-only data audit (duplicate published rows per species), archive any
+  duplicates through the existing publish/archive path with a real actor, then add the partial
+  unique index in its own migration.
 
 ## Verified correct (coverage)
 

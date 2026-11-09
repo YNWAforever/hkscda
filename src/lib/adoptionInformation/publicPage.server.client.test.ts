@@ -133,15 +133,6 @@ function fakeSupabaseClient(calls: string[], options: FakeOptions = {}) {
     from(table: string) {
       return new FakeSupabaseQuery(table, calls, options);
     },
-    storage: {
-      from(bucket: string) {
-        return {
-          getPublicUrl(path: string) {
-            return { data: { publicUrl: `https://cdn.test/${bucket}/${path}` } };
-          },
-        };
-      },
-    },
   };
 }
 

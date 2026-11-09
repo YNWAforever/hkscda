@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { isRevisionConflict } from "../../../lib/admin/revisionConflict";
 import type { BoardMember, BoardMemberInput } from "../../../lib/governance/types";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
@@ -24,6 +25,7 @@ export const ADMIN_GOVERNANCE_QUERY_KEY = ["admin-governance"] as const;
 export function toInput(draft: BoardMemberDraft): BoardMemberInput {
   return {
     ...(draft.id ? { id: draft.id } : {}),
+    ...(draft.id && draft.revision !== undefined ? { expectedRevision: draft.revision } : {}),
     name: draft.name,
     roleTitle: draft.roleTitle,
     sortOrder: draft.sortOrder,
@@ -55,11 +57,26 @@ export function GovernanceManagement() {
         method: "POST",
         body: JSON.stringify(input),
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       setDraft(null);
+      queryClient.setQueryData<BoardMember[]>(
+        ADMIN_GOVERNANCE_QUERY_KEY,
+        (current) =>
+          current?.map((member) => (member.id === result.member.id ? result.member : member)) ??
+          current,
+      );
       return invalidateGovernanceQueries(queryClient);
     },
   });
+
+  const upsertConflict = isRevisionConflict(upsertMutation.error);
+  async function reloadLatestMember() {
+    upsertMutation.reset();
+    const result = await membersQuery.refetch();
+    if (!draft?.id || !result.data) return;
+    const fresh = result.data.find((member) => member.id === draft.id);
+    if (fresh) setDraft(draftFromMember(fresh));
+  }
 
   const deactivateMutation = useMutation({
     mutationFn: (request: BoardMemberDeactivateRequest) =>
@@ -166,6 +183,8 @@ export function GovernanceManagement() {
           onCancel={() => setDraft(null)}
           pending={upsertMutation.isPending}
           failed={upsertMutation.isError}
+          conflict={upsertConflict}
+          onReloadLatest={() => void reloadLatestMember()}
         />
       ) : null}
     </div>
@@ -179,6 +198,8 @@ export function BoardMemberForm({
   onCancel,
   pending,
   failed,
+  conflict = false,
+  onReloadLatest,
 }: {
   draft: BoardMemberDraft;
   onDraftChange: (draft: BoardMemberDraft) => void;
@@ -186,6 +207,8 @@ export function BoardMemberForm({
   onCancel: () => void;
   pending: boolean;
   failed: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
 }) {
   const copy = useAdminCopy(governanceCopy).form;
   return (
@@ -233,7 +256,20 @@ export function BoardMemberForm({
           required
         />
       </label>
-      {failed ? (
+      {conflict ? (
+        <div role="alert" className="space-y-2 border border-[var(--color-warning)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-warning)]">
+            {copy.revisionConflict}
+          </p>
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4"
+            onClick={() => onReloadLatest?.()}
+          >
+            {copy.reloadLatest}
+          </button>
+        </div>
+      ) : failed ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {copy.saveFailed}
         </p>

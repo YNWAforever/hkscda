@@ -68,4 +68,57 @@ describe("AdminResetPasswordForm", () => {
     expect(english).toMatch(/<main[^>]*lang="en"/);
     expect(english).not.toContain('lang="zh-HK"');
   });
+
+  // BUG-25: an invite link lands on this page with ?intent=invite and must say "set password".
+  test("shows invite wording for an invited admin, not reset wording", () => {
+    const markup = renderToStaticMarkup(
+      <AdminLanguageProvider>
+        <AdminResetPasswordForm
+          status="ready"
+          intent="invite"
+          loading={false}
+          error={null}
+          onSubmit={() => {}}
+          onBack={() => {}}
+        />
+      </AdminLanguageProvider>,
+    );
+    expect(markup).toContain("設定密碼");
+    expect(markup).toContain("為你的管理後台帳戶設定密碼");
+    expect(markup).not.toContain("重設密碼");
+    expect(markup).not.toContain("更新密碼");
+  });
+
+  test("shows the invite link failure, not the reset failure, for an invalid invite", () => {
+    const markup = renderToStaticMarkup(
+      <AdminLanguageProvider>
+        <AdminResetPasswordForm
+          status="invalid"
+          intent="invite"
+          loading={false}
+          error={null}
+          onSubmit={() => {}}
+          onBack={() => {}}
+        />
+      </AdminLanguageProvider>,
+    );
+    expect(markup).toContain("邀請連結無效或已過期");
+    expect(markup).not.toContain("重設連結無效");
+  });
+
+  test("renders the invite wording in English too", () => {
+    const english = renderAdminInEnglish(
+      <AdminResetPasswordForm
+        status="ready"
+        intent="invite"
+        loading={false}
+        error={null}
+        onSubmit={() => {}}
+        onBack={() => {}}
+      />,
+    );
+    expect(english).toContain("Set your password");
+    expect(english).toContain("Set a password for your admin account");
+    expect(english).not.toContain("Reset password");
+  });
 });

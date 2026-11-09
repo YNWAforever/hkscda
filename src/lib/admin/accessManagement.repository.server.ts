@@ -266,10 +266,12 @@ export function createSupabaseInviteAuthProvider(
   options: { sendInviteEmail?: InviteEmailSender } = {},
 ): AdminInviteAuthProvider {
   return {
-    async inviteByEmail(email) {
+    async inviteByEmail(email, redirectTo) {
       const { data, error } = await client.auth.admin.generateLink({
         type: "invite",
         email,
+        // BUG-25: the invitee lands on the admin set-password page, not the site root.
+        options: { redirectTo },
       });
       if (error) throw inviteLinkError(error);
       if (!data.user?.id) {
@@ -286,10 +288,11 @@ export function createSupabaseInviteAuthProvider(
       await (options.sendInviteEmail ?? sendAdminInviteEmail)(input);
     },
 
-    async resendInvite(email) {
+    async resendInvite(email, redirectTo) {
       const { data, error } = await client.auth.admin.generateLink({
         type: "invite",
         email,
+        options: { redirectTo },
       });
       if (error) throw inviteLinkError(error);
 

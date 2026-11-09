@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { isRevisionConflict } from "../../../lib/admin/revisionConflict";
 import type {
   AboutPageContent,
   AboutPageSlug,
@@ -14,10 +15,13 @@ import { aboutPagesCopy } from "./aboutPagesCopy";
 
 export const ABOUT_PAGES_QUERY_KEY = ["admin-about-pages"] as const;
 
+type PageRevisions = Record<AboutPageSlug, number | null>;
+
 type PagesData = {
   about: AboutPageContent | null;
   tnr: TnrPageContent | null;
   cccp: CccpPageContent | null;
+  revisions: PageRevisions;
 };
 
 // The server always echoes back content of the same shape it was asked to
@@ -25,9 +29,9 @@ type PagesData = {
 // union (rather than the looser AnyAboutPageContent) lets a `pageSlug`
 // equality check narrow `content` for us, with no cast needed at the call site.
 type AboutPagesUpsertResult =
-  | { pageSlug: "about"; content: AboutPageContent }
-  | { pageSlug: "tnr"; content: TnrPageContent }
-  | { pageSlug: "cccp"; content: CccpPageContent };
+  | { pageSlug: "about"; content: AboutPageContent; revision: number }
+  | { pageSlug: "tnr"; content: TnrPageContent; revision: number }
+  | { pageSlug: "cccp"; content: CccpPageContent; revision: number };
 
 const TABS: readonly ["about", "tnr"] = ["about", "tnr"];
 
@@ -68,20 +72,35 @@ function AboutPagesManagementRuntime() {
     mutationFn: (input: { pageSlug: AboutPageSlug; content: unknown }) =>
       fetchAdminJson<AboutPagesUpsertResult>("/api/admin/about-pages", {
         method: "PUT",
-        body: JSON.stringify(input),
+        body: JSON.stringify({
+          ...input,
+          // The revision this page was loaded at: the server refuses the save with a coded 409
+          // when another tab saved the page first (the 2026-11-09 revision fence).
+          expectedRevision: drafts?.revisions[input.pageSlug] ?? undefined,
+        }),
       }),
     onSuccess: (result) => {
       // Reset only the page that was just saved to the confirmed-saved value;
       // the other two drafts (and any in-progress edits they hold) are untouched.
       setDrafts((current) => {
         if (!current) return current;
-        if (result.pageSlug === "about") return { ...current, about: result.content };
-        if (result.pageSlug === "tnr") return { ...current, tnr: result.content };
-        return { ...current, cccp: result.content };
+        const revisions = { ...current.revisions, [result.pageSlug]: result.revision };
+        if (result.pageSlug === "about") return { ...current, about: result.content, revisions };
+        if (result.pageSlug === "tnr") return { ...current, tnr: result.content, revisions };
+        return { ...current, cccp: result.content, revisions };
       });
       void invalidateAboutPagesQueries(queryClient);
     },
   });
+
+  const conflict = isRevisionConflict(upsertMutation.error);
+  async function reloadLatest() {
+    // Explicit reload: replace the drafts with the server's latest pages and revisions, which is
+    // what discards the conflicting unsaved edit.
+    upsertMutation.reset();
+    const result = await pagesQuery.refetch();
+    if (result.data) setDrafts(result.data);
+  }
 
   const heading = <h1 className="text-2xl font-bold text-[var(--color-panel)]">{copy.title}</h1>;
   if (pagesQuery.isLoading)
@@ -125,6 +144,8 @@ function AboutPagesManagementRuntime() {
       onSave={(pageSlug, content) => upsertMutation.mutate({ pageSlug, content })}
       isSaving={upsertMutation.isPending}
       isSaveError={upsertMutation.isError}
+      conflict={conflict}
+      onReloadLatest={() => void reloadLatest()}
     />
   );
 }
@@ -138,6 +159,8 @@ export function AboutPagesManagementView({
   onSave,
   isSaving,
   isSaveError,
+  conflict = false,
+  onReloadLatest,
 }: {
   activeTab: AboutPageSlug;
   onTabChange: (tab: AboutPageSlug) => void;
@@ -147,6 +170,8 @@ export function AboutPagesManagementView({
   onSave: (pageSlug: AboutPageSlug, content: unknown) => void;
   isSaving: boolean;
   isSaveError: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
 }) {
   const copy = useAdminCopy(aboutPagesCopy);
   return (
@@ -181,6 +206,8 @@ export function AboutPagesManagementView({
           onSave={(c) => onSave("about", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
+          conflict={conflict}
+          onReloadLatest={onReloadLatest}
         />
       ) : null}
       {activeTab === "tnr" && drafts.tnr ? (
@@ -190,23 +217,51 @@ export function AboutPagesManagementView({
           onSave={(c) => onSave("tnr", c)}
           isSaving={isSaving}
           isSaveError={isSaveError}
+          conflict={conflict}
+          onReloadLatest={onReloadLatest}
         />
       ) : null}
     </div>
   );
 }
 
-function SaveBar({ isSaving, isSaveError }: { isSaving: boolean; isSaveError: boolean }) {
+function SaveBar({
+  isSaving,
+  isSaveError,
+  conflict = false,
+  onReloadLatest,
+}: {
+  isSaving: boolean;
+  isSaveError: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
+}) {
   const copy = useAdminCopy(aboutPagesCopy);
   return (
-    <div className="flex items-center gap-3">
-      <button type="submit" className="btn-primary min-h-11 px-4" disabled={isSaving}>
-        {copy.save}
-      </button>
-      {isSaveError ? (
-        <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
-          {copy.saveFailed}
-        </p>
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <button type="submit" className="btn-primary min-h-11 px-4" disabled={isSaving}>
+          {copy.save}
+        </button>
+        {isSaveError && !conflict ? (
+          <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
+            {copy.saveFailed}
+          </p>
+        ) : null}
+      </div>
+      {conflict ? (
+        <div role="alert" className="space-y-2 border border-[var(--color-warning)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-warning)]">
+            {copy.revisionConflict}
+          </p>
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4"
+            onClick={() => onReloadLatest?.()}
+          >
+            {copy.reloadLatest}
+          </button>
+        </div>
       ) : null}
     </div>
   );
@@ -252,12 +307,16 @@ function AboutTabForm({
   onSave,
   isSaving,
   isSaveError,
+  conflict = false,
+  onReloadLatest,
 }: {
   draft: AboutPageContent;
   onDraftChange: (content: AboutPageContent) => void;
   onSave: (content: AboutPageContent) => void;
   isSaving: boolean;
   isSaveError: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
 }) {
   const copy = useAdminCopy(aboutPagesCopy);
   return (
@@ -577,7 +636,12 @@ function AboutTabForm({
         />
       </fieldset>
 
-      <SaveBar isSaving={isSaving} isSaveError={isSaveError} />
+      <SaveBar
+        isSaving={isSaving}
+        isSaveError={isSaveError}
+        conflict={conflict}
+        onReloadLatest={onReloadLatest}
+      />
     </form>
   );
 }
@@ -588,12 +652,16 @@ function TnrTabForm({
   onSave,
   isSaving,
   isSaveError,
+  conflict = false,
+  onReloadLatest,
 }: {
   draft: TnrPageContent;
   onDraftChange: (content: TnrPageContent) => void;
   onSave: (content: TnrPageContent) => void;
   isSaving: boolean;
   isSaveError: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
 }) {
   const copy = useAdminCopy(aboutPagesCopy);
   return (
@@ -701,7 +769,12 @@ function TnrTabForm({
         />
       </fieldset>
 
-      <SaveBar isSaving={isSaving} isSaveError={isSaveError} />
+      <SaveBar
+        isSaving={isSaving}
+        isSaveError={isSaveError}
+        conflict={conflict}
+        onReloadLatest={onReloadLatest}
+      />
     </form>
   );
 }

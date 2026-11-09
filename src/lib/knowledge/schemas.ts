@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 const optionalId = z.string().uuid().optional();
 const requiredText = (max: number) => z.string().trim().min(1).max(max);
@@ -36,6 +36,8 @@ export const adminKnowledgeQuerySchema = z.object({
 const rawKnowledgePostInputSchema = z
   .object({
     id: optionalId,
+    /** The `revision` the editor loaded; the database refuses a stale update with a coded 409. */
+    expectedRevision: z.number().int().nonnegative().optional(),
     title: requiredText(180),
     topic: requiredText(120),
     shortIntro: requiredText(500),
@@ -66,6 +68,7 @@ const rawKnowledgePostInputSchema = z
   })
   .transform((value) => ({
     id: value.id,
+    ...(value.expectedRevision === undefined ? {} : { expectedRevision: value.expectedRevision }),
     title: value.title,
     topic: value.topic,
     shortIntro: value.shortIntro,

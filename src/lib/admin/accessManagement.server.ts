@@ -73,15 +73,19 @@ export type AdminAccessRepository = {
 };
 
 export type AdminInviteAuthProvider = {
-  // Preparation creates a link, but does not deliver it.
-  inviteByEmail(email: string): Promise<{
+  // Preparation creates a link, but does not deliver it. `redirectTo` is where the link lands
+  // after Supabase verifies the token (BUG-25: the admin set-password page, invite-marked).
+  inviteByEmail(
+    email: string,
+    redirectTo: string,
+  ): Promise<{
     authUserId: string;
     email: string | null;
     actionLink: string;
   }>;
   sendInviteEmail(input: { to: string; actionLink: string }): Promise<void>;
   // Resend also prepares a link without delivering it.
-  resendInvite(email: string): Promise<{ actionLink: string }>;
+  resendInvite(email: string, redirectTo: string): Promise<{ actionLink: string }>;
 };
 
 export class AdminAccessError extends Error {
@@ -193,7 +197,7 @@ export function createAdminAccessService({
       return { users, summary: summary(users) };
     },
 
-    async inviteUser(args: { actor: AdminAccessActor; input: unknown }) {
+    async inviteUser(args: { actor: AdminAccessActor; input: unknown; redirectTo: string }) {
       const input: InviteInput = inviteSchema.parse(args.input);
       const existing = await repo.findUserByEmail(input.email);
       if (existing && (existing.status === "active" || existing.status === "pending")) {
@@ -203,7 +207,7 @@ export function createAdminAccessService({
       // Link generation may create an Auth identity, but it does not send an email.
       // A failed database commit must not deliver an unusable invitation. Do not
       // delete the Auth identity here: the provider may have returned an existing user.
-      const invited = await auth.inviteByEmail(input.email);
+      const invited = await auth.inviteByEmail(input.email, args.redirectTo);
       const sentAt = timestamp(now);
       const user = await repo.inviteUserWithAudit({
         actorUserId: args.actor.authUserId,
@@ -218,14 +222,14 @@ export function createAdminAccessService({
       return { user, emailDeliveryFailed };
     },
 
-    async resendInvite(args: { actor: AdminAccessActor; userId: string }) {
+    async resendInvite(args: { actor: AdminAccessActor; userId: string; redirectTo: string }) {
       const user = await repo.findUserById(args.userId);
       if (!user) throw notFound();
       if (user.status !== "pending") {
         throw new AdminAccessError("invite_not_pending", "Only pending invites can be resent", 422);
       }
 
-      const prepared = await auth.resendInvite(user.email);
+      const prepared = await auth.resendInvite(user.email, args.redirectTo);
       const sentAt = timestamp(now);
       const resent = await repo.resendInviteWithAudit({
         actorUserId: args.actor.authUserId,

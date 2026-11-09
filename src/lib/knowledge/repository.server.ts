@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { publicDocumentDownloadPath } from "../documents/downloadPath";
+
 import type {
   AdminKnowledgeQuery,
   KnowledgeAuditLog,
@@ -12,7 +14,7 @@ import type {
 const SITE_DOCUMENTS_BUCKET = "site-documents";
 const ASSET_COLUMNS = "id,bucket_name,object_path,mime_type,is_published";
 const POST_BASE_COLUMNS =
-  "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,created_at,updated_at";
+  "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,revision,created_at,updated_at";
 const ZH_HK_ASSET_RELATION = `zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey(${ASSET_COLUMNS})`;
 const EN_ASSET_RELATION = `en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey(${ASSET_COLUMNS})`;
 const POST_COLUMNS = `${POST_BASE_COLUMNS},document_assets:document_assets!knowledge_posts_document_asset_id_fkey(${ASSET_COLUMNS}),${ZH_HK_ASSET_RELATION},${EN_ASSET_RELATION}`;
@@ -32,6 +34,7 @@ const postRowSchema = z.object({
   source_name: z.string().nullable(),
   is_published: z.boolean(),
   sort_order: z.number().int().min(0),
+  revision: z.number().int().nonnegative().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -66,7 +69,7 @@ function isSafeObjectPath(value: unknown): value is string {
     .every((segment) => segment.length > 0 && segment !== "." && segment !== "..");
 }
 
-function publicAssetUrl(client: SupabaseClient, value: unknown) {
+function publicAssetUrl(value: unknown) {
   const row = relatedRow(value);
   if (
     !row ||
@@ -77,21 +80,21 @@ function publicAssetUrl(client: SupabaseClient, value: unknown) {
   ) {
     return null;
   }
-  const publicUrl =
-    client.storage?.from(String(row.bucket_name)).getPublicUrl(row.object_path).data.publicUrl ??
-    null;
-  return safeExternal(publicUrl);
+  // A private bucket (migration 20261109104000): pages link the controlled route, which
+  // re-checks publication and redirects to a short-lived signed URL. The row id is what the
+  // route addresses, so an object path is never leaked into public HTML either.
+  return publicDocumentDownloadPath(String(row.id));
 }
 
-function mapPost(client: SupabaseClient, raw: Row, publicOnly = false): KnowledgePost | null {
+function mapPost(raw: Row, publicOnly = false): KnowledgePost | null {
   const parsed = postRowSchema.safeParse(raw);
   if (!parsed.success) return null;
   if (publicOnly && parsed.data.is_published !== true) return null;
 
   const externalUrl = safeExternal(parsed.data.external_url);
-  const assetUrl = publicAssetUrl(client, raw.document_assets);
-  const zhHkAssetUrl = publicAssetUrl(client, raw.zh_hk_document_assets);
-  const enAssetUrl = publicAssetUrl(client, raw.en_document_assets);
+  const assetUrl = publicAssetUrl(raw.document_assets);
+  const zhHkAssetUrl = publicAssetUrl(raw.zh_hk_document_assets);
+  const enAssetUrl = publicAssetUrl(raw.en_document_assets);
   const hasZhHkAssetId = Boolean(parsed.data.zh_hk_document_asset_id);
   const hasEnAssetId = Boolean(parsed.data.en_document_asset_id);
   if (hasZhHkAssetId !== hasEnAssetId) return null;
@@ -120,6 +123,7 @@ function mapPost(client: SupabaseClient, raw: Row, publicOnly = false): Knowledg
           },
     isPublished: parsed.data.is_published,
     sortOrder: parsed.data.sort_order,
+    ...(parsed.data.revision === undefined ? {} : { revision: parsed.data.revision }),
     createdAt: parsed.data.created_at,
     updatedAt: parsed.data.updated_at,
   };
@@ -152,8 +156,8 @@ function toRow(input: KnowledgePostInput) {
   };
 }
 
-function requirePost(client: SupabaseClient, data: unknown) {
-  const mapped = data && typeof data === "object" ? mapPost(client, data as Row) : null;
+function requirePost(data: unknown) {
+  const mapped = data && typeof data === "object" ? mapPost(data as Row) : null;
   if (!mapped) throw new Error("Knowledge mutation returned an invalid row");
   return mapped;
 }
@@ -203,7 +207,7 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
         readAllPublishedRows("legacy"),
       ]);
       const posts = [...pairRows, ...legacyRows]
-        .map((row) => mapPost(client, row, true))
+        .map((row) => mapPost(row, true))
         .filter((row): row is KnowledgePost => row !== null);
       const uniquePostsById = new Map<string, KnowledgePost>();
       for (const post of posts) {
@@ -238,7 +242,7 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
       if (error) throw error;
       return {
         posts: ((data ?? []) as Row[])
-          .map((row) => mapPost(client, row))
+          .map((row) => mapPost(row))
           .filter((row): row is KnowledgePost => row !== null),
         total: count ?? 0,
         page: input.page,
@@ -254,9 +258,12 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
         p_operation: "upsert",
         p_id: input.id ?? null,
         p_payload: toRow(input),
+        ...(input.expectedRevision === undefined
+          ? {}
+          : { p_expected_revision: input.expectedRevision }),
       });
       if (error) throw error;
-      return requirePost(client, data);
+      return requirePost(data);
     },
 
     async remove(id: string, actorUserId?: string) {

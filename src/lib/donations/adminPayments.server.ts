@@ -19,6 +19,14 @@ const PAYMENT_SUMMARY_SELECT =
 const READ_BATCH_SIZE = 1000;
 const FILTER_VALUE_CHUNK_SIZE = 200;
 
+/**
+ * The payments CSV export is synchronous: it reads every matching payment, with the supporter's
+ * name and email, into memory and answers in one response. Above this many rows the export is
+ * refused with a 413 pointing at the filters instead of buffering an unbounded personal-data
+ * set (BUG-19). Named so the reader, the route and the tests share one definition.
+ */
+export const PAYMENT_EXPORT_ROW_CAP = 20_000;
+
 type CountedRangeResult<Row> = {
   data: Row[] | null;
   error: unknown;
@@ -144,21 +152,29 @@ async function selectAllPaymentRows(
   client: SupabaseClient,
   filters: { status: string; provider: string },
   paymentIds?: string[],
+  maxRows?: number,
 ) {
   if (paymentIds && paymentIds.length === 0) return [] as AdminPaymentRow[];
 
   const chunks = paymentIds ? uniqueChunks(paymentIds) : [undefined];
   const rows: AdminPaymentRow[] = [];
   for (const paymentIdChunk of chunks) {
-    const result = await readCountedRange<AdminPaymentRow>(() => {
-      let query = client
-        .from("payment")
-        .select(PAYMENT_SELECT, { count: "exact" })
-        .order("created_at", { ascending: false })
-        .order("id", { ascending: false });
-      query = applyPaymentFilters(query, filters, paymentIdChunk);
-      return query;
-    });
+    // Read one row past the cap so an export of exactly `maxRows` still fits (BUG-19).
+    const remaining = maxRows === undefined ? undefined : maxRows + 1 - rows.length;
+    if (remaining !== undefined && remaining <= 0) break;
+    const result = await readCountedRange<AdminPaymentRow>(
+      () => {
+        let query = client
+          .from("payment")
+          .select(PAYMENT_SELECT, { count: "exact" })
+          .order("created_at", { ascending: false })
+          .order("id", { ascending: false });
+        query = applyPaymentFilters(query, filters, paymentIdChunk);
+        return query;
+      },
+      0,
+      remaining === undefined ? undefined : remaining - 1,
+    );
     rows.push(...result.rows);
   }
 
@@ -340,7 +356,20 @@ export async function listAdminPaymentExportRows(
 ): Promise<PaymentExportRow[]> {
   const filters = adminPaymentExportSearchSchema.parse(rawSearch);
   const paymentIds = await resolveSearchPaymentIds(client, filters.q);
-  const rows = await selectAllPaymentRows(client, filters, paymentIds);
+  const rows = await selectAllPaymentRows(client, filters, paymentIds, PAYMENT_EXPORT_ROW_CAP);
+
+  // BUG-19: a synchronous CSV of every matching payment has no safe upper bound without one.
+  // Refuse before the audit row and the CSV: nothing was exported, so nothing is audited.
+  if (rows.length > PAYMENT_EXPORT_ROW_CAP) {
+    throw Response.json(
+      {
+        error: `Payments export matches more than ${PAYMENT_EXPORT_ROW_CAP} rows. Narrow the status, provider or search filters and try again.`,
+        total: rows.length,
+        limit: PAYMENT_EXPORT_ROW_CAP,
+      },
+      { status: 413, headers: { "cache-control": "no-store" } },
+    );
+  }
 
   return rows.map((payment) => ({
     paymentId: payment.id,

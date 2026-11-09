@@ -6,12 +6,15 @@ export type BoardMember = {
   sortOrder: number;
   effectiveDate: string;
   isActive: boolean;
+  /** The row's revision, sent back as `expectedRevision` on the next save (the optimistic fence). */
+  revision?: number;
   createdAt: string;
   updatedAt: string;
 };
 
 export type BoardMemberInput = {
   id?: string;
+  expectedRevision?: number;
   name: string;
   roleTitle: string;
   sortOrder: number;

@@ -22,6 +22,23 @@ export function getAdminPasswordResetRedirect(origin: string) {
   return `${origin.replace(/\/$/, "")}/admin/reset-password`;
 }
 
+/** The query value the invite link appends so the set-password page shows invite wording. */
+export const ADMIN_SET_PASSWORD_INTENT = "invite";
+
+/**
+ * Where an admin invite/resend link lands (BUG-25): the admin set-password page, marked as an
+ * invite so the page says "set your password" rather than "reset your password".
+ */
+export function getAdminInviteRedirect(origin: string) {
+  return `${getAdminPasswordResetRedirect(origin)}?intent=${ADMIN_SET_PASSWORD_INTENT}`;
+}
+
+export type AdminSetPasswordIntent = "invite" | "recovery";
+
+export function parseAdminSetPasswordIntent(value: unknown): AdminSetPasswordIntent {
+  return value === ADMIN_SET_PASSWORD_INTENT ? "invite" : "recovery";
+}
+
 export function validateAdminPassword(password: string, confirmation: string) {
   if (password.length < ADMIN_PASSWORD_MIN_LENGTH) return "too_short" as const;
   if (password !== confirmation) return "mismatch" as const;

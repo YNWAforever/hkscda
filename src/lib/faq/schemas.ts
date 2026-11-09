@@ -97,6 +97,11 @@ export const faqEntryIdSchema = z.string().uuid();
 
 export const upsertFaqEntrySchema = z.object({
   id: z.string().uuid().optional(),
+  /**
+   * The `revision` the editor loaded. The database refuses the update with a coded 409 when the
+   * row changed meanwhile (the 2026-11-09 revision fence); a create sends none.
+   */
+  expectedRevision: z.number().int().nonnegative().optional(),
   category: faqCategorySchema,
   questionZh: requiredText(300),
   questionEn: requiredText(300),

@@ -45,6 +45,13 @@ async function withFaqErrors(operation: () => Promise<Response>) {
       return jsonNoStore({ error: "Invalid FAQ request" }, { status: 400 });
     if (error instanceof FaqDeactivationRequiresReasonError)
       return jsonNoStore({ error: error.message }, { status: 400 });
+    // The revision fence raises 40001 when the row changed since the editor loaded it; the form
+    // reads the code to show its reload-latest notice instead of a generic save failure.
+    if (error && typeof error === "object" && "code" in error && error.code === "40001")
+      return jsonNoStore(
+        { error: { code: "conflict", message: "FAQ entry changed; reload before saving" } },
+        { status: 409 },
+      );
     // The upsert/deactivate RPCs raise P0002 for an unknown id, as knowledge and governance
     // already map (BUG-16).
     if (error && typeof error === "object" && "code" in error && error.code === "P0002")

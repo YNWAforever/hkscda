@@ -8,6 +8,8 @@ export const boardMemberIdSchema = z.string().uuid();
 
 export const boardMemberInputSchema = z.object({
   id: z.string().uuid().optional(),
+  /** The `revision` the editor loaded; the database refuses a stale update with a coded 409. */
+  expectedRevision: z.number().int().nonnegative().optional(),
   name: requiredText(120),
   roleTitle: requiredText(120),
   sortOrder: z.coerce.number().int().min(0).default(0),

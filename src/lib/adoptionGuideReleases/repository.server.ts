@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { publicDocumentDownloadPath } from "../documents/downloadPath";
 import type { DocumentAsset } from "../documents/types";
 import {
   adoptionGuideDraftInputSchema,
@@ -245,15 +246,20 @@ function requireRelease(value: unknown) {
   return release;
 }
 
-function publicAssetUrl(client: SupabaseClient, row: z.infer<typeof assetRowSchema>) {
+/**
+ * Published assets are linked through the controlled public route: `site-documents` is a
+ * private bucket (migration 20261109104000), so a Storage URL would only 400.
+ */
+function publicAssetUrl(row: z.infer<typeof assetRowSchema>) {
   if (!row.is_published) return null;
-  return client.storage.from(row.bucket_name).getPublicUrl(row.object_path).data.publicUrl ?? null;
+  return publicDocumentDownloadPath(row.id);
 }
 
-function mapAsset(
-  client: SupabaseClient,
-  value: unknown,
-): { asset: DocumentAsset; bucketName: string; objectPath: string } | null {
+function mapAsset(value: unknown): {
+  asset: DocumentAsset;
+  bucketName: string;
+  objectPath: string;
+} | null {
   const result = assetRowSchema.safeParse(value);
   if (!result.success) return null;
   const row = result.data;
@@ -265,7 +271,7 @@ function mapAsset(
       language: row.language,
       bucketName: row.bucket_name,
       objectPath: row.object_path,
-      fileUrl: publicAssetUrl(client, row),
+      fileUrl: publicAssetUrl(row),
       mimeType: row.mime_type,
       byteSize: row.byte_size,
       checksumSha256: row.checksum_sha256,
@@ -380,7 +386,7 @@ export function createSupabaseAdoptionGuideReleaseRepository(
 
       const mapped = new Map(
         ((data ?? []) as unknown[])
-          .map((row) => mapAsset(client, row))
+          .map((row) => mapAsset(row))
           .filter((item) => item !== null)
           .map((item) => [item.asset.id, item] as const),
       );

@@ -112,3 +112,20 @@ describe("knowledge schemas", () => {
     });
   });
 });
+
+describe("knowledge revision fence", () => {
+  const base = {
+    title: "Title",
+    topic: "adoption",
+    shortIntro: "Intro",
+    externalUrl: "https://example.test/x",
+  };
+  test("accepts a non-negative integer expectedRevision and rejects other values", () => {
+    expect(knowledgePostInputSchema.safeParse({ ...base, expectedRevision: 3 }).success).toBe(true);
+    for (const value of [-1, 3.5, "3", null]) {
+      expect(knowledgePostInputSchema.safeParse({ ...base, expectedRevision: value }).success).toBe(
+        false,
+      );
+    }
+  });
+});

@@ -21,7 +21,13 @@ const validTnr = {
 function createService(overrides: Partial<ReturnType<typeof createAboutPagesService>> = {}) {
   return {
     listPublic: mock(async () => ({ about: null, tnr: null, cccp: null })),
-    upsertAdmin: mock(async () => validTnr),
+    listAdmin: async () => ({
+      about: null,
+      tnr: null,
+      cccp: null,
+      revisions: { about: null, tnr: null, cccp: null },
+    }),
+    upsertAdmin: mock(async () => ({ content: validTnr, revision: 1 })),
     ...overrides,
   } as unknown as ReturnType<typeof createAboutPagesService>;
 }
@@ -119,13 +125,69 @@ describe("createAdminAboutPagesHandlers", () => {
 
   test("an unexpected error falls through to a generic 500", async () => {
     const service = createService({
-      listPublic: mock(async () => {
+      listAdmin: (async () => {
         throw new Error("db exploded");
-      }),
+      }) as never,
     });
     const requireAboutPagesAdmin = mock(async () => admin);
     const handlers = createAdminAboutPagesHandlers({ requireAboutPagesAdmin, service });
     const response = await handlers.list({ request: request("http://localhost/x") });
     expect(response.status).toBe(500);
+  });
+});
+
+describe("about pages revision fence", () => {
+  test("list returns the pages with the revisions the editor saves against", async () => {
+    const adminPages = {
+      about: null,
+      tnr: validTnr as never,
+      cccp: null,
+      revisions: { about: 4, tnr: 7, cccp: null },
+    };
+    const service = createService({ listAdmin: (async () => adminPages) as never });
+    const handlers = createAdminAboutPagesHandlers({
+      requireAboutPagesAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.list({ request: request("http://localhost/x") });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(adminPages);
+  });
+
+  test("passes expectedRevision and answers a stale one with the coded 409", async () => {
+    const upsertAdmin = mock(async (input: { expectedRevision?: number }) => {
+      if (input.expectedRevision === 2) throw { code: "40001" };
+      return { content: validTnr, revision: 8 };
+    });
+    const handlers = createAdminAboutPagesHandlers({
+      requireAboutPagesAdmin: async () => admin,
+      service: createService({ upsertAdmin: upsertAdmin as never }),
+    });
+
+    const fresh = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "PUT",
+        body: JSON.stringify({ pageSlug: "tnr", expectedRevision: 7, content: validTnr }),
+      }),
+    });
+    expect(fresh.status).toBe(200);
+    expect(await fresh.json()).toEqual({
+      pageSlug: "tnr",
+      content: validTnr,
+      revision: 8,
+    });
+    expect(upsertAdmin.mock.calls[0]?.[0]).toMatchObject({ expectedRevision: 7 });
+
+    const stale = await handlers.upsert({
+      request: request("http://localhost/x", {
+        method: "PUT",
+        body: JSON.stringify({ pageSlug: "tnr", expectedRevision: 2, content: validTnr }),
+      }),
+    });
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toEqual({
+      error: { code: "conflict", message: "About page changed; reload before saving" },
+    });
   });
 });

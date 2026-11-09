@@ -48,6 +48,8 @@ export const faqCopy = defineAdminCopy({
       isActive: "在 /help 頁面顯示",
       sortOrder: "排序",
       saveFailed: "儲存失敗，請檢查資料後再試一次。",
+      revisionConflict: "另一位管理員已修改此問題。請重新載入最新版本，再套用你的修改。",
+      reloadLatest: "重新載入最新版本",
       save: "儲存",
       cancel: "取消",
     },
@@ -129,6 +131,9 @@ export const faqCopy = defineAdminCopy({
       isActive: "Show on the /help page",
       sortOrder: "Sort order",
       saveFailed: "Could not save. Check the details and try again.",
+      revisionConflict:
+        "Another admin changed this question. Reload the latest version, then apply your edits again.",
+      reloadLatest: "Reload latest version",
       save: "Save",
       cancel: "Cancel",
     },

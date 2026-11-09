@@ -144,10 +144,6 @@ function createFakeClient(
     storage: {
       from(bucket: string) {
         return {
-          getPublicUrl(path: string) {
-            storageCalls.push(`public:${bucket}:${path}`);
-            return { data: { publicUrl: `https://cdn.test/${bucket}/${path}` } };
-          },
           async createSignedUploadUrl(path: string) {
             return {
               data: { token: "token", path, signedUrl: "https://upload.test" },
@@ -205,9 +201,7 @@ describe("createSupabaseDocumentRepository", () => {
       "document_assets.is_published",
       true,
     ]);
-    expect(reports[0]?.document.fileUrl).toBe(
-      "https://cdn.test/site-documents/annual-reports/2025-26.pdf",
-    );
+    expect(reports[0]?.document.fileUrl).toBe(`/api/documents/${assetId}`);
   });
 
   test("public and admin annual reports read past a server row cap", async () => {
@@ -606,11 +600,7 @@ test("uses one RPC for an authenticated mutation and its audit record", async ()
     },
     storage: {
       from(bucket: string) {
-        return {
-          getPublicUrl(path: string) {
-            return { data: { publicUrl: `https://cdn.test/${bucket}/${path}` } };
-          },
-        };
+        return {};
       },
     },
   } as unknown as SupabaseClient;

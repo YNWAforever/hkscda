@@ -1,4 +1,4 @@
-﻿export type KnowledgeDestination =
+export type KnowledgeDestination =
   | { kind: "external"; url: string }
   | { kind: "document"; assetId: string; url?: string }
   | {
@@ -18,12 +18,15 @@ export type KnowledgePost = {
   destination: KnowledgeDestination;
   isPublished: boolean;
   sortOrder: number;
+  /** The row's revision, sent back as `expectedRevision` on the next save (the optimistic fence). */
+  revision?: number;
   createdAt: string;
   updatedAt: string;
 };
 
 export type KnowledgePostInput = {
   id?: string;
+  expectedRevision?: number;
   title: string;
   topic: string;
   shortIntro: string;

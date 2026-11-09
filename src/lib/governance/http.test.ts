@@ -196,3 +196,42 @@ describe("createAdminGovernanceHandlers", () => {
     expect(body.error).toBe("Could not process governance request");
   });
 });
+
+describe("governance revision fence", () => {
+  test("answers a stale expectedRevision with the coded 409 the editor reloads on", async () => {
+    const handlers = createHandlers({
+      upsert: async (command) => {
+        const input = command.input as { expectedRevision?: number };
+        if (input.expectedRevision === 2) throw { code: "40001" };
+        return {
+          id: "11111111-1111-4111-8111-111111111111",
+          name: "陳大文",
+          roleTitle: "主席",
+          sortOrder: 0,
+          effectiveDate: "2026-08-01",
+          isActive: true,
+          createdAt: "2026-08-29T00:00:00.000Z",
+          updatedAt: "2026-08-29T00:00:00.000Z",
+        };
+      },
+    });
+
+    const stale = await handlers.upsert({
+      request: new Request("http://x/api/admin/governance", {
+        method: "POST",
+        body: JSON.stringify({
+          id: "22222222-2222-4222-8222-222222222222",
+          expectedRevision: 2,
+          name: "陳大文",
+          roleTitle: "主席",
+          effectiveDate: "2026-08-01",
+        }),
+      }),
+    });
+
+    expect(stale.status).toBe(409);
+    expect(await stale.json()).toEqual({
+      error: { code: "conflict", message: "Board member changed; reload before saving" },
+    });
+  });
+});
