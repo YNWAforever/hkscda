@@ -64,6 +64,30 @@ export function isDestructiveTransition(status: VolunteerRegistrationStatus) {
   return status === "rejected";
 }
 
+/**
+ * The status the legacy activity table's publish/close button should send next, or `null` when
+ * the row has no safe transition.
+ *
+ * `cancelled` is terminal: the bulk cancel flow recorded a required reason, cancelled the
+ * registrations and audited them. The legacy button used to read "Publish" on such a row and
+ * send `published`, putting the cancelled session back on the public list (OPS-01). Draft,
+ * published and closed keep the toggle — closing and reopening are normal.
+ */
+export function activityPublicationAction(
+  current: VolunteerActivityStatus,
+): Extract<VolunteerActivityStatus, "published" | "closed"> | null {
+  switch (current) {
+    case "draft":
+      return "published";
+    case "published":
+      return "closed";
+    case "closed":
+      return "published";
+    case "cancelled":
+      return null;
+  }
+}
+
 export type RegistrationRejection = { status: VolunteerRegistrationStatus; reason: string };
 
 /**

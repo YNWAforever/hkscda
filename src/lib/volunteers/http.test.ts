@@ -2,6 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { z } from "zod";
 
 import type { AdminUser } from "../donations/supabase.server";
+import { VolunteerActivityTransitionError } from "./activityTransition";
+import { volunteerCodeMessage } from "./apiResult";
 import { createVolunteerHandlers } from "./http.server";
 import { createVolunteerService } from "./service";
 import type { VolunteerActivitySummary, VolunteerRegistrationDetail } from "./types";
@@ -368,5 +370,41 @@ describe("volunteer registration trigger refusals — regression", () => {
       hint: null,
     });
     expect(response.status).toBe(403);
+  });
+});
+
+describe("OPS-01: a cancelled activity cannot be republished", () => {
+  test("the refusal reaches the admin as a 409 with the activity_closed code", async () => {
+    const service = createService({
+      async updateActivity() {
+        throw new VolunteerActivityTransitionError("activity_closed");
+      },
+    });
+    const handlers = createVolunteerHandlers({
+      requireVolunteerAdmin: async () => admin,
+      service,
+    });
+
+    const response = await handlers.updateActivity({
+      request: new Request(
+        "https://example.test/api/admin/volunteers/activities/11111111-2222-4333-8444-555555555555",
+        {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            status: "published",
+            expectedUpdatedAt: "2026-09-05T00:00:00Z",
+          }),
+        },
+      ),
+      params: { id: "11111111-2222-4333-8444-555555555555" },
+    });
+
+    expect(response.status).toBe(409);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    const body = (await response.json()) as { error: string; code: string };
+    expect(body.code).toBe("activity_closed");
+    // The admin reads the server's zh-HK text, and maps it to English by its code.
+    expect(body.error).toBe(volunteerCodeMessage("activity_closed") ?? "");
   });
 });

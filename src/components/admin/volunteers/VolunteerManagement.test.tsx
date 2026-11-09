@@ -67,6 +67,7 @@ function registration(
 
 let registrationRows = [registration()];
 let registrationTotal = 1;
+let activityRows: VolunteerActivitySummary[] = [activity];
 
 let mutationError: Error | null = null;
 mock.module("@tanstack/react-query", () => ({
@@ -83,7 +84,7 @@ mock.module("@tanstack/react-query", () => ({
     const key = String(queryKey[0]);
     if (key === "volunteer-activities") {
       return {
-        data: { activities: [activity], total: 1 },
+        data: { activities: activityRows, total: activityRows.length },
         error: null,
         isLoading: false,
         isFetching: false,
@@ -170,6 +171,19 @@ describe("VolunteerManagement", () => {
   test("hides page controls for a single page and shows them beyond one", () => {
     expect(render("pending", 1)).not.toContain("下一頁");
     expect(render("pending", 90)).toContain("下一頁");
+  });
+
+  test("OPS-01: a cancelled activity shows its status instead of a Publish button", () => {
+    activityRows = [{ ...activity, status: "cancelled" }];
+    try {
+      const markup = render();
+      // The old toggle labelled a cancelled row "發布" and sent published, which put the
+      // cancelled session back on the public volunteer list.
+      expect(markup).not.toContain(">發布</button>");
+      expect(markup).toContain("已取消");
+    } finally {
+      activityRows = [activity];
+    }
   });
 });
 

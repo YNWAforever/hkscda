@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 
 import { createVolunteerHandlers } from "./http.server";
+import { VolunteerActivityTransitionError } from "./activityTransition";
 import { createVolunteerService } from "./service";
 import type { VolunteerRepository } from "./service";
 import type { VolunteerActivityDetail, VolunteerRegistrationDetail } from "./types";
@@ -471,5 +472,68 @@ describe("volunteer activity input validation — regression", () => {
     } finally {
       console.error = original;
     }
+  });
+});
+
+describe("OPS-01: terminal activity status", () => {
+  const expectedUpdatedAt = "2026-07-01T00:00:00.000Z";
+
+  test("refuses cancelled -> published before the repository mutation", async () => {
+    const updates: unknown[] = [];
+    const { repo } = createRepo({
+      getActivityDetail: async () => ({ ...activity, status: "cancelled" }),
+      updateActivity: async (id, input) => {
+        updates.push({ id, input });
+      },
+    });
+    const service = createVolunteerService({ repo });
+
+    await expect(
+      service.updateActivity({
+        actorUserId: "actor-1",
+        activityId: activity.id,
+        input: { status: "published", expectedUpdatedAt },
+      }),
+    ).rejects.toThrow(VolunteerActivityTransitionError);
+    expect(updates).toEqual([]);
+  });
+
+  test("keeps closing a cancelled activity, so the guard only blocks the terminal escape", async () => {
+    const updates: unknown[] = [];
+    const { repo } = createRepo({
+      getActivityDetail: async () => ({ ...activity, status: "cancelled" }),
+      updateActivity: async (id, input) => {
+        updates.push({ id, input });
+      },
+    });
+    const service = createVolunteerService({ repo });
+
+    await expect(
+      service.updateActivity({
+        actorUserId: "actor-1",
+        activityId: activity.id,
+        input: { status: "closed", expectedUpdatedAt },
+      }),
+    ).resolves.toEqual({ ok: true });
+    expect(updates).toEqual([{ id: activity.id, input: { status: "closed" } }]);
+  });
+
+  test("publishing a non-cancelled activity reads the stored status and proceeds", async () => {
+    const { repo } = createRepo();
+    let detailReads = 0;
+    repo.getActivityDetail = async () => {
+      detailReads += 1;
+      return activity;
+    };
+    const service = createVolunteerService({ repo });
+
+    await expect(
+      service.updateActivity({
+        actorUserId: "actor-1",
+        activityId: activity.id,
+        input: { status: "published", expectedUpdatedAt },
+      }),
+    ).resolves.toEqual({ ok: true });
+    expect(detailReads).toBe(1);
   });
 });
