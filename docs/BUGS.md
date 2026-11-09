@@ -1134,10 +1134,23 @@ numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
   when two tabs save, the last write silently wins. Each needs a version column, so a migration.
-- **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
-  by anyone who has its random UUID URL.
-- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
-  Removing `'unsafe-inline'` needs nonce support in SSR, so it is out of scope.
+- **`site-documents` was a public bucket** (2026-11-09 audit, "Not filed as bugs") — **fixed
+  2026-11-10.** Migration `20261109104000_private_site_documents_bucket.sql` makes the bucket
+  private and adds `public.read_public_document_asset(uuid)`. Every page now links
+  `/api/documents/<asset id>`; that route returns the asset only when it is published and
+  referenced by a published annual report, document slot or knowledge post, then redirects to a
+  60-second signed URL. No reader mints a public Storage URL any more; admin signed uploads and
+  previews are unchanged.
+- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4) — **decision
+  recorded 2026-11-10**, no behaviour changed. Removing `'unsafe-inline'` needs per-request nonce
+  plumbing that TanStack Start's `getRouter()` does not expose, and moving the admin token off
+  `localStorage` means a cookie/BFF rewrite of the whole admin auth boundary. Options, effort,
+  risk and the recommendation are in
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **zod 3 (BUG-30)** — **assessed 2026-11-10**: the 3→4 bump produces 113 typecheck errors across
+  18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
+  `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
+  migration plan are in the appendix of [`docs/csp-token-decision.md`](csp-token-decision.md).
 - **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
   unchanged. AUD-02 (staff RLS on supporters) is fixed by
   `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.

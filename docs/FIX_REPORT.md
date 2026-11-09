@@ -509,6 +509,40 @@ publication route): 337 pass, 0 fail across 20 files
 (`SUPABASE_LOCAL_URL=http://127.0.0.1:1`; no local Supabase stack, so DB-gated RLS/integration
 files were skipped and no database was touched).
 
+## Security hardening backlog (2026-11-10)
+
+Closes the actionable items from the 2026-11-09 audit's "Not filed as bugs" list: the public
+`site-documents` bucket (fixed), plus a recorded decision for CSP/JWT storage (AUDIT R4) and the
+zod 3→4 assessment.
+
+| Item                               | Sev | Outcome                                                                                                                                                                                                                                                                                                                                                                  | Where                                                                                     |
+| ---------------------------------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Public `site-documents` bucket     | Med | Bucket set private; `public.read_public_document_asset(uuid)` (definer, pinned empty `search_path`, service-role only) returns an asset only when published **and** referenced by a published annual report, document slot or knowledge post. Pages link `/api/documents/<asset id>`, which re-checks eligibility and redirects to a 60-second signed URL. Admin signed uploads/previews unchanged | `20261109104000_private_site_documents_bucket.sql`, `src/routes/api/documents/$assetId.ts` |
+| CSP `'unsafe-inline'` / JWT storage | Low | Decision note only: status quo + cheap hardening now; nonce CSP as a separate CSP-only task (TanStack Start exposes `router.options.ssr.nonce` but not the per-request router hook); HttpOnly cookie/BFF as the real fix only if the threat model demands it. No behaviour changed                                                                                          | [`docs/csp-token-decision.md`](csp-token-decision.md)                                     |
+| zod 3 → 4 (GHSA-mrhx-c7xc-m3w5)     | Low | Attempted, measured, reverted: 113 typecheck errors across 18 files (JSON-schema internals 34, stricter inferred input types 57, `z.record`/issue-code API changes 14, misc 8), over the < 40 limit. Bump deferred to a planned task; exposure already bounded by the 8 MB admin / 1 MB public body caps                                                                  | appendix of [`docs/csp-token-decision.md`](csp-token-decision.md)                         |
+
+**Deploy:** `20261109104000` is a latest-definition-wins migration with no row changes. Deploy it
+with the code half (or immediately before it): the bucket flag and the new links must change
+together, because existing public Storage URLs stop working once the bucket is private. No new
+environment variables, routes are additive (`/api/documents/$assetId` was added to the generated
+route tree), and the CSP/token/zod items change nothing at runtime.
+
+**Behaviour to know.** Annual reports, sponsorship terms, the wedding gift-return plan, adoption
+guides and knowledge PDFs now open through a redirect to a short-lived signed Storage URL; copying
+the address bar gives a URL that expires in 60 seconds, and the stable shareable link is the
+`/api/documents/<asset id>` page link. An asset that is unpublished — or published but no longer
+referenced by a published surface — returns 404 even to someone who knows the old UUID URL.
+Admin upload and preview flows are unchanged.
+
+**Verification.** `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 pre-existing
+warnings). Focused `bun test --isolate` (documents/knowledge/adoption-guide release repositories
+and their route consumers, report/audit + donate + adoption instructions pages, the new route
+tests, the migration guard and `supabaseMigrations.test.ts`): **1,117 pass, 0 fail, 42 skipped**
+across 118 files with `SUPABASE_LOCAL_URL=http://127.0.0.1:1`. The skipped files are the
+database/RLS suites; no database was available and none was touched, so the migration is traced
+and syntax-reviewed rather than executed. The zod result is the measured `tsc` error count above,
+not a partial upgrade.
+
 ## Manual QA checklist (staging or local, never production data)
 
 - [ ] Sign in as each role (staff, treasurer, admin). Each lands on its first allowed
@@ -524,6 +558,9 @@ files were skipped and no database was touched).
       a reason.
 - [ ] Documents: try to change a published sponsorship-terms document's kind. It is
       refused with a clear message.
+- [ ] Document links: the annual-report, sponsorship-terms, wedding gift-return, adoption-guide
+      and knowledge PDFs all open through `/api/documents/<id>`; an unpublished asset's id (or a
+      published-but-unreferenced one) returns 404, not the PDF.
 - [ ] Coordinator reports: a case created at 00:30 HKT on the 1st counts in that month.
 - [ ] Volunteers: approve a waitlisted volunteer out of order and see the waitlist
       message. An activity with its end before its start is refused.
