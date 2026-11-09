@@ -1,4 +1,4 @@
-# Admin panel bug log — Phase 1
+﻿# Admin panel bug log — Phase 1
 
 Date: 2026-10-29. Base: `0e59983`. Companion to `docs/AUDIT.md`.
 
@@ -432,9 +432,10 @@ deleted_at = null`, then the roles are replaced). Callers: `src/lib/crm/service.
   `vite@7.3.2` (fixed ≤7.3.6), plus build tooling (`postcss`, `nanoid`, `js-yaml`,
   `brace-expansion`, `esbuild`, `launch-editor`).
 - **Fix:** lockfile-only bumps within existing ranges (`bun update` on those packages),
-  then re-run all gates. **`zod` 3 → 4 (GHSA-mrhx-c7xc-m3w5) is a major upgrade and is
-  deferred pending approval.** Exposure is limited because admin bodies are capped at
-  8 MB and public bodies at 1 MB.
+  then re-run all gates. **`zod` 3 → 4 (GHSA-mrhx-c7xc-m3w5)** was deferred pending
+  approval; it is fixed by the dedicated upgrade on 2026-11-10 (direct dependency zod
+  4.6.6; see the [dependency upgrade](FIX_REPORT.md#dependency-upgrade--zod-4-2026-11-10)).
+  Exposure was limited because admin bodies are capped at 8 MB and public bodies at 1 MB.
 
 ### BUG-31 — Med — Revoked or expired server session strands the admin
 
@@ -1193,6 +1194,18 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
   `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
   migration plan are in the appendix of [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4) — **decision
+  recorded 2026-11-10**, no behaviour changed. Removing `'unsafe-inline'` needs per-request nonce
+  plumbing that TanStack Start's `getRouter()` does not expose, and moving the admin token off
+  `localStorage` means a cookie/BFF rewrite of the whole admin auth boundary. Options, effort,
+  risk and the recommendation are in
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **zod 3 (BUG-30)** — **fixed 2026-11-10**: the direct dependency is zod 4.6.6 (the first line
+  with the GHSA-mrhx-c7xc-m3w5 fix). The measured 113-error revert from the first attempt was
+  re-done in full: the JSON-schema walker is a typed adapter preserving the database-pinned
+  schema, PATCH schemas no longer inject defaults, `z.record`, issue codes, search-validator and
+  UUID-fixture changes are recorded in
+  [`docs/csp-token-decision.md`](csp-token-decision.md) and the FIX_REPORT upgrade section.
 - **Design gaps (closed 2026-11-09).** About, FAQ, governance and knowledge editors had no
   revision fence: when two tabs saved, the last write silently won. Each table now has a revision
   and its update RPC refuses a stale one; see

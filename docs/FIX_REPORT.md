@@ -104,9 +104,11 @@ None remain.
   It is a product call.
 - **BUG-28:** refreshing the payment row after a 409 from reconcile or issue-receipt is
   not done, because no failing test was written for it first.
-- **BUG-30:** `zod` 3 → 4 (GHSA-mrhx-c7xc-m3w5) is a major upgrade and was not approved.
-  The remaining 31 advisories are build or dev tooling, plus zod. Exposure is bounded by
-  the 8 MB admin and 1 MB public body caps.
+- **BUG-30:** `zod` 3 → 4 (GHSA-mrhx-c7xc-m3w5) was a major upgrade and was deferred. It is now
+  fixed by the dedicated upgrade on 2026-11-10 (direct dependency zod 4.6.6; see
+  [Dependency upgrade — zod 4](#dependency-upgrade--zod-4-2026-11-10)). The remaining advisories
+  are build or dev tooling plus nested zod copies in those tools; exposure was bounded by the
+  8 MB admin and 1 MB public body caps.
 
 ## Test coverage summary
 
@@ -136,19 +138,19 @@ Scenario matrix from the brief, and where each scenario is covered:
 
 ## Final verification (Bun 1.3.14, the pinned version)
 
-| Gate                         | Command                         | Result                                                              |
-| ---------------------------- | ------------------------------- | ------------------------------------------------------------------- |
-| Install                      | `bun install --frozen-lockfile` | ✅ no changes                                                       |
-| Typecheck                    | `bun run typecheck`             | ✅ 0 errors                                                         |
-| Lint (now includes `tests/`) | `bun run lint`                  | ✅ 0 errors, 53 warnings (same as baseline)                         |
-| Full suite                   | `bun run test`                  | ✅ 7,559 pass, 728 skip, **0 fail** (8,287 tests, 866 files)        |
-| Unit                         | `bun run test:unit`             | ✅ 6,322 pass, 0 fail                                               |
-| Integration                  | `bun run test:integration`      | ✅ 37 pass, 0 fail                                                  |
-| E2E                          | `bun run test:e2e`              | ✅ 17 pass, 0 fail (3 consecutive runs)                             |
-| CI aggregate                 | `bun run test:ci`               | ✅                                                                  |
-| Build                        | `bun run build` (CI env)        | ✅; `routeTree.gen.ts` unchanged                                    |
-| Client bundle                | `bun run verify:client-bundle`  | ✅ 146 files clean                                                  |
-| Dependencies                 | `bun audit`                     | ⚠️ 32 advisories (was 41); remaining are tooling and zod (deferred) |
+| Gate                         | Command                         | Result                                                                               |
+| ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
+| Install                      | `bun install --frozen-lockfile` | ✅ no changes                                                                        |
+| Typecheck                    | `bun run typecheck`             | ✅ 0 errors                                                                          |
+| Lint (now includes `tests/`) | `bun run lint`                  | ✅ 0 errors, 53 warnings (same as baseline)                                          |
+| Full suite                   | `bun run test`                  | ✅ 7,559 pass, 728 skip, **0 fail** (8,287 tests, 866 files)                         |
+| Unit                         | `bun run test:unit`             | ✅ 6,322 pass, 0 fail                                                                |
+| Integration                  | `bun run test:integration`      | ✅ 37 pass, 0 fail                                                                   |
+| E2E                          | `bun run test:e2e`              | ✅ 17 pass, 0 fail (3 consecutive runs)                                              |
+| CI aggregate                 | `bun run test:ci`               | ✅                                                                                   |
+| Build                        | `bun run build` (CI env)        | ✅; `routeTree.gen.ts` unchanged                                                     |
+| Client bundle                | `bun run verify:client-bundle`  | ✅ 146 files clean                                                                   |
+| Dependencies                 | `bun audit`                     | ⚠️ 33 advisories; the direct zod advisory is fixed (nested build-tool copies remain) |
 
 **Baseline comparison:** 8,182 tests with 28 failures (all a missing Chrome binary in this
 container) → 8,287 tests with 0 failures. The 728 skips are database/RLS suites that need
@@ -213,7 +215,8 @@ nothing about database behaviour.
    offline in the same way; they share the cause and the fix.
 6. **Database suites never run here.** They need a local stack (AUD-03), and the CI
    `rls-matrix` job is still non-blocking (AUD-04).
-7. **zod 3.** It has a high advisory, fixed only in zod 4.
+7. **zod 3.** It had a high advisory, fixed only in zod 4. The upgrade landed on 2026-11-10
+   (direct dependency zod 4.6.6; see the dependency-upgrade section below).
 
 ## Second pass (2026-10-30)
 
@@ -515,13 +518,14 @@ files were skipped and no database was touched).
 
 Closes the actionable items from the 2026-11-09 audit's "Not filed as bugs" list: the public
 `site-documents` bucket (fixed), plus a recorded decision for CSP/JWT storage (AUDIT R4) and the
-zod 3→4 assessment.
+zod 3→4 upgrade (delivered in the dependency-upgrade section at the end of this report).
 
 | Item                                | Sev | Outcome                                                                                                                                                                                                                                                                                                                                                                                            | Where                                                                                      |
 | ----------------------------------- | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Public `site-documents` bucket      | Med | Bucket set private; `public.read_public_document_asset(uuid)` (definer, pinned empty `search_path`, service-role only) returns an asset only when published **and** referenced by a published annual report, document slot or knowledge post. Pages link `/api/documents/<asset id>`, which re-checks eligibility and redirects to a 60-second signed URL. Admin signed uploads/previews unchanged | `20261109104000_private_site_documents_bucket.sql`, `src/routes/api/documents/$assetId.ts` |
 | CSP `'unsafe-inline'` / JWT storage | Low | Decision note only: status quo + cheap hardening now; nonce CSP as a separate CSP-only task (TanStack Start exposes `router.options.ssr.nonce` but not the per-request router hook); HttpOnly cookie/BFF as the real fix only if the threat model demands it. No behaviour changed                                                                                                                 | [`docs/csp-token-decision.md`](csp-token-decision.md)                                      |
 | zod 3 → 4 (GHSA-mrhx-c7xc-m3w5)     | Low | Attempted, measured, reverted: 113 typecheck errors across 18 files (JSON-schema internals 34, stricter inferred input types 57, `z.record`/issue-code API changes 14, misc 8), over the < 40 limit. Bump deferred to a planned task; exposure already bounded by the 8 MB admin / 1 MB public body caps                                                                                           | appendix of [`docs/csp-token-decision.md`](csp-token-decision.md)                          |
+| zod 3 → 4 (GHSA-mrhx-c7xc-m3w5)     | Low | **Fixed 2026-11-10 in a dedicated upgrade** (see [Dependency upgrade — zod 4](#dependency-upgrade--zod-4-2026-11-10)): direct dependency zod 4.6.6, 139 typecheck errors migrated to 0 without narrowing validation, full suite at baseline numbers. The earlier attempted-and-reverted measurement (113 errors) is what the assessment below records                                              | [`docs/csp-token-decision.md`](csp-token-decision.md)                                      |
 
 **Deploy:** `20261109104000` is a latest-definition-wins migration with no row changes. Deploy it
 with the code half (or immediately before it): the bucket flag and the new links must change
@@ -800,3 +804,45 @@ still needs the nonce work tracked in [`docs/csp-token-decision.md`](csp-token-d
       ready state, the password changes, and you end on sign-in (no admin token in web storage).
 - [ ] Send an invite, open the invitation link and set a password: same result with the invite
       wording.
+## Dependency upgrade — zod 4 (2026-11-10)
+
+Upgrades the direct `zod` dependency from 3.25.76 to **4.6.6**, the first release line with the
+GHSA-mrhx-c7xc-m3w5 fix and the newest version bunfig's 24 h `minimumReleaseAge` guard accepted
+(4.6.7 was still too new; the version is pinned exactly for reproducibility). No other dependency
+changes. Branch `fix/zod4-upgrade-20261110` (base `9c53dd7d`), not pushed.
+
+**Why this was more than a lockfile bump.** The first attempt (2026-11-09, zod 4.6.5) measured
+113 `tsc` errors across 18 files and was reverted. The full migration:
+
+| Area               | Change                                                                                                                                                                                                                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Policy JSON Schema | `volunteers/policy/jsonSchema.ts` walks zod 4's `_zod.def`/check definitions through one typed adapter; the output is byte-identical to the JSON pinned in migration `20260913065257` (sync and hash tests pass). `z.toJSONSchema()` was rejected: draft-2020-12 keywords the SQL matcher does not understand |
+| `z.record`         | 10 call sites use `z.record(z.string(), value)`                                                                                                                                                                                                                                                               |
+| Issue codes        | `ZodIssueCode` → string codes; the policy screen maps `invalid_format`/`invalid_value` plus the union/key/element codes                                                                                                                                                                                       |
+| PATCH schemas      | zod 4 applies a field's inner default through `.partial()`; content, documents (assets/annual reports), adoption status, volunteer activity and CRM supporter PATCHes are explicit all-optional schemas with no defaults; supporter `tags` stay absent unless sent                                            |
+| Search fields      | optional `transform`-wrapped search terms are optional again (they had become required `\| undefined` keys), so fixtures typecheck without casts                                                                                                                                                              |
+| Router search      | `src/lib/searchValidator.ts` adapter gives TanStack Router the schema's optional input while parsing the same output                                                                                                                                                                                          |
+| UUIDs              | zod 4 `uuid()` enforces the RFC 4122 version/variant; payment-config test fixtures updated (production ids are RFC v4)                                                                                                                                                                                        |
+| `ZodTypeDef`       | removed from the public API; `sponsorship/schemas.ts` uses `z.ZodType<string, unknown>`                                                                                                                                                                                                                       |
+| Auth sweep fake    | `tests/integration/admin/authorization.test.ts` params proxy answers `has` (zod 4 checks `key in params` before reading)                                                                                                                                                                                      |
+
+**Validation semantics are not weakened.** The SQL-side policy matcher is unchanged, the
+supporter/status/document PATCHes still validate every field they receive, and the stricter UUID
+and format checks are kept. Two runtime defects surfaced by the upgrade were fixed at the source
+rather than in tests: PATCH default injection (would have overwritten unsent fields) and an empty
+PATCH being accepted where the schema required at least one field.
+
+**Verification (zod 4.6.6).** `bunx tsc --noEmit` 0 errors (139 before the migration, 0 on the
+zod 3 baseline); `bun run lint` 0 errors (the same 56 pre-existing warnings); focused zod suites
+(schemas, policy JSON-schema/messages, content, CRM, documents, payment public config, adoptions,
+route search, integration authorization sweep): 337 pass, 1 skip, 0 fail across 30 files; full
+suite `bun --no-env-file run test` compared before and after on the same worktree: zod 3 baseline
+**7,818 pass / 753 skip / 129 fail** → zod 4 **7,818 pass / 753 skip / 129 fail**, with an
+identical set of failing files (the 129 are the known Windows-sandbox browser/python failures; no
+database stack was used, `SUPABASE_LOCAL_URL=http://127.0.0.1:1`). `bun audit`: the direct zod
+advisory is gone; `zod <4.6.6` is still listed through nested build/dev copies
+(`@tanstack/router-generator`/start plugin resolve 4.6.5 within their own range; `chromium-bidi`
+pins zod 3.25.76), left as tooling-only rather than forcing overrides.
+
+**Deploy.** Code-only dependency upgrade; no migration, route-tree or environment change. The
+zod 4 bundle replaces zod 3 on the next build.
