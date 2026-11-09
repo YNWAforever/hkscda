@@ -1130,10 +1130,41 @@ numbers. See [`FIX_REPORT.md`](FIX_REPORT.md#contentcms-backlog-2026-11-09).
   location notes 500) applied to the three schemas, with matching `maxLength` on the editor
   inputs. No migration: the columns have no DB length constraint, so this is a validation rule.
 
+## Editor revision fences (2026-11-09 design gap)
+
+The 2026-11-09 audit recorded, under "Not filed as bugs", that the About, FAQ, Governance and
+Knowledge editors had no revision fence: two tabs saving the same row kept the last write with no
+notice ([`audit-20261109/`](../audit-20261109/findings-cms.md)). Fixed here end to end; one new
+migration, `20261110100000_admin_editor_revision_fences.sql`. See
+[`FIX_REPORT.md`](FIX_REPORT.md#editor-revision-fences-2026-11-09).
+
+### About / FAQ / Governance / Knowledge — Low — two tabs saving the same row silently kept the last write
+
+- **Where:** `src/lib/aboutPages/*`, `src/lib/faq/*`, `src/lib/governance/*`,
+  `src/lib/knowledge/*` and their admin screens; the underlying tables `about_page_content`,
+  `faq_entry`, `board_member` and `knowledge_posts` had no version column, and the update RPCs
+  (`upsert_about_page_content_with_audit`, `upsert_faq_entry_with_audit`,
+  `mutate_admin_content_with_audit`) wrote unconditionally.
+- **Repro:** open the FAQ (or team, knowledge or about) screen in two tabs; save in tab A, then
+  save in tab B with its stale copy of the row. Both return 200 and B's text replaces A's with no
+  warning; A's change is lost.
+- **Fix (migration + code):** each of the four tables gains `revision integer not null default 0`
+  (existing rows start at 0), and their update RPCs take an optional `p_expected_revision`. An
+  update whose expected revision is set and stale is refused with `40001` (the content CMS's
+  stale-version convention) and every applied change bumps `revision`; callers that send no
+  expected revision keep working, so the deployed app is not broken between deploy and migration.
+  The admin API accepts `expectedRevision`, the list reads return `revision`, and each editor sends
+  the revision it loaded; on the resulting coded 409 it shows a bilingual "another admin changed
+  this — reload latest" notice with a reload action, keeping the unsaved local edits until the
+  admin chooses to reload. FAQ hide and board step-down also bump the revision so a stale editor
+  cannot undo them.
+
 ## Not filed as bugs (recorded for the report)
 
-- **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
-  when two tabs save, the last write silently wins. Each needs a version column, so a migration.
+- **Design gaps (closed 2026-11-09).** About, FAQ, governance and knowledge editors had no
+  revision fence: when two tabs saved, the last write silently won. Each table now has a revision
+  and its update RPC refuses a stale one; see
+  [Editor revision fences](#editor-revision-fences-2026-11-09-design-gap).
 - **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
   by anyone who has its random UUID URL.
 - **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
