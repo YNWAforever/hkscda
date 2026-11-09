@@ -52,6 +52,9 @@ const ROUTE_AREAS: [prefix: string, areas: AdminAccessArea[]][] = [
   ["me.ts", ["taskOverview"]],
   ["task-overview.ts", ["taskOverview"]],
   ["access/", ["accessManagement"]],
+  // The admin session BFF (2026-11-10) is deliberately unauthenticated: login/refresh/logout
+  // bootstrap the session the other 180+ routes'' Bearer tokens come from.
+  ["session/", ["taskOverview"]],
   ["about-pages.ts", ["contentManagement"]],
   ["adoption-guide-releases", ["contentManagement"]],
   ["adoption-information.ts", ["contentManagement"]],
@@ -101,6 +104,14 @@ const ADMIN_ONLY_PREFIXES = [
   // staff-visible volunteers area (src/routes/api/admin/volunteers/jobs/index.ts).
   "volunteers/jobs/",
 ];
+
+/**
+ * The session BFF endpoints are the one anonymous entry point under /api/admin: they set the
+ * HttpOnly cookies and need no Bearer token (they reject cross-origin requests themselves).
+ * They are covered by their own focused tests, so the role sweep skips them.
+ */
+const SESSION_PREFIX = "session/";
+const isSessionEndpoint = (file: string) => file.startsWith(SESSION_PREFIX);
 
 function areasFor(file: string): AdminAccessArea[] {
   const match = ROUTE_AREAS.filter(([prefix]) => file.startsWith(prefix)).sort(
@@ -224,6 +235,7 @@ describe("admin API authorization sweep", () => {
   test("anonymous and invalid-token callers get 401 and touch no data (BUG-26)", async () => {
     const failures: string[] = [];
     for (const { file, method, handler } of endpoints) {
+      if (isSessionEndpoint(file)) continue;
       for (const caller of ["anonymous", "invalid"] as const) {
         const result = await call(handler, method, caller);
         if (result.status !== 401 || result.calledBeforeAuth.length > 0) {
@@ -239,6 +251,7 @@ describe("admin API authorization sweep", () => {
   test("signed-in users without an active admin row get 403 (BUG-26, BUG-27)", async () => {
     const failures: string[] = [];
     for (const { file, method, handler } of endpoints) {
+      if (isSessionEndpoint(file)) continue;
       for (const caller of ["non-admin", "disabled", "pending"] as const) {
         // `/me` deliberately activates a pending invite; every other route refuses it.
         if (caller === "pending" && file === "me.ts") continue;
@@ -253,6 +266,7 @@ describe("admin API authorization sweep", () => {
   test("no route admits a role its page area denies, and admin is never refused (BUG-26)", async () => {
     const failures: string[] = [];
     for (const { file, method, handler } of endpoints) {
+      if (isSessionEndpoint(file)) continue;
       const areas = areasFor(file);
       const adminOnly = ADMIN_ONLY_PREFIXES.some((prefix) => file.startsWith(prefix));
       for (const role of ROLES) {

@@ -5,14 +5,19 @@ afterAll(() => {
 });
 let actor = "A",
   requests = 0;
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({
-        data: { session: { access_token: "token-" + actor, user: { id: actor } } },
-      }),
-    },
-  },
+
+type TokenSet = { accessToken: string; expiresAt: number; authUserId: string };
+const tokenSet = (): TokenSet => ({
+  accessToken: "token-" + actor,
+  expiresAt: Date.now() + 3_600_000,
+  authUserId: actor,
+});
+mock.module("./sessionMemory", () => ({
+  ensureAdminSession: async () => tokenSet(),
+  refreshAdminSession: async () => tokenSet(),
+  adminSessionSnapshot: () => tokenSet(),
+  clearAdminSession: () => {},
+  logoutAdminSession: async () => {},
 }));
 const { fetchAdminJson } = await import("./session");
 beforeEach(() => {

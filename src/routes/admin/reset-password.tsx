@@ -12,7 +12,7 @@ import {
   type AdminSetPasswordIntent,
   type PasswordRecoveryFailure,
 } from "../../lib/admin/passwordRecovery";
-import { supabase } from "../../lib/supabase";
+import { getAdminAuthClient } from "../../lib/admin/adminAuthClient";
 
 export type RecoveryStatus = "checking" | "ready" | "invalid";
 
@@ -57,9 +57,10 @@ function AdminResetPasswordController({
   useEffect(() => {
     let active = true;
     let recoverySeen = false;
+    const auth = getAdminAuthClient().auth;
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = auth.onAuthStateChange((event, session) => {
       if (!active || !session) return;
       // A recovery link fires PASSWORD_RECOVERY; an invite link fires SIGNED_IN (BUG-25).
       if (event !== "PASSWORD_RECOVERY" && !(intent === "invite" && event === "SIGNED_IN")) return;
@@ -67,7 +68,7 @@ function AdminResetPasswordController({
       setStatus("ready");
     });
 
-    void supabase.auth.getSession().then(({ data, error: sessionError }) => {
+    void auth.getSession().then(({ data, error: sessionError }) => {
       if (!active || recoverySeen) return;
       setStatus(!sessionError && data.session ? "ready" : "invalid");
     });
@@ -88,7 +89,7 @@ function AdminResetPasswordController({
     setLoading(true);
     setError(null);
     const result = await completeAdminPasswordReset({
-      auth: supabase.auth,
+      auth: getAdminAuthClient().auth,
       password,
       confirmation,
     });

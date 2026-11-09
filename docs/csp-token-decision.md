@@ -2,8 +2,8 @@
 
 **Date:** 2026-11-10
 **Source:** 2026-11-09 audit (AUDIT R4 / REPORT §3 item 3), task backlog-security-20261110.
-**Status:** decision recorded, no behaviour changed. The two changes below are deliberately _not_
-implemented in this batch; this note is the artefact a follow-up task works from.
+**Status:** the admin-JWT-in-web-storage half is **mitigated** (2026-11-10 session BFF, see the
+update below); the CSP `script-src 'unsafe-inline'` half remains open and is tracked as Option B.
 
 ## What exists today
 
@@ -18,34 +18,62 @@ implemented in this batch; this note is the artefact a follow-up task works from
   `style-src` also carries `'unsafe-inline'`; `object-src 'none'`, `frame-ancestors 'none'`,
   `base-uri 'self'` and a report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are
   already there.
-- The browser Supabase client keeps the session in `localStorage` through a coordinated
-  storage adapter ([`src/lib/supabase.ts`](../src/lib/supabase.ts)); every admin API call
-  sends `Authorization: Bearer <access token>` from [`src/lib/admin/session.ts`](../src/lib/admin/session.ts).
-  There are no auth cookies, so classic cookie CSRF does not apply.
-- No XSS was found by the audit. The exposure is: one XSS anywhere in the origin (including a
-  future one introduced by a dependency or an inline `dangerouslySetInnerHTML`) can read the
-  admin token from `localStorage` and replay it from an attacker machine; `'unsafe-inline'`
-  removes the browser's main structural defence against injected inline script.
+- The admin session no longer lives in web storage (2026-11-10): `POST
+  /api/admin/session/{login,refresh,logout}` keep the access/refresh tokens in `HttpOnly`,
+  `Secure`, `SameSite=Strict` cookies scoped to `Path=/api/admin/session`, and the browser keeps
+  only the short-lived access token in module memory (`src/lib/admin/sessionMemory.ts`). Admin
+  API calls still send `Authorization: Bearer <access token>`; the password-recovery client is
+  `persistSession:false` with in-memory storage. See the update section below.
+- No XSS was found by the audit. With the BFF, one XSS can still act as the signed-in admin
+  while the page is open (the memory token and the app's own fetch path are reachable) but it
+  cannot read a long-lived credential from `localStorage` and replay it elsewhere; the remaining
+  structural gap is the CSP `'unsafe-inline'` allowance itself.
 - Context that bounds the risk: admin sessions are revoked server-side on every call
-  (`requireAdmin` re-reads `admin_user.status`), Supabase refresh tokens rotate, admin copies
-  are localised to the back office, and public request bodies are capped at 1 MB (admin 8 MB,
-  which is what bounds the zod advisory too).
+  (`requireAdmin` re-reads `admin_user.status`), the refresh cookie is revoked on logout and
+  rotated on refresh, admin copies are localised to the back office, and public request bodies
+  are capped at 1 MB (admin 8 MB, which is what bounds the zod advisory too).
 
-## Option A — hardened status quo (recommended now)
+## Update (2026-11-10): admin session BFF shipped
 
-Keep the Supabase SDK storage model and `'unsafe-inline'`; add cheap, low-risk layers:
+The bounded "session BFF" landed in this batch (details and gate numbers in
+[`FIX_REPORT.md`](FIX_REPORT.md)):
 
-1. Nonce-based `script-src` migration (see Option B below) as its own task; until then keep the
+- `POST /api/admin/session/login` (email+password, rate-limited), `/refresh` (rotates the
+  refresh cookie), `/logout` (best-effort revocation, clears both cookies). All three reject a
+  cross-origin or origin-less request with 403 (`Origin` must equal the request origin and
+  `Sec-Fetch-Site`, when present, must be `same-origin`/`none`).
+- Cookie shape: `HttpOnly; Secure; SameSite=Strict; Path=/api/admin/session; Max-Age=<token
+  lifetime>` — the path scoping means the cookies are never attached to the 180+ data endpoints,
+  which keeps their Bearer-token contract unchanged.
+- The browser has no persisted admin session: `sessionMemory.ts` holds the access token for the
+  tab lifetime and bootstraps from `/refresh` on reload; legacy `sb-*-auth-token` web-storage
+  entries are removed on bootstrap/logout. A `noWebStorageAuth.test.ts` guard fails if a browser
+  admin module reintroduces `supabase.auth` persistence or a token write.
+- **Residual risks:** the access token is in JS memory for the tab lifetime, so an XSS during
+  that window is still session-riding (severity reduced: no replayable long-lived token); a
+  cross-tab sign-out awaits the next 401/refresh rather than a broadcast; the session endpoints
+  must be deployed with the client half; and cookie `Path` scoping means a future SSR-admin
+  loader cannot read the access cookie outside `/api/admin/session` without widening the path.
+- **Not changed:** `requireAdmin` and every data endpoint still take a Bearer token, so nothing
+  in the role/authorization layer moved.
+
+## Option A — hardened status quo (superseded for token storage by the BFF)
+
+Before the BFF, the cheap layers were: keep the SDK storage model and `'unsafe-inline'`, add a
+Report-Only Trusted Types policy, shorten the admin token lifetime, and monitor the existing CSP
+report pipeline. The token half is now superseded by the session BFF above; the remaining cheap
+layers still apply:
+
+1. Nonce-based `script-src` migration (see Option B) as its own task; until then keep the
    enforcing CSP plus reporting and add a **Report-Only** `require-trusted-types-for 'script'`
-   policy to surface DOM-XSS sinks without breaking the app (Trusted Types is Chromium-only;
-   safe to report first).
-2. Shorten the admin access-token lifetime in Supabase Auth settings (e.g. 30 min) and keep the
-   existing expiry watcher/sign-out path; refresh rotation already exists.
-3. Keep the admin panel on its own hostname or path and keep the CSP report pipeline (already
-   present) monitored; an enforced CSP block is visible rather than silent.
+   policy to surface DOM-XSS sinks without breaking the app (Trusted Types is Chromium-only; safe
+   to report first).
+2. Keep the admin access-token lifetime short (e.g. 30 min) in Supabase Auth settings; the BFF
+   refresh cookie rotates on every refresh, so a stolen access token ages out quickly.
+3. Keep the CSP report pipeline monitored; an enforced CSP block is visible rather than silent.
 
-**Effort:** S (hours, config + one report-only header). **Risk:** low. **Limits:** does not
-remove the token from `localStorage`, so XSS still equals full session theft.
+**Effort:** S (hours, config + one report-only header). **Risk:** low. **Limits:** without a
+nonce, `'unsafe-inline'` keeps the injected-inline-script class open.
 
 ## Option B — nonce CSP (`script-src 'nonce-…' 'strict-dynamic'`)
 
@@ -78,21 +106,23 @@ inline script silently blocks hydration or analytics; requires deployment observ
 **Recommendation:** approve as a separate, CSP-only task after the current backlog. It does not
 fix the login risk on its own but removes the "injected inline script" class.
 
-## Option C — HttpOnly SameSite cookie sessions through a server-side auth boundary
+## Option C — HttpOnly SameSite cookies for the data endpoints too
 
-Move admin auth off bearer tokens in web storage: the browser holds only an `HttpOnly`,
-`Secure`, `SameSite=Lax` cookie; a server middleware exchanges it for the Supabase session and
-injects the same `requireAdmin` contract. Needs refresh-token rotation on the server, CSRF
-double-submit for state-changing routes, same-origin fetch changes across ~200 admin API calls,
-cross-tab behaviour, and re-testing of the sign-in/recovery flows (AUTH-02/BUG-57 paths).
-Supabase's SSR helpers support this model, but the repo's custom recovery-session storage and
-actor-fencing logic would need rework.
+The shipped BFF is a bounded slice of this option: the browser holds only HttpOnly cookies for
+the *session*, while data endpoints keep their Bearer contract. The full option would also move
+data-endpoint authorization onto the cookie (a server middleware exchanges the cookie for the
+Supabase session and injects the same `requireAdmin` contract, or the endpoints read an
+`HttpOnly` access cookie). That needs CSRF double-submit or origin checks on every mutation
+(not only the three session endpoints), cookie-scope review across ~200 admin API calls,
+cross-tab behaviour, and re-testing of the sign-in/recovery paths (AUTH-02/BUG-57). The repo's
+custom recovery-session storage and actor-fencing logic would need rework.
 
 **Effort:** L (weeks). **Risk:** high — auth-wide, hard to roll back partially.
-**Recommendation:** the correct end state if the admin panel threat model justifies it (e.g.
-hosted admin access for many people, contractual requirements); not worth doing in this batch.
-If approved, do it as an isolated branch behind a feature flag, with a manual security review of
-CSRF, cookie scope, logout and refresh-rotation paths.
+**Recommendation:** not needed now: the BFF already removes the replayable long-lived token from
+web storage, which was the audit's exposure. Revisit only if the admin threat model requires
+cookie-only server sessions (e.g. contractual requirements); if approved, do it as an isolated
+branch behind a flag with a manual security review of CSRF, cookie scope, logout and
+refresh-rotation paths.
 
 ## Option D — token obfuscation without moving it (rejected)
 
@@ -104,15 +134,15 @@ mitigation at best, not a replacement for Option C.
 
 ## Recommendation
 
-1. **Now:** Option A, with the Report-Only Trusted Types header and a ticket for Option B. Keep
-   `'unsafe-inline'` until Option B lands; removing it without nonces breaks TanStack Start
-   hydration.
-2. **Next hardening task:** Option B as a CSP-only change with a report-only soak.
-3. **Only if the admin threat model requires it:** Option C as a separately approved migration,
-   because it rewrites the whole admin authentication boundary.
+1. **Shipped (2026-11-10):** the bounded session BFF — HttpOnly refresh cookie + in-memory access
+   token; no admin JWT in `localStorage`/`sessionStorage`; data endpoints unchanged.
+2. **Next hardening task:** Option B (nonce CSP) as a CSP-only change with a report-only soak.
+   Keep `'unsafe-inline'` until then; removing it without nonces breaks TanStack Start hydration.
+3. **Only if the admin threat model requires it:** full Option C, because it rewrites the whole
+   admin authentication boundary again for a risk this batch already removed.
 
-No behaviour was changed in this batch beyond the private document bucket fix recorded in
-[`BUGS.md`](BUGS.md) and [`FIX_REPORT.md`](FIX_REPORT.md).
+The behaviour change for this batch is recorded in [`BUGS.md`](BUGS.md) and
+[`FIX_REPORT.md`](FIX_REPORT.md).
 
 ## Appendix — zod 3 → 4 assessment (GHSA-mrhx-c7xc-m3w5)
 

@@ -1172,12 +1172,12 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   referenced by a published annual report, document slot or knowledge post, then redirects to a
   60-second signed URL. No reader mints a public Storage URL any more; admin signed uploads and
   previews are unchanged.
-- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4) — **decision
-  recorded 2026-11-10**, no behaviour changed. Removing `'unsafe-inline'` needs per-request nonce
-  plumbing that TanStack Start's `getRouter()` does not expose, and moving the admin token off
-  `localStorage` means a cookie/BFF rewrite of the whole admin auth boundary. Options, effort,
-  risk and the recommendation are in
-  [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — still open 2026-11-10; removing it needs
+  per-request nonce plumbing that TanStack Start's `getRouter()` does not expose. Options, effort,
+  risk and the recommendation are in [`docs/csp-token-decision.md`](csp-token-decision.md). The
+  other half of the finding, the admin JWT in web storage, was **fixed 2026-11-10** by the
+  HttpOnly session BFF — see the "Admin session BFF" section of
+  [`docs/FIX_REPORT.md`](FIX_REPORT.md).
 - **zod 3 (BUG-30)** — **assessed 2026-11-10**: the 3→4 bump produces 113 typecheck errors across
   18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
   `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
@@ -1186,10 +1186,11 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   revision fence: when two tabs saved, the last write silently won. Each table now has a revision
   and its update RPC refuses a stale one; see
   [Editor revision fences](#editor-revision-fences-2026-11-09-design-gap).
-- **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
-  by anyone who has its random UUID URL.
-- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
-  Removing `'unsafe-inline'` needs nonce support in SSR, so it is out of scope.
+- **`site-documents` (closed 2026-11-10).** It was a public bucket; it is now private and served
+  through a checked signed-read route (see the entry above and the security batch in
+  [`docs/FIX_REPORT.md`](FIX_REPORT.md)).
+- **CSP `script-src 'unsafe-inline'`** (AUDIT R4). Nonce support in SSR is still the missing
+  piece; the admin-token half of the finding is fixed by the session BFF (see above).
 - **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
   unchanged. AUD-02 (staff RLS on supporters) is fixed by
   `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.

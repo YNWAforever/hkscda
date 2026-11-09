@@ -179,6 +179,9 @@ import { Route as ApiAdminFinanceBankMatchOperationsRouteImport } from './routes
 import { Route as ApiAdminFinanceBankStatementPreviewRouteImport } from './routes/api/admin/finance/bank-statement-preview'
 import { Route as ApiAdminFinanceDeliveryJobsRouteImport } from './routes/api/admin/finance/delivery-jobs'
 import { Route as ApiAdminPaymentMethodsIdRouteImport } from './routes/api/admin/payment-methods/$id'
+import { Route as ApiAdminSessionLoginRouteImport } from './routes/api/admin/session/login'
+import { Route as ApiAdminSessionLogoutRouteImport } from './routes/api/admin/session/logout'
+import { Route as ApiAdminSessionRefreshRouteImport } from './routes/api/admin/session/refresh'
 import { Route as ApiAdminSponsorshipsAnimalsRouteImport } from './routes/api/admin/sponsorships/animals'
 import { Route as ApiAdminSponsorshipsDeliveriesRouteImport } from './routes/api/admin/sponsorships/deliveries'
 import { Route as ApiAdminSponsorshipsFollowupAssigneesRouteImport } from './routes/api/admin/sponsorships/followup-assignees'
@@ -1190,6 +1193,21 @@ const ApiAdminPaymentMethodsIdRoute =
     path: '/$id',
     getParentRoute: () => ApiAdminPaymentMethodsRoute,
   } as any)
+const ApiAdminSessionLoginRoute = ApiAdminSessionLoginRouteImport.update({
+  id: '/api/admin/session/login',
+  path: '/api/admin/session/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminSessionLogoutRoute = ApiAdminSessionLogoutRouteImport.update({
+  id: '/api/admin/session/logout',
+  path: '/api/admin/session/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminSessionRefreshRoute = ApiAdminSessionRefreshRouteImport.update({
+  id: '/api/admin/session/refresh',
+  path: '/api/admin/session/refresh',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminSponsorshipsAnimalsRoute =
   ApiAdminSponsorshipsAnimalsRouteImport.update({
     id: '/api/admin/sponsorships/animals',
@@ -2048,6 +2066,9 @@ export interface FileRoutesByFullPath {
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/session/login': typeof ApiAdminSessionLoginRoute
+  '/api/admin/session/logout': typeof ApiAdminSessionLogoutRoute
+  '/api/admin/session/refresh': typeof ApiAdminSessionRefreshRoute
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
@@ -2335,6 +2356,9 @@ export interface FileRoutesByTo {
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/session/login': typeof ApiAdminSessionLoginRoute
+  '/api/admin/session/logout': typeof ApiAdminSessionLogoutRoute
+  '/api/admin/session/refresh': typeof ApiAdminSessionRefreshRoute
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
@@ -2624,6 +2648,9 @@ export interface FileRoutesById {
   '/api/admin/finance/bank-statement-preview': typeof ApiAdminFinanceBankStatementPreviewRoute
   '/api/admin/finance/delivery-jobs': typeof ApiAdminFinanceDeliveryJobsRoute
   '/api/admin/payment-methods/$id': typeof ApiAdminPaymentMethodsIdRouteWithChildren
+  '/api/admin/session/login': typeof ApiAdminSessionLoginRoute
+  '/api/admin/session/logout': typeof ApiAdminSessionLogoutRoute
+  '/api/admin/session/refresh': typeof ApiAdminSessionRefreshRoute
   '/api/admin/sponsorships/animals': typeof ApiAdminSponsorshipsAnimalsRoute
   '/api/admin/sponsorships/deliveries': typeof ApiAdminSponsorshipsDeliveriesRoute
   '/api/admin/sponsorships/followup-assignees': typeof ApiAdminSponsorshipsFollowupAssigneesRoute
@@ -2914,6 +2941,9 @@ export interface FileRouteTypes {
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/session/login'
+    | '/api/admin/session/logout'
+    | '/api/admin/session/refresh'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
@@ -3201,6 +3231,9 @@ export interface FileRouteTypes {
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/session/login'
+    | '/api/admin/session/logout'
+    | '/api/admin/session/refresh'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
@@ -3489,6 +3522,9 @@ export interface FileRouteTypes {
     | '/api/admin/finance/bank-statement-preview'
     | '/api/admin/finance/delivery-jobs'
     | '/api/admin/payment-methods/$id'
+    | '/api/admin/session/login'
+    | '/api/admin/session/logout'
+    | '/api/admin/session/refresh'
     | '/api/admin/sponsorships/animals'
     | '/api/admin/sponsorships/deliveries'
     | '/api/admin/sponsorships/followup-assignees'
@@ -3731,6 +3767,9 @@ export interface RootRouteChildren {
   ApiAdminFinanceBankMatchOperationsRoute: typeof ApiAdminFinanceBankMatchOperationsRoute
   ApiAdminFinanceBankStatementPreviewRoute: typeof ApiAdminFinanceBankStatementPreviewRoute
   ApiAdminFinanceDeliveryJobsRoute: typeof ApiAdminFinanceDeliveryJobsRoute
+  ApiAdminSessionLoginRoute: typeof ApiAdminSessionLoginRoute
+  ApiAdminSessionLogoutRoute: typeof ApiAdminSessionLogoutRoute
+  ApiAdminSessionRefreshRoute: typeof ApiAdminSessionRefreshRoute
   ApiAdminSponsorshipsAnimalsRoute: typeof ApiAdminSponsorshipsAnimalsRoute
   ApiAdminSponsorshipsDeliveriesRoute: typeof ApiAdminSponsorshipsDeliveriesRoute
   ApiAdminSponsorshipsFollowupAssigneesRoute: typeof ApiAdminSponsorshipsFollowupAssigneesRoute
@@ -4972,6 +5011,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/payment-methods/$id'
       preLoaderRoute: typeof ApiAdminPaymentMethodsIdRouteImport
       parentRoute: typeof ApiAdminPaymentMethodsRoute
+    }
+    '/api/admin/session/login': {
+      id: '/api/admin/session/login'
+      path: '/api/admin/session/login'
+      fullPath: '/api/admin/session/login'
+      preLoaderRoute: typeof ApiAdminSessionLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/session/logout': {
+      id: '/api/admin/session/logout'
+      path: '/api/admin/session/logout'
+      fullPath: '/api/admin/session/logout'
+      preLoaderRoute: typeof ApiAdminSessionLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/session/refresh': {
+      id: '/api/admin/session/refresh'
+      path: '/api/admin/session/refresh'
+      fullPath: '/api/admin/session/refresh'
+      preLoaderRoute: typeof ApiAdminSessionRefreshRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/sponsorships/animals': {
       id: '/api/admin/sponsorships/animals'
@@ -6694,6 +6754,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminFinanceBankStatementPreviewRoute:
     ApiAdminFinanceBankStatementPreviewRoute,
   ApiAdminFinanceDeliveryJobsRoute: ApiAdminFinanceDeliveryJobsRoute,
+  ApiAdminSessionLoginRoute: ApiAdminSessionLoginRoute,
+  ApiAdminSessionLogoutRoute: ApiAdminSessionLogoutRoute,
+  ApiAdminSessionRefreshRoute: ApiAdminSessionRefreshRoute,
   ApiAdminSponsorshipsAnimalsRoute: ApiAdminSponsorshipsAnimalsRoute,
   ApiAdminSponsorshipsDeliveriesRoute: ApiAdminSponsorshipsDeliveriesRoute,
   ApiAdminSponsorshipsFollowupAssigneesRoute:
@@ -6767,13 +6830,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
