@@ -7,15 +7,19 @@ import { loadPublishedAnnualReports } from "@/lib/documents/public.server";
 import { asContextFreeRouteLoader } from "@/lib/documents/routeLoaders.server";
 import { resilientPublicLoader } from "@/lib/routing/resilientLoader";
 import type { AnnualReport } from "@/lib/documents/types";
-import { datasetSchema, renderJsonLd } from "@/lib/schema";
+import { jsonLdScript, datasetSchema } from "@/lib/schema";
 
 const pageTitle = "年度報告 Annual Report";
 const pageDescription = "我們每年發表協會年度報告電子書，分享救援成果與資金運用摘要。";
+const annualReportSchema = datasetSchema("HKSCDA 年度報告", pageDescription);
 
 export const Route = createFileRoute("/report/audit")({
   loader: resilientPublicLoader(asContextFreeRouteLoader(loadPublishedAnnualReports)),
   errorComponent: AnnualReportLoadError,
-  head: () => pageHead({ title: pageTitle, description: pageDescription, path: "/report/audit" }),
+  head: () => ({
+    ...pageHead({ title: pageTitle, description: pageDescription, path: "/report/audit" }),
+    scripts: [jsonLdScript(annualReportSchema)],
+  }),
   component: AnnualReportRoute,
 });
 
@@ -27,12 +31,9 @@ function AnnualReportRoute() {
 
 export function AnnualReportPage({ reports }: { reports: AnnualReport[] }) {
   const availableReports = reports.filter((report) => report.document.fileUrl !== null);
-  const schema = datasetSchema("HKSCDA 年度報告", pageDescription);
 
   return (
     <PublicPageFrame eyebrow="透明與問責" title={pageTitle} description={pageDescription}>
-      {renderJsonLd(schema)}
-
       <section className="section">
         <div className="public-container space-y-8">
           <nav className="text-sm text-[var(--color-text-muted)]" aria-label="麵包屑導航">

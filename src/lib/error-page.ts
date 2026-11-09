@@ -21,7 +21,10 @@ export function renderErrorPage(): string {
       <h1>This page didn't load</h1>
       <p>Something went wrong on our end. You can try refreshing or head back home.</p>
       <div class="actions">
-        <button class="primary" onclick="location.reload()">Try again</button>
+        <!-- A plain link, not an inline onclick: script-src has no 'unsafe-inline' (the CSP is
+             nonce-based), and an event-handler attribute cannot carry a nonce. An empty href
+             reloads this URL. -->
+        <a class="primary" href="">Try again</a>
         <a class="secondary" href="/">Go home</a>
       </div>
     </div>

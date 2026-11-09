@@ -83,11 +83,11 @@ export function breadcrumbSchema(items: { name: string; url: string }[]) {
   };
 }
 
-export function renderJsonLd(schema: Record<string, unknown>) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
+/**
+ * A JSON-LD data block for a route's `head.scripts`. Route head scripts are rendered by TanStack
+ * Router with the request's CSP nonce (`router.options.ssr.nonce`), so they satisfy the enforcing
+ * nonce-based `script-src` without any inline-script exception.
+ */
+export function jsonLdScript(schema: Record<string, unknown>) {
+  return { type: "application/ld+json", children: JSON.stringify(schema) };
 }

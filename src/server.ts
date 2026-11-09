@@ -1,5 +1,6 @@
 import { consumeLastCapturedError, withRequestErrorCapture } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { createCspNonce, runWithCspNonce } from "./lib/csp-nonce.server";
 import { applySecurityHeaders } from "./lib/security-headers";
 import { assertUpstashConfigFromEnv } from "./lib/security/rate-limit.server";
 import { assertTurnstileConfigFromEnv } from "./lib/security/turnstile.server";
@@ -49,20 +50,26 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 
 export default {
   fetch(request: Request, env: unknown, ctx: unknown) {
-    return withRequestErrorCapture(async () => {
-      try {
-        const handler = await getServerEntry();
-        const response = await handler.fetch(request, env, ctx);
-        return applySecurityHeaders(await normalizeCatastrophicSsrResponse(response));
-      } catch (error) {
-        console.error(error);
-        return applySecurityHeaders(
-          new Response(renderErrorPage(), {
-            status: 500,
-            headers: { "content-type": "text/html; charset=utf-8" },
-          }),
-        );
-      }
-    });
+    // One nonce per request: the CSP header below and every inline script in the SSR markup carry
+    // it (src/router.tsx reads it from the request-scoped store through currentCspNonce()).
+    const nonce = createCspNonce();
+    return runWithCspNonce(nonce, () =>
+      withRequestErrorCapture(async () => {
+        try {
+          const handler = await getServerEntry();
+          const response = await handler.fetch(request, env, ctx);
+          return applySecurityHeaders(await normalizeCatastrophicSsrResponse(response), nonce);
+        } catch (error) {
+          console.error(error);
+          return applySecurityHeaders(
+            new Response(renderErrorPage(), {
+              status: 500,
+              headers: { "content-type": "text/html; charset=utf-8" },
+            }),
+            nonce,
+          );
+        }
+      }),
+    );
   },
 };
