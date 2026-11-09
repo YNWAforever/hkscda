@@ -134,17 +134,20 @@ describe("createAdminAccessHandlers", () => {
         inviteUser: async ({ input }) => {
           const invite = input as { email: string; role: "staff" | "treasurer" | "admin" };
           return {
-            id: "new-row",
-            authUserId: "new-auth",
-            email: invite.email,
-            role: invite.role,
-            status: "pending",
-            invitedAt: "2026-07-01T10:00:00.000Z",
-            inviteSentAt: "2026-07-01T10:00:00.000Z",
-            inviteAcceptedAt: null,
-            lastInvitedBy: "actor-auth",
-            createdAt: "2026-07-01T10:00:00.000Z",
-            updatedAt: "2026-07-01T10:00:00.000Z",
+            user: {
+              id: "new-row",
+              authUserId: "new-auth",
+              email: invite.email,
+              role: invite.role,
+              status: "pending",
+              invitedAt: "2026-07-01T10:00:00.000Z",
+              inviteSentAt: "2026-07-01T10:00:00.000Z",
+              inviteAcceptedAt: null,
+              lastInvitedBy: "actor-auth",
+              createdAt: "2026-07-01T10:00:00.000Z",
+              updatedAt: "2026-07-01T10:00:00.000Z",
+            },
+            emailDeliveryFailed: false,
           };
         },
         resendInvite: async () => {
@@ -167,6 +170,52 @@ describe("createAdminAccessHandlers", () => {
     expect(response.status).toBe(201);
     expect(await response.json()).toMatchObject({
       user: { email: "new@example.com", role: "staff", status: "pending" },
+      emailDeliveryFailed: false,
+    });
+  });
+
+  test("AUTH-03: a delivery failure is a normal 201 with the flag, not a 500", async () => {
+    const handlers = createAdminAccessHandlers({
+      requireAccessAdmin: async () => actor,
+      service: {
+        listUsers: async () => ({ users: [], summary: { active: 0, pending: 0, disabled: 0 } }),
+        inviteUser: async () => ({
+          user: {
+            id: "new-row",
+            authUserId: "new-auth",
+            email: "new@example.com",
+            role: "staff",
+            status: "pending",
+            invitedAt: "2026-07-01T10:00:00.000Z",
+            inviteSentAt: "2026-07-01T10:00:00.000Z",
+            inviteAcceptedAt: null,
+            lastInvitedBy: "actor-auth",
+            createdAt: "2026-07-01T10:00:00.000Z",
+            updatedAt: "2026-07-01T10:00:00.000Z",
+          },
+          emailDeliveryFailed: true,
+        }),
+        resendInvite: async () => {
+          throw new Error("unused");
+        },
+        updateUser: async () => {
+          throw new Error("unused");
+        },
+        listAudit: async () => ({ audit: [] }),
+      },
+    });
+
+    const response = await handlers.inviteUser({
+      request: jsonRequest("/api/admin/access/invites", {
+        email: "new@example.com",
+        role: "staff",
+      }),
+    });
+
+    expect(response.status).toBe(201);
+    expect(await response.json()).toMatchObject({
+      user: { email: "new@example.com", status: "pending" },
+      emailDeliveryFailed: true,
     });
   });
 

@@ -82,6 +82,15 @@ describe("watchSessionExpiry", () => {
     expect(navigate).toHaveBeenCalledTimes(1);
   });
 
+  test("AUTH-02: a 403 from an ordinary mutation stays forbidden and does not sign anyone out", async () => {
+    const { queryClient, navigate } = setup();
+    const observer = new MutationObserver(queryClient, {
+      mutationFn: () => Promise.reject(new AdminHttpError("Request denied", 403)),
+    });
+    await observer.mutate().catch(() => {});
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   test("navigates once on SIGNED_OUT and ignores other auth events", () => {
     const { navigate, emitAuth } = setup();
     emitAuth("SIGNED_IN");

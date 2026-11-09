@@ -50,6 +50,17 @@ export type AdminAccessAtomicUpdate = {
   status?: AdminStatus;
 };
 
+/**
+ * The created/updated admin user plus whether the prepared invite email reached the provider.
+ * The pending row and its audit row are committed before delivery, so a mail-provider failure
+ * must not become a 500 that leaves an undelivered invite behind (AUTH-03): the caller reports
+ * `emailDeliveryFailed` and the admin UI tells the operator to use Resend.
+ */
+export type AdminInviteOutcome = {
+  user: AdminAccessUser;
+  emailDeliveryFailed: boolean;
+};
+
 export type AdminAccessRepository = {
   listUsers(): Promise<AdminAccessUser[]>;
   findUserById(id: string): Promise<AdminAccessUser | null>;
@@ -151,6 +162,22 @@ function removesActiveAdmin(user: AdminAccessUser, nextRole: AdminRole, nextStat
   );
 }
 
+/**
+ * Delivers a link that a committed row and audit record already describe. `true` means the
+ * provider refused the email; the invite stays recorded and Resend is the recovery path.
+ */
+async function deliverInvite(auth: AdminInviteAuthProvider, to: string, actionLink: string) {
+  try {
+    await auth.sendInviteEmail({ to, actionLink });
+    return false;
+  } catch (error) {
+    // Not rethrown: the duplicate pre-check makes a second invite a 409, so a 500 here would
+    // strand the invite with no way forward for the operator (AUTH-03).
+    console.error("Admin invite email delivery failed", error);
+    return true;
+  }
+}
+
 export function createAdminAccessService({
   repo,
   auth,
@@ -185,8 +212,10 @@ export function createAdminAccessService({
         role: input.role,
         sentAt,
       });
-      await auth.sendInviteEmail({ to: input.email, actionLink: invited.actionLink });
-      return user;
+      // The row and its audit record are committed; a provider failure is reported, not thrown,
+      // so the operator still sees the pending invite and is told to press Resend (AUTH-03).
+      const emailDeliveryFailed = await deliverInvite(auth, input.email, invited.actionLink);
+      return { user, emailDeliveryFailed };
     },
 
     async resendInvite(args: { actor: AdminAccessActor; userId: string }) {
@@ -203,8 +232,8 @@ export function createAdminAccessService({
         userId: user.id,
         sentAt,
       });
-      await auth.sendInviteEmail({ to: user.email, actionLink: prepared.actionLink });
-      return resent;
+      const emailDeliveryFailed = await deliverInvite(auth, user.email, prepared.actionLink);
+      return { user: resent, emailDeliveryFailed };
     },
 
     async updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }) {

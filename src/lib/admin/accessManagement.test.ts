@@ -182,7 +182,7 @@ describe("createAdminAccessService", () => {
       input: { email: "new@example.com", role: "staff" },
     });
 
-    expect(result.status).toBe("pending");
+    expect(result.user.status).toBe("pending");
     expect(events).toEqual(["prepared", "committed", "delivered"]);
   });
   test("invites a new admin user as pending and writes audit history", async () => {
@@ -207,7 +207,8 @@ describe("createAdminAccessService", () => {
     });
 
     expect(invited).toEqual(["new.admin@example.com"]);
-    expect(result.status).toBe("pending");
+    expect(result.user.status).toBe("pending");
+    expect(result.emailDeliveryFailed).toBe(false);
     expect(calls.inviteUserWithAudit[0]).toEqual({
       actorUserId: "actor-auth",
       authUserId: "invite-auth-id",
@@ -251,7 +252,7 @@ describe("createAdminAccessService", () => {
       input: { email: "new@example.com", role: "treasurer" },
     });
 
-    expect(result.status).toBe("pending");
+    expect(result.user.status).toBe("pending");
     expect(calls).toEqual([
       {
         actorUserId: "actor-auth",
@@ -337,7 +338,7 @@ describe("createAdminAccessService", () => {
 
     const result = await service.resendInvite({ actor, userId: "target-row" });
 
-    expect(result.status).toBe("pending");
+    expect(result.user.status).toBe("pending");
     expect(calls).toEqual([
       {
         actorUserId: "actor-auth",
@@ -670,8 +671,12 @@ describe("createAdminAccessService", () => {
       requireAccessAdmin: async () => actor,
       service: {
         listUsers: async () => ({}),
-        inviteUser: async () => ({}),
-        resendInvite: async () => ({}),
+        inviteUser: async () => {
+          throw new Error("unused");
+        },
+        resendInvite: async () => {
+          throw new Error("unused");
+        },
         updateUser: async () => {
           throw new AdminAccessError("invite_not_accepted", "x", 422);
         },
@@ -729,6 +734,84 @@ describe("createAdminAccessService", () => {
       });
       expect(response.status).toBe(409);
       expect(calls.inviteUserWithAudit).toHaveLength(0);
+    } finally {
+      console.error = originalError;
+    }
+  });
+
+  test("AUTH-03: a mail-provider failure returns the committed invite and the flag, not a 500", async () => {
+    const { repo, calls } = makeRepo();
+    const handlers = createAdminAccessHandlers({
+      requireAccessAdmin: async () => actor,
+      service: createAdminAccessService({
+        repo,
+        auth: {
+          inviteByEmail: async (email) => ({
+            authUserId: "invite-auth-id",
+            email,
+            actionLink: "https://example.test/invite",
+          }),
+          sendInviteEmail: async () => {
+            throw new Error("Resend is unavailable");
+          },
+          resendInvite: async () => ({ actionLink: "https://example.test/invite" }),
+        },
+        now,
+      }),
+    });
+
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const response = await handlers.inviteUser({
+        request: new Request("https://example.test/api/admin/access/invites", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email: "new@example.com", role: "staff" }),
+        }),
+      });
+      expect(response.status).toBe(201);
+      expect(await response.json()).toMatchObject({
+        user: { email: "new@example.com", status: "pending" },
+        emailDeliveryFailed: true,
+      });
+      // The row and its audit record were committed once; an immediate retry is still a 409.
+      expect(calls.inviteUserWithAudit).toHaveLength(1);
+    } finally {
+      console.error = originalError;
+    }
+  });
+
+  test("AUTH-03: a resend whose email fails still returns the pending row and the flag", async () => {
+    const { repo, calls } = makeRepo({
+      async findUserById() {
+        return adminUser({ status: "pending", email: "pending@example.com" });
+      },
+    });
+    const service = createAdminAccessService({
+      repo,
+      auth: {
+        inviteByEmail: async () => ({
+          authUserId: "unused",
+          email: "unused@example.com",
+          actionLink: "https://example.test/invite",
+        }),
+        sendInviteEmail: async () => {
+          throw new Error("Resend is unavailable");
+        },
+        resendInvite: async () => ({ actionLink: "https://example.test/invite" }),
+      },
+      now,
+    });
+
+    const originalError = console.error;
+    console.error = () => {};
+    try {
+      const result = await service.resendInvite({ actor, userId: "target-row" });
+
+      expect(result.emailDeliveryFailed).toBe(true);
+      expect(result.user.status).toBe("pending");
+      expect(calls.resendInviteWithAudit).toHaveLength(1);
     } finally {
       console.error = originalError;
     }

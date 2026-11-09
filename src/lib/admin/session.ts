@@ -16,6 +16,14 @@ export type AdminMeResponse = {
   admin: AdminIdentity;
 };
 
+/**
+ * The `reason` the sign-in page shows when the server refused the signed-in account itself:
+ * its admin row was removed, or it was disabled or demoted out of every area (AUTH-02). It is
+ * a plain search value so the redirect can carry it, and any other value is ignored.
+ */
+export const NO_ADMIN_ACCESS_LOGIN_REASON = "no_admin_access";
+export type AdminLoginReason = typeof NO_ADMIN_ACCESS_LOGIN_REASON;
+
 export type AdminApiErrorFields = Record<string, string[]>;
 
 /**
@@ -231,14 +239,34 @@ export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
   try {
     return await queryClient.ensureQueryData(adminIdentityQueryOptions());
   } catch (error) {
-    // The browser still holds a session the server no longer accepts: revoked, signed out
-    // elsewhere, or tampered with. Without this the route rendered a full-page load failure
-    // whose retry could never succeed and which offered no way to sign out (BUG-31).
-    if (!isLapsedSessionError(error)) throw error;
+    // The browser still holds a session the server no longer accepts (401): revoked, signed
+    // out elsewhere, or tampered with (BUG-31). Or the server accepted the account and then
+    // refused it admin access (403) because its admin row was removed, disabled or demoted
+    // while it was signed in (AUTH-02). Neither can recover on this browser, so both sign out
+    // locally; without that the route rendered a full-page load failure whose retry could
+    // never succeed and which offered no way to sign out.
+    const forbidden = isForbiddenIdentityError(error);
+    if (!forbidden && !isLapsedSessionError(error)) throw error;
     queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
     await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
-    throw redirect({ to: "/admin/login" });
+    // A lapsed session just needs signing in again; a refused account is told why, using the
+    // same bilingual refusal message completeSignIn shows for a refused sign-in (BUG-57).
+    throw forbidden
+      ? redirect({
+          to: "/admin/login",
+          search: { reason: NO_ADMIN_ACCESS_LOGIN_REASON },
+        })
+      : redirect({ to: "/admin/login" });
   }
+}
+
+/**
+ * A 403 from the identity fetch means the account is refused, not that one area is
+ * forbidden, so only the identity fetch classifies it this way. A 403 from an ordinary
+ * mutation keeps its usual "forbidden" meaning and must not sign anyone out.
+ */
+function isForbiddenIdentityError(error: unknown) {
+  return error instanceof Error && (error as { status?: unknown }).status === 403;
 }
 
 function isLapsedSessionError(error: unknown) {

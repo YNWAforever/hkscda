@@ -910,6 +910,98 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   other branch, `search_path = ''` and the grants are unchanged. The companion admin-code change
   disables the switches for system rows.
 
+## Admin auth backlog — second batch (2026-11-09)
+
+The audit's accepted Lows (AUTH-02…AUTH-05) plus the inherited AUD-02 RLS gap. The IDs keep the
+audit's prefixes so BUG-01…BUG-73 keep their numbers. Four fixes are code/test-only; AUD-02 is a
+migration.
+
+### AUTH-02 — Low — An admin disabled or demoted mid-session reloads into a dead-end load failure
+
+- **Where:** `requireSignedInAdminIdentity` (`src/lib/admin/session.ts`) only treated a 401 as a
+  lapsed session, so a 403 from the identity fetch (`/api/admin/me`) fell through as a generic
+  load failure. `docs/BUGS.md` BUG-31 fixed the 401 case and BUG-57 the sign-in 403; neither
+  covered an admin disabled while already signed in.
+- **Effect:** after an admin is disabled, has its row removed, or is demoted mid-session, a reload
+  of `/admin` renders the load-failure screen whose retry always fails — no message, no sign-out —
+  and the identity cache keeps answering with the old role for up to 60 s.
+- **Fix (code):** a 403 from the identity fetch now takes the lapsed-session path: cached identity
+  removed, `supabase.auth.signOut({scope:"local"})`, and a redirect to
+  `/admin/login?reason=no_admin_access`, where the sign-in page shows the existing bilingual
+  `login.noAdminAccess` refusal copy. Ordinary mutation 403s keep their `forbidden` class in
+  `failureClass`, so one forbidden-area call does not sign anyone out.
+- **Tests:** `src/lib/admin/session.test.ts` (401 without the reason vs 403 with it, identity
+  cleared, local sign-out), `src/components/admin/useSessionExpiryRedirect.test.ts` (a 403
+  mutation is not a lapse), `src/routes/admin/login.test.tsx` and `-authPagesEnglish.test.tsx`
+  (zh-HK and English notices).
+
+### AUTH-03 — Low — Invite/resend commits the row before the email; a delivery failure is a 500 and a retry is a 409
+
+- **Where:** `src/lib/admin/accessManagement.server.ts` (`inviteUser`, `resendInvite`) commits the
+  pending `admin_user` row and its audit row before `sendInviteEmail`; the mail error escaped as a
+  500 (`accessManagement.http.server.ts`), while the duplicate pre-check makes an immediate retry
+  a 409 `duplicate_admin_user`.
+- **Effect:** with Resend down or miskeyed, the invitation is recorded and audited as sent but
+  nobody receives it, and the operator's natural retry is refused. The only recovery is knowing
+  that "Resend" on the pending row is a different button.
+- **Fix (code):** the safe commit ordering stays. A mail-provider failure is caught and reported
+  instead of thrown: the service returns `{ user, emailDeliveryFailed }`, the invite/resend
+  handlers answer 201/200 with that flag (no 500), and the access page shows a bilingual warning
+  saying the invite was created but the email was not delivered and to use Resend.
+- **Tests:** `src/lib/admin/accessManagement.test.ts` (provider throw → row committed once, flag
+  set, handler 201 not 500; success unchanged), `accessManagement.http.test.ts`, and
+  `src/components/admin/access/accessActions.test.ts` (bilingual warning).
+
+### AUTH-04 — Low — A cross-tab account switch leaves the previous admin's cached data in the old tab
+
+- **Where:** `src/lib/admin/useLiveAdminActor.ts` reset only the identity query on an auth-user
+  change; `completeSignIn` clears the whole cache but only in the tab that signs in.
+- **Effect (suspected):** admin A leaves tab 1 on `/admin/supporters`; admin B signs in from tab 2.
+  Tab 1 receives the auth event but keeps rendering A's cached (possibly higher-privilege) rows;
+  only the identity query was reset. Most admin query keys are not actor-scoped.
+- **Fix (code):** on an actual auth-user change (including sign-out) the hook now removes every
+  cached query except the identity entry, then resets and refetches the identity query, so the new
+  account's role is loaded and no previous-account data stays on screen. The first read after
+  mounting is not treated as a switch.
+- **Tests:** `src/lib/admin/useLiveAdminActor.test.tsx` (a non-identity cached key is removed; the
+  identity entry is refetched for the new account; the existing generation/unmount cases hold).
+
+### AUTH-05 — Low — The authorization sweep's admin-only list omits `volunteers/jobs/`
+
+- **Where:** `tests/integration/admin/authorization.test.ts` `ADMIN_ONLY_PREFIXES` listed the other
+  admin-only volunteer endpoints but not `volunteers/jobs/`, although
+  `src/routes/api/admin/volunteers/jobs/index.ts` calls `requireAdmin(request, ["admin"], c)`.
+- **Effect:** the sweep derived the route's permitted roles from its staff-visible `volunteers/`
+  area, so if the route ever admitted `staff` the sweep would not report it (the BUG-63 drift
+  surface).
+- **Fix (test):** add `volunteers/jobs/` to `ADMIN_ONLY_PREFIXES` and a focused case that fails if
+  the route ever admits staff (verified by temporarily allowing staff: both the sweep and the new
+  case fail). The sweep root now uses `fileURLToPath`, so the guard also runs on Windows, where
+  `URL.pathname`'s `/C:/…` form made `Bun.Glob`/import fail before any assertion.
+
+### AUD-02 — Med — Staff can still read/update supporters and consents over PostgREST
+
+- **Where:** `20260623160506_phase_2_donations_mvp.sql:280-305` — `staff can read supporters`,
+  `staff can update supporters`, `staff can read supporter roles`, `staff can read consents` and
+  `staff can update consents` all use
+  `private.has_admin_role(array['staff', 'treasurer', 'admin'])`. No later migration redefines
+  them (checked through `20261109102000`). The CRM APIs are `requireAdmin(…, ["treasurer","admin"])`
+  and `ROLE_ACCESS` gives `staff` no supporters area, so the database was wider than the app.
+- **Effect:** a staff JWT can ignore the API and read or update supporter PII and consent rows
+  directly (`/rest/v1/supporter`, `/rest/v1/consent`), defeating the "staff have no supporters
+  area" boundary; this was AUDIT.md R3, carried as an open item.
+- **Fix (migration):** `20261109103000_tighten_supporter_staff_rls.sql` drops each of the five
+  policies by name and recreates it with the same name and
+  `private.has_admin_role(array['treasurer', 'admin'])` (latest-definition-wins). Nothing else
+  changes: no insert policy exists on either table, there is no public/own-row supporter policy for
+  the supporter portal (its data is served by service-role repositories that bypass RLS), the
+  `authenticated` grants stay, and service_role keeps its grant. No rows are read or rewritten.
+- **Tests:** `src/lib/admin/supporterRlsAccess.migration.test.ts` pins the statements, the
+  policy/table set, absence of grant/revoke/data changes, and the migration order; the behavioural
+  half in `supabase/rls-tests/moneyPii.rls.test.ts` now asserts staff is denied and treasurer/admin
+  are allowed for supporter select/update, supporter_role select and consent select/update (runs
+  under `bun run test:rls` against a local stack).
+
 ## Not filed as bugs (recorded for the report)
 
 - **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
@@ -918,8 +1010,9 @@ audit's AUTH-/OPS- prefixes so the existing BUG-01…BUG-73 numbering is unchang
   by anyone who has its random UUID URL.
 - **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4).
   Removing `'unsafe-inline'` needs nonce support in SSR, so it is out of scope.
-- **Prior open items** AUD-02 (staff RLS on supporters), AUD-04 (non-blocking RLS CI
-  job) and AUD-06 (GA on admin pages) are unchanged.
+- **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
+  unchanged. AUD-02 (staff RLS on supporters) is fixed by
+  `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.
 - **Content datetimes** convert in the browser's timezone. That is correct for staff in
   Hong Kong; HKT is not forced.
 

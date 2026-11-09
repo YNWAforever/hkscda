@@ -250,6 +250,18 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
     }
     fixtureConsentId = consentRow.id as string;
 
+    // AUD-02: a real supporter_role row, so the staff-denied / treasurer-admin-allowed
+    // assertions below cannot pass vacuously on an empty table. Cascades with the supporter.
+    const { error: supporterRoleError } = await svc
+      .from("supporter_role")
+      .upsert(
+        { supporter_id: fixtureSupporterId, role: "donor" },
+        { onConflict: "supporter_id,role" },
+      );
+    if (supporterRoleError) {
+      throw new Error(`Failed to seed fixture supporter role: ${supporterRoleError.message}`);
+    }
+
     clients = {
       anon,
       noRow: noRowClient,
@@ -394,21 +406,31 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(data).toEqual([]);
     });
 
-    test("staff can select", async () => {
+    test("AUD-02: staff cannot select supporters", async () => {
+      // No error: the select policy simply matches no row for staff, and `authenticated`
+      // keeps its table grant. The supporter CRM belongs to treasurer/admin.
       const { data, error } = await clients.staff
         .from("supporter")
         .select("id")
         .eq("id", fixtureSupporterId!);
       expect(error).toBeNull();
-      expect(data).toHaveLength(1);
+      expect(data ?? []).toEqual([]);
     });
 
-    test("staff can update", async () => {
-      const { error } = await clients.staff
+    test("AUD-02: staff cannot update supporters", async () => {
+      // A blocked RLS UPDATE is a silent 0-row no-op (error null), so read the fixture back
+      // through the service client: the value must not have changed.
+      const updateResult = await clients.staff
         .from("supporter")
         .update({ language: "en" })
         .eq("id", fixtureSupporterId!);
-      expect(error).toBeNull();
+      expect(updateResult.error).toBeNull();
+      const check = await clients.service
+        .from("supporter")
+        .select("language")
+        .eq("id", fixtureSupporterId!)
+        .single();
+      expect(check.data?.language).not.toBe("en");
     });
 
     test("staff cannot insert (no insert policy exists for any authenticated role)", async () => {
@@ -418,22 +440,79 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(error).not.toBeNull();
     });
 
-    test("treasurer can select", async () => {
-      const { data, error } = await clients.treasurer
-        .from("supporter")
-        .select("id")
-        .eq("id", fixtureSupporterId!);
-      expect(error).toBeNull();
-      expect(data).toHaveLength(1);
+    test("AUD-02: treasurer and admin can select supporters", async () => {
+      for (const role of ["treasurer", "admin"] as const) {
+        const { data, error } = await clients[role]
+          .from("supporter")
+          .select("id")
+          .eq("id", fixtureSupporterId!);
+        expect(error).toBeNull();
+        expect(data, `${role} should read the supporter row`).toHaveLength(1);
+      }
     });
 
-    test("admin can select", async () => {
-      const { data, error } = await clients.admin
-        .from("supporter")
-        .select("id")
-        .eq("id", fixtureSupporterId!);
+    test("AUD-02: treasurer can update supporters", async () => {
+      try {
+        const { error } = await clients.treasurer
+          .from("supporter")
+          .update({ language: "en" })
+          .eq("id", fixtureSupporterId!);
+        expect(error).toBeNull();
+        const check = await clients.service
+          .from("supporter")
+          .select("language")
+          .eq("id", fixtureSupporterId!)
+          .single();
+        expect(check.data?.language).toBe("en");
+      } finally {
+        await clients.service
+          .from("supporter")
+          .update({ language: "zh-HK" })
+          .eq("id", fixtureSupporterId!);
+      }
+    });
+
+    test("AUD-02: admin can update supporters", async () => {
+      try {
+        const { error } = await clients.admin
+          .from("supporter")
+          .update({ language: "en" })
+          .eq("id", fixtureSupporterId!);
+        expect(error).toBeNull();
+        const check = await clients.service
+          .from("supporter")
+          .select("language")
+          .eq("id", fixtureSupporterId!)
+          .single();
+        expect(check.data?.language).toBe("en");
+      } finally {
+        await clients.service
+          .from("supporter")
+          .update({ language: "zh-HK" })
+          .eq("id", fixtureSupporterId!);
+      }
+    });
+  });
+
+  describe("supporter_role", () => {
+    test("AUD-02: staff cannot read supporter roles", async () => {
+      const { data, error } = await clients.staff
+        .from("supporter_role")
+        .select("role")
+        .eq("supporter_id", fixtureSupporterId!);
       expect(error).toBeNull();
-      expect(data).toHaveLength(1);
+      expect(data ?? []).toEqual([]);
+    });
+
+    test("AUD-02: treasurer and admin can read supporter roles", async () => {
+      for (const role of ["treasurer", "admin"] as const) {
+        const { data, error } = await clients[role]
+          .from("supporter_role")
+          .select("role")
+          .eq("supporter_id", fixtureSupporterId!);
+        expect(error).toBeNull();
+        expect(data, `${role} should read the supporter role row`).toHaveLength(1);
+      }
     });
   });
 
@@ -756,34 +835,37 @@ describe.skipIf(!reachable)("RLS behavioral matrix: money/PII tables", () => {
       expect(data).toEqual([]);
     });
 
-    test("staff can select and update (unlike donation/payment, staff has update access here)", async () => {
+    test("AUD-02: staff cannot select or update consents", async () => {
       const selectResult = await clients.staff
         .from("consent")
         .select("id")
         .eq("id", fixtureConsentId!);
       expect(selectResult.error).toBeNull();
-      expect(selectResult.data).toHaveLength(1);
+      expect(selectResult.data ?? []).toEqual([]);
 
-      // Restore runs in `finally` (not as a trailing statement): unlike the
-      // treasurer/donation-style coupled pairs elsewhere in this file, this
-      // single test both mutates and restores the fixture's state with no
-      // cross-test ordering dependency -- but that's only true if the restore
-      // genuinely always runs. The `expect` on `updateResult.error` below can
-      // throw if the update itself regresses, which without `finally` would
-      // skip the restore and leave the fixture as "opt_out" for whatever test
-      // runs next -- so cleanup belongs in `finally`, matching the rigor
-      // established for `receipt` in the previous task.
-      try {
-        const updateResult = await clients.staff
+      // A blocked RLS UPDATE is a silent 0-row no-op, so read the fixture back through the
+      // service client: the consent status must still be the seeded "opt_in".
+      const updateResult = await clients.staff
+        .from("consent")
+        .update({ status: "opt_out" })
+        .eq("id", fixtureConsentId!);
+      expect(updateResult.error).toBeNull();
+      const check = await clients.service
+        .from("consent")
+        .select("status")
+        .eq("id", fixtureConsentId!)
+        .single();
+      expect(check.data?.status).toBe("opt_in");
+    });
+
+    test("AUD-02: treasurer and admin can select consents", async () => {
+      for (const role of ["treasurer", "admin"] as const) {
+        const { data, error } = await clients[role]
           .from("consent")
-          .update({ status: "opt_out" })
+          .select("id")
           .eq("id", fixtureConsentId!);
-        expect(updateResult.error).toBeNull();
-      } finally {
-        await clients.service
-          .from("consent")
-          .update({ status: "opt_in" })
-          .eq("id", fixtureConsentId!);
+        expect(error).toBeNull();
+        expect(data, `${role} should read the consent row`).toHaveLength(1);
       }
     });
 
