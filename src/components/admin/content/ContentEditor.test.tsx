@@ -241,6 +241,49 @@ describe("ContentEditor", () => {
     expect(field(">小白正在康復。</textarea>")).toContain('maxLength="320"');
   });
 
+  test("CMS-08: the update body, media caption and internal address/notes carry the server's limits", async () => {
+    const { ContentAuthoringPanels } = await import("./ContentEditor");
+    const withProfile: ContentDetail = {
+      ...content,
+      storyProfile: {
+        contentItemId: content.id,
+        animalType: "cat",
+        publicStatus: "medical_care",
+        rescueRegion: "灣仔",
+        rescueDate: null,
+        showOnMap: false,
+        publicMapLabel: null,
+        publicLat: null,
+        publicLng: null,
+        internalAddress: "internal-address-value",
+        internalLocationNotes: "internal-notes-value",
+        isFeatured: false,
+      },
+    };
+
+    const markup = renderAdminInChinese(
+      <QueryClientProvider client={new QueryClient()}>
+        <ContentAuthoringPanels
+          content={withProfile}
+          pending={false}
+          onCreateLink={async () => undefined}
+          onSaveStoryProfile={async () => undefined}
+          onCreateStoryUpdate={async () => undefined}
+          onCreateMedia={async () => undefined}
+        />
+      </QueryClientProvider>,
+    );
+    const fields = markup.match(/<(input|textarea)[^>]*>([^<]*<\/textarea>)?/g) ?? [];
+    const field = (value: string) => fields.find((tag) => tag.includes(value));
+
+    // The story-profile internal address (input) and location notes (textarea).
+    expect(field('value="internal-address-value"')).toContain('maxLength="500"');
+    expect(field(">internal-notes-value</textarea>")).toContain('maxLength="500"');
+    // The story-update body textarea and the media caption input.
+    expect(markup.match(/maxLength="20000"/g)).toHaveLength(1);
+    expect(markup.match(/maxLength="500"/g)).toHaveLength(3);
+  });
+
   test("uses a router link for returning to the content list", async () => {
     const { ContentEditor } = await import("./ContentEditor");
     const queryClient = new QueryClient();

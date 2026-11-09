@@ -47,6 +47,7 @@ import {
   parseDatetimeLocalToIso,
 } from "./contentAdminLogic";
 import {
+  CONTENT_CHILD_TEXT_MAX,
   CONTENT_SLUG_INPUT_PATTERN,
   CONTENT_SUMMARY_MAX,
   CONTENT_TEXT_MAX,
@@ -1515,6 +1516,7 @@ function StoryWallSettings({
           </Field>
           <Field label={copy.address}>
             <input
+              maxLength={CONTENT_CHILD_TEXT_MAX.internalAddress}
               value={form.internalAddress}
               onChange={(event) =>
                 setForm((current) => ({ ...current, internalAddress: event.target.value }))
@@ -1526,6 +1528,7 @@ function StoryWallSettings({
         <Field label={copy.notes}>
           <textarea
             rows={2}
+            maxLength={CONTENT_CHILD_TEXT_MAX.internalLocationNotes}
             value={form.internalLocationNotes}
             onChange={(event) =>
               setForm((current) => ({ ...current, internalLocationNotes: event.target.value }))
@@ -1668,6 +1671,7 @@ function StoryUpdateCreateForm({
       <Field label={copy.body}>
         <textarea
           rows={3}
+          maxLength={CONTENT_CHILD_TEXT_MAX.storyUpdateBody}
           value={form.body}
           onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
           className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2"
@@ -1801,6 +1805,7 @@ function ContentMediaPanel({
         </Field>
         <Field label={copy.caption}>
           <input
+            maxLength={CONTENT_CHILD_TEXT_MAX.mediaCaption}
             value={form.caption}
             onChange={(event) =>
               setForm((current) => ({ ...current, caption: event.target.value }))
