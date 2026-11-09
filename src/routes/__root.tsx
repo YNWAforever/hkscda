@@ -20,6 +20,7 @@ import { brand } from "../lib/brand/brand";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 import { resolveHeadPathname, shouldIncludePublicStyles } from "../lib/publicHeadAssets";
 import { resolveAuthLandingTarget } from "../lib/admin/authLanding";
+import { currentCspNonce } from "../lib/csp-nonce";
 
 const PublicSiteShell = lazy(() => import("../components/site/PublicSiteShell"));
 
@@ -61,62 +62,67 @@ function NotFoundComponent() {
   );
 }
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: ({ match, matches }) => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "香港拯救貓狗協會 HKSCDA · 領養代替購買" },
-      {
-        name: "description",
-        content:
-          "香港拯救貓狗協會（HKSCDA）成立於2007年，致力為流浪貓狗提供糧食、醫療、絕育及領養服務。支持領養等於拯救生命。",
-      },
-      { name: "author", content: "HKSCDA" },
-      { property: "og:title", content: "香港拯救貓狗協會 HKSCDA" },
-      {
-        property: "og:description",
-        content: "支持領養 · 拯救生命 · 為流浪貓狗提供糧食、醫療、絕育及領養服務",
-      },
-      { property: "og:type", content: "website" },
-      {
-        property: "og:image",
-        content: publicUrl("/brand/hkscda-logo-primary.jpg"),
-      },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "香港拯救貓狗協會 HKSCDA" },
-      {
-        name: "twitter:description",
-        content: "支持領養 · 拯救生命 · 不殺機構",
-      },
-      {
-        name: "twitter:image",
-        content: publicUrl("/brand/hkscda-logo-primary.jpg"),
-      },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      ...(shouldIncludePublicStyles(resolveHeadPathname(matches, match.pathname))
-        ? [
-            { rel: "stylesheet", href: publicFontsCss },
-            { rel: "stylesheet", href: publicCss },
-          ]
-        : []),
-      // Icons use the 192px copy: browsers fetch them on every page, and the
-      // 960px primary is ten times the bytes for a tab or home-screen mark.
-      { rel: "icon", type: "image/jpeg", sizes: "192x192", href: brand.logo.smallSrc },
-      { rel: "apple-touch-icon", href: brand.logo.smallSrc },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(organizationSchema()),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(websiteSchema()),
-      },
-    ],
-  }),
+  head: ({ match, matches }) => {
+    const nonce = currentCspNonce();
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "香港拯救貓狗協會 HKSCDA · 領養代替購買" },
+        {
+          name: "description",
+          content:
+            "香港拯救貓狗協會（HKSCDA）成立於2007年，致力為流浪貓狗提供糧食、醫療、絕育及領養服務。支持領養等於拯救生命。",
+        },
+        { name: "author", content: "HKSCDA" },
+        { property: "og:title", content: "香港拯救貓狗協會 HKSCDA" },
+        {
+          property: "og:description",
+          content: "支持領養 · 拯救生命 · 為流浪貓狗提供糧食、醫療、絕育及領養服務",
+        },
+        { property: "og:type", content: "website" },
+        {
+          property: "og:image",
+          content: publicUrl("/brand/hkscda-logo-primary.jpg"),
+        },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: "香港拯救貓狗協會 HKSCDA" },
+        {
+          name: "twitter:description",
+          content: "支持領養 · 拯救生命 · 不殺機構",
+        },
+        {
+          name: "twitter:image",
+          content: publicUrl("/brand/hkscda-logo-primary.jpg"),
+        },
+        // TanStack's client hydrator reads this to stamp later inline scripts.
+        ...(nonce ? [{ property: "csp-nonce", content: nonce }] : []),
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        ...(shouldIncludePublicStyles(resolveHeadPathname(matches, match.pathname))
+          ? [
+              { rel: "stylesheet", href: publicFontsCss },
+              { rel: "stylesheet", href: publicCss },
+            ]
+          : []),
+        // Icons use the 192px copy: browsers fetch them on every page, and the
+        // 960px primary is ten times the bytes for a tab or home-screen mark.
+        { rel: "icon", type: "image/jpeg", sizes: "192x192", href: brand.logo.smallSrc },
+        { rel: "apple-touch-icon", href: brand.logo.smallSrc },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(organizationSchema()),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(websiteSchema()),
+        },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

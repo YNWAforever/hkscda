@@ -6,17 +6,19 @@ import { routeTree } from "./routeTree.gen";
 
 export const getRouter = () => {
   const queryClient = createQueryClient();
-  // The SSR request's CSP nonce (undefined in the browser, or outside the request context).
-  // TanStack Router stamps it on every inline script it renders for this page, so the enforcing
-  // CSP in src/lib/security-headers.ts can omit 'unsafe-inline' from script-src.
-  const nonce = currentCspNonce();
-
+  // Read the nonce when TanStack stamps scripts, not when this factory first runs.
+  // Start may reuse one router across requests; a snapshot here would stamp a stale
+  // or missing nonce while each response's CSP header gets a fresh one.
   const router = createRouter({
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-    ...(nonce ? { ssr: { nonce } } : {}),
+    ssr: {
+      get nonce() {
+        return currentCspNonce();
+      },
+    },
     // A page that throws renders inside the public shell instead of replacing it.
     defaultErrorComponent: RouteError,
   });

@@ -15,11 +15,19 @@ describe("CSP nonce propagation wiring", () => {
     expect(server.match(/applySecurityHeaders\([\s\S]*?nonce[),]/g)?.length).toBe(2);
   });
 
-  test("getRouter reads the request nonce and passes it as the router ssr nonce", () => {
+  test("getRouter reads the request nonce when scripts are stamped, not when the router is first created", () => {
     const router = read("src/router.tsx");
     expect(router).toContain('import { currentCspNonce } from "./lib/csp-nonce";');
-    expect(router).toContain("const nonce = currentCspNonce();");
-    expect(router).toContain("ssr: { nonce }");
+    expect(router).toContain("get nonce()");
+    expect(router).toContain("return currentCspNonce();");
+    expect(router).not.toContain("ssr: { nonce }");
+  });
+
+  test("the document head publishes the request nonce for the client hydrator", () => {
+    const rootRoute = read("src/routes/__root.tsx");
+    expect(rootRoute).toContain('import { currentCspNonce } from "../lib/csp-nonce";');
+    expect(rootRoute).toContain('property: "csp-nonce"');
+    expect(rootRoute).toContain("currentCspNonce()");
   });
 
   test("the request store is server-only and backs the nonce on AsyncLocalStorage", () => {
