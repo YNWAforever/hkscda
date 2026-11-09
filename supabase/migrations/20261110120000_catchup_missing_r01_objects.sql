@@ -217,7 +217,7 @@ revoke all on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,tim
 
 grant execute on function public.append_crm_consents_with_audit(jsonb,uuid,uuid,timestamptz,jsonb) to service_role;
 
-create function public.claim_expired_animal_draft_image_uploads(
+create or replace function public.claim_expired_animal_draft_image_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -252,7 +252,7 @@ revoke all on function public.claim_expired_animal_draft_image_uploads(timestamp
 grant execute on function public.claim_expired_animal_draft_image_uploads(timestamptz, integer)
   to service_role;
 
-create function public.claim_expired_internship_attachment_uploads(
+create or replace function public.claim_expired_internship_attachment_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -287,7 +287,7 @@ revoke all on function public.claim_expired_internship_attachment_uploads(timest
 grant execute on function public.claim_expired_internship_attachment_uploads(timestamptz, integer)
   to service_role;
 
-create function public.claim_expired_sponsorship_proof_uploads(
+create or replace function public.claim_expired_sponsorship_proof_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -321,7 +321,7 @@ revoke all on function public.claim_expired_sponsorship_proof_uploads(timestampt
 grant execute on function public.claim_expired_sponsorship_proof_uploads(timestamptz, integer)
   to service_role;
 
-create function public.claim_expired_staff_sponsorship_proof_uploads(
+create or replace function public.claim_expired_staff_sponsorship_proof_uploads(
   p_cutoff timestamptz,
   p_limit integer default 50
 )
@@ -630,7 +630,7 @@ revoke all on function public.cms_promotion_command(uuid, jsonb) from public, an
 
 grant execute on function public.cms_promotion_command(uuid, jsonb) to service_role;
 
-create function public.create_public_sponsorship_pledge(
+create or replace function public.create_public_sponsorship_pledge(
   p_pledge_id uuid,
   p_pledge jsonb,
   p_preferences jsonb,
@@ -1032,7 +1032,7 @@ begin
 end;
 $$;
 
-create function public.mark_animal_draft_image_attached()
+create or replace function public.mark_animal_draft_image_attached()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1082,7 +1082,7 @@ revoke all on function public.mark_animal_draft_image_attached()
 grant execute on function public.mark_animal_draft_image_attached()
   to service_role;
 
-create function public.mark_internship_attachment_uploaded()
+create or replace function public.mark_internship_attachment_uploaded()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1114,7 +1114,7 @@ revoke all on function public.mark_internship_attachment_uploaded()
 grant execute on function public.mark_internship_attachment_uploaded()
   to service_role;
 
-create function public.mark_sponsorship_proof_upload_submitted()
+create or replace function public.mark_sponsorship_proof_upload_submitted()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1147,7 +1147,7 @@ revoke all on function public.mark_sponsorship_proof_upload_submitted()
 grant execute on function public.mark_sponsorship_proof_upload_submitted()
   to service_role;
 
-create function public.mark_staff_sponsorship_proof_attached()
+create or replace function public.mark_staff_sponsorship_proof_attached()
 returns trigger
 language plpgsql
 set search_path = ''
@@ -1403,7 +1403,7 @@ revoke all on function public.resend_admin_invite_with_audit(uuid, uuid, timesta
 grant execute on function public.resend_admin_invite_with_audit(uuid, uuid, timestamptz)
   to service_role;
 
-create function public.reserve_animal_draft_image_upload(
+create or replace function public.reserve_animal_draft_image_upload(
   p_animal_id uuid,
   p_storage_path text
 ) returns void
@@ -1444,7 +1444,7 @@ revoke all on function public.reserve_animal_draft_image_upload(uuid, text)
 grant execute on function public.reserve_animal_draft_image_upload(uuid, text)
   to service_role;
 
-create function public.reserve_staff_sponsorship_proof_upload(
+create or replace function public.reserve_staff_sponsorship_proof_upload(
   p_pledge_id uuid,
   p_storage_path text
 ) returns void
@@ -1626,7 +1626,7 @@ revoke all on function public.update_group_enquiry_with_audit(uuid, uuid, timest
 grant execute on function public.update_group_enquiry_with_audit(uuid, uuid, timestamptz, jsonb)
   to service_role;
 
-create function public.void_donation_receipts_with_audit(
+create or replace function public.void_donation_receipts_with_audit(
   p_donation_id uuid,
   p_reason text default 'refund'
 )
