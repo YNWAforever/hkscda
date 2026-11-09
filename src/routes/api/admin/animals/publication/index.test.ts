@@ -57,7 +57,6 @@ test("valid draft revisions retain saved and stale-write responses", async () =>
   for (const [revision, data, status] of [
     [0, { kind: "saved", revision: 1 }, 200],
     [1, { kind: "saved", revision: 2 }, 200],
-    [1, { kind: "conflict" }, 409],
   ] as const) {
     activeClient = { rpc: async () => ({ data, error: null }) };
     const response = await handler({
@@ -70,6 +69,29 @@ test("valid draft revisions retain saved and stale-write responses", async () =>
     expect(response.status).toBe(status);
     expect(await response.json()).toEqual(data);
   }
+});
+
+test("CMS-01: a stale draft save answers 409 with the actionable stale_draft code", async () => {
+  const handlers = Route.options.server?.handlers;
+  const handler = handlers && typeof handlers !== "function" ? handlers.POST : undefined;
+  if (!handler) throw new Error("Animal publication POST handler missing");
+  activeClient = { rpc: async () => ({ data: { kind: "conflict" }, error: null }) };
+
+  const response = await handler({
+    request: new Request("http://localhost/api/admin/animals/publication/", {
+      method: "POST",
+      body: JSON.stringify({ kind: "save", expected_revision: 1 }),
+    }),
+  } as never);
+
+  if (!(response instanceof Response)) throw new Error("Expected HTTP response");
+  expect(response.status).toBe(409);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  // Previously the raw `{kind:"conflict"}` reached the editor, which had no way to tell a
+  // stale revision from a failed save, so every retry re-sent the same revision.
+  const body = (await response.json()) as { error: { code: string; message: string } };
+  expect(body.error.code).toBe("stale_draft");
+  expect(body.error.message.length).toBeGreaterThan(0);
 });
 
 test("BUG-22: version restores require an explicit revision and answer a stale one with 409", async () => {
