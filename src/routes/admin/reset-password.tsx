@@ -8,6 +8,8 @@ import {
 import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import {
   completeAdminPasswordReset,
+  parseAdminSetPasswordIntent,
+  type AdminSetPasswordIntent,
   type PasswordRecoveryFailure,
 } from "../../lib/admin/passwordRecovery";
 import { supabase } from "../../lib/supabase";
@@ -15,15 +17,22 @@ import { supabase } from "../../lib/supabase";
 export type RecoveryStatus = "checking" | "ready" | "invalid";
 
 export const Route = createFileRoute("/admin/reset-password")({
+  // BUG-25: the invite link lands here with ?intent=invite so the page can say "set your
+  // password" rather than "reset your password". Supabase appends the session hash after it.
+  validateSearch: (search: Record<string, unknown>) => ({
+    intent: search.intent === "invite" ? ("invite" as const) : undefined,
+  }),
   component: AdminResetPasswordPage,
 });
 
 export function AdminResetPasswordPage() {
   const navigate = useNavigate();
+  const { intent: rawIntent } = Route.useSearch();
 
   return (
     <AdminLanguageProvider>
       <AdminResetPasswordController
+        intent={parseAdminSetPasswordIntent(rawIntent)}
         onComplete={() => navigate({ to: "/admin/login", search: { passwordReset: "success" } })}
         onBack={() => navigate({ to: "/admin/login", search: {} })}
       />
@@ -32,9 +41,11 @@ export function AdminResetPasswordPage() {
 }
 
 function AdminResetPasswordController({
+  intent,
   onComplete,
   onBack,
 }: {
+  intent: AdminSetPasswordIntent;
   onComplete: () => void | Promise<void>;
   onBack: () => void;
 }) {
@@ -49,7 +60,9 @@ function AdminResetPasswordController({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!active || event !== "PASSWORD_RECOVERY" || !session) return;
+      if (!active || !session) return;
+      // A recovery link fires PASSWORD_RECOVERY; an invite link fires SIGNED_IN (BUG-25).
+      if (event !== "PASSWORD_RECOVERY" && !(intent === "invite" && event === "SIGNED_IN")) return;
       recoverySeen = true;
       setStatus("ready");
     });
@@ -63,7 +76,7 @@ function AdminResetPasswordController({
       active = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [intent]);
 
   function getFailureMessage(reason: PasswordRecoveryFailure) {
     if (reason === "too_short") return copy.login.passwordTooShort;
@@ -92,6 +105,7 @@ function AdminResetPasswordController({
   return (
     <AdminResetPasswordForm
       status={status}
+      intent={intent}
       loading={loading}
       error={error}
       onSubmit={handleSubmit}
@@ -102,6 +116,7 @@ function AdminResetPasswordController({
 
 export interface AdminResetPasswordFormProps {
   status: RecoveryStatus;
+  intent?: AdminSetPasswordIntent;
   loading: boolean;
   error: string | null;
   onSubmit: (password: string, confirmation: string) => void | Promise<void>;
@@ -110,6 +125,7 @@ export interface AdminResetPasswordFormProps {
 
 export function AdminResetPasswordForm({
   status,
+  intent = "recovery",
   loading,
   error,
   onSubmit,
@@ -118,6 +134,7 @@ export function AdminResetPasswordForm({
   const { copy, language } = useAdminLanguage();
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const invite = intent === "invite";
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -134,11 +151,17 @@ export function AdminResetPasswordForm({
           <div>
             <p className="text-2xl font-bold">HKSCDA</p>
             <h1 className="text-sm font-normal tracking-normal text-[var(--color-text-muted)] mt-1">
-              {copy.login.resetTitle}
+              {invite ? copy.login.setPasswordTitle : copy.login.resetTitle}
             </h1>
           </div>
           <AdminLanguageToggle />
         </div>
+
+        {invite && (
+          <p className="text-sm text-[var(--color-text-muted)]">
+            {copy.login.setPasswordInstructions}
+          </p>
+        )}
 
         {status === "checking" && (
           <p role="status" className="text-sm text-[var(--color-text-muted)]">
@@ -152,7 +175,7 @@ export function AdminResetPasswordForm({
               role="alert"
               className="rounded-lg bg-[var(--color-error-highlight)] px-3 py-2 text-sm text-[var(--color-error)]"
             >
-              {copy.login.invalidRecoveryLink}
+              {invite ? copy.login.invalidInviteLink : copy.login.invalidRecoveryLink}
             </p>
             <button
               type="button"
@@ -206,7 +229,13 @@ export function AdminResetPasswordForm({
               disabled={loading}
               className="w-full py-2.5 bg-[var(--color-primary)] text-[var(--color-primary-foreground)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-60"
             >
-              {loading ? copy.login.updatingPassword : copy.login.updatePassword}
+              {loading
+                ? invite
+                  ? copy.login.setPasswordSaving
+                  : copy.login.updatingPassword
+                : invite
+                  ? copy.login.setPasswordSubmit
+                  : copy.login.updatePassword}
             </button>
           </form>
         )}

@@ -4,6 +4,7 @@ import { RequestBodyTooLargeError } from "../http/publicJson.server";
 
 import type { AdminAccessActor, AdminInviteOutcome } from "./accessManagement.server";
 import { AdminAccessError } from "./accessManagement.server";
+import { getAdminInviteRedirect } from "./passwordRecovery";
 
 type HandlerContext = {
   request: Request;
@@ -12,11 +13,24 @@ type HandlerContext = {
 
 type AccessService = {
   listUsers(): Promise<unknown>;
-  inviteUser(args: { actor: AdminAccessActor; input: unknown }): Promise<AdminInviteOutcome>;
-  resendInvite(args: { actor: AdminAccessActor; userId: string }): Promise<AdminInviteOutcome>;
+  inviteUser(args: {
+    actor: AdminAccessActor;
+    input: unknown;
+    redirectTo: string;
+  }): Promise<AdminInviteOutcome>;
+  resendInvite(args: {
+    actor: AdminAccessActor;
+    userId: string;
+    redirectTo: string;
+  }): Promise<AdminInviteOutcome>;
   updateUser(args: { actor: AdminAccessActor; userId: string; input: unknown }): Promise<unknown>;
   listAudit(page?: number): Promise<unknown>;
 };
+
+/** BUG-25: where the invitee's set-password landing page lives for this deployment. */
+function inviteRedirect(request: Request) {
+  return getAdminInviteRedirect(new URL(request.url).origin);
+}
 
 type CreateAdminAccessHandlersArgs = {
   requireAccessAdmin: (request: Request) => Promise<AdminAccessActor>;
@@ -89,7 +103,11 @@ export function createAdminAccessHandlers({
     inviteUser({ request }: HandlerContext) {
       return withAccessErrors(async () => {
         const actor = await requireAccessAdmin(request);
-        const outcome = await service.inviteUser({ actor, input: await jsonBody(request) });
+        const outcome = await service.inviteUser({
+          actor,
+          input: await jsonBody(request),
+          redirectTo: inviteRedirect(request),
+        });
         // 201 even when the email provider failed: the pending row and its audit record exist,
         // and the flag tells the admin UI to offer Resend instead of a generic save error
         // (AUTH-03).
@@ -104,7 +122,11 @@ export function createAdminAccessHandlers({
       return withAccessErrors(async () => {
         const userId = requiredId(params);
         const actor = await requireAccessAdmin(request);
-        const outcome = await service.resendInvite({ actor, userId });
+        const outcome = await service.resendInvite({
+          actor,
+          userId,
+          redirectTo: inviteRedirect(request),
+        });
         return jsonResponse({
           user: outcome.user,
           emailDeliveryFailed: outcome.emailDeliveryFailed,

@@ -119,6 +119,16 @@ export function applyPaymentFilters(
 export type VoidReceiptRequest = { receiptId: string; reason: string };
 
 /**
+ * Whether a failed payment action means the row on screen is stale. A 409 is a conflict:
+ * another admin already reconciled the payment or issued the receipt, so the row must be
+ * refetched or its action button stays until a manual reload (BUG-28). A 422 is a
+ * user-fixable refusal (for example a receipt below HK$100), and the row is current.
+ */
+export function paymentActionNeedsRefresh(error: unknown): boolean {
+  return error instanceof Error && (error as { status?: unknown }).status === 409;
+}
+
+/**
  * The request the void dialog's confirm sends: the receipt and the staff's reason. Null when no
  * receipt is chosen, so a stray confirm sends nothing.
  */

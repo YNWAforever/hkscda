@@ -441,13 +441,13 @@ database was available, so the SQL is traced, not executed; the behavioural RLS 
 The same audit's accepted Lows (AUTH-02…AUTH-05) plus the inherited AUD-02 RLS gap. Four fixes are
 code or test only; AUD-02 is a migration.
 
-| ID      | Sev | Fix                                                                                                                                                                                                                                                  | Where                                                                                       |
-| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| AUTH-02 | Low | A 403 from `/api/admin/me` now takes the lapsed-session path (clear identity, local sign-out) and lands on sign-in with the bilingual "no admin access" reason, instead of a dead-end load failure. Ordinary 403s keep their meaning and sign no one out. | `src/lib/admin/session.ts`, `src/routes/admin/login.tsx`                                    |
-| AUTH-03 | Low | An invite/resend whose row committed but whose email failed returns the user plus `emailDeliveryFailed` (201/200, not a 500) and the access page says to use Resend. The safe commit ordering is unchanged.                                          | `src/lib/admin/accessManagement.{server,http.server}.ts`, `src/components/admin/access/`    |
-| AUTH-04 | Low | On a real auth-user change the tab removes every non-identity cached query, then resets and refetches identity, so a cross-tab account switch leaves no previous admin's rows on screen.                                                              | `src/lib/admin/useLiveAdminActor.ts`                                                        |
-| AUTH-05 | Low | `volunteers/jobs/` is in the role sweep's admin-only list, with a case that fails if it admits staff; the sweep root is resolved with `fileURLToPath` so the guard runs on Windows too.                                                               | `tests/integration/admin/authorization.test.ts`                                             |
-| AUD-02  | Med | The five staff-wide supporter/supporter_role/consent policies are redefined to `array['treasurer', 'admin']`; grants, service-role access and the supporter portal paths are unchanged and no rows are touched.                                       | `20261109103000_tighten_supporter_staff_rls.sql`                                            |
+| ID      | Sev | Fix                                                                                                                                                                                                                                                       | Where                                                                                    |
+| ------- | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| AUTH-02 | Low | A 403 from `/api/admin/me` now takes the lapsed-session path (clear identity, local sign-out) and lands on sign-in with the bilingual "no admin access" reason, instead of a dead-end load failure. Ordinary 403s keep their meaning and sign no one out. | `src/lib/admin/session.ts`, `src/routes/admin/login.tsx`                                 |
+| AUTH-03 | Low | An invite/resend whose row committed but whose email failed returns the user plus `emailDeliveryFailed` (201/200, not a 500) and the access page says to use Resend. The safe commit ordering is unchanged.                                               | `src/lib/admin/accessManagement.{server,http.server}.ts`, `src/components/admin/access/` |
+| AUTH-04 | Low | On a real auth-user change the tab removes every non-identity cached query, then resets and refetches identity, so a cross-tab account switch leaves no previous admin's rows on screen.                                                                  | `src/lib/admin/useLiveAdminActor.ts`                                                     |
+| AUTH-05 | Low | `volunteers/jobs/` is in the role sweep's admin-only list, with a case that fails if it admits staff; the sweep root is resolved with `fileURLToPath` so the guard runs on Windows too.                                                                   | `tests/integration/admin/authorization.test.ts`                                          |
+| AUD-02  | Med | The five staff-wide supporter/supporter_role/consent policies are redefined to `array['treasurer', 'admin']`; grants, service-role access and the supporter portal paths are unchanged and no rows are touched.                                           | `20261109103000_tighten_supporter_staff_rls.sql`                                         |
 
 **Deploy:** AUD-02 is a `latest-definition-wins` policy migration with no data rewrite, so any
 order after `20261109102000` works and it can ship on its own. AUTH-02/AUTH-03/AUTH-04 are
@@ -465,6 +465,7 @@ skipped (no local Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`, they 
 database was available, so the migration is traced, not executed; the AUTH-05 case was
 negative-checked by temporarily allowing staff and observing both the sweep and the new case fail.
 No full test suite was run.
+
 ## Admin operations backlog — second batch (2026-11-09)
 
 **Verification (OPS-03/OPS-04 code-only follow-up).** `bunx tsc --noEmit` clean; `bun run lint`
@@ -474,6 +475,7 @@ No full test suite was run.
 fake service-role client, the error mapping through injected fakes, and the receipt rule through
 a logic/component test; the receipt API's 422 expectation still passes unchanged in
 `reconcile.lifecycle.test.ts`.
+
 ## Content/CMS backlog (2026-11-09)
 
 The content side of the same read-only audit
@@ -483,13 +485,13 @@ summary cards counted the current page) were closed with the admin P0 batch; CMS
 images stay public until the daily withdrawal job) is a recorded accepted product decision. This
 batch closes the other five in code — **no migration** — and keeps the audit's CMS- IDs.
 
-| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                                                                    |
-| ------ | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CMS-02 | Med | Social copy for a specific story update now quotes the update from the published snapshot (the same read that supplies the link), not the authoring `story_update` row; that read is kept only to validate ownership/visibility. An id the published revision does not contain is a coded 409 `update_not_published`, explained in both admin languages                                             |
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------ | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CMS-02 | Med | Social copy for a specific story update now quotes the update from the published snapshot (the same read that supplies the link), not the authoring `story_update` row; that read is kept only to validate ownership/visibility. An id the published revision does not contain is a coded 409 `update_not_published`, explained in both admin languages                                                  |
 | CMS-03 | Med | The publication-metadata handler returns the structured `{error:{code,message,fields}}` shape: zod issue paths now name `sourceReference`/`contentOwner`/`effectiveUntil` (verified provenance, inverted range), 40001 maps to `conflict`, known failures to `not_found`/`internal`. `editorFieldLabels` and the copy modules cover the five metadata fields, and the inverted-range reason is bilingual |
-| CMS-05 | Low | Publish, archive and restore send the version the editor's own saves advanced the `editorVersions` fence to (with the cached row only as the pre-fence fallback), so a click during the post-save refetch window no longer sends a stale `expectedVersion` and self-inflicts a 409                                                   |
-| CMS-06 | Low | The content authoring read returns the current draft revision's saved editorial review (and the animal publication read returns the draft revision's review), so `ContentReviewPanel` shows the collapsed verified summary for an approved revision and the saved classification/evidence otherwise, instead of reopening as `needs_review` and overwriting the earlier review               |
-| CMS-08 | Low | `CONTENT_CHILD_TEXT_MAX` bounds the authoring rows every save copies into both revision snapshots: story-update body 20,000, media caption and story-profile internal address/location notes 500, mirrored as `maxLength` on the editor inputs. Server and input limits come from the same constants; no DB column constraint exists, so no migration |
+| CMS-05 | Low | Publish, archive and restore send the version the editor's own saves advanced the `editorVersions` fence to (with the cached row only as the pre-fence fallback), so a click during the post-save refetch window no longer sends a stale `expectedVersion` and self-inflicts a 409                                                                                                                       |
+| CMS-06 | Low | The content authoring read returns the current draft revision's saved editorial review (and the animal publication read returns the draft revision's review), so `ContentReviewPanel` shows the collapsed verified summary for an approved revision and the saved classification/evidence otherwise, instead of reopening as `needs_review` and overwriting the earlier review                           |
+| CMS-08 | Low | `CONTENT_CHILD_TEXT_MAX` bounds the authoring rows every save copies into both revision snapshots: story-update body 20,000, media caption and story-profile internal address/location notes 500, mirrored as `maxLength` on the editor inputs. Server and input limits come from the same constants; no DB column constraint exists, so no migration                                                    |
 
 **Deploy:** code-only on the existing lifecycle routes and reads; no migration, no new environment
 variable, no cron change. The animal read response gains a nullable `review` field and the content
@@ -666,3 +668,55 @@ skipped and no database was touched). The migration is traced SQL, not executed.
       this" with a reload button and keeps its typed text. Reload: the page shows tab A's change
       and tab B's stale draft is gone. Saving in a single tab still works, and a page reload shows
       the saved text.
+
+## Deferred backlog follow-up (2026-11-10)
+
+The halves left deliberately open in the 2026-11-09 batch. BUG-19/25/28/46 are now closed;
+BUG-53 stays open by decision, with the reason below.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                                                                                                         | Migration        |
+| ------ | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| BUG-19 | Low | The payments CSV export reads at most `PAYMENT_EXPORT_ROW_CAP` (20,000) rows and refuses a larger set with a no-store **413** naming the limit, before the audit row and the CSV. The audit row and `cache-control: no-store` it already had are unchanged; exactly 20,000 rows still export                                                                                                                                | —                |
+| BUG-25 | Low | `auth.admin.generateLink({type:"invite"})` sends `options.redirectTo` = `<request origin>/admin/reset-password?intent=invite` for invite and resend. The reset-password page handles the invite session (`SIGNED_IN` or restored session), shows bilingual set-password wording and its own invalid-link message, and the invitee then signs in at `/admin/login`, where first `/me` activates the pending admin            | —                |
+| BUG-28 | Low | A 409 from reconcile, issue-receipt or void-receipt invalidates the payment list/summary/activity queries, so a row another admin already changed stops offering the stale action without a manual reload (422 refusals do not refetch)                                                                                                                                                                                     | —                |
+| BUG-46 | Low | Donation exports (CSV and queued job) match supporters with the `receiptNeeded` key removed, then select donations on the per-donation rule. A supporter still owed a receipt on one donation no longer drops their receipt-not-needed donations from a `receiptNeeded=false` export. Supporter list/filter unchanged; no data rewrite                                                                                      | `20261110100000` |
+| BUG-53 | Low | **Left open deliberately.** The publish path already serialises per species and archives every published release of the species, so the application cannot create a second live guide. A partial unique index cannot be added safely without a data audit (the bug may have left duplicates; the migration must not rewrite data), and a conditional index/trigger would be a new schema invariant needing its own decision | —                |
+
+**Deploy.** Only `20261110100000` needs applying: it is a latest-definition-wins redefinition of
+`crm_export_donations` and `enqueue_crm_export_job` with no data rewrite, so it can run before or
+with the code. BUG-25 needs the Supabase Auth redirect allow-list to include the deployment
+origin's `/admin/reset-password` path (Auth dashboard setting, not a repository change); without
+it Supabase falls back to the Site URL. No new environment variable.
+
+**Behaviour to know.** A payments export above 20,000 matching rows is refused instead of being
+served; narrow the status/provider/search filters. A donation export filtered to
+`receiptNeeded=false` now lists already-receipted, failed, refunded and below-threshold donations
+(they genuinely need no receipt) while the supporter list still shows the supporter-level state.
+BUG-19's 413 does not point at the async export jobs because they support supporters/donations
+only — adding payments to the job queue is a separate feature.
+
+**Verification.** Focused suites for this batch: 182 pass, 0 fail (11 files: payments export
+reader and route, payment reconcile logic, password recovery, reset-password page, access
+management service/repository/handlers, receipt-needed migration content, login copy, and
+`supabaseMigrations.test.ts`). `bunx tsc --noEmit` clean; `bun run lint` 0 errors (the same 56
+warnings). No database stack was available (`SUPABASE_LOCAL_URL=http://127.0.0.1:1`), so the two
+database tests that exercise the new export SQL (`manualGift.database.test.ts`) are written but
+skipped locally; the migration's SQL content is asserted by
+`receiptNeeded.migration.test.ts`, which passed.
+
+**Manual QA checklist.**
+
+- [ ] **BUG-19:** as treasurer, export payments with no filters; the CSV downloads with
+      `cache-control: no-store` and an `export.payments` audit row appears. With a filter set that
+      matches more than 20,000 payments the export is refused with the 413 message naming the
+      limit (no CSV, no audit row), and narrowing the filters exports again.
+- [ ] **BUG-25:** invite an admin and open the emailed invitation link: it lands on
+      `/admin/reset-password?intent=invite` with "Set your password" wording (zh: 設定密碼). Set a
+      password, sign in, and the Access page shows the user active. Resend on a pending invite
+      lands the same way.
+- [ ] **BUG-28:** reconcile a pending payment in one tab, then in a second tab (stale row) press
+      Reconcile / Issue receipt: the conflict notice appears and the row refreshes to its new
+      state without a manual reload.
+- [ ] **BUG-46:** with one supporter holding both a donation still owed a receipt and a
+      failed/refunded/receipted one, export donations with "receipt not needed": the
+      not-needed donations now appear; export with "receipt needed" still lists only the owed one.

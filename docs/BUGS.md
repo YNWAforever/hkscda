@@ -1001,6 +1001,7 @@ migration.
   half in `supabase/rls-tests/moneyPii.rls.test.ts` now asserts staff is denied and treasurer/admin
   are allowed for supporter select/update, supporter_role select and consent select/update (runs
   under `bun run test:rls` against a local stack).
+
 ## Admin operations backlog — second batch (2026-11-09)
 
 ### OPS-03 — Low — The supporter record offers "Issue receipt" for donations the API refuses
@@ -1046,6 +1047,7 @@ migration.
   unknown email keeps the generic 409; a failed lookup falls back to the generic 409 rather
   than a 500. The database function is unchanged. The intake screen maps the code to bilingual
   copy (`manualIntake.serverErrors.supporter_archived` in `pageCopy/caseCopy.ts`).
+
 ## Content/CMS backlog (2026-11-09)
 
 A read-only audit of the content CMS surfaces
@@ -1193,6 +1195,70 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.
 - **Content datetimes** convert in the browser's timezone. That is correct for staff in
   Hong Kong; HKT is not forced.
+
+## Deferred backlog follow-up (2026-11-10)
+
+The deliberately deferred halves of BUG-19, BUG-25, BUG-28, BUG-46 and BUG-53, closed or
+re-decided in one batch. No production data is touched and no existing behaviour is narrowed.
+
+### BUG-19 — Payments CSV export row cap
+
+- **Where:** `src/routes/api/admin/exports/payments[.]csv.ts` and
+  `src/lib/donations/adminPayments.server.ts`. The audit row and `cache-control: no-store`
+  shipped with the first BUG-19 fix; the row cap was deferred as a product call.
+- **Fix:** `PAYMENT_EXPORT_ROW_CAP = 20_000` (named constant). The synchronous export reads at
+  most one row past the cap and answers **413** with
+  `{error, total, limit}`, no `no-store`-less body, and **no audit row** (nothing was exported),
+  telling the treasurer to narrow the status/provider/search filters. Exactly 20,000 rows still
+  export. The async CRM export jobs cover supporters/donations only, so the message does not
+  point at them for payments; see the FIX_REPORT note.
+
+### BUG-25 — Admin invite/resend land on the set-password page
+
+- **Where:** `src/lib/admin/accessManagement.{repository.server,server,http.server}.ts`,
+  `src/lib/admin/passwordRecovery.ts`, `src/routes/admin/reset-password.tsx`.
+- **Fix:** `generateLink({type:"invite"})` now sends
+  `options.redirectTo = <request origin>/admin/reset-password?intent=invite` for both a first
+  invite and a resend. The existing reset-password page recognises `intent=invite`, treats the
+  invite's `SIGNED_IN` session (or the restored session) as ready, and shows its own bilingual
+  wording (setting a password, invite-link failure); recovery keeps the reset wording. After
+  setting a password the invitee signs in at `/admin/login`, where the first `/me` call
+  activates the pending admin (`activate_admin_invite_with_audit`, unchanged).
+- **Deploy note:** the Supabase Auth redirect allow-list must include the deployment origin's
+  `/admin/reset-password` path; otherwise Supabase falls back to the Site URL.
+
+### BUG-28 — Refresh the payment row after a 409
+
+- **Where:** `src/components/admin/donations/{PaymentsReconcile,ReconcileDialog}.tsx`.
+- **Fix:** `paymentActionNeedsRefresh` (a 409 means the row is stale; a 422 does not) is applied
+  to the reconcile, issue-receipt and void-receipt failures, which now invalidate the payment
+  list/summary/activity queries on conflict instead of leaving the old action button until a
+  manual reload.
+
+### BUG-46 — "Receipt not needed" export filter was per supporter
+
+- **Where:** `20261110110000_crm_donation_export_receipt_needed_per_donation.sql` redefines
+  `public.crm_export_donations` and `public.enqueue_crm_export_job`.
+- **Fix:** both donation-export paths call `private.crm_matching_supporters(p_filters -
+'receiptNeeded')`, so a supporter who is still owed a receipt on one donation no longer
+  disappears whole; the existing per-donation predicate then selects each donation on its own
+  merits. The supporter list and its filter are unchanged (there the column is per supporter).
+  No data rewrite. Behaviour change: with `receiptNeeded=false`, already-receipted, failed,
+  refunded and below-threshold donations are now exported (they genuinely need no receipt).
+
+### BUG-53 — One published guide per species: index left out deliberately
+
+- **Decision:** **no** unique index or trigger is added in this batch. `publish_adoption_guide_release`
+  (`20261030121000`) already serialises publishes per species and archives every published
+  release of that species, so the only application write path cannot create a duplicate.
+  A partial unique index `unique (species) where state = 'published'` cannot be created safely
+  from here: the bug itself may have left duplicate published rows in production, the migration
+  is forbidden to rewrite data, and creating the index would then fail the deploy. A conditional
+  `DO` block would make the schema differ between environments; a trigger guard is possible but
+  is a new invariant that needs a data audit first.
+- **Follow-up:** after a read-only data audit (duplicate published rows per species), archive any
+  duplicates through the existing publish/archive path with a real actor, then add the partial
+  unique index in its own migration.
 
 ## Verified correct (coverage)
 

@@ -8,7 +8,9 @@ import {
 import { AdminAccessError } from "./accessManagement.server";
 
 describe("createSupabaseInviteAuthProvider", () => {
-  test("prepares a first invite without delivering it", async () => {
+  const redirectTo = "https://admin.example.test/admin/reset-password?intent=invite";
+
+  test("prepares a first invite without delivering it, with the admin set-password redirect", async () => {
     const sent: unknown[] = [];
     const client = {
       auth: {
@@ -17,7 +19,11 @@ describe("createSupabaseInviteAuthProvider", () => {
             throw new Error("must not send before the database commit");
           },
           async generateLink(input: unknown) {
-            expect(input).toEqual({ type: "invite", email: "new@example.com" });
+            expect(input).toEqual({
+              type: "invite",
+              email: "new@example.com",
+              options: { redirectTo },
+            });
             return {
               data: {
                 user: { id: "new-auth", email: "new@example.com" },
@@ -35,14 +41,14 @@ describe("createSupabaseInviteAuthProvider", () => {
       },
     });
 
-    expect(await provider.inviteByEmail("new@example.com")).toEqual({
+    expect(await provider.inviteByEmail("new@example.com", redirectTo)).toEqual({
       authUserId: "new-auth",
       email: "new@example.com",
       actionLink: "https://example.test/invite",
     });
     expect(sent).toEqual([]);
   });
-  test("prepares a resend link without delivering it", async () => {
+  test("prepares a resend link without delivering it, with the admin set-password redirect", async () => {
     const generateCalls: unknown[] = [];
     const sent: unknown[] = [];
     const client = {
@@ -70,9 +76,11 @@ describe("createSupabaseInviteAuthProvider", () => {
       },
     });
 
-    const prepared = await provider.resendInvite("pending@example.com");
+    const prepared = await provider.resendInvite("pending@example.com", redirectTo);
 
-    expect(generateCalls).toEqual([{ type: "invite", email: "pending@example.com" }]);
+    expect(generateCalls).toEqual([
+      { type: "invite", email: "pending@example.com", options: { redirectTo } },
+    ]);
     expect(prepared).toEqual({
       actionLink: "https://supabase.example/verify?token=fresh-token",
     });

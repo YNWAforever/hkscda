@@ -413,10 +413,13 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
           await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values(${id}::uuid,10000,'general','succeeded','manual',true) returning id`;
         const [receipted] =
           await tx`insert into public.donation(supporter_id,amount_cents,purpose,status,method,receipt_requested) values(${id}::uuid,20000,'general','succeeded','manual',true) returning id`;
-        await tx`insert into public.donation(supporter_id,amount_cents,refunded_cents,purpose,status,method,receipt_requested) values
+        const notNeeded =
+          (await tx`insert into public.donation(supporter_id,amount_cents,refunded_cents,purpose,status,method,receipt_requested) values
           (${id}::uuid,50000,0,'general','failed','manual',true),
           (${id}::uuid,50000,50000,'general','refunded','manual',true),
-          (${id}::uuid,15000,6000,'general','succeeded','manual',true)`;
+          (${id}::uuid,15000,6000,'general','succeeded','manual',true) returning id`) as Array<{
+            id: string;
+          }>;
         await tx`insert into public.receipt(supporter_id,receipt_no,donation_ids,total_amount_cents,tax_year,status) values(${id}::uuid,${"LOCAL-" + id},array[${receipted.id}::uuid],20000,2026,'issued')`;
 
         const exported = async (receiptNeeded: boolean) =>
@@ -426,8 +429,13 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
             )[0].result.donations as { donationId: string }[]
           ).map((row) => row.donationId);
         expect(await exported(true)).toEqual([owed.id]);
-        // receiptNeeded=false first keeps supporters owed nothing; this one is still owed one.
-        expect(await exported(false)).toEqual([]);
+        // BUG-46 remainder: receiptNeeded=false is per donation. The supporter is still owed a
+        // receipt on one donation, but their receipt-not-needed donations are still exported
+        // (the already-receipted one, the failed one, the refunded one and the below-threshold
+        // one), instead of the whole supporter being dropped.
+        expect(new Set(await exported(false))).toEqual(
+          new Set([receipted.id, ...notNeeded.map((row) => row.id)]),
+        );
         const all = (await tx`select public.crm_export_donations(${{ tag: id }}::jsonb) result`)[0]
           .result.donations as unknown[];
         expect(all).toHaveLength(5);
@@ -438,6 +446,13 @@ describe.skipIf(!url)("manual gift real database transaction and leases", () => 
           // to_jsonb: Bun SQL returns a uuid[] column as its Postgres text form ("{…}").
           await tx`select to_jsonb(item_ids) item_ids from public.crm_export_job where id=${job.result.id}::uuid`;
         expect(items.item_ids).toEqual([owed.id]);
+        const [notNeededJob] =
+          await tx`select public.enqueue_crm_export_job(${exporter}::uuid,'donations',${{ tag: id, receiptNeeded: false }}::jsonb) result`;
+        const [notNeededItems] =
+          await tx`select to_jsonb(item_ids) item_ids from public.crm_export_job where id=${notNeededJob.result.id}::uuid`;
+        expect(new Set(notNeededItems.item_ids as string[])).toEqual(
+          new Set([receipted.id, ...notNeeded.map((row) => row.id)]),
+        );
         throw rollback;
       });
     } catch (error) {
