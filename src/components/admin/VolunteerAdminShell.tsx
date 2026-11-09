@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, HeartHandshake } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { subscribeToAdminAuth } from "../../lib/admin/supabaseAuthEvents";
+import { adminSessionSnapshot, subscribeAdminSession } from "../../lib/admin/sessionMemory";
 import {
   clearVolunteerIdentityQueries,
   clearVolunteerSessionSearch,
@@ -60,8 +60,8 @@ export function VolunteerWorkspaceFrame({
     let active = true;
     let generation = 0;
     let previous = identityRef.current?.admin.authUserId ?? null;
-    const stopAuth = subscribeToAdminAuth((_event, session) => {
-      const next = session?.user.id ?? null;
+    const stopAuth = subscribeAdminSession(() => {
+      const next = adminSessionSnapshot()?.authUserId ?? null;
       if (next === previous) return;
       previous = next;
       const current = ++generation;

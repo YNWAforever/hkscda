@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { supabase } from "../supabase";
 import { ADMIN_IDENTITY_QUERY_KEY } from "./identity";
+import {
+  adminSessionSnapshot,
+  bootstrapAdminSession,
+  subscribeAdminSession,
+} from "./sessionMemory";
 import type { AdminMeResponse } from "./session";
 
-/** Local session identity only; server-verified admin roles remain authoritative. */
+/**
+ * Local session identity only; server-verified admin roles remain authoritative.
+ *
+ * The actor now comes from the in-memory session store (populated by the session BFF), not
+ * from a persisted Supabase session: a page load bootstraps via `/api/admin/session/refresh`,
+ * and the query cache is cleared only when the account behind the store changes.
+ */
 export function useLiveAdminActor() {
   const queryClient = useQueryClient();
   const [actor, setActor] = useState<string | null | undefined>(undefined);
   useEffect(() => {
     let active = true,
-      sequence = 0,
       actorGeneration = 0;
     let lastAccepted: string | null | undefined;
     const timers = new Set<ReturnType<typeof setTimeout>>();
@@ -19,9 +28,9 @@ export function useLiveAdminActor() {
       setActor(userId);
       const cached = queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY);
       const cachedActorId = cached?.admin.authUserId;
-      // A different account now owns the shared Supabase session: a sign-in in another tab,
-      // or a switch in this one. The first read after mounting is only a switch when the cache
-      // already names another account.
+      // A different account now owns the session: a sign-in in another tab, or a switch in
+      // this one. The first read after mounting is only a switch when the cache already names
+      // another account.
       const switched =
         lastAccepted === undefined
           ? Boolean(cachedActorId && cachedActorId !== userId)
@@ -32,7 +41,7 @@ export function useLiveAdminActor() {
       lastAccepted = userId;
       if (switched || (cachedActorId && cachedActorId !== userId)) {
         const acceptedActorGeneration = actorGeneration;
-        // Keep Supabase calls outside its synchronous auth event callback.
+        // Keep network calls outside the synchronous store notification.
         const timer = setTimeout(() => {
           timers.delete(timer);
           if (active && actorGeneration === acceptedActorGeneration) {
@@ -49,25 +58,22 @@ export function useLiveAdminActor() {
         timers.add(timer);
       }
     };
-    const initial = sequence;
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (sequence === initial) accept(data.session?.user.id ?? null);
-      })
-      .catch(() => {
-        if (sequence === initial) accept(null);
-      });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      sequence += 1;
-      accept(session?.user.id ?? null);
+
+    const initial = adminSessionSnapshot();
+    if (initial) accept(initial.authUserId);
+    const unsubscribe = subscribeAdminSession(() => {
+      accept(adminSessionSnapshot()?.authUserId ?? null);
     });
+    // A reload has no in-memory token: the refresh cookie re-establishes the session. Read the
+    // store after the attempt (a concurrent sign-in may have won the race).
+    void bootstrapAdminSession().then(() => {
+      if (active) accept(adminSessionSnapshot()?.authUserId ?? null);
+    });
+
     return () => {
       active = false;
       for (const timer of timers) clearTimeout(timer);
-      subscription.unsubscribe();
+      unsubscribe();
     };
   }, [queryClient]);
   return actor;

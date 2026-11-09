@@ -3,8 +3,8 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { ListTodo, LogOut, Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode, type MouseEvent } from "react";
 
-import { supabase } from "../../lib/supabase";
 import { getFirstAllowedAdminRoute } from "../../lib/admin/access";
+import { logoutAdminSession } from "../../lib/admin/sessionMemory";
 import { signOutAndLeave } from "../../lib/admin/signInFlow";
 import { adminIdentityQueryOptions } from "../../lib/admin/pageAccess";
 import { cn } from "../../lib/utils";
@@ -220,7 +220,7 @@ function AdminLayoutShell({ children, activeSection, recordName }: AdminLayoutPr
     try {
       await signOutAndLeave({
         suppressSessionExpiry,
-        signOut: () => supabase.auth.signOut(),
+        signOut: () => logoutAdminSession(),
         queryClient,
         push: () => {
           void navigate({ to: "/admin/login" });

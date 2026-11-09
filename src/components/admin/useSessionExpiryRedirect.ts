@@ -3,7 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
 import { isAdminAuthPath, loginUrlFor } from "../../lib/admin/loginRedirect";
-import { subscribeToAdminAuth } from "../../lib/admin/supabaseAuthEvents";
+import { subscribeAdminSessionCleared } from "../../lib/admin/sessionMemory";
 import { isLapsedSession } from "./failureClass";
 
 export type SessionExpiryDeps = {
@@ -12,7 +12,7 @@ export type SessionExpiryDeps = {
   navigate: (url: string) => void;
   /** The current path plus search, read when an expiry is seen. */
   getPath: () => string;
-  /** Subscribes to Supabase auth events and returns the unsubscribe. */
+  /** Subscribes to admin session changes and returns the unsubscribe. */
   onAuthStateChange: (listener: (event: string) => void) => () => void;
 };
 
@@ -48,7 +48,8 @@ export function expiryNavigate(
 
 /**
  * Sends staff to sign-in, with the page they were on as `redirect`, when the session lapses:
- * a query or mutation fails with a session error or a 401, or Supabase reports SIGNED_OUT.
+ * a query or mutation fails with a session error or a 401, or the in-memory session store is
+ * cleared (the token could not be refreshed, or another tab signed out).
  * Navigates at most once however many failures arrive, and never from a sign-in page.
  */
 export function watchSessionExpiry(deps: SessionExpiryDeps): SessionExpiryWatcher {
@@ -91,8 +92,8 @@ export function watchSessionExpiry(deps: SessionExpiryDeps): SessionExpiryWatche
   };
 }
 
-function subscribeToSupabaseAuth(listener: (event: string) => void) {
-  return subscribeToAdminAuth((event) => listener(event));
+function subscribeToAdminSession(listener: (event: string) => void) {
+  return subscribeAdminSessionCleared(() => listener("SIGNED_OUT"));
 }
 
 /**
@@ -101,7 +102,7 @@ function subscribeToSupabaseAuth(listener: (event: string) => void) {
  */
 export function useSessionExpiryRedirect(
   queryClient: QueryClient,
-  onAuthStateChange: SessionExpiryDeps["onAuthStateChange"] = subscribeToSupabaseAuth,
+  onAuthStateChange: SessionExpiryDeps["onAuthStateChange"] = subscribeToAdminSession,
 ): () => void {
   const router = useRouter({ warn: false });
   const watcherRef = useRef<SessionExpiryWatcher | null>(null);

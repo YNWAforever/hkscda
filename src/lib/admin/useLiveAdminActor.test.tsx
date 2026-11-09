@@ -1,6 +1,9 @@
 import { beforeEach, expect, mock, test } from "bun:test";
 import React from "react";
 import * as realQuery from "@tanstack/react-query";
+
+import type { AdminSessionTokenSet } from "./sessionMemory";
+
 let value: string | null | undefined,
   cleanup: (() => void) | undefined,
   writes = 0;
@@ -17,11 +20,54 @@ mock.module("react", () => ({
     cleanup = callback();
   },
 }));
+
+const sessionA: AdminSessionTokenSet = {
+  accessToken: "token-a",
+  expiresAt: Date.now() + 3_600_000,
+  authUserId: "A",
+};
+const sessionB: AdminSessionTokenSet = { ...sessionA, accessToken: "token-b", authUserId: "B" };
+
+let session: AdminSessionTokenSet | null = null;
+const listeners = new Set<() => void>();
+function setSession(next: AdminSessionTokenSet | null) {
+  session = next;
+  for (const listener of listeners) listener();
+}
+
+let bootstrapResolve: (value: AdminSessionTokenSet | null) => void = () => {};
+let bootstrap = () =>
+  new Promise<AdminSessionTokenSet | null>((resolve) => {
+    bootstrapResolve = resolve;
+  });
+
+mock.module("./sessionMemory", () => ({
+  adminSessionSnapshot: () => session,
+  subscribeAdminSession: (listener: () => void) => {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  },
+  bootstrapAdminSession: () => bootstrap(),
+  // Imported by session.ts, which identity.ts pulls in for the real query options.
+  ensureAdminSession: async () => {
+    if (!session) throw new Error("not signed in");
+    return session;
+  },
+  refreshAdminSession: async () => {
+    if (!session) throw new Error("not signed in");
+    return session;
+  },
+  clearAdminSession: () => {
+    session = null;
+  },
+  logoutAdminSession: async () => {
+    session = null;
+  },
+}));
+
 let cachedActor = "A",
   resets = 0,
-  removals = 0,
-  callback: (_event: string, session: { user: { id: string } } | null) => void,
-  unsubscribed = 0;
+  removals = 0;
 const fakeClient = {
   getQueryData: () => ({ admin: { authUserId: cachedActor } }),
   removeQueries: async () => {
@@ -35,155 +81,104 @@ let queryClient: typeof fakeClient | realQuery.QueryClient = fakeClient;
 mock.module("@tanstack/react-query", () => ({
   ...realQuery,
   useQueryClient: () => queryClient,
-  queryOptions: (v: unknown) => v,
+  queryOptions: (options: unknown) => options,
 }));
-let initial: Promise<{ data: { session: { user: { id: string } } | null } }>;
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: () => initial,
-      onAuthStateChange: (fn: typeof callback) => {
-        callback = fn;
-        return { data: { subscription: { unsubscribe: () => unsubscribed++ } } };
-      },
-    },
-  },
-}));
+
 const { useLiveAdminActor } = await import("./useLiveAdminActor");
-const flush = () => new Promise<void>((r) => setTimeout(r, 10));
+const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 10));
+
 beforeEach(() => {
   queryClient = fakeClient;
   value = undefined;
   cleanup = undefined;
   writes = 0;
+  session = null;
+  listeners.clear();
   cachedActor = "A";
   resets = 0;
   removals = 0;
-  unsubscribed = 0;
-  initial = Promise.resolve({ data: { session: { user: { id: "A" } } } });
+  bootstrap = () =>
+    new Promise<AdminSessionTokenSet | null>((resolve) => {
+      bootstrapResolve = resolve;
+    });
 });
-test("live account changes immediately invalidate visible actor and defer cached identity reset", async () => {
+
+test("a page-load bootstrap shows the in-memory session account", async () => {
+  session = sessionA;
   useLiveAdminActor();
+  bootstrapResolve(sessionA);
   await flush();
   expect(value).toBe("A");
-  callback("SIGNED_IN", { user: { id: "B" } });
+  cleanup!();
+});
+
+test("a session change to another account updates the actor and defers the cache clear", async () => {
+  session = sessionA;
+  useLiveAdminActor();
+  bootstrapResolve(sessionA);
+  await flush();
+  expect(value).toBe("A");
+
+  setSession(sessionB);
   expect(value).toBe("B");
   expect(resets).toBe(0);
   await flush();
   expect(resets).toBe(1);
   expect(removals).toBe(1);
   cleanup!();
-  expect(unsubscribed).toBe(1);
 });
-test("an older initial session read cannot replace a newer auth event", async () => {
-  let resolve!: (v: { data: { session: { user: { id: string } } } }) => void;
-  initial = new Promise((r) => (resolve = r));
+
+test("a page load with no refreshable session leaves the actor null", async () => {
+  session = null;
+  // No identity cached from a previous account, so there is nothing to switch away from.
+  cachedActor = "";
   useLiveAdminActor();
-  callback("SIGNED_IN", { user: { id: "B" } });
-  resolve({ data: { session: { user: { id: "A" } } } });
+  bootstrapResolve(null);
+  await flush();
+  expect(value).toBeNull();
+  expect(resets).toBe(0);
+  cleanup!();
+});
+
+test("a sign-in that beats the bootstrap is not clobbered when the bootstrap settles", async () => {
+  session = null;
+  useLiveAdminActor();
+  setSession(sessionB);
+  expect(value).toBe("B");
+  bootstrapResolve(null);
   await flush();
   expect(value).toBe("B");
   cleanup!();
 });
-test("same-actor refresh keeps identity cache; logout hides the actor", async () => {
+
+test("unmount stops store notifications and cancels deferred resets", async () => {
+  session = sessionA;
   useLiveAdminActor();
+  bootstrapResolve(sessionA);
   await flush();
-  callback("TOKEN_REFRESHED", { user: { id: "A" } });
-  await flush();
-  expect(resets).toBe(0);
-  callback("SIGNED_OUT", null);
-  expect(value).toBeNull();
-  await flush();
-  expect(resets).toBe(1);
-  cleanup!();
-});
-test("unmount cancels callbacks and deferred resets", async () => {
-  useLiveAdminActor();
-  await flush();
-  callback("SIGNED_IN", { user: { id: "B" } });
+  setSession(sessionB);
   cleanup!();
   const before = writes;
-  callback("SIGNED_IN", { user: { id: "C" } });
+  setSession(null);
   await flush();
   expect(writes).toBe(before);
   expect(resets).toBe(0);
-  expect(unsubscribed).toBe(1);
 });
 
-for (const refresh of [false, true])
-  test(`a third actor cancels the prior identity read with empty cache (refresh=${refresh})`, async () => {
-    const client = new realQuery.QueryClient({ defaultOptions: { queries: { retry: false } } });
-    queryClient = client;
-    client.setQueryData(["admin-me"], { admin: { authUserId: "A" } });
-    let finishB!: (value: { admin: { authUserId: string } }) => void;
-    let reads = 0;
-    const observer = new realQuery.QueryObserver(client, {
-      queryKey: ["admin-me"],
-      staleTime: Infinity,
-      queryFn: () => {
-        reads++;
-        return reads === 1
-          ? new Promise<{ admin: { authUserId: string } }>((resolve) => {
-              finishB = resolve;
-            })
-          : Promise.resolve({ admin: { authUserId: "C" } });
-      },
-    });
-    const unsubscribe = observer.subscribe(() => {});
-    useLiveAdminActor();
-    await flush();
-    callback("SIGNED_IN", { user: { id: "B" } });
-    await flush();
-    expect(client.getQueryData(["admin-me"])).toBeUndefined();
-    callback("SIGNED_IN", { user: { id: "C" } });
-    if (refresh) callback("TOKEN_REFRESHED", { user: { id: "C" } });
-    await flush();
-    finishB({ admin: { authUserId: "B" } });
-    await flush();
-    expect(value).toBe("C");
-    expect(client.getQueryData<{ admin: { authUserId: string } }>(["admin-me"])).toEqual({
-      admin: { authUserId: "C" },
-    });
-    expect(reads).toBe(2);
-    cleanup!();
-    unsubscribe();
-    client.clear();
-  });
-
-test("AUTH-04: a different account signing in clears every non-identity cached query", async () => {
+test("AUTH-04: an account switch removes every non-identity cached query", async () => {
   const client = new realQuery.QueryClient({ defaultOptions: { queries: { retry: false } } });
   queryClient = client;
+  session = sessionA;
   client.setQueryData(["supporters"], [{ name: "Previous admin's supporter" }]);
   client.setQueryData(["admin-me"], { admin: { authUserId: "A" } });
   useLiveAdminActor();
+  bootstrapResolve(sessionA);
   await flush();
-  callback("SIGNED_IN", { user: { id: "B" } });
+
+  setSession(sessionB);
   await flush();
+
   expect(client.getQueryData(["supporters"])).toBeUndefined();
   cleanup!();
-  client.clear();
-});
-
-test("AUTH-04: the identity entry survives the clear so it is refetched for the new account", async () => {
-  const client = new realQuery.QueryClient({ defaultOptions: { queries: { retry: false } } });
-  queryClient = client;
-  let served = "A";
-  const observer = new realQuery.QueryObserver(client, {
-    queryKey: ["admin-me"],
-    staleTime: Infinity,
-    queryFn: () => Promise.resolve({ admin: { authUserId: served } }),
-  });
-  const unsubscribe = observer.subscribe(() => {});
-  client.setQueryData(["admin-me"], { admin: { authUserId: "A" } });
-  useLiveAdminActor();
-  await flush();
-  served = "B";
-  callback("SIGNED_IN", { user: { id: "B" } });
-  await flush();
-  expect(client.getQueryData<{ admin: { authUserId: string } }>(["admin-me"])).toEqual({
-    admin: { authUserId: "B" },
-  });
-  cleanup!();
-  unsubscribe();
   client.clear();
 });

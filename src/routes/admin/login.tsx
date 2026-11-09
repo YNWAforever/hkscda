@@ -9,9 +9,14 @@ import {
 import { adminLanguageTag } from "../../components/admin/i18n/pageLanguage";
 import { safeAdminRedirect } from "../../lib/admin/loginRedirect";
 import { NO_ADMIN_ACCESS_LOGIN_REASON, type AdminLoginReason } from "../../lib/admin/session";
+import { getAdminAuthClient } from "../../lib/admin/adminAuthClient";
+import {
+  clearLegacyAdminTokenStorage,
+  loginAdminSession,
+  logoutAdminSession,
+} from "../../lib/admin/sessionMemory";
 import { completeSignIn, type SignInRefusal } from "../../lib/admin/signInFlow";
 import { requestAdminPasswordReset } from "../../lib/admin/passwordRecovery";
-import { supabase } from "../../lib/supabase";
 
 const subscribeToHydration = () => () => {};
 const clientReady = () => true;
@@ -43,7 +48,7 @@ export function AdminLoginPage() {
       queryClient,
       redirectParam: search.redirect,
       push: (path) => router.history.push(path),
-      signOut: () => supabase.auth.signOut({ scope: "local" }),
+      signOut: () => logoutAdminSession(),
     });
   }
 
@@ -93,12 +98,17 @@ export function AdminLoginContent({
     e.preventDefault();
     setError(null);
     setLoading(true);
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (authError) {
+    // The session BFF sets the HttpOnly cookies and returns the short-lived access token,
+    // which stays in this tab's memory only (no web-storage write anywhere).
+    try {
+      await loginAdminSession(email, password);
+    } catch {
+      setLoading(false);
       setError(copy.login.error);
       return;
     }
+    setLoading(false);
+    clearLegacyAdminTokenStorage();
     // A refused account (no admin row, or disabled) is signed out and told why here,
     // instead of landing on an admin page that can never load (BUG-57).
     if ((await onSignedIn()) === "no_admin_access") setError(copy.login.noAdminAccess);
@@ -109,7 +119,7 @@ export function AdminLoginContent({
     setError(null);
     setLoading(true);
     const result = await requestAdminPasswordReset({
-      auth: supabase.auth,
+      auth: getAdminAuthClient().auth,
       email,
       origin: window.location.origin,
     });
