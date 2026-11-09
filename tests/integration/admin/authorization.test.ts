@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { fileURLToPath } from "node:url";
 
 import {
   canRoleAccessAdminArea,
@@ -96,6 +97,9 @@ const ADMIN_ONLY_PREFIXES = [
   "volunteers/simulation/",
   "volunteers/daily-settings/",
   "volunteers/assessments/",
+  // AUTH-05: the notification-retry queue is admin-only even though it lives under the
+  // staff-visible volunteers area (src/routes/api/admin/volunteers/jobs/index.ts).
+  "volunteers/jobs/",
 ];
 
 function areasFor(file: string): AdminAccessArea[] {
@@ -185,7 +189,9 @@ beforeAll(async () => {
   originalFetch = globalThis.fetch;
   globalThis.fetch = Object.assign(fakeSupabaseFetch, { preconnect: originalFetch.preconnect });
 
-  const root = new URL("../../../", import.meta.url).pathname;
+  // fileURLToPath, not URL.pathname: on Windows pathname is "/C:/..." and Bun.Glob/import
+  // cannot open it, which made this sweep fail before it discovered any endpoint.
+  const root = fileURLToPath(new URL("../../../", import.meta.url)).replaceAll("\\", "/");
   const files = (await Array.fromAsync(new Bun.Glob("src/routes/api/admin/**/*.ts").scan(root)))
     .map((path) => path.split("\\").join("/"))
     .filter((path) => !path.includes(".test.") && !path.split("/").pop()?.startsWith("-"))
@@ -262,4 +268,26 @@ describe("admin API authorization sweep", () => {
     }
     expect(failures).toEqual([]);
   }, 180_000);
+
+  test("AUTH-05: the volunteer jobs queue is admin-only, not staff-visible", async () => {
+    // Without the prefix entry the sweep computes permitted=true for staff (the volunteers
+    // page area is staff-allowed), so a staff admission on this route would go unreported.
+    const jobs = endpoints.filter(({ file }) => file.startsWith("volunteers/jobs/"));
+    expect(jobs.length).toBeGreaterThan(0);
+
+    const failures: string[] = [];
+    for (const { file, method, handler } of jobs) {
+      const adminOnly = ADMIN_ONLY_PREFIXES.some((prefix) => file.startsWith(prefix));
+      if (!adminOnly) failures.push(`${method} ${file} is not listed as admin-only`);
+      const areas = areasFor(file);
+      if (!areas.some((area) => canRoleAccessAdminArea("staff", area)))
+        failures.push(
+          `${method} ${file} is no longer under a staff-visible area — update the test`,
+        );
+      const asStaff = await call(handler, method, "staff");
+      if (asStaff.status !== 403)
+        failures.push(`${method} ${file} admits staff (${asStaff.status})`);
+    }
+    expect(failures).toEqual([]);
+  }, 60_000);
 });
