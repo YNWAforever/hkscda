@@ -167,3 +167,110 @@ test("BUG-33: a second return is a 409 and an unknown adoption is a 404", async 
   });
   expect(noReason.status).toBe(400);
 });
+
+/** The unique violation the manual-intake new-supporter insert raises (OPS-04). */
+function duplicateSupporterEmail(email: string) {
+  return {
+    code: "23505",
+    message: 'duplicate key value violates unique constraint "supporter_email_key"',
+    details: `Key (email)=(${email}) already exists.`,
+    hint: null,
+  };
+}
+
+test("OPS-04: a soft-deleted supporter's email returns a distinct supporter_archived 409", async () => {
+  const lookedUp: string[] = [];
+  const response = await withErrors(
+    async () => {
+      throw duplicateSupporterEmail("Ada@Example.test");
+    },
+    {
+      lookupSupporterByEmail: async (email) => {
+        lookedUp.push(email);
+        return { deletedAt: "2026-11-01T00:00:00.000Z" };
+      },
+    },
+  );
+
+  expect(lookedUp).toEqual(["Ada@Example.test"]);
+  expect(response.status).toBe(409);
+  const body = (await response.json()) as { error: { code: string; message: string } };
+  expect(body.error.code).toBe("supporter_archived");
+  expect(body.error.message).toContain("archived supporter");
+  expect(body.error.message).toContain("treasurer or admin");
+  expect(body.error.message).toContain("without the email");
+  // The database's clashing value stays private.
+  expect(JSON.stringify(body)).not.toContain("Ada@Example.test");
+});
+
+test("OPS-04: an active supporter keeps the existing choose-the-supporter 409", async () => {
+  const response = await withErrors(
+    async () => {
+      throw duplicateSupporterEmail("active@example.test");
+    },
+    { lookupSupporterByEmail: async () => ({ deletedAt: null }) },
+  );
+
+  expect(response.status).toBe(409);
+  expect(await response.json()).toEqual({
+    error: "A supporter with this email already exists. Choose the existing supporter instead.",
+  });
+});
+
+test("OPS-04: an unknown email keeps the generic unique-constraint 409", async () => {
+  const response = await withErrors(
+    async () => {
+      throw duplicateSupporterEmail("nobody@example.test");
+    },
+    { lookupSupporterByEmail: async () => null },
+  );
+
+  expect(response.status).toBe(409);
+  const body = (await response.json()) as { error: unknown };
+  expect(typeof body.error).toBe("string");
+});
+
+test("OPS-04: a failed lookup falls back to the generic 409 instead of a 500", async () => {
+  const logged = spyOn(console, "error").mockImplementation(() => {});
+  try {
+    const response = await withErrors(
+      async () => {
+        throw duplicateSupporterEmail("ada@example.test");
+      },
+      {
+        lookupSupporterByEmail: async () => {
+          throw new Error("lookup unavailable");
+        },
+      },
+    );
+    expect(response.status).toBe(409);
+    expect(typeof ((await response.json()) as { error: unknown }).error).toBe("string");
+    expect(logged).toHaveBeenCalled();
+  } finally {
+    logged.mockRestore();
+  }
+});
+
+test("OPS-04: only the supporter email constraint consults the manual-intake lookup", async () => {
+  let lookups = 0;
+  const response = await withErrors(
+    async () => {
+      throw {
+        code: "23505",
+        message:
+          'duplicate key value violates unique constraint "successful_adoption_case_number_key"',
+        details: "Key (case_number)=(AC-2026-001) already exists.",
+      };
+    },
+    {
+      lookupSupporterByEmail: async () => {
+        lookups += 1;
+        return { deletedAt: "2026-11-01T00:00:00.000Z" };
+      },
+    },
+  );
+
+  expect(lookups).toBe(0);
+  expect(response.status).toBe(409);
+  expect(typeof ((await response.json()) as { error: unknown }).error).toBe("string");
+});
