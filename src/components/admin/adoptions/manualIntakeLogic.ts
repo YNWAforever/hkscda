@@ -242,6 +242,20 @@ export function canSearchIdentity(text: string): boolean {
 }
 
 /**
+ * The copy for a manual-intake failure the server reports as a structured error code
+ * (OPS-04: `supporter_archived`). Returns null for errors without a code this screen
+ * translates, so the caller keeps showing the server's own message.
+ */
+export function codedManualIntakeErrorMessage(
+  error: unknown,
+  serverErrors: Record<string, string>,
+): string | null {
+  if (!error || typeof error !== "object" || !("code" in error)) return null;
+  const code = error.code;
+  return typeof code === "string" && Object.hasOwn(serverErrors, code) ? serverErrors[code]! : null;
+}
+
+/**
  * The contact a chosen identity pre-fills into the case. A supporter who is not an adopter comes
  * back with masked contact details (BUG-37), which must not be saved as the applicant's own.
  */

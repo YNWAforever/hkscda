@@ -143,6 +143,80 @@ describe("createCaseHandlers", () => {
     expect(await response.json()).toEqual({ error: "Closing case status not allowed at intake" });
   });
 
+  async function manualIntakeFailingWith(error: object) {
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async createManualCase() {
+          // PostgREST hands the RPC error back as a plain object.
+          throw error;
+        },
+      }),
+      lookupSupporterByEmail: async () => ({ deletedAt: "2026-11-01T00:00:00.000Z" }),
+    });
+    return handlers.createManualCase({
+      request: jsonRequest("https://example.test/api/admin/adoptions/intake/cases", {}),
+    });
+  }
+
+  function supporterEmailConflict(email: string) {
+    return {
+      code: "23505",
+      message: 'duplicate key value violates unique constraint "supporter_email_key"',
+      details: `Key (email)=(${email}) already exists.`,
+      hint: null,
+    };
+  }
+
+  test("OPS-04: a soft-deleted supporter's email gets its own actionable 409 from manual intake", async () => {
+    const response = await manualIntakeFailingWith(supporterEmailConflict("ada@example.com"));
+
+    expect(response.status).toBe(409);
+    const body = (await response.json()) as { error: { code: string; message: string } };
+    expect(body.error.code).toBe("supporter_archived");
+    expect(body.error.message).toContain("archived supporter");
+  });
+
+  test("OPS-04: an active supporter's email keeps the existing choose-the-supporter 409", async () => {
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async createManualCase() {
+          throw supporterEmailConflict("active@example.com");
+        },
+      }),
+      lookupSupporterByEmail: async () => ({ deletedAt: null }),
+    });
+
+    const response = await handlers.createManualCase({
+      request: jsonRequest("https://example.test/api/admin/adoptions/intake/cases", {}),
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: "A supporter with this email already exists. Choose the existing supporter instead.",
+    });
+  });
+
+  test("OPS-04: an unknown email keeps the generic 409", async () => {
+    const handlers = createCaseHandlers({
+      requireCoordinator: async () => staff,
+      service: createService({
+        async createManualCase() {
+          throw supporterEmailConflict("nobody@example.com");
+        },
+      }),
+      lookupSupporterByEmail: async () => null,
+    });
+
+    const response = await handlers.createManualCase({
+      request: jsonRequest("https://example.test/api/admin/adoptions/intake/cases", {}),
+    });
+
+    expect(response.status).toBe(409);
+    expect(typeof ((await response.json()) as { error: unknown }).error).toBe("string");
+  });
+
   test("BUG-34: a finalised case's status change is a 409 and a reopen without a reason is a 400", async () => {
     const caseId = "aaaaaaaa-bbbb-4333-8444-555555555555";
     async function statusChangeFailingWith(message: string) {

@@ -1,4 +1,8 @@
-import type { AdoptionCoordinatorService, CoordinatorAuthorizer } from "./http/shared.server";
+import type {
+  AdoptionCoordinatorService,
+  CoordinatorAuthorizer,
+  SupporterEmailLookup,
+} from "./http/shared.server";
 import { createAdopterHandlers } from "./http/adopterHandlers.server";
 import { createAnimalLookupHandlers } from "./http/animalLookupHandlers.server";
 import { createCaseHandlers } from "./http/caseHandlers.server";
@@ -10,6 +14,8 @@ type CreateArgs = {
   requireCoordinator: CoordinatorAuthorizer;
   requireStatusAdmin: CoordinatorAuthorizer;
   service: AdoptionCoordinatorService;
+  /** OPS-04: manual intake's archived-supporter lookup (service-role repository). */
+  lookupSupporterByEmail?: SupporterEmailLookup;
 };
 
 export function createAdoptionCoordinatorHandlers(args: CreateArgs) {

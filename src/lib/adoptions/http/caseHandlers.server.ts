@@ -3,6 +3,7 @@ import type {
   AdoptionCoordinatorService,
   CoordinatorAuthorizer,
   HandlerContext,
+  SupporterEmailLookup,
 } from "./shared.server";
 
 export type CaseService = Pick<
@@ -22,9 +23,12 @@ export type CaseService = Pick<
 export function createCaseHandlers({
   requireCoordinator,
   service,
+  lookupSupporterByEmail,
 }: {
   requireCoordinator: CoordinatorAuthorizer;
   service: CaseService;
+  /** OPS-04: the service-role lookup wired for manual intake's archived-supporter 409. */
+  lookupSupporterByEmail?: SupporterEmailLookup;
 }): {
   listCases(context: HandlerContext): Promise<Response>;
   listIntakeItems(context: HandlerContext): Promise<Response>;
@@ -63,22 +67,25 @@ export function createCaseHandlers({
     },
 
     createManualCase({ request }: HandlerContext) {
-      return withErrors(async () => {
-        const admin = await requireCoordinator(request);
-        const result = await service.createManualCase({
-          actorUserId: admin.authUserId,
-          input: await jsonBody(request),
-        });
-        return jsonResponse(
-          {
-            case: { id: result.caseId },
-            supporterId: result.supporterId,
-            adopterProfileId: result.adopterProfileId,
-            taskId: result.taskId,
-          },
-          { status: 201 },
-        );
-      });
+      return withErrors(
+        async () => {
+          const admin = await requireCoordinator(request);
+          const result = await service.createManualCase({
+            actorUserId: admin.authUserId,
+            input: await jsonBody(request),
+          });
+          return jsonResponse(
+            {
+              case: { id: result.caseId },
+              supporterId: result.supporterId,
+              adopterProfileId: result.adopterProfileId,
+              taskId: result.taskId,
+            },
+            { status: 201 },
+          );
+        },
+        { lookupSupporterByEmail },
+      );
     },
 
     getCase({ request, params }: HandlerContext) {

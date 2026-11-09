@@ -24,6 +24,7 @@ import {
   buildManualCasePayload,
   canSearchIdentity,
   candidateContactPrefill,
+  codedManualIntakeErrorMessage,
   intakeCaseStatuses,
   type ManualAdopterProfileForm,
   type ManualCaseForm,
@@ -453,7 +454,10 @@ export function ManualCaseIntake() {
     identityMode === "new_supporter"
       ? supporterForm.name.trim() || copy.newSupporter
       : selectedCandidate?.displayName || copy.existingIdentity;
-  const submitFailure = submitError ?? adminErrorMessage(createCaseMutation.error, language);
+  const submitFailure =
+    submitError ??
+    codedManualIntakeErrorMessage(createCaseMutation.error, copy.serverErrors) ??
+    adminErrorMessage(createCaseMutation.error, language);
   const isSubmitting = createCaseMutation.isPending;
 
   return (

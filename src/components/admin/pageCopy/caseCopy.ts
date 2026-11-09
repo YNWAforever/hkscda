@@ -141,6 +141,11 @@ export const casePageCopy = defineAdminCopy({
         taskStatus: "請選擇跟進工作狀態。",
         taskTitle: "請輸入跟進工作標題。",
       },
+      // OPS-04: the email belongs to a supporter archived in CRM, which intake cannot surface.
+      serverErrors: {
+        supporter_archived:
+          "此電郵屬於已封存的捐款人。請通知司庫或管理員取消封存該捐款人，或在不填寫電郵的情況下建立個案。",
+      },
     },
   },
   en: {
@@ -278,6 +283,11 @@ export const casePageCopy = defineAdminCopy({
         applicantPhone: "Enter the applicant phone number.",
         taskStatus: "Choose a follow-up task status.",
         taskTitle: "Enter the follow-up task title.",
+      },
+      // OPS-04: the email belongs to a supporter archived in CRM, which intake cannot surface.
+      serverErrors: {
+        supporter_archived:
+          "This email belongs to an archived supporter. Ask a treasurer or admin to unarchive that supporter, or record the intake without the email.",
       },
     },
   },
