@@ -13,7 +13,7 @@ import {
 const idSchema = z.string().uuid();
 const requestSchema = z.object({
   kind: z.enum(["supporters", "donations"]),
-  filters: z.record(z.unknown()),
+  filters: z.record(z.string(), z.unknown()),
 });
 
 type Dependencies = {

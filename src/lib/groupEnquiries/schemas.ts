@@ -85,7 +85,11 @@ const boundedPageSize = z.coerce
   .transform((value) => Math.min(value, 50));
 
 export const groupEnquirySearchSchema = z.object({
-  q: optionalTrimmed.optional().transform((value) => value ?? undefined),
+  q: z
+    .string()
+    .trim()
+    .transform((value) => (value ? value : undefined))
+    .optional(),
   status: z.enum(groupEnquiryStatuses).optional(),
   notificationStatus: z.enum(groupEnquiryNotificationStatuses).optional(),
   page: boundedPage.default(1),

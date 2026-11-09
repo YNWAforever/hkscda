@@ -1,3 +1,4 @@
+﻿import { searchValidator } from "../../lib/searchValidator";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -29,7 +30,7 @@ import { dashboardCopy } from "./-dashboardCopy";
 type DashboardSection = AdminListSearch["section"];
 
 export const Route = createFileRoute("/admin/")({
-  validateSearch: adminListSearchSchema,
+  validateSearch: searchValidator(adminListSearchSchema),
   ssr: false,
   beforeLoad: async ({ context, search }) => {
     await requireAdminPageAccess(

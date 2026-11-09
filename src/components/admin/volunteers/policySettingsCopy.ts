@@ -236,7 +236,7 @@ export const policySettingsCopy = defineAdminCopy({
         invalid_type: "This setting is missing or holds the wrong kind of value. Check it.",
         too_small: "The value is too small. Increase it.",
         too_big: "The value is too large. Reduce it.",
-        invalid_string: "The text is not in the right format. Check it.",
+        invalid_format: "The text is not in the right format. Check it.",
         invalid_option: "Choose one of the listed options.",
         unrecognized_keys: "This setting is not recognised. Remove it.",
         other: "Check this value and try again.",

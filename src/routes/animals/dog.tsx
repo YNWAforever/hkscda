@@ -1,6 +1,7 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+﻿import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { pageHead } from "@/lib/pageHead";
 import { z } from "zod";
+import { searchValidator } from "../../lib/searchValidator";
 
 import {
   AnimalListingError,
@@ -21,7 +22,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/animals/dog")({
-  validateSearch: searchSchema,
+  validateSearch: searchValidator(searchSchema),
   // Server-rendered: the listing arrives with the first response instead of
   // after a browser round trip, and the projection filters before it paginates
   // so the total and the page count always agree (defect G-01).

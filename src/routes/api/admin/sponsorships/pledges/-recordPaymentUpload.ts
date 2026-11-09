@@ -71,7 +71,7 @@ export async function handleRecordPaymentUpload({
 
       // Validate all payment facts before reserving or uploading an object.
       // Keep the raw values for the service boundary's canonical parse.
-      payload = z.record(z.unknown()).parse(payload);
+      payload = z.record(z.string(), z.unknown()).parse(payload);
       recordPledgePaymentSchema.parse({ ...payload, file: undefined });
       const submissionKey = z.string().uuid().parse(payload.idempotencyKey);
       const fileValue = formData.get("file");

@@ -1,3 +1,4 @@
+﻿import { searchValidator } from "../lib/searchValidator";
 import { createFileRoute } from "@tanstack/react-router";
 import { pageHead } from "@/lib/pageHead";
 import {
@@ -47,7 +48,7 @@ import { BrandLogo } from "../components/site/BrandLogo";
 import { TurnstileWidget, turnstileEnabled } from "../components/site/TurnstileWidget";
 
 export const Route = createFileRoute("/donate")({
-  validateSearch: donateSearchSchema,
+  validateSearch: searchValidator(donateSearchSchema),
   loader: asContextFreeRouteLoader(async () => {
     const [slots, checkoutState] = await Promise.all([
       loadDonationDocumentSlots(),

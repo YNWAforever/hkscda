@@ -82,7 +82,7 @@ export const expandedAdoptionApplicationSchema = z
       agreed: z.literal(true),
       version: z.string().min(1).default(ADOPTION_TERMS_VERSION),
     }),
-    sourceMetadata: z.record(z.unknown()).default({}),
+    sourceMetadata: z.record(z.string(), z.unknown()).default({}),
   })
   .superRefine((value, context) => {
     const ranks = new Set(value.animalPreferences.map((animal) => animal.rank));

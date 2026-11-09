@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+﻿import type { SupabaseClient } from "@supabase/supabase-js";
 import { describe, expect, mock, test } from "bun:test";
 
 import {
@@ -7,7 +7,7 @@ import {
 } from "./repository.server";
 
 const BASE_ROW = {
-  id: "11111111-1111-1111-1111-111111111111",
+  id: "11111111-1111-4111-8111-111111111111",
   method: "fps",
   is_publicly_visible: true,
   display_label_zh: "轉數快 FPS",
@@ -16,9 +16,9 @@ const BASE_ROW = {
   details: {},
   state: "draft",
   version: 1,
-  created_by: "22222222-2222-2222-2222-222222222222",
-  updated_by: "22222222-2222-2222-2222-222222222222",
-  edited_by: ["22222222-2222-2222-2222-222222222222"],
+  created_by: "22222222-2222-4222-8222-222222222222",
+  updated_by: "22222222-2222-4222-8222-222222222222",
+  edited_by: ["22222222-2222-4222-8222-222222222222"],
   submitted_by: null,
   submitted_at: null,
   published_by: null,
@@ -83,7 +83,7 @@ describe("createSupabasePaymentPublicConfigRepository", () => {
         sortOrder: 2,
         details: {},
       },
-      "22222222-2222-2222-2222-222222222222",
+      "22222222-2222-4222-8222-222222222222",
     );
     expect(result.method).toBe("fps");
     expect(client.rpc).toHaveBeenCalledWith(
@@ -94,8 +94,8 @@ describe("createSupabasePaymentPublicConfigRepository", () => {
 
   test("BUG-38: maps the draft's editors, which the Publish button and the publish RPC both check", async () => {
     const editors = [
-      "22222222-2222-2222-2222-222222222222",
-      "33333333-3333-3333-3333-333333333333",
+      "22222222-2222-4222-8222-222222222222",
+      "33333333-3333-4333-8333-333333333333",
     ];
     const { client } = fakeClient({ getData: { ...BASE_ROW, edited_by: editors } });
     const repository = createSupabasePaymentPublicConfigRepository(client);

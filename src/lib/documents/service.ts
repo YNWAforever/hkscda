@@ -1,9 +1,11 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 import { requiredReasonSchema } from "../admin/requiredReason";
 import {
   annualReportInputSchema,
+  annualReportUpdateSchema,
   documentAssetInputSchema,
+  documentAssetUpdateSchema,
   documentIdSchema,
   documentListSearchSchema,
   uploadTargetSchema,
@@ -99,24 +101,12 @@ type AssetActionArgs = ActorInput & {
   assetId: string;
 };
 
-const updateAssetInputSchema = documentAssetInputSchema
-  .omit({ isPublished: true })
-  .partial()
-  .strict()
-  .refine((input) => Object.keys(input).length > 0, { message: "No document updates supplied" });
 const slotKeysSchema = z.array(
   z
     .string()
     .trim()
     .regex(/^[a-z0-9_]+$/),
 );
-const updateAnnualReportInputSchema = annualReportInputSchema
-  .omit({ isPublished: true })
-  .partial()
-  .strict()
-  .refine((input) => Object.keys(input).length > 0, {
-    message: "No annual report updates supplied",
-  });
 
 function timestamp(now: () => Date) {
   return now().toISOString();
@@ -210,7 +200,7 @@ export function createDocumentService({
       input,
     }: ActorInput & { reportId: string; input: unknown }) {
       const parsedReportId = documentIdSchema.parse(reportId);
-      const parsed = updateAnnualReportInputSchema.parse(input);
+      const parsed = annualReportUpdateSchema.parse(input);
       if (parsed.documentAssetId !== undefined) {
         const current = await annualReportForMutation(parsedReportId);
         await requireAnnualReportAsset(parsed.documentAssetId, current.isPublished);
@@ -302,7 +292,7 @@ export function createDocumentService({
 
     async updateAsset({ actorUserId, assetId, input }: AssetActionArgs & { input: unknown }) {
       const parsedAssetId = documentIdSchema.parse(assetId);
-      const parsed = updateAssetInputSchema.parse(input);
+      const parsed = documentAssetUpdateSchema.parse(input);
       if (
         parsed.objectPath !== undefined ||
         parsed.kind !== undefined ||

@@ -45,6 +45,13 @@ function optionalTrimmedMax(max: number) {
 
 export { isSafePublicHref } from "./publicHref";
 
+/** A search box value: an absent, blank or untrimmed string becomes undefined (an optional key). */
+const searchText = z
+  .string()
+  .trim()
+  .transform((value) => (value ? value : undefined))
+  .optional();
+
 const optionalSafePublicHref = optionalTrimmed.refine(
   (value) => value === null || isSafePublicHref(value),
   "CTA URL must be an http(s) URL or a root-relative path",
@@ -63,12 +70,12 @@ const boundedPageSize = numberFromInput(z.number().int().min(1))
   .transform((value) => Math.min(value, 50));
 
 export const contentSearchSchema = z.object({
-  q: optionalTrimmed.optional().transform((value) => value ?? undefined),
+  q: searchText,
   type: z.enum(contentTypes).optional(),
   status: z.enum(contentStatuses).optional(),
   animalType: z.enum(animalStoryTypes).optional(),
   publicStatus: z.enum(rescuePublicStatuses).optional(),
-  rescueRegion: optionalTrimmed.optional().transform((value) => value ?? undefined),
+  rescueRegion: searchText,
   page: boundedPage.default(1),
   pageSize: boundedPageSize.default(25),
 });
@@ -104,6 +111,29 @@ export const contentInputSchema = z.object({
   seoDescription: optionalTrimmedMax(CONTENT_TEXT_MAX.seoDescription),
   ogTitle: optionalTrimmedMax(CONTENT_TEXT_MAX.ogTitle),
   ogDescription: optionalTrimmedMax(CONTENT_TEXT_MAX.ogDescription),
+});
+
+/**
+ * A PATCH body: every field optional and none applies its own default. zod 4 keeps an inner
+ * default when a field is made optional (`.partial()`), so an empty PATCH would parse to the
+ * defaults (`coverMediaId: null` and so on) and overwrite fields the caller did not send.
+ */
+export const contentUpdateSchema = z.object({
+  type: z.enum(contentTypes).optional(),
+  slug: trimmed.min(1).max(CONTENT_SLUG_MAX).regex(CONTENT_SLUG_PATTERN).optional(),
+  title: trimmed.min(1).max(CONTENT_TITLE_MAX).optional(),
+  subtitle: optionalTrimmedMax(CONTENT_TEXT_MAX.subtitle).optional(),
+  summary: trimmed.min(1).max(CONTENT_SUMMARY_MAX).optional(),
+  body: optionalTrimmedMax(CONTENT_TEXT_MAX.body).optional(),
+  coverMediaId: z.string().uuid().nullable().optional(),
+  status: z.enum(contentStatuses).optional(),
+  publishedAt: z.string().datetime().nullable().optional(),
+  ctaLabel: optionalTrimmedMax(CONTENT_TEXT_MAX.ctaLabel).optional(),
+  ctaUrl: optionalSafePublicHref.optional(),
+  seoTitle: optionalTrimmedMax(CONTENT_TEXT_MAX.seoTitle).optional(),
+  seoDescription: optionalTrimmedMax(CONTENT_TEXT_MAX.seoDescription).optional(),
+  ogTitle: optionalTrimmedMax(CONTENT_TEXT_MAX.ogTitle).optional(),
+  ogDescription: optionalTrimmedMax(CONTENT_TEXT_MAX.ogDescription).optional(),
 });
 
 /**

@@ -24,34 +24,78 @@ const slotKeySchema = z
   .string()
   .trim()
   .regex(/^[a-z0-9_]+$/);
-const sortOrderSchema = z.coerce.number().int().min(0).default(0);
+const sortOrderValueSchema = z.coerce.number().int().min(0);
 
 export const documentIdSchema = z.string().uuid();
-export const documentAssetInputSchema = z.object({
+
+const documentAssetFields = {
   kind: z.enum(documentKinds),
   title: z.string().trim().min(1).max(180),
   language: z.enum(documentLanguages),
-  bucketName: siteDocumentsBucketSchema.default("site-documents"),
+  bucketName: siteDocumentsBucketSchema,
   objectPath: documentPathSchema,
-  mimeType: z.literal("application/pdf").default("application/pdf"),
+  mimeType: z.literal("application/pdf"),
   byteSize: documentByteSizeSchema,
   checksumSha256: z
     .string()
     .regex(/^[a-f0-9]{64}$/)
-    .nullable()
-    .optional()
-    .default(null),
+    .nullable(),
+  sortOrder: sortOrderValueSchema,
+} as const;
+
+export const documentAssetInputSchema = z.object({
+  ...documentAssetFields,
+  bucketName: documentAssetFields.bucketName.default("site-documents"),
+  mimeType: documentAssetFields.mimeType.default("application/pdf"),
+  checksumSha256: documentAssetFields.checksumSha256.optional().default(null),
   isPublished: z.boolean().default(false),
-  sortOrder: sortOrderSchema,
+  sortOrder: documentAssetFields.sortOrder.default(0),
 });
 
-export const annualReportInputSchema = z.object({
+/**
+ * A PATCH body: every field optional and none applies its own default. zod 4 keeps an inner
+ * default when a field is made optional (`.partial()`), so an empty PATCH would parse to the
+ * defaults and overwrite fields the caller did not send.
+ */
+export const documentAssetUpdateSchema = z
+  .object({
+    kind: documentAssetFields.kind.optional(),
+    title: documentAssetFields.title.optional(),
+    language: documentAssetFields.language.optional(),
+    bucketName: documentAssetFields.bucketName.optional(),
+    objectPath: documentAssetFields.objectPath.optional(),
+    mimeType: documentAssetFields.mimeType.optional(),
+    byteSize: documentAssetFields.byteSize.optional(),
+    checksumSha256: documentAssetFields.checksumSha256.optional(),
+    sortOrder: documentAssetFields.sortOrder.optional(),
+  })
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, { message: "No document updates supplied" });
+
+const annualReportFields = {
   title: z.string().trim().min(1).max(180),
   yearLabel: z.string().trim().min(1),
   documentAssetId: documentIdSchema,
+  sortOrder: sortOrderValueSchema,
+} as const;
+
+export const annualReportInputSchema = z.object({
+  ...annualReportFields,
   isPublished: z.boolean().default(false),
-  sortOrder: sortOrderSchema,
+  sortOrder: annualReportFields.sortOrder.default(0),
 });
+
+export const annualReportUpdateSchema = z
+  .object({
+    title: annualReportFields.title.optional(),
+    yearLabel: annualReportFields.yearLabel.optional(),
+    documentAssetId: annualReportFields.documentAssetId.optional(),
+    sortOrder: annualReportFields.sortOrder.optional(),
+  })
+  .strict()
+  .refine((input) => Object.keys(input).length > 0, {
+    message: "No annual report updates supplied",
+  });
 
 export const documentSlotInputSchema = z.object({
   slotKey: slotKeySchema,

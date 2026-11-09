@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { searchValidator } from "../../../lib/searchValidator";
 
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AnimalPipeline } from "../../../components/admin/adoptions/AnimalPipeline";
@@ -10,7 +11,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/admin/coordinator/animals")({
-  validateSearch: searchSchema,
+  validateSearch: searchValidator(searchSchema),
   ssr: false,
   beforeLoad: async ({ context }) => {
     await requireAdminPageAccess("animals", context.queryClient);
