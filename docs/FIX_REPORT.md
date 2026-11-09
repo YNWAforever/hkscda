@@ -472,6 +472,40 @@ No full test suite was run.
 fake service-role client, the error mapping through injected fakes, and the receipt rule through
 a logic/component test; the receipt API's 422 expectation still passes unchanged in
 `reconcile.lifecycle.test.ts`.
+## Content/CMS backlog (2026-11-09)
+
+The content side of the same read-only audit
+([`audit-20261109/`](../audit-20261109/findings-cms.md)) left five incomplete fixes of BUG-66/67/68/73
+plus the quality gaps around them. CMS-01 (stale animal-draft save) and CMS-04 (content-list
+summary cards counted the current page) were closed with the admin P0 batch; CMS-07 (withdrawn
+images stay public until the daily withdrawal job) is a recorded accepted product decision. This
+batch closes the other five in code — **no migration** — and keeps the audit's CMS- IDs.
+
+| ID     | Sev | Fix                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------ | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CMS-02 | Med | Social copy for a specific story update now quotes the update from the published snapshot (the same read that supplies the link), not the authoring `story_update` row; that read is kept only to validate ownership/visibility. An id the published revision does not contain is a coded 409 `update_not_published`, explained in both admin languages                                             |
+| CMS-03 | Med | The publication-metadata handler returns the structured `{error:{code,message,fields}}` shape: zod issue paths now name `sourceReference`/`contentOwner`/`effectiveUntil` (verified provenance, inverted range), 40001 maps to `conflict`, known failures to `not_found`/`internal`. `editorFieldLabels` and the copy modules cover the five metadata fields, and the inverted-range reason is bilingual |
+| CMS-05 | Low | Publish, archive and restore send the version the editor's own saves advanced the `editorVersions` fence to (with the cached row only as the pre-fence fallback), so a click during the post-save refetch window no longer sends a stale `expectedVersion` and self-inflicts a 409                                                   |
+| CMS-06 | Low | The content authoring read returns the current draft revision's saved editorial review (and the animal publication read returns the draft revision's review), so `ContentReviewPanel` shows the collapsed verified summary for an approved revision and the saved classification/evidence otherwise, instead of reopening as `needs_review` and overwriting the earlier review               |
+| CMS-08 | Low | `CONTENT_CHILD_TEXT_MAX` bounds the authoring rows every save copies into both revision snapshots: story-update body 20,000, media caption and story-profile internal address/location notes 500, mirrored as `maxLength` on the editor inputs. Server and input limits come from the same constants; no DB column constraint exists, so no migration |
+
+**Deploy:** code-only on the existing lifecycle routes and reads; no migration, no new environment
+variable, no cron change. The animal read response gains a nullable `review` field and the content
+detail gains a nullable `savedReview`, both additive.
+
+**Behaviour to know.** Generating copy for an update that has not been published yet (added or
+edited since the last publish) is now refused with "publish the story update first" instead of
+quoting text the public page does not show. Content already longer than the new CMS-08 limits
+still displays; its next save is refused naming the field until it is shortened. Editing an update
+body, media caption or internal address/notes in the editor is stopped at the same limit the
+server enforces.
+
+**Verification.** `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 pre-existing
+warnings). Focused suite (content schemas/service/http/publication-metadata/repository/social
+copy/lifecycle/media mapping, editor copy + version fence + editor + review panels, animal
+publication route): 337 pass, 0 fail across 20 files
+(`SUPABASE_LOCAL_URL=http://127.0.0.1:1`; no local Supabase stack, so DB-gated RLS/integration
+files were skipped and no database was touched).
 
 ## Manual QA checklist (staging or local, never production data)
 
@@ -535,3 +569,18 @@ a logic/component test; the receipt API's 422 expectation still passes unchanged
       the error says the email belongs to an archived supporter and to ask a treasurer/admin to
       unarchive it or record the intake without the email. An active supporter's email still
       shows the existing "choose the existing supporter" message.
+- [ ] **CMS-02:** publish a story, then add a public update without publishing again. Through the
+      API, generate social copy for that update: it is refused with "publish the story update
+      first". Publish again, then generate: the copy quotes the update text the public page shows.
+- [ ] **CMS-03:** in Publication metadata choose "verified" and clear the source/owner → the banner
+      names those fields in zh-HK. Set an end time before the start time → the banner names the end
+      time. Save while a second tab has published → the conflict banner, not an English string.
+- [ ] **CMS-05:** throttle the network, save Publication metadata, then immediately click Publish:
+      it publishes instead of showing a conflict banner. A change really made by someone else
+      still shows the conflict banner.
+- [ ] **CMS-06:** approve a content revision, reload its editor → the source review is collapsed as
+      "已核實可發布 · <evidence>". A needs-review revision opens the form with its saved evidence.
+      The same for an approved animal draft in the animal form.
+- [ ] **CMS-08:** try to type more than 20,000 characters into a story-update body or more than
+      500 into a media caption / the internal address or notes → the input stops at the limit, and
+      the API refuses anything longer with the field named.

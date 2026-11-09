@@ -37,3 +37,17 @@ export const CONTENT_TEXT_MAX = {
   ogTitle: 180,
   ogDescription: 320,
 } as const;
+
+/**
+ * The longest text of the authoring rows that every content save copies into both revision
+ * snapshots (CMS-08, the same unbounded-copy class as BUG-73): a story update's body, a media
+ * caption, and the story profile's internal address and location notes. They are not public page
+ * fields, so they only need a bound that keeps a snapshot small; the item body's 50,000 would
+ * still allow one update to put the same weight into every later revision twice over.
+ */
+export const CONTENT_CHILD_TEXT_MAX = {
+  storyUpdateBody: 20_000,
+  mediaCaption: 500,
+  internalAddress: 500,
+  internalLocationNotes: 500,
+} as const;

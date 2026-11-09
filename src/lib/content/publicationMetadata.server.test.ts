@@ -75,3 +75,88 @@ describe("publication metadata handler", () => {
     expect(await response.text()).not.toContain("credential");
   });
 });
+
+describe("CMS-03: publication metadata answers the structured admin error shape", () => {
+  function staticHandler(update: () => Promise<unknown>) {
+    return createPublicationMetadataHandler({
+      requireAdmin: async () => ({ authUserId: actor }),
+      update,
+    });
+  }
+
+  test("CMS-03: verified without a source reference names sourceReference, in both the code and the field", async () => {
+    const response = await staticHandler(async () => ({ version: 5 }))(
+      request({ ...body, sourceReference: "" }),
+      id,
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: {
+        code: "invalid",
+        message: "Invalid publication metadata",
+        fields: { sourceReference: ["Required"] },
+      },
+    });
+  });
+
+  test("CMS-03: verified without an owner names contentOwner", async () => {
+    const response = await staticHandler(async () => ({ version: 5 }))(
+      request({ ...body, contentOwner: "" }),
+      id,
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: {
+        code: "invalid",
+        message: "Invalid publication metadata",
+        fields: { contentOwner: ["Required"] },
+      },
+    });
+  });
+
+  test("CMS-03: an inverted effective-date range names effectiveUntil", async () => {
+    const response = await staticHandler(async () => ({ version: 5 }))(
+      request({
+        ...body,
+        effectiveFrom: "2026-11-10T00:00:00.000Z",
+        effectiveUntil: "2026-11-09T00:00:00.000Z",
+      }),
+      id,
+    );
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: {
+        code: "invalid",
+        message: "Invalid publication metadata",
+        fields: { effectiveUntil: ["Effective until must be after effective from"] },
+      },
+    });
+  });
+
+  test("CMS-03: a stale expected version is a coded conflict, not a string error", async () => {
+    const response = await staticHandler(async () => {
+      throw { code: "40001" };
+    })(request(), id);
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: { code: "conflict", message: "Content changed; reload before saving" },
+    });
+  });
+
+  test("CMS-03: known refusals and unknown failures carry a code the screen can translate", async () => {
+    for (const [thrown, status, code] of [
+      [{ code: "23514" }, 400, "invalid"],
+      [{ code: "22023" }, 400, "invalid"],
+      [{ code: "P0002" }, 404, "not_found"],
+      [new Error("secret"), 500, "internal"],
+    ] as const) {
+      const response = await staticHandler(async () => {
+        throw thrown;
+      })(request(), id);
+      expect(response.status).toBe(status);
+      const json = (await response.json()) as { error: { code: string } };
+      expect(json.error.code).toBe(code);
+      expect(JSON.stringify(json)).not.toContain("secret");
+    }
+  });
+});

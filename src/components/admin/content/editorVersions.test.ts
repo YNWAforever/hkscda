@@ -3,6 +3,7 @@ import {
   applyOwnSave,
   createEditorVersions,
   expectedVersionFor,
+  lifecycleExpectedVersion,
   markPanelClean,
   markPanelDirty,
   observeServerVersion,
@@ -72,4 +73,31 @@ test("BUG-67: the saved version is read from every save response shape", () => {
   expect(savedVersionFrom({ id: "update" }, 8)).toBe(9);
   expect(savedVersionFrom(undefined, 8)).toBe(9);
   expect(savedVersionFrom({ id: "update" }, undefined)).toBeUndefined();
+});
+
+test("CMS-05: a save followed by an immediate publish sends the saved version, not the cached row", () => {
+  // The editor opened at 5 and saved Publication eligibility; the response moved the fence to 6,
+  // but the detail query cache still holds version 5 until its refetch lands.
+  const cachedContentVersion = 5;
+  let versions = markPanelDirty(createEditorVersions(cachedContentVersion), "metadata");
+  const sent = expectedVersionFor(versions, "metadata");
+  versions = applyOwnSave(versions, sent, savedVersionFrom({ version: 6 }, sent));
+  versions = markPanelClean(versions, "metadata");
+
+  // Publish (and likewise archive/restore) sends the fenced version, so it is not refused as a
+  // conflict the editor caused itself.
+  expect(lifecycleExpectedVersion(versions, cachedContentVersion)).toBe(6);
+  expect(lifecycleExpectedVersion(versions, undefined)).toBe(6);
+  // Once the refetch lands, the cache and the fence agree.
+  expect(lifecycleExpectedVersion(versions, 6)).toBe(6);
+});
+
+test("CMS-05: a save response that does not move the version keeps the cached one", () => {
+  const versions = createEditorVersions(5);
+  expect(lifecycleExpectedVersion(versions, 5)).toBe(5);
+});
+
+test("CMS-05: without a known fenced version the cached row is still used", () => {
+  expect(lifecycleExpectedVersion(createEditorVersions(undefined), 4)).toBe(4);
+  expect(lifecycleExpectedVersion(createEditorVersions(undefined), undefined)).toBeUndefined();
 });

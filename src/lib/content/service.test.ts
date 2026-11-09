@@ -2,7 +2,12 @@ import { describe, expect, mock, spyOn, test } from "bun:test";
 import { createContentHandlers } from "./http.server";
 import type { AdopterNotificationRecipient } from "./notificationDrafts";
 import { contentServerMessageText } from "./serverMessages";
-import { ContentNotPublishedError, createContentService, type ContentRepository } from "./service";
+import {
+  ContentNotPublishedError,
+  ContentUpdateNotPublishedError,
+  createContentService,
+  type ContentRepository,
+} from "./service";
 import type { ContentDetail, RecipientNotificationDraft, StoryUpdate } from "./types";
 
 type ContentService = ReturnType<typeof createContentService>;
@@ -79,8 +84,13 @@ function createRepo(overrides: Partial<ContentRepository> = {}) {
   const repo: ContentRepository = {
     listPublicContent: async () => ({ items: [detail], total: 1 }),
     listPublicStoriesPage: async () => ({ items: [detail], total: 1, points: [] }),
-    // The public read only returns published snapshots (BUG-66 checks the status it gets).
-    getPublicContentBySlug: async () => ({ ...detail, status: "published" }),
+    // The public read only returns published snapshots (BUG-66 checks the status it gets). Its
+    // updates are the published revision's, which is what the update-specific copy quotes.
+    getPublicContentBySlug: async () => ({
+      ...detail,
+      status: "published",
+      updates: [publicStoryUpdate],
+    }),
     listPublicMapStories: async () => [],
     listAdminContent: async () => ({ items: [detail], total: 1 }),
     getAdminContent: async () => detail,
@@ -1418,6 +1428,91 @@ describe("BUG-66: outbound copy links to the published story and uses its publis
     expect(facebook?.copyText).toContain("Lucky 獲救");
     expect(facebook?.copyText).toContain("已審核的摘要。");
     for (const copy of socialCopies) expect(copy.copyText).not.toContain("未審核");
+  });
+
+  test("CMS-02: social copy quotes the published update, not a newer unpublished edit of it", async () => {
+    const publishedUpdate: StoryUpdate = {
+      ...publicStoryUpdate,
+      title: "已審核的近況",
+      body: "已審核的更新內容。",
+    };
+    const newerDraftEdit: StoryUpdate = {
+      ...publicStoryUpdate,
+      title: "未審核的近況",
+      body: "未審核的更新內容。",
+    };
+    const { repo, socialCopies } = createRepo({
+      getAdminContent: async () => editedDraft,
+      getStoryUpdate: async () => newerDraftEdit,
+      getPublicContentBySlug: async () => ({
+        ...published,
+        updates: [publishedUpdate],
+      }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await service.generateSocialCopy({
+      actorUserId: "admin-user",
+      contentId: "content-1",
+      input: { storyUpdateId },
+    });
+
+    const facebook = socialCopies.find((copy) => copy.platform === "facebook");
+    expect(facebook?.copyText).toContain("最新近況：已審核的近況");
+    expect(facebook?.copyText).toContain("已審核的更新內容。");
+    expect(facebook?.copyText).not.toContain("未審核");
+    expect(facebook?.storyUpdateId).toBe(storyUpdateId);
+  });
+
+  test("CMS-02: an update that is not in the published revision is refused with a coded 409", async () => {
+    const { repo, socialCopies } = createRepo({
+      getAdminContent: async () => editedDraft,
+      getStoryUpdate: async () => publicStoryUpdate,
+      // The published revision has no updates yet: the authoring update was added after it.
+      getPublicContentBySlug: async () => published,
+    });
+    const handlers = createContentHandlers({
+      requireContentAdmin: async () => staff,
+      service: createContentService({ repo, publicBaseUrl: "https://example.test" }),
+    });
+
+    const response = await handlers.generateSocialCopy({
+      request: new Request(
+        "https://example.test/api/admin/content/44444444-4444-4444-8444-444444444444/social-copy",
+        { method: "POST", body: JSON.stringify({ storyUpdateId }) },
+      ),
+      params: { id: "44444444-4444-4444-8444-444444444444" },
+    });
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: {
+        code: "update_not_published",
+        message: "Publish the story update before generating outbound copy",
+      },
+    });
+    expect(socialCopies).toHaveLength(0);
+  });
+
+  test("CMS-02: the service refuses an update outside the published revision as a typed error", async () => {
+    const { repo } = createRepo({
+      getAdminContent: async () => editedDraft,
+      getStoryUpdate: async () => publicStoryUpdate,
+      // The public page serves a different update id, not the one the admin asked for.
+      getPublicContentBySlug: async () => ({
+        ...published,
+        updates: [{ ...publicStoryUpdate, id: "55555555-5555-4555-8555-555555555555" }],
+      }),
+    });
+    const service = createContentService({ repo, publicBaseUrl: "https://example.test" });
+
+    await expect(
+      service.generateSocialCopy({
+        actorUserId: "admin-user",
+        contentId: "content-1",
+        input: { storyUpdateId },
+      }),
+    ).rejects.toBeInstanceOf(ContentUpdateNotPublishedError);
   });
 
   test("BUG-66: adopter notification drafts link to the published slug with the published title", async () => {

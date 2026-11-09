@@ -68,6 +68,13 @@ export function AnimalForm({ existing }: AnimalFormProps) {
   const [gallery, setGallery] = useState<EditableGalleryItem[]>(() => existing?.gallery ?? []);
   const [saving, setSaving] = useState(false);
   const [draftRevision, setDraftRevision] = useState(0);
+  // The saved editorial review of the current draft revision (CMS-06), tagged with the revision
+  // it belongs to so a later save cannot show the previous revision's approval.
+  const [savedReview, setSavedReview] = useState<{
+    revision: number;
+    classification: "approved" | "demo" | "needs_review";
+    evidence: string;
+  } | null>(null);
   const [copyingVersion, setCopyingVersion] = useState(false);
   const [dirty, setDirty] = useState(false);
   const editVersion = useRef(0);
@@ -166,6 +173,7 @@ export function AnimalForm({ existing }: AnimalFormProps) {
     void fetchAdminJson<{
       draft: { body: Record<string, unknown>; revision: number } | null;
       versions: Array<{ id: string; revision: number; created_at: string }>;
+      review?: { classification: "approved" | "demo" | "needs_review"; evidence: string } | null;
     }>("/api/admin/animals/publication/", {
       method: "POST",
       body: JSON.stringify({ kind: "read", animal_id: animalId }),
@@ -181,6 +189,9 @@ export function AnimalForm({ existing }: AnimalFormProps) {
           typeof body.draft_image_path === "string" ? body.draft_image_path : null,
         );
         setDraftRevision(result.draft.revision);
+        setSavedReview(
+          result.review ? { ...result.review, revision: result.draft.revision } : null,
+        );
         setProfileFields(toPublicProfileFields(body.public_profile as Animal["public_profile"]));
         setGallery(Array.isArray(body.gallery) ? (body.gallery as EditableGalleryItem[]) : []);
         reset({
@@ -922,6 +933,12 @@ export function AnimalForm({ existing }: AnimalFormProps) {
                 id={animalId}
                 revision={String(draftRevision)}
                 disabled={dirty || saving}
+                savedClassification={
+                  savedReview?.revision === draftRevision ? savedReview.classification : undefined
+                }
+                savedEvidence={
+                  savedReview?.revision === draftRevision ? savedReview.evidence : null
+                }
               />
             </div>
             {dirty && <p role="status">{formCopy.publish.dirty}</p>}

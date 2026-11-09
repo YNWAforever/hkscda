@@ -21,6 +21,7 @@ import type {
   ContentStatus,
   ContentSummary,
   ContentType,
+  EditorialReview,
   PublicStoryMapPoint,
   NotificationDraftStatus,
   RecipientNotificationDraft,
@@ -552,6 +553,34 @@ function buildContentDetail(
   };
 }
 
+const savedReviewRowSchema = z.object({
+  classification: z.enum(["approved", "demo", "needs_review"]),
+  evidence: z.string(),
+});
+
+/**
+ * The editorial review recorded for this exact revision, or `null` when there is none (CMS-06).
+ * The review key is the content item's current draft revision, the same key
+ * `editorial_review_command` writes and `enforce_editorial_review` checks on publish.
+ */
+async function readSavedReview(
+  client: SupabaseClient,
+  contentId: string,
+  revisionId: string | null,
+): Promise<EditorialReview | null> {
+  if (!revisionId) return null;
+  const { data, error } = await client
+    .from("editorial_content_review")
+    .select("classification,evidence")
+    .eq("entity_kind", "content")
+    .eq("entity_id", contentId)
+    .eq("revision_key", revisionId)
+    .maybeSingle();
+  if (error) throw error;
+  const parsed = savedReviewRowSchema.safeParse(data);
+  return parsed.success ? parsed.data : null;
+}
+
 async function hydrateContentDetail(
   client: SupabaseClient,
   row: ContentRow,
@@ -611,6 +640,13 @@ async function hydrateContentDetail(
     latestPublicUpdate: snapshot.latest
       ? toStoryUpdate({ ...snapshot.latest, body: null } as StoryUpdateRow, [])
       : null,
+    // The review panel keys its collapsed verified state off the current revision's saved review
+    // (CMS-06). Reading it here keeps the admin read the one place the editor loads a revision from.
+    savedReview: await readSavedReview(
+      client,
+      contentRow.id,
+      typeof contentRow.draft_revision_id === "string" ? contentRow.draft_revision_id : null,
+    ),
     history: {
       page: historyPage,
       hasMore: [
