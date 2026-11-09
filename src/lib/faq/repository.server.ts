@@ -6,7 +6,7 @@ import { toHelpFaq } from "./toHelpFaq";
 import type { FaqEntry, FaqEntryInput, FaqRepository, HelpFaq } from "./types";
 
 const ROW_COLUMNS =
-  "id,category,question_zh,question_en,answer_zh,answer_en,keywords_zh,keywords_en,cta_key,sensitive,sort_order,is_active,created_at,updated_at";
+  "id,category,question_zh,question_en,answer_zh,answer_en,keywords_zh,keywords_en,cta_key,sensitive,sort_order,is_active,revision,created_at,updated_at";
 
 const rowSchema = z.object({
   id: z.string(),
@@ -21,6 +21,7 @@ const rowSchema = z.object({
   sensitive: z.boolean(),
   sort_order: z.number().int(),
   is_active: z.boolean(),
+  revision: z.number().int().nonnegative().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -38,6 +39,7 @@ function mapRow(raw: unknown): FaqEntry | null {
     sensitive: parsed.data.sensitive,
     sortOrder: parsed.data.sort_order,
     isActive: parsed.data.is_active,
+    ...(parsed.data.revision === undefined ? {} : { revision: parsed.data.revision }),
     createdAt: parsed.data.created_at,
     updatedAt: parsed.data.updated_at,
   };
@@ -92,6 +94,9 @@ export function createSupabaseFaqRepository(client: SupabaseClient): FaqReposito
         p_sensitive: input.sensitive,
         p_sort_order: input.sortOrder,
         p_is_active: input.isActive,
+        ...(input.expectedRevision === undefined
+          ? {}
+          : { p_expected_revision: input.expectedRevision }),
       });
       if (error) throw error;
       const mapped = mapRow(data);

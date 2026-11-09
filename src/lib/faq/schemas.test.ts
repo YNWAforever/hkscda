@@ -258,3 +258,25 @@ describe("faq schemas — regression", () => {
     expect(result.success).toBe(false);
   });
 });
+
+describe("FAQ revision fence", () => {
+  const base = {
+    category: "sponsorship" as const,
+    questionZh: "問題",
+    questionEn: "Question",
+    answerZh: "答案",
+    answerEn: "Answer",
+    ctaKey: null,
+  };
+  test("accepts a non-negative integer expectedRevision and rejects other values", () => {
+    expect(upsertFaqEntrySchema.safeParse({ ...base, expectedRevision: 3 }).success).toBe(true);
+    for (const value of [-1, 1.5, "3", null]) {
+      expect(upsertFaqEntrySchema.safeParse({ ...base, expectedRevision: value }).success).toBe(
+        false,
+      );
+    }
+  });
+  test("a create may omit expectedRevision", () => {
+    expect(upsertFaqEntrySchema.safeParse(base).success).toBe(true);
+  });
+});

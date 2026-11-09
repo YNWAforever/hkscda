@@ -15,6 +15,8 @@ export const aboutPagesCopy = defineAdminCopy({
     loadFailed: "無法載入頁面內容",
     save: "儲存",
     saveFailed: "儲存失敗，請檢查資料後再試一次。",
+    revisionConflict: "另一位管理員已修改此頁面。請重新載入最新版本，再套用你的修改。",
+    reloadLatest: "重新載入最新版本",
     /** The name of a field of the page, as the form labels it. */
     fields: {
       eyebrow: "引言",
@@ -64,6 +66,9 @@ export const aboutPagesCopy = defineAdminCopy({
     loadFailed: "Could not load the page content",
     save: "Save",
     saveFailed: "Could not save. Check the details and try again.",
+    revisionConflict:
+      "Another admin changed this page. Reload the latest version, then apply your edits again.",
+    reloadLatest: "Reload latest version",
     fields: {
       eyebrow: "Lead-in",
       title: "Title",

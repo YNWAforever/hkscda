@@ -14,7 +14,7 @@ import type {
 const SITE_DOCUMENTS_BUCKET = "site-documents";
 const ASSET_COLUMNS = "id,bucket_name,object_path,mime_type,is_published";
 const POST_BASE_COLUMNS =
-  "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,created_at,updated_at";
+  "id,title,topic,short_intro,external_url,document_asset_id,zh_hk_document_asset_id,en_document_asset_id,source_name,is_published,sort_order,revision,created_at,updated_at";
 const ZH_HK_ASSET_RELATION = `zh_hk_document_assets:document_assets!knowledge_posts_zh_hk_document_asset_id_fkey(${ASSET_COLUMNS})`;
 const EN_ASSET_RELATION = `en_document_assets:document_assets!knowledge_posts_en_document_asset_id_fkey(${ASSET_COLUMNS})`;
 const POST_COLUMNS = `${POST_BASE_COLUMNS},document_assets:document_assets!knowledge_posts_document_asset_id_fkey(${ASSET_COLUMNS}),${ZH_HK_ASSET_RELATION},${EN_ASSET_RELATION}`;
@@ -34,6 +34,7 @@ const postRowSchema = z.object({
   source_name: z.string().nullable(),
   is_published: z.boolean(),
   sort_order: z.number().int().min(0),
+  revision: z.number().int().nonnegative().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -122,6 +123,7 @@ function mapPost(raw: Row, publicOnly = false): KnowledgePost | null {
           },
     isPublished: parsed.data.is_published,
     sortOrder: parsed.data.sort_order,
+    ...(parsed.data.revision === undefined ? {} : { revision: parsed.data.revision }),
     createdAt: parsed.data.created_at,
     updatedAt: parsed.data.updated_at,
   };
@@ -256,6 +258,9 @@ export function createSupabaseKnowledgeRepository(client: SupabaseClient): Knowl
         p_operation: "upsert",
         p_id: input.id ?? null,
         p_payload: toRow(input),
+        ...(input.expectedRevision === undefined
+          ? {}
+          : { p_expected_revision: input.expectedRevision }),
       });
       if (error) throw error;
       return requirePost(data);

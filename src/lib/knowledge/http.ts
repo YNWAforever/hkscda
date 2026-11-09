@@ -42,6 +42,13 @@ async function withKnowledgeErrors(operation: () => Promise<Response>) {
       return jsonNoStore({ error: "Invalid knowledge request" }, { status: 400 });
     if (error && typeof error === "object" && "code" in error && error.code === "P0002")
       return jsonNoStore({ error: "Knowledge post not found" }, { status: 404 });
+    // A stale `expectedRevision` from the revision fence: the editor shows its reload-latest
+    // notice instead of the generic save failure (the 23514 below is a different 409).
+    if (error && typeof error === "object" && "code" in error && error.code === "40001")
+      return jsonNoStore(
+        { error: { code: "conflict", message: "Knowledge post changed; reload before saving" } },
+        { status: 409 },
+      );
     if (error && typeof error === "object" && "code" in error && error.code === "23514")
       return jsonNoStore(
         { error: "Knowledge post conflicts with document publication state" },

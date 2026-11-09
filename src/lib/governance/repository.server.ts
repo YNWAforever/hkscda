@@ -10,7 +10,8 @@ import type {
   PublicBoardRoster,
 } from "./types";
 
-const ROW_COLUMNS = "id,name,role_title,sort_order,effective_date,is_active,created_at,updated_at";
+const ROW_COLUMNS =
+  "id,name,role_title,sort_order,effective_date,is_active,revision,created_at,updated_at";
 
 const rowSchema = z.object({
   id: z.string(),
@@ -19,6 +20,7 @@ const rowSchema = z.object({
   sort_order: z.number().int().min(0),
   effective_date: z.string(),
   is_active: z.boolean(),
+  revision: z.number().int().nonnegative().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -33,6 +35,7 @@ function mapRow(raw: unknown): BoardMember | null {
     sortOrder: parsed.data.sort_order,
     effectiveDate: parsed.data.effective_date,
     isActive: parsed.data.is_active,
+    ...(parsed.data.revision === undefined ? {} : { revision: parsed.data.revision }),
     createdAt: parsed.data.created_at,
     updatedAt: parsed.data.updated_at,
   };
@@ -105,6 +108,9 @@ export function createSupabaseGovernanceRepository(client: SupabaseClient): Gove
         p_operation: "upsert",
         p_id: input.id ?? null,
         p_payload: toRow(input, actorUserId),
+        ...(input.expectedRevision === undefined
+          ? {}
+          : { p_expected_revision: input.expectedRevision }),
       });
       if (error) throw error;
       const mapped = mapRow(data);

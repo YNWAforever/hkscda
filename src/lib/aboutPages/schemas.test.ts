@@ -156,3 +156,31 @@ describe("aboutPageUpsertRequestSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("about pages revision fence", () => {
+  const content = {
+    hero: { eyebrow: "e", title: "t", description: "d" },
+    stages: [
+      { title: "1", description: "d" },
+      { title: "2", description: "d" },
+      { title: "3", description: "d" },
+    ],
+    chapter: { title: "t", description: "d", bullets: ["1", "2", "3"] },
+    cta: { eyebrow: "e", title: "t", descriptionPrefix: "p" },
+  };
+  test("accepts a non-negative integer expectedRevision and rejects other values", () => {
+    expect(
+      aboutPageUpsertRequestSchema.safeParse({ pageSlug: "tnr", expectedRevision: 5, content })
+        .success,
+    ).toBe(true);
+    for (const value of [-1, 5.5, "5", null]) {
+      expect(
+        aboutPageUpsertRequestSchema.safeParse({
+          pageSlug: "tnr",
+          expectedRevision: value,
+          content,
+        }).success,
+      ).toBe(false);
+    }
+  });
+});

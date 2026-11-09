@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type Ref } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { isRevisionConflict } from "../../../lib/admin/revisionConflict";
 import { buildTesterFaqs } from "../../../lib/faq/answerTester";
 import { FAQ_CTA_OPTIONS, faqCtaOptionLabel } from "../../../lib/faq/schemas";
 import type { FaqCategory, FaqEntry, FaqEntryInput, FaqLanguage } from "../../../lib/faq/types";
@@ -33,6 +34,8 @@ const CATEGORIES: readonly FaqCategory[] = [
 
 export type FaqDraft = {
   id?: string;
+  /** The revision the entry was loaded at; the save sends it as the optimistic fence. */
+  revision?: number;
   category: FaqCategory;
   questionZh: string;
   questionEn: string;
@@ -51,6 +54,7 @@ export type FaqDraft = {
 function draftFromEntry(entry?: FaqEntry): FaqDraft {
   return {
     id: entry?.id,
+    revision: entry?.revision,
     category: entry?.category ?? "sponsorship",
     questionZh: entry?.question["zh-HK"] ?? "",
     questionEn: entry?.question.en ?? "",
@@ -69,6 +73,7 @@ function draftFromEntry(entry?: FaqEntry): FaqDraft {
 export function toInput(draft: FaqDraft): FaqEntryInput {
   return {
     ...(draft.id ? { id: draft.id } : {}),
+    ...(draft.id && draft.revision !== undefined ? { expectedRevision: draft.revision } : {}),
     category: draft.category,
     questionZh: draft.questionZh,
     questionEn: draft.questionEn,
@@ -136,11 +141,27 @@ export function FaqManagement() {
         method: "POST",
         body: JSON.stringify(input),
       }),
-    onSuccess: () => {
+    onSuccess: (result) => {
       setDraft(null);
+      // Keep the cached entry's new revision so reopening the form before the refetch lands does
+      // not send the previous revision.
+      queryClient.setQueryData<FaqEntry[]>(
+        ADMIN_FAQ_QUERY_KEY,
+        (current) =>
+          current?.map((entry) => (entry.id === result.entry.id ? result.entry : entry)) ?? current,
+      );
       return invalidateFaqQueries(queryClient);
     },
   });
+
+  const upsertConflict = isRevisionConflict(upsertMutation.error);
+  async function reloadLatestFaq() {
+    upsertMutation.reset();
+    const result = await entriesQuery.refetch();
+    if (!draft?.id || !result.data) return;
+    const fresh = result.data.find((entry) => entry.id === draft.id);
+    if (fresh) setDraft(draftFromEntry(fresh));
+  }
 
   const deactivateMutation = useMutation({
     mutationFn: (request: FaqDeactivateRequest) => sendFaqDeactivate(request, language),
@@ -273,6 +294,8 @@ export function FaqManagement() {
           onCancel={() => setDraft(null)}
           pending={upsertMutation.isPending}
           failed={upsertMutation.isError}
+          conflict={upsertConflict}
+          onReloadLatest={() => void reloadLatestFaq()}
           firstFieldRef={firstFieldRef}
         />
       ) : null}
@@ -287,6 +310,8 @@ export function FaqEntryForm({
   onCancel,
   pending,
   failed,
+  conflict = false,
+  onReloadLatest,
   firstFieldRef,
 }: {
   draft: FaqDraft;
@@ -295,6 +320,8 @@ export function FaqEntryForm({
   onCancel: () => void;
   pending: boolean;
   failed: boolean;
+  conflict?: boolean;
+  onReloadLatest?: () => void;
   firstFieldRef?: Ref<HTMLSelectElement>;
 }) {
   const common = useAdminCopy(faqCopy);
@@ -422,7 +449,20 @@ export function FaqEntryForm({
           onChange={(event) => onDraftChange({ ...draft, sortOrder: Number(event.target.value) })}
         />
       </label>
-      {failed ? (
+      {conflict ? (
+        <div role="alert" className="space-y-2 border border-[var(--color-warning)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-warning)]">
+            {copy.revisionConflict}
+          </p>
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4"
+            onClick={() => onReloadLatest?.()}
+          >
+            {copy.reloadLatest}
+          </button>
+        </div>
+      ) : failed ? (
         <p role="alert" className="text-sm text-[var(--color-error)]">
           {copy.saveFailed}
         </p>

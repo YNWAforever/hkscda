@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { LoadFailure, type ViewLoadFailure } from "../LoadFailure";
 import { TablePager } from "../TablePager";
 import { fetchAdminJson } from "../../../lib/admin/http";
+import { isRevisionConflict } from "../../../lib/admin/revisionConflict";
 import { adminErrorMessage } from "../../../lib/admin/session";
 import type { DocumentAsset } from "../../../lib/documents/types";
 import type {
@@ -34,6 +35,8 @@ type DraftDestinationMode = "external" | "document";
 
 type KnowledgeDraft = {
   id?: string;
+  /** The revision the post was loaded at; the save sends it as the optimistic fence. */
+  revision?: number;
   title: string;
   topic: string;
   shortIntro: string;
@@ -71,6 +74,7 @@ function draftFromPost(post?: KnowledgePost): KnowledgeDraft {
   }
   return {
     id: post?.id,
+    revision: post?.revision,
     title: post?.title ?? "",
     topic: post?.topic ?? "adoption",
     shortIntro: post?.shortIntro ?? "",
@@ -88,6 +92,7 @@ function toInput(
 ): KnowledgePostInput & { externalUrl?: string; documentAssetId?: string } {
   return {
     ...(draft.id ? { id: draft.id } : {}),
+    ...(draft.id && draft.revision !== undefined ? { expectedRevision: draft.revision } : {}),
     title: draft.title,
     topic: draft.topic,
     shortIntro: draft.shortIntro,
@@ -112,6 +117,9 @@ export function KnowledgeManagement() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<AdminKnowledgeStatus>("all");
   const [page, setPage] = useState(1);
+  const [reloadToken, setReloadToken] = useState(0);
+  // The revision this editor's own successful save returned for a post, keyed by post id.
+  const savedRevisions = useRef(new Map<string, number>());
 
   function withPageReset<T>(setter: (value: T) => void) {
     return (value: T) => {
@@ -151,13 +159,39 @@ export function KnowledgeManagement() {
           body: JSON.stringify({ id: operation.id }),
         });
       }
-      return fetchAdminJson("/api/admin/knowledge", {
+      // This editor's own successful saves advance the revision its draft sends next time, so a
+      // second save inside the post-save refetch window is not refused as a stale one.
+      const expectedRevision = operation.draft.id
+        ? savedRevisions.current.get(operation.draft.id)
+        : undefined;
+      return fetchAdminJson<{ post: KnowledgePost }>("/api/admin/knowledge", {
         method: "POST",
-        body: JSON.stringify(toInput(operation.draft)),
+        body: JSON.stringify({
+          ...toInput(operation.draft),
+          ...(expectedRevision === undefined ? {} : { expectedRevision }),
+        }),
       });
     },
-    onSuccess: () => invalidateKnowledgeQueries(queryClient),
+    onSuccess: (result, operation) => {
+      if (operation.action === "save" && result && typeof result === "object" && "post" in result) {
+        const post = (result as { post: KnowledgePost }).post;
+        if (typeof post.revision === "number") {
+          savedRevisions.current.set(post.id, post.revision);
+        }
+      }
+      return invalidateKnowledgeQueries(queryClient);
+    },
   });
+
+  const revisionConflict = isRevisionConflict(mutation.error);
+  function reloadLatest() {
+    // Explicit reload: clear this editor's revision memory and remount the article editors from
+    // the refetched rows, which is what discards the conflicting unsaved edit.
+    mutation.reset();
+    savedRevisions.current.clear();
+    setReloadToken((value) => value + 1);
+    void invalidateKnowledgeQueries(queryClient);
+  }
 
   const loadError = knowledgeQuery.error ?? ownershipQuery.error ?? documentsQuery.error;
   // Irreversible, and the trigger sits inline in a list where a mis-click is easy. Name the
@@ -230,6 +264,9 @@ export function KnowledgeManagement() {
             : null
         }
         error={adminErrorMessage(mutation.error, language)}
+        revisionConflict={revisionConflict}
+        onReloadLatest={reloadLatest}
+        reloadToken={reloadToken}
         onQueryChange={withPageReset(setQuery)}
         onStatusChange={withPageReset(setStatus)}
         onPageChange={setPage}
@@ -252,6 +289,9 @@ export function KnowledgeManagementView({
   pending = false,
   loadFailure = null,
   error,
+  revisionConflict = false,
+  onReloadLatest,
+  reloadToken = 0,
   onQueryChange,
   onStatusChange,
   onPageChange,
@@ -271,6 +311,11 @@ export function KnowledgeManagementView({
   loadFailure?: ViewLoadFailure | null;
   /** A refusal or failure of a save or a delete. */
   error?: string | null;
+  /** The error is the stale-revision conflict: show the reload-latest notice instead. */
+  revisionConflict?: boolean;
+  onReloadLatest?: () => void;
+  /** Changes when the admin reloads the latest rows, so the article editors remount with them. */
+  reloadToken?: number;
   onQueryChange?: (value: string) => void;
   onStatusChange?: (value: AdminKnowledgeStatus) => void;
   onPageChange?: (page: number) => void;
@@ -318,7 +363,20 @@ export function KnowledgeManagementView({
           title={loadFailure.heading ?? undefined}
         />
       ) : null}
-      {error ? (
+      {revisionConflict ? (
+        <div role="alert" className="space-y-2 border border-[var(--color-warning)] p-3">
+          <p className="text-sm font-semibold text-[var(--color-warning)]">
+            {copy.revisionConflict}
+          </p>
+          <button
+            type="button"
+            className="btn-secondary min-h-11 px-4"
+            onClick={() => onReloadLatest?.()}
+          >
+            {copy.reloadLatest}
+          </button>
+        </div>
+      ) : error ? (
         <p role="alert" className="text-sm font-semibold text-[var(--color-error)]">
           {error}
         </p>
@@ -327,7 +385,12 @@ export function KnowledgeManagementView({
       {!loading && !ownershipReady ? <p role="alert">{copy.ownershipUnknown}</p> : null}
 
       {!loading && ownershipReady ? (
-        <KnowledgeEditor documents={documents} pending={pending} onSave={onSave} />
+        <KnowledgeEditor
+          key={`new:${reloadToken}`}
+          documents={documents}
+          pending={pending}
+          onSave={onSave}
+        />
       ) : null}
 
       {!loading && ownershipReady && posts.length === 0 && !error && !loadFailure ? (
@@ -337,7 +400,7 @@ export function KnowledgeManagementView({
         ownershipReady &&
         posts.map((post) => (
           <KnowledgeEditor
-            key={post.id}
+            key={`${post.id}:${reloadToken}`}
             post={post}
             ownerReleaseId={ownerReleaseIds[post.id]}
             documents={documents}

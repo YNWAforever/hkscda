@@ -5,7 +5,7 @@ import type { AboutPageSlug, AnyAboutPageContent } from "./types";
 export function createAboutPagesService({
   repo,
 }: {
-  repo: Pick<AboutPagesRepository, "getContent" | "upsertContent">;
+  repo: Pick<AboutPagesRepository, "getContent" | "getPage" | "upsertContent">;
 }) {
   return {
     async listPublic() {
@@ -17,6 +17,28 @@ export function createAboutPagesService({
       return { about, tnr, cccp };
     },
 
+    /**
+     * The admin editor's read: the three pages plus the revision each one was loaded at, so the
+     * next save can be fenced against it (the 2026-11-09 revision fence).
+     */
+    async listAdmin() {
+      const [about, tnr, cccp] = await Promise.all([
+        repo.getPage("about"),
+        repo.getPage("tnr"),
+        repo.getPage("cccp"),
+      ]);
+      return {
+        about: about?.content ?? null,
+        tnr: tnr?.content ?? null,
+        cccp: cccp?.content ?? null,
+        revisions: {
+          about: about?.revision ?? null,
+          tnr: tnr?.revision ?? null,
+          cccp: cccp?.revision ?? null,
+        },
+      };
+    },
+
     // No separate audit() call here — upsert_about_page_content_with_audit
     // already writes the audit_log row atomically inside the same
     // transaction as the content change, same documented pattern as
@@ -25,14 +47,18 @@ export function createAboutPagesService({
       actorUserId,
       pageSlug,
       content,
+      expectedRevision,
     }: {
       actorUserId: string;
       pageSlug: AboutPageSlug;
       content: unknown;
+      expectedRevision?: number;
     }) {
       const schema = PAGE_CONTENT_SCHEMAS[pageSlug];
       const parsed = schema.parse(content) as AnyAboutPageContent;
-      return repo.upsertContent(pageSlug, parsed, actorUserId);
+      return expectedRevision === undefined
+        ? repo.upsertContent(pageSlug, parsed, actorUserId)
+        : repo.upsertContent(pageSlug, parsed, actorUserId, expectedRevision);
     },
   };
 }

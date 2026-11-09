@@ -542,6 +542,44 @@ across 118 files with `SUPABASE_LOCAL_URL=http://127.0.0.1:1`. The skipped files
 database/RLS suites; no database was available and none was touched, so the migration is traced
 and syntax-reviewed rather than executed. The zod result is the measured `tsc` error count above,
 not a partial upgrade.
+## Editor revision fences (2026-11-09)
+
+Closes the design gap the 2026-11-09 audit recorded for the four simple admin editors: About, FAQ,
+Governance and Knowledge had no revision fence, so two tabs saving the same row silently kept the
+last write. One new migration, `20261110100000_admin_editor_revision_fences.sql` — no data
+rewrite, no new cron or environment variable.
+
+| Area       | Table                 | Fenced RPC(s)                                                                                       |
+| ---------- | --------------------- | --------------------------------------------------------------------------------------------------- |
+| About      | `about_page_content`  | `upsert_about_page_content_with_audit` (compare-and-set on the page row)                            |
+| FAQ        | `faq_entry`           | `upsert_faq_entry_with_audit`; `deactivate_faq_entry_with_audit` bumps the revision too              |
+| Governance | `board_member`        | `mutate_admin_content_with_audit` upsert; step-down bumps the revision                               |
+| Knowledge  | `knowledge_posts`     | `mutate_admin_content_with_audit` upsert                                                             |
+
+**How it works.** Each table gains `revision integer not null default 0`; the update RPCs take an
+optional `p_expected_revision`, refuse a stale one with `40001` (`Stale content version`, the
+content CMS convention) and bump `revision` on every applied change. Callers that send no expected
+revision keep the old last-write-wins behaviour, so an older deployed app keeps working during the
+deploy. The admin APIs accept and validate `expectedRevision`, the admin list reads return
+`revision`, and each editor sends the revision it loaded. On the API's structured
+`409 {error:{code:"conflict"}}` the editor shows a bilingual "another admin changed this — reload
+latest" notice with a reload action; the unsaved local edits stay visible until the admin reloads.
+The latest function definitions are redefined in the new file (latest-definition-wins), keeping
+their identity checks, audit rows, publish guards, triggered `search_path` pins and revokes/grants.
+
+**Deploy:** migration and code in the same deploy. The migration is backward compatible (no
+expected revision = old behaviour), so either order is safe; the editors only start fencing once
+both are live.
+
+**Behaviour to know.** A save from a stale tab now answers 409 and the editor keeps the typed text
+in view with a reload button; reloading discards that tab's unsaved text and loads the other
+admin's version. The public pages are unchanged.
+
+**Verification.** `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 pre-existing
+warnings). Focused suite (four domains' schemas/service/repository/handlers, revision-conflict
+helper, editor screens, admin copy guard, migration conventions): 257 pass, 0 fail across 23 files
+(`SUPABASE_LOCAL_URL=http://127.0.0.1:1`; no local Supabase stack, so DB-gated SQL tests were
+skipped and no database was touched). The migration is traced SQL, not executed.
 
 ## Manual QA checklist (staging or local, never production data)
 
@@ -623,3 +661,8 @@ not a partial upgrade.
 - [ ] **CMS-08:** try to type more than 20,000 characters into a story-update body or more than
       500 into a media caption / the internal address or notes → the input stops at the limit, and
       the API refuses anything longer with the field named.
+- [ ] **Revision fences:** open About (or FAQ, team/governance, knowledge) in two tabs. Save a
+      change in tab A, then save a different change in tab B: tab B shows "another admin changed
+      this" with a reload button and keeps its typed text. Reload: the page shows tab A's change
+      and tab B's stale draft is gone. Saving in a single tab still works, and a page reload shows
+      the saved text.

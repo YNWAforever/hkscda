@@ -3,6 +3,8 @@ import { hongKongDay } from "../i18n/format";
 
 export type BoardMemberDraft = {
   id?: string;
+  /** The revision the member was loaded at; the save sends it as the optimistic fence. */
+  revision?: number;
   name: string;
   roleTitle: string;
   sortOrder: number;
@@ -16,6 +18,7 @@ export function draftFromMember(
 ): BoardMemberDraft {
   return {
     id: member?.id,
+    revision: member?.revision,
     name: member?.name ?? "",
     roleTitle: member?.roleTitle ?? "",
     sortOrder: member?.sortOrder ?? 0,

@@ -107,7 +107,12 @@ const cccpContent: CccpPageContent = {
   },
 };
 
-const allPages = { about: aboutContent, tnr: tnrContent, cccp: cccpContent };
+const allPages = {
+  about: aboutContent,
+  tnr: tnrContent,
+  cccp: cccpContent,
+  revisions: { about: 0, tnr: 0, cccp: 0 },
+};
 
 const noopDraftHandlers = {
   onAboutDraftChange: () => {},
