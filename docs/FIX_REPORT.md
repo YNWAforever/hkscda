@@ -428,6 +428,36 @@ Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`). `src/lib/supabaseMigra
 database was available, so the SQL is traced, not executed; the behavioural RLS test runs under
 `bun run test:rls` against a local stack.
 
+## Admin auth backlog — second batch (2026-11-09)
+
+The same audit's accepted Lows (AUTH-02…AUTH-05) plus the inherited AUD-02 RLS gap. Four fixes are
+code or test only; AUD-02 is a migration.
+
+| ID      | Sev | Fix                                                                                                                                                                                                                                                  | Where                                                                                       |
+| ------- | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| AUTH-02 | Low | A 403 from `/api/admin/me` now takes the lapsed-session path (clear identity, local sign-out) and lands on sign-in with the bilingual "no admin access" reason, instead of a dead-end load failure. Ordinary 403s keep their meaning and sign no one out. | `src/lib/admin/session.ts`, `src/routes/admin/login.tsx`                                    |
+| AUTH-03 | Low | An invite/resend whose row committed but whose email failed returns the user plus `emailDeliveryFailed` (201/200, not a 500) and the access page says to use Resend. The safe commit ordering is unchanged.                                          | `src/lib/admin/accessManagement.{server,http.server}.ts`, `src/components/admin/access/`    |
+| AUTH-04 | Low | On a real auth-user change the tab removes every non-identity cached query, then resets and refetches identity, so a cross-tab account switch leaves no previous admin's rows on screen.                                                              | `src/lib/admin/useLiveAdminActor.ts`                                                        |
+| AUTH-05 | Low | `volunteers/jobs/` is in the role sweep's admin-only list, with a case that fails if it admits staff; the sweep root is resolved with `fileURLToPath` so the guard runs on Windows too.                                                               | `tests/integration/admin/authorization.test.ts`                                             |
+| AUD-02  | Med | The five staff-wide supporter/supporter_role/consent policies are redefined to `array['treasurer', 'admin']`; grants, service-role access and the supporter portal paths are unchanged and no rows are touched.                                       | `20261109103000_tighten_supporter_staff_rls.sql`                                            |
+
+**Deploy:** AUD-02 is a `latest-definition-wins` policy migration with no data rewrite, so any
+order after `20261109102000` works and it can ship on its own. AUTH-02/AUTH-03/AUTH-04 are
+client/server code; AUTH-05 is test-only.
+
+**Behaviour to know.** An admin disabled or demoted mid-session is signed out on the next page load
+and told why; a forbidden-area 403 still shows as a normal failed action. If the mail provider is
+down, the invite is created and the page warns to press Resend instead of showing a save error.
+Staff can no longer read supporter/consent rows over PostgREST; every app read is a service-role
+API handler, so the UI is unchanged.
+
+**Verification.** Focused tests: 226 pass, 0 fail across 14 files. `moneyPii.rls.test.ts`: 45 tests
+skipped (no local Supabase stack; `SUPABASE_LOCAL_URL=http://127.0.0.1:1`, they run under
+`bun run test:rls`). `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 warnings). No
+database was available, so the migration is traced, not executed; the AUTH-05 case was
+negative-checked by temporarily allowing staff and observing both the sweep and the new case fail.
+No full test suite was run.
+
 ## Manual QA checklist (staging or local, never production data)
 
 - [ ] Sign in as each role (staff, treasurer, admin). Each lands on its first allowed
