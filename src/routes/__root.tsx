@@ -19,6 +19,7 @@ import { organizationSchema, websiteSchema } from "../lib/schema";
 import { brand } from "../lib/brand/brand";
 import { initGA4, redactSensitivePagePath } from "../lib/analytics";
 import { resolveHeadPathname, shouldIncludePublicStyles } from "../lib/publicHeadAssets";
+import { resolveAuthLandingTarget } from "../lib/admin/authLanding";
 
 const PublicSiteShell = lazy(() => import("../components/site/PublicSiteShell"));
 
@@ -140,6 +141,18 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
+  // BUG-25 fallback: Supabase invite/recovery links land on the Site URL when the
+  // dashboard redirect allow-list does not include the set-password path. Forward them
+  // before the rest of the shell renders so the reset screen can consume the token.
+  useEffect(() => {
+    const target = resolveAuthLandingTarget({
+      pathname: window.location.pathname,
+      search: window.location.search,
+      hash: window.location.hash,
+    });
+    if (target) window.location.replace(target);
+  }, []);
+
   const { queryClient } = Route.useRouteContext();
   const { location } = useRouterState();
   const isAdmin = location.pathname.startsWith("/admin");

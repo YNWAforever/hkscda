@@ -1302,3 +1302,16 @@ was not enforced at the database level.
   `state = 'published'`). The publish path already serialises per species and archives older
   releases; the index makes the invariant explicit. A future environment with duplicate published
   rows would refuse the migration and must archive through the publish path first.
+
+## Invite/recovery landing fallback and branch archive (2026-11-10)
+
+- **Invite links no longer depend on the Supabase Auth redirect allow-list.** Supabase falls back to
+  the project Site URL when `redirectTo` is not allow-listed, dropping invitees on `/` with the
+  token in the fragment. `src/lib/admin/authLanding.ts` now recognises typed invite/recovery
+  payloads (and Supabase error payloads) on any page load and forwards them to
+  `/admin/reset-password` with the fragment intact, so the existing BUG-25 set-password screen
+  completes the flow. The dashboard allow-list entry is still recommended and documented in
+  `docs/admin-invite-links-2026-11-10.md`.
+- **Branch archive:** the 15 remaining long-lived branches (13 heads of squash-merged PRs + 2
+  superseded integrations) were preserved as `archive/2026-11-10/*` tags and deleted; see
+  `docs/branch-archive-2026-11-10.md` to recover any of them.
