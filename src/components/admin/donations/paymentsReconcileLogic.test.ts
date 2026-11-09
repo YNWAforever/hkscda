@@ -9,6 +9,7 @@ import {
   canReconcile,
   canVoidReceipt,
   findIssuedReceipt,
+  paymentActionNeedsRefresh,
   paymentPurposeText,
   paymentStatusPill,
   receiptPill,
@@ -56,6 +57,25 @@ const issuedReceipt: AdminReceiptRow = {
   donation_ids: ["don-1"],
   status: "issued",
 };
+
+describe("paymentActionNeedsRefresh (BUG-28)", () => {
+  test("a 409 means the row is stale and must be refetched", () => {
+    const conflict = Object.assign(new Error("This payment was already reconciled"), {
+      status: 409,
+    });
+    expect(paymentActionNeedsRefresh(conflict)).toBe(true);
+  });
+
+  test("a validation refusal or a network failure leaves the row as it is", () => {
+    const ineligible = Object.assign(new Error("Donation is not eligible for an IRD receipt"), {
+      status: 422,
+    });
+    expect(paymentActionNeedsRefresh(ineligible)).toBe(false);
+    expect(paymentActionNeedsRefresh(new Error("Request failed"))).toBe(false);
+    expect(paymentActionNeedsRefresh({ status: 409 })).toBe(false);
+    expect(paymentActionNeedsRefresh(null)).toBe(false);
+  });
+});
 
 describe("paymentStatusPill", () => {
   test("maps every payment status to a tone + label", () => {

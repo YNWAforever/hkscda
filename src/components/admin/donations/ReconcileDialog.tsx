@@ -12,6 +12,7 @@ import { Label } from "../../ui/label";
 import { useAdminLanguage } from "../adminI18n";
 import { useAdminCopy } from "../i18n/copy";
 import { reconcileDialogCopy } from "./copy";
+import { paymentActionNeedsRefresh } from "./paymentsReconcileLogic";
 
 type ReconcileDialogProps = {
   paymentId: string;
@@ -52,6 +53,10 @@ export function ReconcileDialog({
       } else {
         setDeliveryJobId(result.deliveryJobId);
       }
+    },
+    // BUG-28: a 409 means someone else reconciled this payment, so the row is stale.
+    onError: (error) => {
+      if (paymentActionNeedsRefresh(error)) onReconciled();
     },
   });
   const retryDelivery = useMutation({

@@ -34,6 +34,7 @@ import {
   canReconcile,
   canVoidReceipt,
   findIssuedReceipt,
+  paymentActionNeedsRefresh,
   paymentPurposeText,
   paymentStatusPill,
   receiptPill,
@@ -150,11 +151,19 @@ export function PaymentsReconcile() {
         body: JSON.stringify({ donationId }),
       }),
     onSuccess: refresh,
+    // BUG-28: a 409 says another admin already issued the receipt, so this row is stale.
+    onError: (error) => {
+      if (paymentActionNeedsRefresh(error)) refresh();
+    },
   });
 
   const voidReceipt = useMutation({
     mutationFn: (request: VoidReceiptRequest) => sendReceiptVoid(request, language),
     onSuccess: refresh,
+    // BUG-28: a 409 here means the receipt was voided or replaced elsewhere.
+    onError: (error) => {
+      if (paymentActionNeedsRefresh(error)) refresh();
+    },
   });
 
   async function handleExport() {
