@@ -517,11 +517,11 @@ Closes the actionable items from the 2026-11-09 audit's "Not filed as bugs" list
 `site-documents` bucket (fixed), plus a recorded decision for CSP/JWT storage (AUDIT R4) and the
 zod 3→4 assessment.
 
-| Item                               | Sev | Outcome                                                                                                                                                                                                                                                                                                                                                                  | Where                                                                                     |
-| ---------------------------------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| Public `site-documents` bucket     | Med | Bucket set private; `public.read_public_document_asset(uuid)` (definer, pinned empty `search_path`, service-role only) returns an asset only when published **and** referenced by a published annual report, document slot or knowledge post. Pages link `/api/documents/<asset id>`, which re-checks eligibility and redirects to a 60-second signed URL. Admin signed uploads/previews unchanged | `20261109104000_private_site_documents_bucket.sql`, `src/routes/api/documents/$assetId.ts` |
-| CSP `'unsafe-inline'` / JWT storage | Low | Decision note only: status quo + cheap hardening now; nonce CSP as a separate CSP-only task (TanStack Start exposes `router.options.ssr.nonce` but not the per-request router hook); HttpOnly cookie/BFF as the real fix only if the threat model demands it. No behaviour changed                                                                                          | [`docs/csp-token-decision.md`](csp-token-decision.md)                                     |
-| zod 3 → 4 (GHSA-mrhx-c7xc-m3w5)     | Low | Attempted, measured, reverted: 113 typecheck errors across 18 files (JSON-schema internals 34, stricter inferred input types 57, `z.record`/issue-code API changes 14, misc 8), over the < 40 limit. Bump deferred to a planned task; exposure already bounded by the 8 MB admin / 1 MB public body caps                                                                  | appendix of [`docs/csp-token-decision.md`](csp-token-decision.md)                         |
+| Item                                | Sev | Outcome                                                                                                                                                                                                                                                                                                                                                                                            | Where                                                                                      |
+| ----------------------------------- | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Public `site-documents` bucket      | Med | Bucket set private; `public.read_public_document_asset(uuid)` (definer, pinned empty `search_path`, service-role only) returns an asset only when published **and** referenced by a published annual report, document slot or knowledge post. Pages link `/api/documents/<asset id>`, which re-checks eligibility and redirects to a 60-second signed URL. Admin signed uploads/previews unchanged | `20261109104000_private_site_documents_bucket.sql`, `src/routes/api/documents/$assetId.ts` |
+| CSP `'unsafe-inline'` / JWT storage | Low | Decision note only: status quo + cheap hardening now; nonce CSP as a separate CSP-only task (TanStack Start exposes `router.options.ssr.nonce` but not the per-request router hook); HttpOnly cookie/BFF as the real fix only if the threat model demands it. No behaviour changed                                                                                                                 | [`docs/csp-token-decision.md`](csp-token-decision.md)                                      |
+| zod 3 → 4 (GHSA-mrhx-c7xc-m3w5)     | Low | Attempted, measured, reverted: 113 typecheck errors across 18 files (JSON-schema internals 34, stricter inferred input types 57, `z.record`/issue-code API changes 14, misc 8), over the < 40 limit. Bump deferred to a planned task; exposure already bounded by the 8 MB admin / 1 MB public body caps                                                                                           | appendix of [`docs/csp-token-decision.md`](csp-token-decision.md)                          |
 
 **Deploy:** `20261109104000` is a latest-definition-wins migration with no row changes. Deploy it
 with the code half (or immediately before it): the bucket flag and the new links must change
@@ -544,6 +544,7 @@ across 118 files with `SUPABASE_LOCAL_URL=http://127.0.0.1:1`. The skipped files
 database/RLS suites; no database was available and none was touched, so the migration is traced
 and syntax-reviewed rather than executed. The zod result is the measured `tsc` error count above,
 not a partial upgrade.
+
 ## Editor revision fences (2026-11-09)
 
 Closes the design gap the 2026-11-09 audit recorded for the four simple admin editors: About, FAQ,
@@ -551,12 +552,12 @@ Governance and Knowledge had no revision fence, so two tabs saving the same row 
 last write. One new migration, `20261110100000_admin_editor_revision_fences.sql` — no data
 rewrite, no new cron or environment variable.
 
-| Area       | Table                 | Fenced RPC(s)                                                                                       |
-| ---------- | --------------------- | --------------------------------------------------------------------------------------------------- |
-| About      | `about_page_content`  | `upsert_about_page_content_with_audit` (compare-and-set on the page row)                            |
-| FAQ        | `faq_entry`           | `upsert_faq_entry_with_audit`; `deactivate_faq_entry_with_audit` bumps the revision too              |
-| Governance | `board_member`        | `mutate_admin_content_with_audit` upsert; step-down bumps the revision                               |
-| Knowledge  | `knowledge_posts`     | `mutate_admin_content_with_audit` upsert                                                             |
+| Area       | Table                | Fenced RPC(s)                                                                           |
+| ---------- | -------------------- | --------------------------------------------------------------------------------------- |
+| About      | `about_page_content` | `upsert_about_page_content_with_audit` (compare-and-set on the page row)                |
+| FAQ        | `faq_entry`          | `upsert_faq_entry_with_audit`; `deactivate_faq_entry_with_audit` bumps the revision too |
+| Governance | `board_member`       | `mutate_admin_content_with_audit` upsert; step-down bumps the revision                  |
+| Knowledge  | `knowledge_posts`    | `mutate_admin_content_with_audit` upsert                                                |
 
 **How it works.** Each table gains `revision integer not null default 0`; the update RPCs take an
 optional `p_expected_revision`, refuse a stale one with `40001` (`Stale content version`, the
@@ -723,11 +724,20 @@ skipped locally; the migration's SQL content is asserted by
 
 ## Post-baseline parity and guide uniqueness (2026-11-10)
 
-| Change | Detail |
-| --- | --- |
+| Change          | Detail                                                                                                                                                                                                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Function parity | `record_sponsorship_payment_proof`, `read_content_admin_summaries`, `claim_volunteer_operation_outbox`, `volunteer_roster_attendance_result` replaced with their latest repository bodies. Production `prosrc` was compared after apply and matches all four definitions. Migration `20261110140000`. |
-| BUG-53 closed | Production `adoption_guide_releases` audit: 0 rows, so no published duplicates. Adds a partial unique index `adoption_guide_releases_one_published_per_species` on `(species) where state = 'published'`; the existing publish path (serialised per species, archives older releases) is unchanged. |
+| BUG-53 closed   | Production `adoption_guide_releases` audit: 0 rows, so no published duplicates. Adds a partial unique index `adoption_guide_releases_one_published_per_species` on `(species) where state = 'published'`; the existing publish path (serialised per species, archives older releases) is unchanged.   |
 
 **Verification.** Transactional dry run then apply in production: all four parity checks OK, the
 index exists, and the duplicate query returns 0. Snapshot of the previous function bodies:
 `audit-20261109/db-snapshot-20261110-parity/`.
+
+## Invite/recovery landing fallback + branch archive (2026-11-10)
+
+`src/lib/admin/authLanding.ts` + `src/routes/__root.tsx` now forward Supabase invite/recovery
+payloads from any landing page (including a Site URL fallback) to `/admin/reset-password`, keeping
+the token fragment, so BUG-25 invite links work without a dashboard redirect-allow-list change
+(documented in `docs/admin-invite-links-2026-11-10.md`). The 15 remaining long-lived branches were
+tagged `archive/2026-11-10/*` and deleted (`docs/branch-archive-2026-11-10.md`). Tests:
+`src/lib/admin/authLanding.test.ts` (8 cases).
