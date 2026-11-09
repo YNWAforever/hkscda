@@ -20,12 +20,15 @@ export type FaqEntry = {
   sensitive: boolean;
   sortOrder: number;
   isActive: boolean;
+  /** The row's revision, sent back as `expectedRevision` on the next save (the optimistic fence). */
+  revision?: number;
   createdAt: string;
   updatedAt: string;
 };
 
 export type FaqEntryInput = {
   id?: string;
+  expectedRevision?: number;
   category: FaqCategory;
   questionZh: string;
   questionEn: string;

@@ -11,7 +11,7 @@ type AboutPagesService = ReturnType<typeof createAboutPagesService>;
 
 type CreateAdminAboutPagesHandlersArgs = {
   requireAboutPagesAdmin: (request: Request) => Promise<AdminUser>;
-  service: Pick<AboutPagesService, "listPublic" | "upsertAdmin">;
+  service: Pick<AboutPagesService, "listPublic" | "listAdmin" | "upsertAdmin">;
 };
 
 function jsonNoStore(body: unknown, init: ResponseInit = {}) {
@@ -47,6 +47,15 @@ async function withAboutPagesErrors(operation: () => Promise<Response>) {
         { status: 400 },
       );
     }
+    // A stale `expectedRevision` from the revision fence: the editor shows its reload-latest
+    // notice instead of a generic failure.
+    if (error && typeof error === "object" && "code" in error && error.code === "40001")
+      return jsonNoStore(
+        { error: { code: "conflict", message: "About page changed; reload before saving" } },
+        { status: 409 },
+      );
+    if (error && typeof error === "object" && "code" in error && error.code === "P0002")
+      return jsonNoStore({ error: "About page content not found" }, { status: 404 });
     console.error(error);
     return jsonNoStore({ error: "Could not process about page request" }, { status: 500 });
   }
@@ -60,7 +69,7 @@ export function createAdminAboutPagesHandlers({
     list({ request }: HandlerContext) {
       return withAboutPagesErrors(async () => {
         await requireAboutPagesAdmin(request);
-        return jsonNoStore(await service.listPublic());
+        return jsonNoStore(await service.listAdmin());
       });
     },
 
@@ -68,12 +77,19 @@ export function createAdminAboutPagesHandlers({
       return withAboutPagesErrors(async () => {
         const admin = await requireAboutPagesAdmin(request);
         const body = aboutPageUpsertRequestSchema.parse(await jsonBody(request));
-        const content = await service.upsertAdmin({
+        const result = await service.upsertAdmin({
           actorUserId: admin.authUserId,
           pageSlug: body.pageSlug,
           content: body.content,
+          ...(body.expectedRevision === undefined
+            ? {}
+            : { expectedRevision: body.expectedRevision }),
         });
-        return jsonNoStore({ pageSlug: body.pageSlug, content });
+        return jsonNoStore({
+          pageSlug: body.pageSlug,
+          content: result.content,
+          revision: result.revision,
+        });
       });
     },
   };

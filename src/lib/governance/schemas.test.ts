@@ -88,3 +88,15 @@ describe("deactivateBoardMemberSchema", () => {
     expect(() => deactivateBoardMemberSchema.parse({ id, reason: "x".repeat(501) })).toThrow();
   });
 });
+
+describe("governance revision fence", () => {
+  const base = { name: "陳大文", roleTitle: "主席", effectiveDate: "2026-08-01" };
+  test("accepts a non-negative integer expectedRevision and rejects other values", () => {
+    expect(boardMemberInputSchema.safeParse({ ...base, expectedRevision: 2 }).success).toBe(true);
+    for (const value of [-1, 2.5, "2", null]) {
+      expect(boardMemberInputSchema.safeParse({ ...base, expectedRevision: value }).success).toBe(
+        false,
+      );
+    }
+  });
+});

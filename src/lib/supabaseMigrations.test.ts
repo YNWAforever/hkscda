@@ -1884,3 +1884,24 @@ describe("content public image withdrawal", () => {
     expect(sql.replace(/\$\$[\s\S]*?\$\$/g, "")).not.toMatch(/\bupdate\s+public\./i);
   });
 });
+
+test("CMS editor revision fences refuse a stale expected revision and bump the revision", () => {
+  const sql = readMigration("20261110100000_admin_editor_revision_fences.sql");
+  for (const table of ["faq_entry", "board_member", "knowledge_posts", "about_page_content"]) {
+    expect(sql).toContain(
+      `alter table public.${table} add column if not exists revision integer not null default 0`,
+    );
+  }
+  // Every fenced update compares the caller's expected revision and bumps the stored one.
+  expect((sql.match(/p_expected_revision/g) ?? []).length).toBeGreaterThanOrEqual(8);
+  expect((sql.match(/revision = revision \+ 1/g) ?? []).length).toBeGreaterThanOrEqual(4);
+  expect(sql).toContain("using errcode = '40001'");
+  // The latest definitions are re-created for a fresh reset, with the identity checks and the
+  // search_path pin the house rules require.
+  expect(sql).toContain("drop function if exists public.mutate_admin_content_with_audit");
+  expect(sql).toContain("create or replace function public.mutate_admin_content_with_audit");
+  expect(sql).toContain("set search_path = ''");
+  expect(sql).toContain("set search_path = public, pg_temp");
+  expect(sql).toContain("revoke all on function public.mutate_admin_content_with_audit");
+  expect(sql).toContain("grant execute on function public.mutate_admin_content_with_audit");
+});

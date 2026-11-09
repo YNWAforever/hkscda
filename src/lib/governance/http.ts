@@ -37,6 +37,12 @@ async function withGovernanceErrors(operation: () => Promise<Response>) {
     if (error instanceof Response) return error;
     if (error instanceof z.ZodError)
       return jsonNoStore({ error: "Invalid governance request" }, { status: 400 });
+    // A stale `expectedRevision` from the revision fence: the form shows its reload-latest notice.
+    if (error && typeof error === "object" && "code" in error && error.code === "40001")
+      return jsonNoStore(
+        { error: { code: "conflict", message: "Board member changed; reload before saving" } },
+        { status: 409 },
+      );
     if (error && typeof error === "object" && "code" in error && error.code === "P0002")
       return jsonNoStore({ error: "Board member not found" }, { status: 404 });
     console.error(error);

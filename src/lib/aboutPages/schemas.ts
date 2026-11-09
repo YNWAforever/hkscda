@@ -106,7 +106,20 @@ export const PAGE_CONTENT_SCHEMAS = {
 } as const;
 
 export const aboutPageUpsertRequestSchema = z.discriminatedUnion("pageSlug", [
-  z.object({ pageSlug: z.literal("about"), content: aboutPageContentSchema }),
-  z.object({ pageSlug: z.literal("tnr"), content: tnrPageContentSchema }),
-  z.object({ pageSlug: z.literal("cccp"), content: cccpPageContentSchema }),
+  z.object({
+    pageSlug: z.literal("about"),
+    /** The `revision` the editor loaded; the database refuses a stale update with a coded 409. */
+    expectedRevision: z.number().int().nonnegative().optional(),
+    content: aboutPageContentSchema,
+  }),
+  z.object({
+    pageSlug: z.literal("tnr"),
+    expectedRevision: z.number().int().nonnegative().optional(),
+    content: tnrPageContentSchema,
+  }),
+  z.object({
+    pageSlug: z.literal("cccp"),
+    expectedRevision: z.number().int().nonnegative().optional(),
+    content: cccpPageContentSchema,
+  }),
 ]);
