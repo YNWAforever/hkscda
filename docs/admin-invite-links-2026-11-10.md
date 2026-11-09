@@ -28,20 +28,30 @@ This makes the invite and recovery emails work even when the dashboard allow-lis
 page already understands `SIGNED_IN` (invite) and `PASSWORD_RECOVERY` events and the "no session"
 invalid state.
 
-## Required operational step (recommended, still not doable from the repo)
+## Applied on 2026-11-10 (via the Supabase Management API)
 
-Add these URLs to Authentication → URL Configuration → Redirect URLs in the Supabase project
-`iihqjzilgawhfdhdevam` (both production and preview origins):
+The project's Auth URL configuration had `site_url = https://hkscda.vercel.app/` and an **empty**
+`uri_allow_list`, so every invite/recovery `redirectTo` fell back to the Site URL. The allow-list is
+now:
 
 ```
 https://hkscda.vercel.app/admin/reset-password
-https://hkscda.com/admin/reset-password          (at cutover)
-https://www.hkscda.com/admin/reset-password      (at cutover)
+https://hkscda.vercel.app/admin/reset-password*
+https://hkscda.com/admin/reset-password
+https://hkscda.com/admin/reset-password*
+https://www.hkscda.com/admin/reset-password
+https://www.hkscda.com/admin/reset-password*
 ```
 
-Keep the Site URL itself correct as the fallback destination (any path under it works now thanks to
-the app-side landing handler). Preview deployments each have their own origin; add them only if
-invites need to work from previews.
+The `*` variants cover the `?intent=invite` query string; the `hkscda.com` entries are ready for the
+DNS cutover. `site_url` stays `https://hkscda.vercel.app/` until cutover (it is the fallback
+destination, and any path under it now lands correctly thanks to the app-side handler).
+
+Changing this setting is not part of the repository: use the Supabase dashboard (Authentication →
+URL Configuration) or the Management API
+`PATCH /v1/projects/iihqjzilgawhfdhdevam/config/auth` with `{"uri_allow_list": "…"}`. Preview
+deployments have their own origins; add them to the allow-list only if invites need to work from a
+preview.
 
 ## Verification
 
