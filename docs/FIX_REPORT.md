@@ -720,3 +720,14 @@ skipped locally; the migration's SQL content is asserted by
 - [ ] **BUG-46:** with one supporter holding both a donation still owed a receipt and a
       failed/refunded/receipted one, export donations with "receipt not needed": the
       not-needed donations now appear; export with "receipt needed" still lists only the owed one.
+
+## Post-baseline parity and guide uniqueness (2026-11-10)
+
+| Change | Detail |
+| --- | --- |
+| Function parity | `record_sponsorship_payment_proof`, `read_content_admin_summaries`, `claim_volunteer_operation_outbox`, `volunteer_roster_attendance_result` replaced with their latest repository bodies. Production `prosrc` was compared after apply and matches all four definitions. Migration `20261110140000`. |
+| BUG-53 closed | Production `adoption_guide_releases` audit: 0 rows, so no published duplicates. Adds a partial unique index `adoption_guide_releases_one_published_per_species` on `(species) where state = 'published'`; the existing publish path (serialised per species, archives older releases) is unchanged. |
+
+**Verification.** Transactional dry run then apply in production: all four parity checks OK, the
+index exists, and the duplicate query returns 0. Snapshot of the previous function bodies:
+`audit-20261109/db-snapshot-20261110-parity/`.
