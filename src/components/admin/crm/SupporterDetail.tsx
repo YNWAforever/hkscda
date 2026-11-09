@@ -4,10 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, FileCheck, FileX } from "lucide-react";
 
 import { adminErrorMessage } from "../../../lib/admin/session";
-import type {
-  DonationHistoryRow,
-  SupporterDetail as SupporterDetailData,
-} from "../../../lib/crm/types";
+import type { SupporterDetail as SupporterDetailData } from "../../../lib/crm/types";
 import { Button } from "../../ui/button";
 import { ConfirmActionDialog } from "../ConfirmActionDialog";
 import { requiredReasonDialog } from "../confirmActionState";
@@ -20,6 +17,7 @@ import { useAdminCopy } from "../i18n/copy";
 import { LoadFailure } from "../LoadFailure";
 import { ConsentEditor } from "./ConsentEditor";
 import { fetchAdminJson } from "./api";
+import { canIssueReceipt } from "./receiptActions";
 import { crmLabelCopy, supporterDetailCopy } from "./copy";
 import { crmFormatCopy } from "./formatCopy";
 import { ManualDonationDialog } from "./ManualDonationDialog";
@@ -37,20 +35,6 @@ import { SupporterTimeline } from "./SupporterTimeline";
 type SupporterDetailProps = {
   supporterId: string;
 };
-
-function receiptForDonation(data: SupporterDetailData, donationId: string) {
-  return data.receipts.find(
-    (receipt) => receipt.status === "issued" && receipt.donationIds.includes(donationId),
-  );
-}
-
-function canIssueReceipt(data: SupporterDetailData, donation: DonationHistoryRow) {
-  return (
-    donation.status === "succeeded" &&
-    donation.receiptRequested &&
-    !receiptForDonation(data, donation.id)
-  );
-}
 
 export function SupporterDetail({ supporterId }: SupporterDetailProps) {
   const { language, pageCopy } = useAdminPageCopy();

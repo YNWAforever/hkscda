@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { AdminSessionError } from "../../../lib/admin/session";
 import type {
+  DonationHistoryRow,
   SupporterDetail as SupporterDetailData,
   SupporterSummary,
 } from "../../../lib/crm/types";
@@ -506,6 +507,37 @@ describe("supporter detail in English", () => {
     expect(renderAdminInEnglish(<SupporterDetail supporterId="sup-1" />)).toContain(
       "Save manual donation",
     );
+  });
+
+  test("OPS-03: offers Issue receipt only when the net amount reaches HK$100", () => {
+    function receiptlessDonation(amountCents: number, refundedCents?: number) {
+      return {
+        id: "d-ops03",
+        amountCents,
+        ...(refundedCents === undefined ? {} : { refundedCents }),
+        currency: "HKD",
+        purpose: "general",
+        customPurpose: null,
+        status: "succeeded",
+        method: "fps",
+        receiptRequested: true,
+        createdAt: "2026-11-01T00:00:00Z",
+      } satisfies DonationHistoryRow;
+    }
+    const showsIssueReceipt = (donation: DonationHistoryRow) => {
+      load({ receipts: [], donations: [donation] });
+      return renderAdminInEnglish(<SupporterDetail supporterId="sup-1" />).includes(
+        "Issue receipt",
+      );
+    };
+
+    // HK$99 net (HK$99 gift, or HK$150 refunded HK$51) is refused by the API with a 422.
+    expect(showsIssueReceipt(receiptlessDonation(9900))).toBe(false);
+    expect(showsIssueReceipt(receiptlessDonation(15000, 5100))).toBe(false);
+    // HK$100 net is eligible; the rule applies to what is retained, after refunds.
+    expect(showsIssueReceipt(receiptlessDonation(10000))).toBe(true);
+    expect(showsIssueReceipt(receiptlessDonation(15000, 5000))).toBe(true);
+    load();
   });
 
   test("keeps the Chinese detail, dates and amounts as they were", () => {
