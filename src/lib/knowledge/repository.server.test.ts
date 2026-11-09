@@ -104,19 +104,6 @@ function createClient(data?: RowSource, serverRowCap?: number) {
       calls.push({ name: "rpc", functionName: name, args });
       return Promise.resolve({ data: row, error: null });
     },
-    storage: {
-      from(bucket: string) {
-        return {
-          getPublicUrl(objectPath: string) {
-            calls.push({ name: "getPublicUrl", objectPath });
-            if (objectPath === "knowledge/unsafe-url.pdf") {
-              return { data: { publicUrl: "javascript:alert(1)" } };
-            }
-            return { data: { publicUrl: `https://cdn.test/${bucket}/${objectPath}` } };
-          },
-        };
-      },
-    },
   };
 }
 
@@ -257,7 +244,7 @@ describe("Supabase knowledge repository", () => {
         id: "malformed-url-pair",
         en_document_assets: {
           ...pairedRow.en_document_assets,
-          object_path: "knowledge/unsafe-url.pdf",
+          object_path: "knowledge/../unsafe-url.pdf",
         },
       },
     ]);
@@ -270,8 +257,8 @@ describe("Supabase knowledge repository", () => {
           kind: "document_pair",
           zhHkAssetId: zhId,
           enAssetId: enId,
-          zhHkUrl: "https://cdn.test/site-documents/knowledge/guide-zh.pdf",
-          enUrl: "https://cdn.test/site-documents/knowledge/guide-en.pdf",
+          zhHkUrl: `/api/documents/${zhId}`,
+          enUrl: `/api/documents/${enId}`,
         },
       }),
     ]);
@@ -285,7 +272,7 @@ describe("Supabase knowledge repository", () => {
     expect(selectCall?.columns).toContain("en_document_assets");
   });
 
-  test("rejects empty and whitespace-only object paths before public URL lookup", async () => {
+  test("rejects empty and whitespace-only object paths before building a document link", async () => {
     for (const objectPath of ["", "   "]) {
       const client = createClient([
         {
@@ -297,11 +284,10 @@ describe("Supabase knowledge repository", () => {
       const repo = createSupabaseKnowledgeRepository(client as never);
 
       await expect(repo.listPublished()).resolves.toEqual([]);
-      expect(client.calls).not.toContainEqual({ name: "getPublicUrl", objectPath });
     }
   });
 
-  test("rejects leading, non-normalized, and traversal object paths before public URL lookup", async () => {
+  test("rejects leading, non-normalized, and traversal object paths before building a document link", async () => {
     const invalidPaths = [
       "/knowledge/guide.pdf",
       "knowledge//guide.pdf",
@@ -321,7 +307,6 @@ describe("Supabase knowledge repository", () => {
       const repo = createSupabaseKnowledgeRepository(client as never);
 
       await expect(repo.listPublished()).resolves.toEqual([]);
-      expect(client.calls).not.toContainEqual({ name: "getPublicUrl", objectPath });
     }
   });
 

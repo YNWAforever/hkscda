@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { publicDocumentDownloadPath } from "./downloadPath";
 import { annualReportInputSchema, documentAssetInputSchema, documentIdSchema } from "./schemas";
 import type { AnnualReportInput, DocumentAssetInput, DocumentListSearch } from "./schemas";
 import {
@@ -55,14 +56,15 @@ function relatedRow(value: unknown): Row | null {
   return value && typeof value === "object" ? (value as Row) : null;
 }
 
-function publicUrl(client: SupabaseClient, asset: DocumentAssetInput) {
-  if (!asset.isPublished) return null;
-  return (
-    client.storage.from(asset.bucketName).getPublicUrl(asset.objectPath).data.publicUrl ?? null
-  );
+/**
+ * Pages link the controlled route, never a Storage URL: `site-documents` is a private
+ * bucket (migration 20261109104000) and the route re-checks publication on every request.
+ */
+function assetFileUrl(assetId: string, isPublished: boolean) {
+  return isPublished ? publicDocumentDownloadPath(assetId) : null;
 }
 
-function mapAsset(client: SupabaseClient, row: Row): DocumentAsset | null {
+function mapAsset(row: Row): DocumentAsset | null {
   const id = documentIdSchema.safeParse(row.id);
   const asset = documentAssetInputSchema.safeParse({
     kind: row.kind,
@@ -92,7 +94,7 @@ function mapAsset(client: SupabaseClient, row: Row): DocumentAsset | null {
   return {
     id: id.data,
     ...asset.data,
-    fileUrl: publicUrl(client, asset.data),
+    fileUrl: assetFileUrl(id.data, asset.data.isPublished),
     ...timestamps.data,
   };
 }
@@ -112,16 +114,16 @@ function assetRowInput(input: Partial<DocumentAssetInput>) {
   return row;
 }
 
-function requireMappedAsset(client: SupabaseClient, value: unknown) {
+function requireMappedAsset(value: unknown) {
   if (!value || typeof value !== "object") {
     throw new Error("Document asset mutation returned no row");
   }
-  const asset = mapAsset(client, value as Row);
+  const asset = mapAsset(value as Row);
   if (!asset) throw new Error("Document asset mutation returned an invalid row");
   return asset;
 }
 
-function mapAdminAnnualReport(client: SupabaseClient, row: Row): AnnualReport | null {
+function mapAdminAnnualReport(row: Row): AnnualReport | null {
   const id = documentIdSchema.safeParse(row.id);
   const report = annualReportInputSchema.safeParse({
     title: row.title,
@@ -134,7 +136,7 @@ function mapAdminAnnualReport(client: SupabaseClient, row: Row): AnnualReport | 
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   });
-  const document = mapAsset(client, relatedRow(row.document_assets) ?? {});
+  const document = mapAsset(relatedRow(row.document_assets) ?? {});
   if (!id.success || !report.success || !timestamps.success || !document) return null;
 
   return {
@@ -158,25 +160,25 @@ function annualReportRowInput(input: Partial<AnnualReportInput>) {
   return row;
 }
 
-function requireMappedAnnualReport(client: SupabaseClient, value: unknown) {
+function requireMappedAnnualReport(value: unknown) {
   if (!value || typeof value !== "object") {
     throw new Error("Annual report mutation returned no row");
   }
-  const report = mapAdminAnnualReport(client, value as Row);
+  const report = mapAdminAnnualReport(value as Row);
   if (!report) throw new Error("Annual report mutation returned an invalid row");
   return report;
 }
 
-function mapPublishedAsset(client: SupabaseClient, value: unknown) {
+function mapPublishedAsset(value: unknown) {
   const row = relatedRow(value);
   if (!row || row.is_published !== true) return null;
-  const asset = mapAsset(client, row);
+  const asset = mapAsset(row);
   return asset?.isPublished === true && asset.fileUrl ? asset : null;
 }
 
-function mapAnnualReport(client: SupabaseClient, row: Row): AnnualReport | null {
+function mapAnnualReport(row: Row): AnnualReport | null {
   if (row.is_published !== true) return null;
-  const document = mapPublishedAsset(client, row.document_assets);
+  const document = mapPublishedAsset(row.document_assets);
   if (!document?.fileUrl) return null;
 
   return {
@@ -191,9 +193,9 @@ function mapAnnualReport(client: SupabaseClient, row: Row): AnnualReport | null 
   };
 }
 
-function mapSlot(client: SupabaseClient, row: Row): DocumentSlot | null {
+function mapSlot(row: Row): DocumentSlot | null {
   if (row.is_published !== true) return null;
-  const document = mapPublishedAsset(client, row.document_assets);
+  const document = mapPublishedAsset(row.document_assets);
   if (!document?.fileUrl) return null;
 
   return {
@@ -230,7 +232,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       .eq("id", id)
       .maybeSingle();
     if (error) throwRepositoryError(error);
-    return data ? mapAdminAnnualReport(client, data as Row) : null;
+    return data ? mapAdminAnnualReport(data as Row) : null;
   }
 
   async function loadAsset(id: string) {
@@ -240,7 +242,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       .eq("id", id)
       .maybeSingle();
     if (error) throwRepositoryError(error);
-    return data ? mapAsset(client, data as Row) : null;
+    return data ? mapAsset(data as Row) : null;
   }
 
   async function readAnnualReportRows(publishedOnly: boolean): Promise<Row[]> {
@@ -274,13 +276,13 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
     usesAtomicAudit: true,
     async listPublishedAnnualReports() {
       return (await readAnnualReportRows(true))
-        .map((row) => mapAnnualReport(client, row))
+        .map((row) => mapAnnualReport(row))
         .filter((row): row is AnnualReport => row !== null);
     },
 
     async listAnnualReports() {
       return (await readAnnualReportRows(false))
-        .map((row) => mapAdminAnnualReport(client, row))
+        .map((row) => mapAdminAnnualReport(row))
         .filter((row): row is AnnualReport => row !== null);
     },
 
@@ -291,7 +293,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data ? mapAdminAnnualReport(client, data as Row) : null;
+      return data ? mapAdminAnnualReport(data as Row) : null;
     },
 
     async createAnnualReport(input: AnnualReportInput, actorUserId?: string | null) {
@@ -313,7 +315,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ANNUAL_REPORT_COLUMNS)
         .single();
       if (error) throwRepositoryError(error);
-      return requireMappedAnnualReport(client, data);
+      return requireMappedAnnualReport(data);
     },
 
     async updateAnnualReport(
@@ -340,7 +342,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ANNUAL_REPORT_COLUMNS)
         .single();
       if (error) throwRepositoryError(error);
-      return requireMappedAnnualReport(client, data);
+      return requireMappedAnnualReport(data);
     },
 
     async setAnnualReportPublished(id: string, isPublished: boolean, actorUserId?: string | null) {
@@ -364,7 +366,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ANNUAL_REPORT_COLUMNS)
         .single();
       if (error) throw error;
-      return requireMappedAnnualReport(client, data);
+      return requireMappedAnnualReport(data);
     },
 
     async deleteAnnualReport(id: string, actorUserId?: string | null, reason?: string) {
@@ -395,7 +397,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
       if (error) throw error;
 
       return ((data ?? []) as Row[])
-        .map((row) => mapSlot(client, row))
+        .map((row) => mapSlot(row))
         .filter((row): row is DocumentSlot => row !== null);
     },
 
@@ -421,7 +423,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
 
       return {
         items: ((data ?? []) as Row[])
-          .map((row) => mapAsset(client, row))
+          .map((row) => mapAsset(row))
           .filter((row): row is DocumentAsset => row !== null),
         total: count ?? 0,
       };
@@ -434,7 +436,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data ? mapAsset(client, data as Row) : null;
+      return data ? mapAsset(data as Row) : null;
     },
 
     async createAsset(input: DocumentAssetInput, actorUserId?: string | null) {
@@ -456,7 +458,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ASSET_COLUMNS)
         .single();
       if (error) throw error;
-      return requireMappedAsset(client, data);
+      return requireMappedAsset(data);
     },
 
     async updateAsset(id: string, input: Partial<DocumentAssetInput>, actorUserId?: string | null) {
@@ -479,7 +481,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ASSET_COLUMNS)
         .single();
       if (error) throw error;
-      return requireMappedAsset(client, data);
+      return requireMappedAsset(data);
     },
 
     async setAssetPublished(id: string, isPublished: boolean, actorUserId?: string | null) {
@@ -503,7 +505,7 @@ export function createSupabaseDocumentRepository(client: SupabaseClient) {
         .select(ASSET_COLUMNS)
         .single();
       if (error) throw error;
-      return requireMappedAsset(client, data);
+      return requireMappedAsset(data);
     },
 
     async deleteAsset(id: string, actorUserId?: string | null, reason?: string) {
