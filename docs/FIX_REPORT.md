@@ -10,7 +10,8 @@ Companion documents: [`AUDIT.md`](AUDIT.md) (stack, feature map, baseline) and
   only High), BUG-02, BUG-03, BUG-06, BUG-22 and BUG-23, whose migrations were approved
   after Phase 4 (BUG-23 after PR #226 merged). 1 is deferred: it needs a product decision.
 - **Tests:** about 105 new tests in the unit suite, plus a 17-test admin E2E suite.
-- **Gates:** every gate is green on the repository's pinned Bun 1.3.14. No production
+- **Gates:** every gate is green on the repository's pinned Bun (1.4.4 since the zod 4 upgrade;
+  1.3.14 at the time of this batch). No production
   data, credential or deployment was touched.
 - **Second pass (2026-10-30):** 33 more findings, BUG-33 to BUG-65 (7 Medium, 26 Low).
   21 code-only ones were fixed in PR #228; the other 12, and the database parts of BUG-42
@@ -136,7 +137,7 @@ Scenario matrix from the brief, and where each scenario is covered:
 | Data/Locale   | BUG-04, BUG-09 (HKT boundaries); E2E Traditional Chinese text.                                                                                                                                                                                                      |
 | UI            | E2E: phone viewport has no horizontal scroll, keyboard-only login, no console errors on the happy paths.                                                                                                                                                            |
 
-## Final verification (Bun 1.3.14, the pinned version)
+## Final verification snapshot (2026-10-29 batch, Bun 1.3.14 — historical)
 
 | Gate                         | Command                         | Result                                                                               |
 | ---------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
@@ -163,9 +164,10 @@ nothing about database behaviour.
   browser tests launch the `chrome` channel, so locally Chromium was linked at
   `/opt/google/chrome/chrome`. GitHub's `ubuntu-latest` image ships Chrome.
   `E2E_CHROMIUM_PATH` overrides the browser for the new E2E suite.
-- **Bun:** final gates used the pinned Bun 1.3.14. Earlier exploration used Bun 1.4.4,
-  and one E2E timing issue showed up only on 1.3.14 (fixed in the test, commit
-  `6ae8b91`).
+- **Bun:** the snapshot above ran on Bun 1.3.14, the pin at the time. The repository now pins
+  **Bun 1.4.4** (`.bun-version`): 1.3.14's bundler dropped zod 4 namespace re-exports in the
+  Playwright browser-fixture bundles (`util is not defined`); 1.4.4 bundles them correctly and the
+  PR also carries a fixture-level namespace fix.
 - **Database:** no Supabase stack ran, so the migration-level bugs are verified by SQL
   text and fakes, not against Postgres.
 
@@ -742,9 +744,12 @@ index exists, and the duplicate query returns 0. Snapshot of the previous functi
 `src/lib/admin/authLanding.ts` + `src/routes/__root.tsx` now forward Supabase invite/recovery
 payloads from any landing page (including a Site URL fallback) to `/admin/reset-password`, keeping
 the token fragment, so BUG-25 invite links work without a dashboard redirect-allow-list change
-(documented in `docs/admin-invite-links-2026-11-10.md`). The 15 remaining long-lived branches were
-tagged `archive/2026-11-10/*` and deleted (`docs/branch-archive-2026-11-10.md`). Tests:
-`src/lib/admin/authLanding.test.ts` (8 cases).
+(documented in `docs/admin-invite-links-2026-11-10.md`). The allow-list itself was also applied on
+2026-11-10 via the Management API (the project's list was empty; values and re-read verification are
+in the same doc), so Supabase now lands directly on the reset route and the app-side fallback stays
+as defence in depth. The 15 remaining long-lived branches were tagged `archive/2026-11-10/*` and
+deleted (`docs/branch-archive-2026-11-10.md`). Tests: `src/lib/admin/authLanding.test.ts` (8 cases).
+
 ## Admin session BFF (2026-11-10)
 
 The browser-persisted admin session (AUDIT R4, "Not filed as bugs") is replaced by a bounded
@@ -753,14 +758,14 @@ server-side session: the access and refresh tokens live in `HttpOnly` cookies sc
 The 180+ data endpoints keep their Bearer-token contract and `requireAdmin` is untouched, so the
 authorization layer and RLS do not move. No migration and no new environment variable.
 
-| Piece | Change | Where |
-| --- | --- | --- |
-| Session endpoints | `POST /api/admin/session/login` (email+password, rate-limited), `/refresh` (rotates the refresh cookie), `/logout` (best-effort revoke, clears cookies). All three reject a cross-origin or origin-less request with 403 | `src/lib/admin/sessionBff.server.ts`, `src/lib/admin/sessionSupabase.server.ts`, `src/routes/api/admin/session/*` |
-| Cookie flags | `HttpOnly; Secure; SameSite=Strict; Path=/api/admin/session; Max-Age=<token lifetime>` on the access cookie, 30 days on the refresh cookie. The path scope keeps both cookies off every data endpoint | `src/lib/admin/sessionCookies.ts` |
-| CSRF | `Origin` must equal the request origin and `Sec-Fetch-Site` (when sent) must be `same-origin` or `none`; anything else is a 403 before any provider call. Cookies add `SameSite=Strict` as the second layer | `sessionBff.server.ts` (`isCrossSiteRequest`) |
-| Client store | Access token lives only in `sessionMemory.ts` (tab lifetime); page load bootstraps via `/refresh`; a 401 from a data call rotates once and retries once; expired/near-expiry tokens refresh before use; concurrent refreshes are single-flight. Sign-out clears memory and calls `/logout`; pre-BFF `sb-*-auth-token` entries are removed on bootstrap/logout | `src/lib/admin/sessionMemory.ts` |
-| Refactors | `getAdminAccessToken`/`fetchAdminJson`/`requireSignedInAdminIdentity`, `useLiveAdminActor`, the expiry watcher, `AdminLayout` logout, the volunteer shell identity watch, both export download paths, and the login page now use the BFF/store; password recovery/invite set-password use a separate `persistSession:false` in-memory Supabase client | `src/lib/admin/{session,adminAuthClient,useLiveAdminActor}.ts`, `src/components/admin/{AdminLayout,useSessionExpiryRedirect,VolunteerAdminShell}.tsx`, `src/components/admin/adoptions/{ExportButton,CoordinatorReports}.tsx`, `src/routes/admin/{login,reset-password}.tsx` |
-| Guard tests | `noWebStorageAuth.test.ts` fails if a browser admin module reintroduces `supabase.auth` persistence or writes an admin token to web storage; the authorization sweep treats `session/` as the one anonymous `api/admin` prefix (its own tests cover CSRF/cookies) | `src/lib/admin/noWebStorageAuth.test.ts`, `tests/integration/admin/authorization.test.ts` |
+| Piece             | Change                                                                                                                                                                                                                                                                                                                                                        | Where                                                                                                                                                                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Session endpoints | `POST /api/admin/session/login` (email+password, rate-limited), `/refresh` (rotates the refresh cookie), `/logout` (best-effort revoke, clears cookies). All three reject a cross-origin or origin-less request with 403                                                                                                                                      | `src/lib/admin/sessionBff.server.ts`, `src/lib/admin/sessionSupabase.server.ts`, `src/routes/api/admin/session/*`                                                                                                                                                            |
+| Cookie flags      | `HttpOnly; Secure; SameSite=Strict; Path=/api/admin/session; Max-Age=<token lifetime>` on the access cookie, 30 days on the refresh cookie. The path scope keeps both cookies off every data endpoint                                                                                                                                                         | `src/lib/admin/sessionCookies.ts`                                                                                                                                                                                                                                            |
+| CSRF              | `Origin` must equal the request origin and `Sec-Fetch-Site` (when sent) must be `same-origin` or `none`; anything else is a 403 before any provider call. Cookies add `SameSite=Strict` as the second layer                                                                                                                                                   | `sessionBff.server.ts` (`isCrossSiteRequest`)                                                                                                                                                                                                                                |
+| Client store      | Access token lives only in `sessionMemory.ts` (tab lifetime); page load bootstraps via `/refresh`; a 401 from a data call rotates once and retries once; expired/near-expiry tokens refresh before use; concurrent refreshes are single-flight. Sign-out clears memory and calls `/logout`; pre-BFF `sb-*-auth-token` entries are removed on bootstrap/logout | `src/lib/admin/sessionMemory.ts`                                                                                                                                                                                                                                             |
+| Refactors         | `getAdminAccessToken`/`fetchAdminJson`/`requireSignedInAdminIdentity`, `useLiveAdminActor`, the expiry watcher, `AdminLayout` logout, the volunteer shell identity watch, both export download paths, and the login page now use the BFF/store; password recovery/invite set-password use a separate `persistSession:false` in-memory Supabase client         | `src/lib/admin/{session,adminAuthClient,useLiveAdminActor}.ts`, `src/components/admin/{AdminLayout,useSessionExpiryRedirect,VolunteerAdminShell}.tsx`, `src/components/admin/adoptions/{ExportButton,CoordinatorReports}.tsx`, `src/routes/admin/{login,reset-password}.tsx` |
+| Guard tests       | `noWebStorageAuth.test.ts` fails if a browser admin module reintroduces `supabase.auth` persistence or writes an admin token to web storage; the authorization sweep treats `session/` as the one anonymous `api/admin` prefix (its own tests cover CSRF/cookies)                                                                                             | `src/lib/admin/noWebStorageAuth.test.ts`, `tests/integration/admin/authorization.test.ts`                                                                                                                                                                                    |
 
 **Behaviour to know.** Sign-in and reload still work (reload re-establishes the session from the
 refresh cookie), but an admin session is now tied to that browser profile and tab: an old tab
@@ -789,8 +794,9 @@ issues a session for any valid Supabase credential; the existing `/api/admin/me`
 signs non-admins out immediately, so a non-admin can hold a token only until that first identity
 call. Rate limiting is fail-open when Upstash is absent (deliberate: do not lock admins out).
 `Secure` cookies require HTTPS in production (Vercel provides it); localhost is treated as a
-secure context by current browsers. The CSP `'unsafe-inline'` half of AUDIT R4 remains open and
-still needs the nonce work tracked in [`docs/csp-token-decision.md`](csp-token-decision.md).
+secure context by current browsers. The CSP `'unsafe-inline'` half of AUDIT R4 landed in the same
+release (see [CSP nonce migration](#csp-nonce-migration-2026-11-10) below): live production checks
+show a per-request nonce on every inline script and no `script-src 'unsafe-inline'`.
 
 **Manual QA checklist.**
 
@@ -804,12 +810,41 @@ still needs the nonce work tracked in [`docs/csp-token-decision.md`](csp-token-d
       ready state, the password changes, and you end on sign-in (no admin token in web storage).
 - [ ] Send an invite, open the invitation link and set a password: same result with the invite
       wording.
+
+## CSP nonce migration (2026-11-10)
+
+Drops `script-src 'unsafe-inline'` (AUDIT R4) and replaces it with a per-request nonce plus
+`'strict-dynamic'` (PR #240, merge `57816730`). `style-src 'unsafe-inline'` stays deliberately:
+React style attributes cannot carry a style nonce.
+
+| Piece                  | Change                                                                                                                                                                                                                                                                          | Where                                                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Nonce generation       | 16 random bytes (Web Crypto) as base64 per request, run inside an `AsyncLocalStorage` store so concurrent requests never share a nonce                                                                                                                                          | `src/server.ts`, `src/lib/csp-nonce.server.ts`, `src/lib/csp-nonce.ts`                                        |
+| Router wiring          | `getRouter()` exposes `ssr.nonce` as a **getter** that reads the current request's nonce at render time (TanStack Start can reuse one router across requests; a snapshot stamped markup with the previous request's nonce and blocked hydration)                                | `src/router.tsx`                                                                                              |
+| Script stamping        | Router-stamped hydration/`ScriptOnce`/`head.scripts`; the server also rewrites HTML responses so any `<script>` without a nonce gets this request's nonce (JSON/API bodies untouched). The root route publishes the nonce as `meta[property=csp-nonce]` for the client hydrator | `src/server.ts`, `src/routes/__root.tsx`                                                                      |
+| Inline scripts removed | JSON-LD data blocks moved to route `head.scripts` (`jsonLdScript()`); the static 500 page's inline `onclick` became a plain same-URL link, so the page has no script at all                                                                                                     | `src/lib/schema.tsx`, `src/lib/error-page.ts`                                                                 |
+| Header                 | `script-src 'self' 'nonce-…' 'strict-dynamic' <GA4/Maps/Turnstile hosts>`; reporting (`report-uri`/`report-to`), `object-src 'none'`, `frame-ancestors 'none'` and `base-uri 'self'` unchanged                                                                                  | `src/lib/security-headers.ts`                                                                                 |
+| Tests                  | Exact directive, no `'unsafe-inline'`, `style-src` unchanged, reporting kept, per-request header; nonce generation and isolation across concurrent awaits; server → router propagation, nonce getter, `meta[property=csp-nonce]`, no un-nonced `<script>`                       | `security-headers.nonce.test.ts`, `csp-nonce.test.ts`, `csp-nonce.server.test.ts`, `csp-nonce-wiring.test.ts` |
+
+**Live verification (2026-11-10, `https://hkscda.vercel.app`).** `/`, `/report/audit` and
+`/admin/login` return a fresh nonce in `script-src` with `'strict-dynamic'`, no `script-src
+'unsafe-inline'`, and **0 inline script tags without the matching nonce**; `style-src
+'unsafe-inline'` is still present as documented.
+
+**Residual risk.** `'strict-dynamic'` keeps third-party loaders working but does not stop an
+injected external script loaded by an already-nonced script; Trusted Types in Report-Only is the
+next optional layer. Details, options and rejected alternatives are in
+[`docs/csp-token-decision.md`](csp-token-decision.md).
+
 ## Dependency upgrade — zod 4 (2026-11-10)
 
 Upgrades the direct `zod` dependency from 3.25.76 to **4.6.6**, the first release line with the
 GHSA-mrhx-c7xc-m3w5 fix and the newest version bunfig's 24 h `minimumReleaseAge` guard accepted
-(4.6.7 was still too new; the version is pinned exactly for reproducibility). No other dependency
-changes. Branch `fix/zod4-upgrade-20261110` (base `9c53dd7d`), not pushed.
+(4.6.7 was still too new; the version is pinned exactly for reproducibility). No other app
+dependency changes. Merged as PR #241 (`43a40ba9`) on 2026-11-10 and deployed to production; the
+branch was deleted. The same PR pins **Bun 1.4.4** (`.bun-version`): 1.3.14's bundler dropped zod 4
+namespace re-exports in the Playwright browser-fixture bundles (`util is not defined`, 8 dashboard
+tests), so the runtime pin moved and the fixtures also carry a namespace-level fix.
 
 **Why this was more than a lockfile bump.** The first attempt (2026-11-09, zod 4.6.5) measured
 113 `tsc` errors across 18 files and was reverted. The full migration:

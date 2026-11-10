@@ -1,4 +1,4 @@
-﻿# Admin panel bug log — Phase 1
+# Admin panel bug log — Phase 1
 
 Date: 2026-10-29. Base: `0e59983`. Companion to `docs/AUDIT.md`.
 
@@ -14,7 +14,7 @@ The brief requires approval before any migration, so those wait for a go-ahead.
 Proof scripts (throwaway, not committed) are under the session scratchpad
 `agents/<domain>/` and `sweep/`. Phase 2 turns each into a committed failing test.
 
-> **Status:** 31 fixed (BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations were approved and added after Phase 4), 1 deferred. BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). BUG-66 to BUG-73 come from a content-creation review (2026-11-05): all are fixed: BUG-66–70 and 73 in code, BUG-71 and BUG-72 with approved migrations; see [Content creation pass](#content-creation-pass-bug-66bug-73). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
+> **Status:** all Phase 1 findings are fixed. The 31 include BUG-01's, BUG-02's, BUG-03's, BUG-06's, BUG-22's and BUG-23's migrations, approved and added after Phase 4; the one originally deferred item (BUG-53's one-published-guide uniqueness) was closed on 2026-11-10 after a production data audit — see [Post-baseline parity and guide uniqueness](#post-baseline-parity-and-guide-uniqueness-2026-11-10). BUG-33 to BUG-65 come from a second pass (2026-10-30) and are all fixed: 21 in code (PR #228), the other 12 and the database parts of BUG-42 and BUG-55 with approved migrations; see [Second pass](#second-pass-bug-33bug-65). BUG-66 to BUG-73 come from a content-creation review (2026-11-05): all are fixed: BUG-66–70 and 73 in code, BUG-71 and BUG-72 with approved migrations; see [Content creation pass](#content-creation-pass-bug-66bug-73). See [`FIX_REPORT.md`](FIX_REPORT.md) for which ones and why.
 
 ## Summary
 
@@ -1164,64 +1164,39 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
 
 ## Not filed as bugs (recorded for the report)
 
-- **Design gaps.** About, FAQ, governance and knowledge editors have no revision fence:
-  when two tabs save, the last write silently wins. Each needs a version column, so a migration.
-- **`site-documents` was a public bucket** (2026-11-09 audit, "Not filed as bugs") — **fixed
-  2026-11-10.** Migration `20261109104000_private_site_documents_bucket.sql` makes the bucket
-  private and adds `public.read_public_document_asset(uuid)`. Every page now links
-  `/api/documents/<asset id>`; that route returns the asset only when it is published and
-  referenced by a published annual report, document slot or knowledge post, then redirects to a
-  60-second signed URL. No reader mints a public Storage URL any more; admin signed uploads and
-  previews are unchanged.
-- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — still open 2026-11-10; removing it needs
-  per-request nonce plumbing that TanStack Start's `getRouter()` does not expose. Options, effort,
-  risk and the recommendation are in [`docs/csp-token-decision.md`](csp-token-decision.md). The
-  other half of the finding, the admin JWT in web storage, was **fixed 2026-11-10** by the
-  HttpOnly session BFF — see the "Admin session BFF" section of
-  [`docs/FIX_REPORT.md`](FIX_REPORT.md).
-- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — **fixed 2026-11-10.** `script-src` is now
-  `'self' 'nonce-<per-request nonce>' 'strict-dynamic' <host sources>`; the nonce is generated in
-  `src/server.ts`, travels through an `AsyncLocalStorage` request store into `getRouter()`'s
-  `ssr.nonce`, and TanStack Router stamps it on the hydration/`ScriptOnce`/head JSON-LD scripts.
-  The app's JSON-LD data blocks moved into route `head.scripts` (nonce-stamped) and the static 500
-  page's inline `onclick` became a plain link; `style-src 'unsafe-inline'` stays deliberately for
-  React style attributes and is documented in `src/lib/security-headers.ts`. The remaining half of
-  AUDIT R4 — the admin bearer token in `localStorage` (Option C, cookie/BFF session) — is still
-  open; options, effort and risk are in [`docs/csp-token-decision.md`](csp-token-decision.md).
-- **Admin bearer token in web storage** (AUDIT R4) — **still open**, unchanged: the admin session
-  stays in `localStorage`; see Option C in [`docs/csp-token-decision.md`](csp-token-decision.md).
-- **zod 3 (BUG-30)** — **assessed 2026-11-10**: the 3→4 bump produces 113 typecheck errors across
-  18 files (hand-rolled JSON-schema internals 34, stricter inferred input types 57,
-  `z.record`/issue-code API changes 14, misc 8), so it was reverted. The measurement and the
-  migration plan are in the appendix of [`docs/csp-token-decision.md`](csp-token-decision.md).
-- **CSP `script-src 'unsafe-inline'` and bearer tokens in web storage** (AUDIT R4) — **decision
-  recorded 2026-11-10**, no behaviour changed. Removing `'unsafe-inline'` needs per-request nonce
-  plumbing that TanStack Start's `getRouter()` does not expose, and moving the admin token off
-  `localStorage` means a cookie/BFF rewrite of the whole admin auth boundary. Options, effort,
-  risk and the recommendation are in
-  [`docs/csp-token-decision.md`](csp-token-decision.md).
-- **zod 3 (BUG-30)** — **fixed 2026-11-10**: the direct dependency is zod 4.6.6 (the first line
-  with the GHSA-mrhx-c7xc-m3w5 fix). The measured 113-error revert from the first attempt was
-  re-done in full: the JSON-schema walker is a typed adapter preserving the database-pinned
-  schema, PATCH schemas no longer inject defaults, `z.record`, issue codes, search-validator and
-  UUID-fixture changes are recorded in
-  [`docs/csp-token-decision.md`](csp-token-decision.md) and the FIX_REPORT upgrade section.
-- **Design gaps (closed 2026-11-09).** About, FAQ, governance and knowledge editors had no
+- **Design gaps — closed 2026-11-09.** About, FAQ, governance and knowledge editors had no
   revision fence: when two tabs saved, the last write silently won. Each table now has a revision
   and its update RPC refuses a stale one; see
   [Editor revision fences](#editor-revision-fences-2026-11-09-design-gap).
-- **`site-documents` (closed 2026-11-10).** It was a public bucket; it is now private and served
-  through a checked signed-read route (see the entry above and the security batch in
-  [`docs/FIX_REPORT.md`](FIX_REPORT.md)).
-- **CSP `script-src 'unsafe-inline'`** (AUDIT R4). Nonce support in SSR is still the missing
-  piece; the admin-token half of the finding is fixed by the session BFF (see above).
-- **`site-documents` is a public bucket.** An uploaded but unpublished PDF can be fetched
-  by anyone who has its random UUID URL.
-- **CSP `script-src 'unsafe-inline'`** (AUDIT R4) — **fixed 2026-11-10**; see the nonce entry
+- **`site-documents` was a public bucket — closed 2026-11-10.** Migration
+  `20261109104000_private_site_documents_bucket.sql` makes the bucket private and adds
+  `public.read_public_document_asset(uuid)`. Every page now links `/api/documents/<asset id>`; that
+  route returns the asset only when it is published and referenced by a published annual report,
+  document slot or knowledge post, then redirects to a 60-second signed URL. No reader mints a
+  public Storage URL any more; admin signed uploads and previews are unchanged.
+- **CSP `script-src 'unsafe-inline'` (AUDIT R4) — fixed 2026-11-10.** `script-src` is now
+  `'self' 'nonce-<per-request nonce>' 'strict-dynamic' <host sources>`; the nonce is generated in
+  `src/server.ts`, travels through an `AsyncLocalStorage` request store into the router's
+  `ssr.nonce` getter, and is stamped on hydration/`ScriptOnce`/head JSON-LD scripts plus a
+  server-side HTML stamping pass. JSON-LD data blocks moved into route `head.scripts` and the
+  static 500 page's inline `onclick` became a plain link; `style-src 'unsafe-inline'` stays
+  deliberately for React style attributes. Live production check: a fresh nonce per response and
+  zero un-nonced inline scripts on `/`, `/report/audit`, `/admin/login`. See
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **Admin bearer token in web storage (AUDIT R4) — fixed 2026-11-10.** The admin session moved
+  behind an `HttpOnly`/`Secure`/`SameSite=Strict` cookie session BFF; the browser keeps only a
+  memory-only access token, legacy `sb-*-auth-token` entries are purged, and a guard test forbids
+  reintroducing web-storage persistence. Data endpoints keep their Bearer/`requireAdmin` contract;
+  the residual risk is session-riding XSS during the tab lifetime (no replayable token). See the
+  "Admin session BFF" section of [`docs/FIX_REPORT.md`](FIX_REPORT.md).
+- **zod 3 (BUG-30) — fixed 2026-11-10.** The direct dependency is zod 4.6.6 (the first line with
+  the GHSA-mrhx-c7xc-m3w5 fix); the compat migration is recorded in
+  [`docs/csp-token-decision.md`](csp-token-decision.md) and the FIX_REPORT upgrade section. Bun is
+  pinned to 1.4.4 because Bun 1.3.14's bundler broke the zod 4 browser-fixture bundles.
+- **Prior open items.** AUD-04 (non-blocking RLS CI job) is now fixed: `rls-matrix` is a required
+  branch-protection check. AUD-06 (GA on admin pages) is unchanged. AUD-02 (staff RLS on
+  supporters) is fixed by `20261109103000_tighten_supporter_staff_rls.sql` in the second batch
   above.
-- **Prior open items** AUD-04 (non-blocking RLS CI job) and AUD-06 (GA on admin pages) are
-  unchanged. AUD-02 (staff RLS on supporters) is fixed by
-  `20261109103000_tighten_supporter_staff_rls.sql` in the second batch above.
 - **Content datetimes** convert in the browser's timezone. That is correct for staff in
   Hong Kong; HKT is not forced.
 
@@ -1229,6 +1204,8 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
 
 The deliberately deferred halves of BUG-19, BUG-25, BUG-28, BUG-46 and BUG-53, closed or
 re-decided in one batch. No production data is touched and no existing behaviour is narrowed.
+BUG-53 was subsequently closed too, after the read-only production audit described in
+[Post-baseline parity and guide uniqueness](#post-baseline-parity-and-guide-uniqueness-2026-11-10).
 
 ### BUG-19 — Payments CSV export row cap
 
@@ -1253,8 +1230,11 @@ re-decided in one batch. No production data is touched and no existing behaviour
   wording (setting a password, invite-link failure); recovery keeps the reset wording. After
   setting a password the invitee signs in at `/admin/login`, where the first `/me` call
   activates the pending admin (`activate_admin_invite_with_audit`, unchanged).
-- **Deploy note:** the Supabase Auth redirect allow-list must include the deployment origin's
-  `/admin/reset-password` path; otherwise Supabase falls back to the Site URL.
+- **Deploy note:** the Supabase Auth redirect allow-list was empty in this project, so every
+  invite/resend fell back to the Site URL; it was applied on 2026-11-10 through the Management API
+  (`/admin/reset-password` for `hkscda.vercel.app`, `hkscda.com` and `www.hkscda.com`, plus `*`
+  query variants). Values, the app-side landing fallback and the verification are in
+  [`docs/admin-invite-links-2026-11-10.md`](admin-invite-links-2026-11-10.md).
 
 ### BUG-28 — Refresh the payment row after a 409
 
@@ -1275,19 +1255,22 @@ re-decided in one batch. No production data is touched and no existing behaviour
   No data rewrite. Behaviour change: with `receiptNeeded=false`, already-receipted, failed,
   refunded and below-threshold donations are now exported (they genuinely need no receipt).
 
-### BUG-53 — One published guide per species: index left out deliberately
+### BUG-53 — One published guide per species (closed 2026-11-10: index added)
 
-- **Decision:** **no** unique index or trigger is added in this batch. `publish_adoption_guide_release`
-  (`20261030121000`) already serialises publishes per species and archives every published
-  release of that species, so the only application write path cannot create a duplicate.
-  A partial unique index `unique (species) where state = 'published'` cannot be created safely
-  from here: the bug itself may have left duplicate published rows in production, the migration
-  is forbidden to rewrite data, and creating the index would then fail the deploy. A conditional
-  `DO` block would make the schema differ between environments; a trigger guard is possible but
-  is a new invariant that needs a data audit first.
-- **Follow-up:** after a read-only data audit (duplicate published rows per species), archive any
-  duplicates through the existing publish/archive path with a real actor, then add the partial
-  unique index in its own migration.
+**Original decision (superseded later the same day):** **no** unique index or trigger is added in
+this batch. `publish_adoption_guide_release` (`20261030121000`) already serialises publishes per
+species and archives every published release of that species, so the only application write path
+cannot create a duplicate. A partial unique index `unique (species) where state = 'published'`
+cannot be created safely from here: the bug itself may have left duplicate published rows in
+production, the migration is forbidden to rewrite data, and creating the index would then fail the
+deploy. A conditional `DO` block would make the schema differ between environments; a trigger guard
+is possible but is a new invariant that needs a data audit first.
+
+- **Outcome:** the read-only production audit found **0** `adoption_guide_releases` rows, so no
+  duplicate existed. The partial unique index `adoption_guide_releases_one_published_per_species`
+  was added in `20261110140000_function_parity_and_guide_uniqueness.sql`; see
+  [Post-baseline parity and guide uniqueness](#post-baseline-parity-and-guide-uniqueness-2026-11-10).
+  Archiving duplicate rows remains the only manual step if a future data import reintroduces them.
 
 ## Verified correct (coverage)
 
@@ -1339,8 +1322,9 @@ was not enforced at the database level.
   token in the fragment. `src/lib/admin/authLanding.ts` now recognises typed invite/recovery
   payloads (and Supabase error payloads) on any page load and forwards them to
   `/admin/reset-password` with the fragment intact, so the existing BUG-25 set-password screen
-  completes the flow. The dashboard allow-list entry is still recommended and documented in
-  `docs/admin-invite-links-2026-11-10.md`.
+  completes the flow. The dashboard allow-list was also applied on 2026-11-10 (values in
+  `docs/admin-invite-links-2026-11-10.md`), so Supabase now lands directly on the reset route and
+  the fallback stays as defence in depth.
 - **Branch archive:** the 15 remaining long-lived branches (13 heads of squash-merged PRs + 2
   superseded integrations) were preserved as `archive/2026-11-10/*` tags and deleted; see
   `docs/branch-archive-2026-11-10.md` to recover any of them.
