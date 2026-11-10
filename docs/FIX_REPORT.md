@@ -741,3 +741,62 @@ the token fragment, so BUG-25 invite links work without a dashboard redirect-all
 (documented in `docs/admin-invite-links-2026-11-10.md`). The 15 remaining long-lived branches were
 tagged `archive/2026-11-10/*` and deleted (`docs/branch-archive-2026-11-10.md`). Tests:
 `src/lib/admin/authLanding.test.ts` (8 cases).
+## Admin session BFF (2026-11-10)
+
+The browser-persisted admin session (AUDIT R4, "Not filed as bugs") is replaced by a bounded
+server-side session: the access and refresh tokens live in `HttpOnly` cookies scoped to
+`/api/admin/session`, and the browser keeps only the short-lived access token in module memory.
+The 180+ data endpoints keep their Bearer-token contract and `requireAdmin` is untouched, so the
+authorization layer and RLS do not move. No migration and no new environment variable.
+
+| Piece | Change | Where |
+| --- | --- | --- |
+| Session endpoints | `POST /api/admin/session/login` (email+password, rate-limited), `/refresh` (rotates the refresh cookie), `/logout` (best-effort revoke, clears cookies). All three reject a cross-origin or origin-less request with 403 | `src/lib/admin/sessionBff.server.ts`, `src/lib/admin/sessionSupabase.server.ts`, `src/routes/api/admin/session/*` |
+| Cookie flags | `HttpOnly; Secure; SameSite=Strict; Path=/api/admin/session; Max-Age=<token lifetime>` on the access cookie, 30 days on the refresh cookie. The path scope keeps both cookies off every data endpoint | `src/lib/admin/sessionCookies.ts` |
+| CSRF | `Origin` must equal the request origin and `Sec-Fetch-Site` (when sent) must be `same-origin` or `none`; anything else is a 403 before any provider call. Cookies add `SameSite=Strict` as the second layer | `sessionBff.server.ts` (`isCrossSiteRequest`) |
+| Client store | Access token lives only in `sessionMemory.ts` (tab lifetime); page load bootstraps via `/refresh`; a 401 from a data call rotates once and retries once; expired/near-expiry tokens refresh before use; concurrent refreshes are single-flight. Sign-out clears memory and calls `/logout`; pre-BFF `sb-*-auth-token` entries are removed on bootstrap/logout | `src/lib/admin/sessionMemory.ts` |
+| Refactors | `getAdminAccessToken`/`fetchAdminJson`/`requireSignedInAdminIdentity`, `useLiveAdminActor`, the expiry watcher, `AdminLayout` logout, the volunteer shell identity watch, both export download paths, and the login page now use the BFF/store; password recovery/invite set-password use a separate `persistSession:false` in-memory Supabase client | `src/lib/admin/{session,adminAuthClient,useLiveAdminActor}.ts`, `src/components/admin/{AdminLayout,useSessionExpiryRedirect,VolunteerAdminShell}.tsx`, `src/components/admin/adoptions/{ExportButton,CoordinatorReports}.tsx`, `src/routes/admin/{login,reset-password}.tsx` |
+| Guard tests | `noWebStorageAuth.test.ts` fails if a browser admin module reintroduces `supabase.auth` persistence or writes an admin token to web storage; the authorization sweep treats `session/` as the one anonymous `api/admin` prefix (its own tests cover CSRF/cookies) | `src/lib/admin/noWebStorageAuth.test.ts`, `tests/integration/admin/authorization.test.ts` |
+
+**Behaviour to know.** Sign-in and reload still work (reload re-establishes the session from the
+refresh cookie), but an admin session is now tied to that browser profile and tab: an old tab
+that is never reloaded keeps working until its memory token expires, and a sign-out in another
+tab is not broadcast — the next 401/refresh in this tab redirects to sign-in. The old
+`sb-*-auth-token` entry is removed on the next admin page load; until then it is ignored by the
+admin code. Password-recovery and invite links keep working through a memory-only Supabase client
+and still sign out locally once the password is set. Data endpoints are unchanged, so nothing in
+the API/authorization contract moved.
+
+**Verification.** `bunx tsc --noEmit` clean. `bun run lint` 0 errors (the same 56 pre-existing
+warnings). Focused `bun test --isolate` over the new endpoint/store/guard tests plus every
+refactored call site (login, reset-password, auth pages, AdminLayout, expiry watcher, live actor,
+volunteer shell, coordinator reports/exports, authorization sweep): **151 pass, 0 fail across 18
+files** with `SUPABASE_LOCAL_URL=http://127.0.0.1:1`. No database and no Supabase stack were
+used: the endpoints are tested with injected auth/limiter fakes (cookie flags, CSRF rejection,
+refresh rotation, provider error mapping), and the client store with a mocked `fetch` plus a
+storage spy proving no web-storage write. The browser-fixture suites (`*.browser.test.ts`) and
+the Python/Playwright evidence tests cannot spawn child processes in this sandbox and fail for
+that environmental reason, not on this change.
+
+**Residual risks.** The access token is readable by script during the tab lifetime, so an XSS can
+still act as the signed-in admin while the page is open (it can no longer exfiltrate a replayable
+long-lived token). Cross-tab logout/account switch is eventual, not broadcast. The login endpoint
+issues a session for any valid Supabase credential; the existing `/api/admin/me` 403 path still
+signs non-admins out immediately, so a non-admin can hold a token only until that first identity
+call. Rate limiting is fail-open when Upstash is absent (deliberate: do not lock admins out).
+`Secure` cookies require HTTPS in production (Vercel provides it); localhost is treated as a
+secure context by current browsers. The CSP `'unsafe-inline'` half of AUDIT R4 remains open and
+still needs the nonce work tracked in [`docs/csp-token-decision.md`](csp-token-decision.md).
+
+**Manual QA checklist.**
+
+- [ ] Sign in as an admin: DevTools → Application → Local Storage has no `sb-*-auth-token` and no
+      admin JWT; Cookies show `hkscda-admin-access`/`hkscda-admin-refresh` with HttpOnly, Secure,
+      SameSite=Strict and path `/api/admin/session`. Reloading `/admin` keeps you signed in.
+- [ ] Sign out: both cookies disappear, the identity cache is cleared, and Back to a protected
+      page redirects to sign-in. Open the app in a second tab before signing out: its next
+      navigation/401 lands on sign-in rather than showing the previous admin's data.
+- [ ] Request a password reset, open the emailed link, set a new password: the page reaches the
+      ready state, the password changes, and you end on sign-in (no admin token in web storage).
+- [ ] Send an invite, open the invitation link and set a password: same result with the invite
+      wording.

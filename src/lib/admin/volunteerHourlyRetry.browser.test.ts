@@ -176,7 +176,13 @@ test("hourly retry requires a reason and preserves the confirmed revision throug
         return Response.json({ fixtureId });
       }
       if (url.pathname === "/api/admin/me")
-        return Response.json({ admin: { id: actor, authUserId: actor, role, status: "active" } });
+        // The shared overview fixture seeds session.authUserId "synthetic-admin".
+        // fetchAdminJson fences the retry POST on identity.admin.authUserId, so this
+        // double must match that seed or the dialog shows identity-changed instead of
+        // the 503 unavailable copy.
+        return Response.json({
+          admin: { id: actor, authUserId: "synthetic-admin", role, status: "active" },
+        });
       if (url.pathname === "/api/admin/volunteers/overview") return overview(request);
       if (url.pathname === "/api/admin/volunteers/calendar")
         return Response.json({ activities: [] });

@@ -6,13 +6,28 @@ const getSession = mock(
   }),
 );
 
-mock.module("../../../lib/supabase", () => ({
-  supabase: {
-    auth: {
-      getSession,
-    },
-  },
-}));
+mock.module("../../../lib/admin/sessionMemory", () => {
+  const tokenSet = async () => {
+    const { data } = await getSession();
+    if (!data.session?.access_token) throw new Error("not signed in");
+    return {
+      accessToken: data.session.access_token,
+      expiresAt: Date.now() + 3_600_000,
+      authUserId: "auth-a",
+    };
+  };
+  return {
+    ensureAdminSession: tokenSet,
+    refreshAdminSession: tokenSet,
+    adminSessionSnapshot: () => ({
+      accessToken: "session-token",
+      expiresAt: Date.now() + 3_600_000,
+      authUserId: "auth-a",
+    }),
+    clearAdminSession: () => {},
+    logoutAdminSession: async () => {},
+  };
+});
 
 const { fetchCoordinatorJson } = await import("./api");
 

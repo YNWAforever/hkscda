@@ -1,17 +1,11 @@
-import { afterEach, describe, expect, mock, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { expectNoChineseText } from "../../components/admin/i18n/testing";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({
-        data: { session: { access_token: "session-token", user: { id: "auth-1" } } },
-      }),
-    },
-  },
-}));
+// The admin fetch seam is the in-memory session store now; seed the account the fixture names.
+seedAdminSessionForTests({ accessToken: "session-token", authUserId: "auth-1" });
 
 const { fetchAdminJson } = await import("../admin/session");
 const { createSponsorshipAdminHandlers } = await import("./http.server");

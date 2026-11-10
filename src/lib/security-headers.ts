@@ -12,15 +12,34 @@
 // the previous list would have broken the adoption, volunteer and sponsorship
 // forms - every gated public form on the site.
 //
+// `script-src` uses a per-request nonce instead of `'unsafe-inline'` (2026-11-09
+// audit, AUDIT R4). src/server.ts generates a fresh nonce for each request,
+// src/router.tsx puts it on the router (`ssr.nonce`), and TanStack Start stamps it
+// on every inline script it emits for the render: the hydration/bootstrap
+// `<Scripts>` tags, `ScriptOnce`, and the JSON-LD blocks declared through route
+// `head.scripts`. Scripts our own nonced code inserts at runtime (GA4's gtag
+// loader, the Google Maps loader, Turnstile) are allowed by `'strict-dynamic'`;
+// the host sources that follow it are only read by browsers that do not support
+// `'strict-dynamic'` yet, which is why they stay.
+//
+// `style-src` keeps `'unsafe-inline'`: React style attributes (and the error page's
+// inline `<style>`) are inline styles, and a style nonce covers only `<style>`
+// elements, never `style="..."` attributes. Removing it would need every inline
+// style migrated to classes first; forcing that split is a separate change.
+//
 // Violations are still reported: report-uri and report-to are kept, so an
 // enforced block is visible rather than silent.
-//
-// 'unsafe-inline' remains for now (TanStack Start injects inline hydration
-// script/style); moving to nonces is the next hardening step.
 /** Where the browser POSTs CSP violation reports. See routes/api/csp-report.ts. */
 export const CSP_REPORT_PATH = "/api/csp-report";
 /** Reporting API group name, declared by the `Reporting-Endpoints` header. */
 export const CSP_REPORT_GROUP = "csp";
+
+/** The external script origins the app loads (directly or through a trusted loader). */
+const SCRIPT_HOST_SOURCES = [
+  "https://www.googletagmanager.com",
+  "https://maps.googleapis.com",
+  "https://challenges.cloudflare.com",
+] as const;
 
 /** Accept only a single configured service origin; never interpolate raw env into CSP. */
 export function configuredSupabaseOrigin(value?: string): string | null {
@@ -36,9 +55,20 @@ export function configuredSupabaseOrigin(value?: string): string | null {
   }
 }
 
-export function buildContentSecurityPolicy(supabaseUrl?: string): string {
+/**
+ * The policy for one response. `nonce` is the request's CSP nonce; when it is omitted (tests, or
+ * a response rendered outside the SSR request context) the policy has no nonce and no
+ * `'strict-dynamic'`, so no inline script is trusted — the only such response is the static error
+ * page, which carries no script at all. A nonce that is not base64 is ignored rather than
+ * interpolated, so a caller can never inject a directive through it.
+ */
+export function buildContentSecurityPolicy(supabaseUrl?: string, nonce?: string): string {
   const origin = configuredSupabaseOrigin(supabaseUrl);
   const configuredSource = origin ? ` ${origin}` : "";
+  const safeNonce = nonce && /^[A-Za-z0-9+/]+={0,2}$/.test(nonce) ? nonce : undefined;
+  const scriptSources = ["'self'"];
+  if (safeNonce) scriptSources.push(`'nonce-${safeNonce}'`, "'strict-dynamic'");
+  scriptSources.push(...SCRIPT_HOST_SOURCES);
   return [
     "default-src 'self'",
     "base-uri 'self'",
@@ -46,8 +76,10 @@ export function buildContentSecurityPolicy(supabaseUrl?: string): string {
     "frame-ancestors 'none'",
     `img-src 'self' data: https:${configuredSource}`,
     "font-src 'self' data:",
+    // React style attributes (`style={{...}}`) and the error page's inline <style> need this; a
+    // style nonce cannot cover style attributes, so it is kept deliberately (see the file header).
     "style-src 'self' 'unsafe-inline'",
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com https://challenges.cloudflare.com",
+    `script-src ${scriptSources.join(" ")}`,
     // Turnstile renders in an iframe. Without this the widget cannot mount and
     // every Turnstile-gated form fails closed.
     "frame-src 'self' https://challenges.cloudflare.com",
@@ -77,24 +109,82 @@ export const SECURITY_HEADERS: Record<string, string> = {
   "Content-Security-Policy": CONTENT_SECURITY_POLICY,
 };
 
-// Add the security headers to a response without clobbering any the handler
-// already set. Mutates in place when possible (preserves SSR streaming bodies);
-// falls back to a rebuilt response if the header set is immutable.
-export function applySecurityHeaders(response: Response): Response {
+const SAFE_NONCE = /^[A-Za-z0-9+/]+={0,2}$/;
+
+/**
+ * Put the request nonce on every `<script>` tag that does not already have one.
+ * TanStack/Nitro may emit hydration scripts before this request's nonce exists
+ * (a reused router, or HTML rendered at build time). The CSP header always
+ * carries a fresh nonce, so those tags must be stamped here or the browser
+ * blocks them. The nonce charset cannot break out of the double-quoted attribute.
+ */
+export function stampHtmlScriptNonces(html: string, nonce: string): string {
+  if (!SAFE_NONCE.test(nonce)) return html;
+  return html.replace(/<script\b(?![^>]*\bnonce\s*=)/gi, `<script nonce="${nonce}"`);
+}
+
+/**
+ * For HTML responses, stamp the request nonce onto script tags, then return a
+ * new body. Non-HTML responses (JSON APIs) are left unread and unchanged.
+ */
+export async function withNonceStampedScripts(
+  response: Response,
+  nonce?: string,
+): Promise<Response> {
+  if (!nonce || !SAFE_NONCE.test(nonce)) return response;
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType && !contentType.toLowerCase().includes("text/html")) return response;
+  const html = await response.text();
+  const stamped = stampHtmlScriptNonces(html, nonce);
+  if (stamped === html) {
+    return new Response(html, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  }
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(stamped, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+/**
+ * Add the security headers to a response without clobbering any the handler
+ * already set. Mutates in place when possible (preserves SSR streaming bodies);
+ * falls back to a rebuilt response if the header set is immutable.
+ *
+ * Pass the request's CSP nonce so this response's `script-src` matches the nonce
+ * on the inline scripts in its markup; the baseline headers are used when it is
+ * omitted.
+ */
+export function applySecurityHeaders(response: Response, nonce?: string): Response {
+  const headers: Record<string, string> = nonce
+    ? {
+        ...SECURITY_HEADERS,
+        "Content-Security-Policy": buildContentSecurityPolicy(
+          import.meta.env.VITE_SUPABASE_URL,
+          nonce,
+        ),
+      }
+    : SECURITY_HEADERS;
   try {
-    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+    for (const [key, value] of Object.entries(headers)) {
       if (!response.headers.has(key)) response.headers.set(key, value);
     }
     return response;
   } catch {
-    const headers = new Headers(response.headers);
-    for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
-      if (!headers.has(key)) headers.set(key, value);
+    const rebuiltHeaders = new Headers(response.headers);
+    for (const [key, value] of Object.entries(headers)) {
+      if (!rebuiltHeaders.has(key)) rebuiltHeaders.set(key, value);
     }
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
-      headers,
+      headers: rebuiltHeaders,
     });
   }
 }

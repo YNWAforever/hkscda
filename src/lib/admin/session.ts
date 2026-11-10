@@ -10,7 +10,13 @@ import {
 } from "./access";
 import { ADMIN_IDENTITY_QUERY_KEY, adminIdentityQueryOptions } from "./identity";
 import type { AdminLanguage } from "./language";
-import { supabase } from "../supabase";
+import {
+  adminSessionSnapshot,
+  clearAdminSession,
+  ensureAdminSession,
+  logoutAdminSession,
+  refreshAdminSession,
+} from "./sessionMemory";
 
 export type AdminMeResponse = {
   admin: AdminIdentity;
@@ -106,13 +112,17 @@ export class AdminApiError extends Error {
   readonly fields?: AdminApiErrorFields;
 }
 export async function getAdminAccessToken(expectedActorUserId?: string) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session?.access_token) throw new AdminSessionError("not_signed_in");
-  if (expectedActorUserId && session.user?.id !== expectedActorUserId)
+  // The token lives only in this tab's memory; the persistent half of the session is the
+  // HttpOnly refresh cookie behind the session BFF endpoints.
+  let session;
+  try {
+    session = await ensureAdminSession();
+  } catch {
+    throw new AdminSessionError("not_signed_in");
+  }
+  if (expectedActorUserId && session.authUserId !== expectedActorUserId)
     throw new AdminSessionError("identity_changed");
-  return session.access_token;
+  return session.accessToken;
 }
 
 /** Puts `status` on `error` if it can; `false`, never a throw, when it cannot. */
@@ -127,14 +137,9 @@ function attachStatus(error: Error, status: number | null): boolean {
   return (error as { status?: unknown }).status === status;
 }
 
-export async function fetchAdminJson<T>(
-  path: string,
-  init?: RequestInit,
-  expectedActorUserId?: string,
-): Promise<T> {
-  const token = await getAdminAccessToken(expectedActorUserId);
+async function requestAdminJson(path: string, init: RequestInit | undefined, token: string) {
   const isFormData = init?.body instanceof FormData;
-  const response = await fetch(path, {
+  return fetch(path, {
     ...init,
     headers: {
       ...(isFormData ? {} : { "content-type": "application/json" }),
@@ -150,6 +155,28 @@ export async function fetchAdminJson<T>(
     // so it is wrapped with the same message.
     throw new AdminHttpError(error.message, null);
   });
+}
+
+export async function fetchAdminJson<T>(
+  path: string,
+  init?: RequestInit,
+  expectedActorUserId?: string,
+): Promise<T> {
+  let token = await getAdminAccessToken(expectedActorUserId);
+  let response = await requestAdminJson(path, init, token);
+  if (response.status === 401 && adminSessionSnapshot()) {
+    // The access token expired between the memory check and the request (or was revoked):
+    // the refresh cookie may still be valid, so rotate once and retry once. A second 401 is
+    // a real session failure and flows into the normal error mapping below.
+    try {
+      await refreshAdminSession();
+    } catch {
+      clearAdminSession();
+      throw new AdminSessionError("not_signed_in");
+    }
+    token = await getAdminAccessToken(expectedActorUserId);
+    response = await requestAdminJson(path, init, token);
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);
@@ -223,15 +250,13 @@ function safeErrorFields(value: unknown): AdminApiErrorFields | undefined {
 }
 
 export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = await ensureAdminSession().catch(() => null);
   if (!session) {
     queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
     throw redirect({ to: "/admin/login" });
   }
   const cachedIdentity = queryClient.getQueryData<AdminMeResponse>(ADMIN_IDENTITY_QUERY_KEY);
-  if (cachedIdentity && cachedIdentity.admin.authUserId !== session.user.id) {
+  if (cachedIdentity && cachedIdentity.admin.authUserId !== session.authUserId) {
     queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
   }
   // ensureQueryData is what makes AdminLayout's later useQuery a cache hit
@@ -239,7 +264,7 @@ export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
   try {
     return await queryClient.ensureQueryData(adminIdentityQueryOptions());
   } catch (error) {
-    // The browser still holds a session the server no longer accepts (401): revoked, signed
+    // The tab still holds a session token the server no longer accepts (401): revoked, signed
     // out elsewhere, or tampered with (BUG-31). Or the server accepted the account and then
     // refused it admin access (403) because its admin row was removed, disabled or demoted
     // while it was signed in (AUTH-02). Neither can recover on this browser, so both sign out
@@ -248,7 +273,8 @@ export async function requireSignedInAdminIdentity(queryClient: QueryClient) {
     const forbidden = isForbiddenIdentityError(error);
     if (!forbidden && !isLapsedSessionError(error)) throw error;
     queryClient.removeQueries({ queryKey: ADMIN_IDENTITY_QUERY_KEY });
-    await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+    clearAdminSession();
+    await logoutAdminSession().catch(() => undefined);
     // A lapsed session just needs signing in again; a refused account is told why, using the
     // same bilingual refusal message completeSignIn shows for a refused sign-in (BUG-57).
     throw forbidden

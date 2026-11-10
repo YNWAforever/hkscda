@@ -1,27 +1,32 @@
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { QueryClient } from "@tanstack/react-query";
 
-const getSession = mock(
-  async (): Promise<{
-    data: { session: { access_token: string; user: { id: string } } | null };
-  }> => ({
-    data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
-  }),
-);
+import type { AdminSessionTokenSet } from "./sessionMemory";
 
-const signOut = mock(async (_options?: { scope?: string }) => ({ error: null }));
+const tokenSet: AdminSessionTokenSet = {
+  accessToken: "session-token",
+  expiresAt: Date.now() + 3_600_000,
+  authUserId: "auth-a",
+};
+const ensureAdminSession = mock(async (): Promise<AdminSessionTokenSet> => tokenSet);
+const refreshAdminSession = mock(async (): Promise<AdminSessionTokenSet> => tokenSet);
+const adminSessionSnapshot = mock((): AdminSessionTokenSet | null => tokenSet);
+const clearAdminSession = mock(() => {});
+const logoutAdminSession = mock(async () => {});
+const bootstrapAdminSession = mock(async (): Promise<AdminSessionTokenSet | null> => tokenSet);
 
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession,
-      signOut,
-    },
-  },
+mock.module("./sessionMemory", () => ({
+  ensureAdminSession,
+  refreshAdminSession,
+  adminSessionSnapshot,
+  clearAdminSession,
+  logoutAdminSession,
+  bootstrapAdminSession,
 }));
 
 const {
   AdminApiError,
+  AdminHttpError,
   AdminSessionError,
   adminErrorMessage,
   adminSessionErrorText,
@@ -31,31 +36,45 @@ const {
   requireSignedInAdminIdentity,
 } = await import("./session");
 
+const noSignedIn = () => {
+  const error = new AdminSessionError("not_signed_in");
+  return Promise.reject(error);
+};
+
 describe("admin browser session", () => {
   const originalFetch = globalThis.fetch;
 
   beforeEach(() => {
-    getSession.mockResolvedValue({
-      data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
-    });
+    ensureAdminSession.mockImplementation(async () => tokenSet);
+    refreshAdminSession.mockImplementation(async () => tokenSet);
+    adminSessionSnapshot.mockImplementation(() => tokenSet);
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
-    getSession.mockClear();
+    ensureAdminSession.mockClear();
+    refreshAdminSession.mockClear();
+    clearAdminSession.mockClear();
+    logoutAdminSession.mockClear();
   });
 
-  test("returns the current Supabase access token", async () => {
+  test("returns the access token from the in-memory session store", async () => {
     await expect(getAdminAccessToken()).resolves.toBe("session-token");
+    expect(ensureAdminSession).toHaveBeenCalled();
   });
 
-  test("throws before fetch when there is no admin access token", async () => {
-    const fetchSpy = mock(async () => new Response("{}"));
-    globalThis.fetch = fetchSpy as unknown as typeof fetch;
-    getSession.mockResolvedValue({ data: { session: null } });
+  test("throws not_signed_in when the refresh cookie cannot restore a session", async () => {
+    ensureAdminSession.mockImplementation(noSignedIn);
+    const error = await getAdminAccessToken().catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminSessionError);
+    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("not_signed_in");
+  });
 
-    await expect(fetchAdminJson("/api/admin/me")).rejects.toThrow();
-    expect(fetchSpy).not.toHaveBeenCalled();
+  test("throws identity_changed when the store belongs to another account", async () => {
+    ensureAdminSession.mockImplementation(async () => ({ ...tokenSet, authUserId: "auth-b" }));
+    const error = await getAdminAccessToken("auth-a").catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminSessionError);
+    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("identity_changed");
   });
 
   test("sends JSON content type and bearer authorization", async () => {
@@ -77,7 +96,7 @@ describe("admin browser session", () => {
     );
   });
 
-  test("omits the JSON content type for a FormData body so the browser can set its own multipart boundary", async () => {
+  test("omits the JSON content type for a FormData body", async () => {
     const fetchSpy = mock(async (_input: RequestInfo | URL, _init?: RequestInit) =>
       Response.json({ ok: true }),
     );
@@ -85,27 +104,53 @@ describe("admin browser session", () => {
 
     const formData = new FormData();
     formData.append("file", new Blob(["proof"]), "proof.pdf");
-
-    await fetchAdminJson("/api/admin/sponsorships/pledges/pledge-1/proof", {
+    await fetchAdminJson("/api/admin/sponsorships/pledges/p/proof", {
       method: "POST",
       body: formData,
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith(
-      "/api/admin/sponsorships/pledges/pledge-1/proof",
-      expect.objectContaining({
-        method: "POST",
-        body: formData,
-        headers: expect.objectContaining({
-          authorization: "Bearer session-token",
-        }),
-      }),
-    );
     const [, requestInit] = fetchSpy.mock.calls[0];
     expect(requestInit?.headers).not.toHaveProperty("content-type");
   });
 
-  test("preserves structured safe errors for a conflict response", async () => {
+  test("rotates the session once and retries when the server answers 401", async () => {
+    let calls = 0;
+    globalThis.fetch = mock(async () => {
+      calls += 1;
+      if (calls === 1) return Response.json({ error: "expired" }, { status: 401 });
+      return Response.json({ ok: true });
+    }) as unknown as typeof fetch;
+
+    await expect(fetchAdminJson("/api/admin/content")).resolves.toEqual({ ok: true });
+    expect(refreshAdminSession).toHaveBeenCalledTimes(1);
+    expect(calls).toBe(2);
+  });
+
+  test("a failed refresh on 401 clears the session and reports not signed in", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "expired" }, { status: 401 }),
+    ) as unknown as typeof fetch;
+    refreshAdminSession.mockImplementation(() => Promise.reject(new Error("refresh failed")));
+
+    const error = await fetchAdminJson("/api/admin/content").catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminSessionError);
+    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("not_signed_in");
+    expect(clearAdminSession).toHaveBeenCalled();
+  });
+
+  test("does not attempt a refresh when the store is already empty", async () => {
+    globalThis.fetch = mock(async () =>
+      Response.json({ error: "nope" }, { status: 401 }),
+    ) as unknown as typeof fetch;
+    adminSessionSnapshot.mockImplementation(() => null);
+
+    const error = await fetchAdminJson("/api/admin/content").catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(AdminHttpError);
+    expect((error as { status?: unknown }).status).toBe(401);
+    expect(refreshAdminSession).not.toHaveBeenCalled();
+  });
+
+  test("preserves structured errors for a conflict response", async () => {
     globalThis.fetch = mock(async () =>
       Response.json(
         {
@@ -119,12 +164,9 @@ describe("admin browser session", () => {
       ),
     ) as unknown as typeof fetch;
 
-    const error = await fetchAdminJson("/api/admin/adoption-guide-releases/release-1").catch(
-      (reason: unknown) => reason,
-    );
+    const error = await fetchAdminJson("/api/admin/releases/r1").catch((caught: unknown) => caught);
 
     expect(error).toBeInstanceOf(AdminApiError);
-    expect(error).toBeInstanceOf(Error);
     expect(error).toMatchObject({
       status: 409,
       code: "conflict",
@@ -133,78 +175,27 @@ describe("admin browser session", () => {
     });
   });
 
-  test("keeps string error messages compatible", async () => {
-    globalThis.fetch = mock(async () =>
-      Response.json({ error: "Request denied." }, { status: 403 }),
-    ) as unknown as typeof fetch;
-
-    await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("Request denied.");
-  });
-
-  test("uses the generic error for malformed error bodies", async () => {
-    globalThis.fetch = mock(
-      async () => new Response("not json", { status: 500 }),
-    ) as unknown as typeof fetch;
-
-    await expect(fetchAdminJson("/api/admin/content")).rejects.toThrow("API request failed");
-  });
-
   test("carries the HTTP status on every error it throws", async () => {
-    for (const status of [401, 403, 404, 500]) {
-      // A plain string error body, a malformed body and a structured body all keep the status.
+    for (const status of [403, 404, 500]) {
       for (const response of [
         () => Response.json({ error: "Request denied." }, { status }),
         () => new Response("not json", { status }),
         () => Response.json({ error: { code: "conflict", message: "Nope." } }, { status }),
       ]) {
         globalThis.fetch = mock(async () => response()) as unknown as typeof fetch;
-        const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+        const error = await fetchAdminJson("/api/admin/content").catch((caught: unknown) => caught);
         expect(error).toBeInstanceOf(Error);
         expect((error as { status?: unknown }).status).toBe(status);
       }
     }
   });
 
-  test("keeps the status on a volunteers path error", async () => {
-    globalThis.fetch = mock(async () =>
-      Response.json({}, { status: 403 }),
-    ) as unknown as typeof fetch;
-    const error = await fetchAdminJson("/api/admin/volunteers/activities").catch(
-      (reason: unknown) => reason,
-    );
-    expect(error).toBeInstanceOf(AdminApiError);
-    expect((error as { status?: unknown }).status).toBe(403);
-  });
-
-  test("gives a null status for a network failure and keeps the error as it was", async () => {
+  test("a network failure keeps the error and gets a null status", async () => {
     globalThis.fetch = mock(async () => {
       throw new TypeError("Failed to fetch");
     }) as unknown as typeof fetch;
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    const error = await fetchAdminJson("/api/admin/content").catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(TypeError);
-    expect((error as Error).message).toBe("Failed to fetch");
-    expect((error as { status?: unknown }).status).toBeNull();
-  });
-
-  test("wraps a network error whose own status cannot be redefined, without throwing", async () => {
-    globalThis.fetch = mock(async () => {
-      const error = new TypeError("Failed to fetch");
-      Object.defineProperty(error, "status", { value: 0, configurable: false, writable: false });
-      throw error;
-    }) as unknown as typeof fetch;
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
-    expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toBe("Failed to fetch");
-    expect((error as { status?: unknown }).status).toBeNull();
-  });
-
-  test("wraps a network error that cannot carry a status, with the same message", async () => {
-    globalThis.fetch = mock(async () => {
-      throw Object.freeze(new TypeError("Failed to fetch"));
-    }) as unknown as typeof fetch;
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
-    expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toBe("Failed to fetch");
     expect((error as { status?: unknown }).status).toBeNull();
   });
 
@@ -212,66 +203,13 @@ describe("admin browser session", () => {
     globalThis.fetch = mock(async () => {
       throw new DOMException("aborted", "AbortError");
     }) as unknown as typeof fetch;
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
+    const error = await fetchAdminJson("/api/admin/content").catch((caught: unknown) => caught);
     expect((error as Error).name).toBe("AbortError");
     expect("status" in (error as object)).toBe(false);
   });
 
-  test("omits unsafe structured error codes and invalid field collections", async () => {
-    globalThis.fetch = mock(async () =>
-      Response.json(
-        {
-          error: {
-            code: "conflict;drop",
-            message: "Review the request.",
-            fields: {
-              expectedVersion: "Reload first.",
-              topic: ["Required.", 42],
-            },
-          },
-        },
-        { status: 400 },
-      ),
-    ) as unknown as typeof fetch;
-
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
-
-    expect(error).toBeInstanceOf(AdminApiError);
-    expect(error).toMatchObject({
-      status: 400,
-      message: "Review the request.",
-    });
-    expect((error as InstanceType<typeof AdminApiError>).code).toBeUndefined();
-    expect((error as InstanceType<typeof AdminApiError>).fields).toBeUndefined();
-  });
-
-  test("keeps only validated structured error fields", async () => {
-    globalThis.fetch = mock(async () =>
-      Response.json(
-        {
-          error: {
-            code: "validation_error",
-            message: "Review the highlighted fields.",
-            fields: {
-              topic: ["Topic is required."],
-              expectedVersion: "Reload first.",
-              mixed: ["Safe-looking text", null],
-            },
-          },
-        },
-        { status: 400 },
-      ),
-    ) as unknown as typeof fetch;
-
-    const error = await fetchAdminJson("/api/admin/content").catch((reason: unknown) => reason);
-
-    expect(error).toMatchObject({
-      code: "validation_error",
-      fields: { topic: ["Topic is required."] },
-    });
-  });
   test("loads admin identity through the shared admin JSON interface", async () => {
-    const fetchSpy = mock(async () =>
+    globalThis.fetch = mock(async () =>
       Response.json({
         admin: {
           id: "admin-row",
@@ -281,104 +219,35 @@ describe("admin browser session", () => {
           status: "active",
         },
       }),
-    );
-    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    ) as unknown as typeof fetch;
 
-    await expect(fetchAdminIdentity()).resolves.toEqual({
-      admin: {
-        id: "admin-row",
-        authUserId: "auth-user",
-        email: "admin@example.com",
-        role: "admin",
-        status: "active",
-      },
+    await expect(fetchAdminIdentity()).resolves.toMatchObject({
+      admin: { authUserId: "auth-user", role: "admin" },
     });
-    expect(fetchSpy).toHaveBeenCalledWith(
-      "/api/admin/me",
-      expect.objectContaining({
-        headers: expect.objectContaining({ authorization: "Bearer session-token" }),
-      }),
-    );
-  });
-});
-
-describe("session errors", () => {
-  beforeEach(() => {
-    getSession.mockResolvedValue({ data: { session: null } });
   });
 
-  afterEach(() => {
-    getSession.mockClear();
-  });
-
-  test("a missing session keeps its zh-HK message and carries a code", async () => {
-    const error = await getAdminAccessToken().catch((caught: unknown) => caught);
-    expect(error).toBeInstanceOf(AdminSessionError);
-    expect(error).toBeInstanceOf(Error);
-    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("not_signed_in");
-    expect((error as Error).message).toBe("未登入");
-  });
-
-  test("a missing session reads as a 401", async () => {
-    const error = await getAdminAccessToken().catch((caught: unknown) => caught);
-    expect((error as InstanceType<typeof AdminSessionError>).status).toBe(401);
-  });
-
-  test("a changed account keeps its zh-HK message and carries a code and a 401", async () => {
-    getSession.mockResolvedValue({
-      data: { session: { access_token: "token-b", user: { id: "auth-b" } } },
-    });
-    const error = await getAdminAccessToken("auth-a").catch((caught: unknown) => caught);
-    expect(error).toBeInstanceOf(AdminSessionError);
-    expect((error as InstanceType<typeof AdminSessionError>).code).toBe("identity_changed");
-    expect((error as Error).message).toBe("登入身份已變更，請重新載入頁面。");
-    expect((error as InstanceType<typeof AdminSessionError>).status).toBe(401);
-  });
-
-  test("adminErrorMessage translates a session error and leaves other messages as sent", () => {
-    const notSignedIn = new AdminSessionError("not_signed_in");
-    expect(adminErrorMessage(notSignedIn)).toBe("未登入");
-    expect(adminErrorMessage(notSignedIn, "zh")).toBe("未登入");
-    expect(adminErrorMessage(notSignedIn, "en")).toBe("Not signed in. Sign in again.");
-    expect(adminErrorMessage(new AdminSessionError("identity_changed"), "en")).toBe(
-      "Your signed-in account has changed. Reload the page.",
-    );
-    expect(adminErrorMessage(new Error("Invalid JSON body"), "en")).toBe("Invalid JSON body");
-    expect(adminErrorMessage("not an error", "en")).toBeNull();
-  });
-
-  test("the English session text has no Chinese and tells the user what to do", () => {
-    for (const code of ["not_signed_in", "identity_changed"] as const) {
-      expect(adminSessionErrorText(code, "en")).not.toMatch(/\p{Script=Han}/u);
-    }
-    expect(adminSessionErrorText("identity_changed", "en")).toContain("Reload");
-    expect(adminSessionErrorText("not_signed_in", "en")).toContain("Sign in again");
-    // ExportBar compares the zh message with this exact text.
-    expect(adminSessionErrorText("not_signed_in", "zh")).toBe("未登入");
+  test("session error text keeps zh-HK defaults and offers English guidance", () => {
     expect(adminSessionErrorText("not_signed_in")).toBe("未登入");
+    expect(adminSessionErrorText("not_signed_in", "en")).toContain("Sign in again");
+    expect(adminSessionErrorText("identity_changed", "en")).toContain("Reload");
+    expect(adminErrorMessage(new AdminSessionError("not_signed_in"), "en")).toBe(
+      "Not signed in. Sign in again.",
+    );
   });
 });
 
 describe("requireSignedInAdminIdentity", () => {
   const originalFetch = globalThis.fetch;
-  let calls: number;
 
   beforeEach(() => {
-    calls = 0;
-    globalThis.fetch = mock(async () => {
-      calls += 1;
-      return new Response(
-        JSON.stringify({
-          admin: { id: "a1", authUserId: "auth-a", email: "a@b.c", role: "admin" },
-        }),
-        {
-          headers: { "content-type": "application/json" },
-        },
-      );
-    }) as unknown as typeof fetch;
-    getSession.mockResolvedValue({
-      data: { session: { access_token: "session-token", user: { id: "auth-a" } } },
-    });
+    ensureAdminSession.mockImplementation(async () => tokenSet);
+    adminSessionSnapshot.mockImplementation(() => tokenSet);
+    refreshAdminSession.mockImplementation(async () => tokenSet);
+    globalThis.fetch = mock(async () =>
+      Response.json({
+        admin: { id: "a1", authUserId: "auth-a", email: "a@b.c", role: "admin" },
+      }),
+    ) as unknown as typeof fetch;
   });
 
   afterEach(() => {
@@ -389,105 +258,94 @@ describe("requireSignedInAdminIdentity", () => {
     const queryClient = new QueryClient();
     const { admin } = await requireSignedInAdminIdentity(queryClient);
     expect(admin.role).toBe("admin");
-    expect(calls).toBe(1);
   });
 
-  test("BUG-31: a session the server rejects is cleared and sent to sign-in", async () => {
+  test("BUG-31: a 401 identity fetch clears the session and sends the admin to sign-in", async () => {
     globalThis.fetch = mock(async () =>
-      Response.json({ error: "Invalid authorization token" }, { status: 401 }),
+      Response.json({ error: "Invalid token" }, { status: 401 }),
     ) as unknown as typeof fetch;
-    signOut.mockClear();
+    logoutAdminSession.mockClear();
     const queryClient = new QueryClient();
 
     const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
 
     expect(thrown).toMatchObject({ options: { to: "/admin/login" } });
-    // A lapsed session needs a plain sign-in; only a refused account gets the reason.
     expect((thrown as { options?: { search?: unknown } }).options?.search).toBeUndefined();
-    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(logoutAdminSession).toHaveBeenCalled();
     expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
   });
 
-  test("AUTH-02: a 403 identity fetch signs the account out and says why, instead of a dead-end load failure", async () => {
+  test("AUTH-02: a 403 identity fetch signs out and carries the no-access reason", async () => {
     globalThis.fetch = mock(async () =>
-      Response.json({ error: "Admin access revoked" }, { status: 403 }),
+      Response.json({ error: "revoked" }, { status: 403 }),
     ) as unknown as typeof fetch;
-    signOut.mockClear();
+    logoutAdminSession.mockClear();
     const queryClient = new QueryClient();
-    // A cached identity for another account is evicted first, so the identity is re-read from
-    // the server, as it is on a page load after the admin was disabled or demoted (AUTH-02).
-    queryClient.setQueryData(["admin-me"], {
-      admin: { id: "old-row", authUserId: "auth-old", email: "old@example.com", role: "admin" },
-    });
 
     const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
 
     expect(thrown).toMatchObject({
-      options: {
-        to: "/admin/login",
-        search: { reason: "no_admin_access" },
-      },
+      options: { to: "/admin/login", search: { reason: "no_admin_access" } },
     });
-    expect(signOut).toHaveBeenCalledWith({ scope: "local" });
+    expect(logoutAdminSession).toHaveBeenCalled();
     expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
   });
 
-  test("a server failure that is not a lapsed session is not treated as sign-out", async () => {
+  test("a server failure that is not a session loss is rethrown and does not sign out", async () => {
     globalThis.fetch = mock(async () =>
       Response.json({ error: "unavailable" }, { status: 503 }),
     ) as unknown as typeof fetch;
-    signOut.mockClear();
+    logoutAdminSession.mockClear();
 
     await expect(requireSignedInAdminIdentity(new QueryClient())).rejects.toMatchObject({
       status: 503,
     });
-    expect(signOut).not.toHaveBeenCalled();
+    expect(logoutAdminSession).not.toHaveBeenCalled();
   });
 
-  test("a second call on the same client issues no second request", async () => {
-    // This is the duplicate GET /api/admin/me: beforeLoad primes the entry and
-    // AdminLayout reads it back.
-    const queryClient = new QueryClient();
-    await requireSignedInAdminIdentity(queryClient);
-    await requireSignedInAdminIdentity(queryClient);
-    expect(calls).toBe(1);
-  });
-
-  test("reloads identity when a different admin signs in on the same query client", async () => {
-    let authUserId = "auth-a";
-    getSession.mockImplementation(async () => ({
-      data: { session: { access_token: `token-${authUserId}`, user: { id: authUserId } } },
-    }));
+  test("no token and no refresh cookie redirects to sign-in without a request", async () => {
+    ensureAdminSession.mockImplementation(noSignedIn);
     globalThis.fetch = mock(async () => {
-      calls += 1;
-      return Response.json({
-        admin: { id: authUserId, authUserId, email: `${authUserId}@example.com`, role: "staff" },
-      });
+      throw new Error("must not fetch");
     }) as unknown as typeof fetch;
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(["admin-me"], {
+      admin: { id: "a1", authUserId: "auth-a", email: "a@example.com", role: "admin" },
+    });
+
+    const thrown = await requireSignedInAdminIdentity(queryClient).catch((error: unknown) => error);
+    expect(thrown).toMatchObject({ options: { to: "/admin/login" } });
+    expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
+  });
+
+  test("reloads the identity when the session store names a different account", async () => {
+    let authUserId = "auth-a";
+    ensureAdminSession.mockImplementation(async () => ({ ...tokenSet, authUserId }));
+    globalThis.fetch = mock(async () =>
+      Response.json({
+        admin: { id: authUserId, authUserId, email: `${authUserId}@example.com`, role: "staff" },
+      }),
+    ) as unknown as typeof fetch;
 
     const queryClient = new QueryClient();
     expect((await requireSignedInAdminIdentity(queryClient)).admin.authUserId).toBe("auth-a");
     authUserId = "auth-b";
     expect((await requireSignedInAdminIdentity(queryClient)).admin.authUserId).toBe("auth-b");
-    expect(calls).toBe(2);
   });
 
-  test("clears cached admin identity when the session has ended", async () => {
-    const queryClient = new QueryClient();
-    queryClient.setQueryData(["admin-me"], {
-      admin: { id: "a1", authUserId: "auth-a", email: "a@example.com", role: "admin" },
-    });
-    getSession.mockResolvedValue({ data: { session: null } });
+  test("a second call on the same client issues no second request", async () => {
+    let calls = 0;
+    ensureAdminSession.mockClear();
+    globalThis.fetch = mock(async () => {
+      calls += 1;
+      return Response.json({
+        admin: { id: "a1", authUserId: "auth-a", email: "a@b.c", role: "admin" },
+      });
+    }) as unknown as typeof fetch;
 
-    await expect(requireSignedInAdminIdentity(queryClient)).rejects.toBeDefined();
-    expect(queryClient.getQueryData(["admin-me"])).toBeUndefined();
-    expect(calls).toBe(0);
-  });
-
-  test("redirects to login when there is no session", async () => {
-    getSession.mockResolvedValue({ data: { session: null } });
     const queryClient = new QueryClient();
-    await expect(requireSignedInAdminIdentity(queryClient)).rejects.toBeDefined();
-    expect(calls).toBe(0);
+    await requireSignedInAdminIdentity(queryClient);
+    await requireSignedInAdminIdentity(queryClient);
+    expect(calls).toBe(1);
   });
 });

@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, expect, mock, spyOn } from "bun:test";
 
 import { expectNoChineseText } from "../../components/admin/i18n/testing";
+import { seedAdminSessionForTests } from "../admin/sessionMemory";
 import type { VolunteerServerErrorCode } from "./serverErrors";
 
 /**
@@ -8,19 +9,14 @@ import type { VolunteerServerErrorCode } from "./serverErrors";
  * (`adminVolunteerServerMessages.test.ts` and `adminVolunteerPolicyServerMessages.test.ts`). It holds no
  * test of its own; it is named like a test file so that the scan of the server code skips it.
  *
- * The mocks must be installed before anything loads the Supabase client, so importing this module installs
- * them, and what needs them is loaded later by `loadHarness()`. A test file imports this module first, with
- * `await import`, calls `installHarnessHooks()` once at its top level and awaits `loadHarness()`.
+ * The database-client mocks must be installed before anything loads them, so importing this
+ * module installs them, and what needs them is loaded later by `loadHarness()`. A test file
+ * imports this module first, with `await import`, calls `installHarnessHooks()` once at its top
+ * level and awaits `loadHarness()`.
  */
-mock.module("../supabase", () => ({
-  supabase: {
-    auth: {
-      getSession: async () => ({
-        data: { session: { access_token: "session-token", user: { id: "auth-1" } } },
-      }),
-    },
-  },
-}));
+// The admin fetch seam is the in-memory session store now (the BFF owns the persistent
+// session); seed it with the same account the old SDK fixture represented.
+seedAdminSessionForTests({ accessToken: "session-token", authUserId: "auth-1" });
 
 /** What the handlers that create their own database client are given. */
 let rpcResult: { data: unknown; error: unknown } = { data: null, error: null };

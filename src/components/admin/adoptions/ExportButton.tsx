@@ -1,9 +1,8 @@
 import { Download } from "lucide-react";
 import { useState } from "react";
 
-import { adminErrorMessage } from "../../../lib/admin/session";
+import { adminErrorMessage, getAdminAccessToken } from "../../../lib/admin/session";
 import type { CoordinatorExportKind } from "../../../lib/adoptions/types";
-import { supabase } from "../../../lib/supabase";
 import { Button } from "../../ui/button";
 import { useAdminPageCopy } from "../adminPageCopy";
 import { buildCoordinatorExportUrl, getCoordinatorExportFilename } from "./adopterWorkflowLogic";
@@ -30,13 +29,10 @@ export function ExportButton({
     setIsExporting(true);
 
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session?.access_token) throw new Error(pageCopy.common.notSignedIn);
+      const accessToken = await getAdminAccessToken();
 
       const response = await fetch(buildCoordinatorExportUrl(kind, searchParams), {
-        headers: { authorization: `Bearer ${session.access_token}` },
+        headers: { authorization: `Bearer ${accessToken}` },
       });
 
       if (!response.ok) {
