@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+﻿import { describe, expect, mock, test } from "bun:test";
 
 import { createPaymentPublicConfigService, PaymentPublicConfigError } from "./service";
 import type { PaymentPublicConfigRepository } from "./repository.server";
@@ -12,7 +12,7 @@ const TREASURER_ACTOR = {
 };
 
 const DRAFT_CONFIG: PaymentPublicConfig = {
-  id: "11111111-1111-1111-1111-111111111111",
+  id: "11111111-1111-4111-8111-111111111111",
   method: "fps",
   isPubliclyVisible: true,
   displayLabelZh: "轉數快 FPS",

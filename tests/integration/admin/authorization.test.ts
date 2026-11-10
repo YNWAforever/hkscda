@@ -171,7 +171,15 @@ async function call(handler: Handler, method: string, caller: Caller) {
     headers,
     body: method === "GET" || method === "HEAD" ? undefined : "{}",
   });
-  const params = new Proxy<Record<string, string>>({}, { get: () => RECORD_ID });
+  // zod 4 checks `key in params` before reading a dynamic segment, so the fake must answer
+  // `has` as well as `get` (zod 3 read the value directly and never asked).
+  const params = new Proxy<Record<string, string>>(
+    {},
+    {
+      get: () => RECORD_ID,
+      has: () => true,
+    },
+  );
   let status: number;
   try {
     const response = await Promise.race([

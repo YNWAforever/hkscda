@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { ContentLifecycleRepository } from "./lifecycle.repository.server";
 import {
   contentInputSchema,
+  contentUpdateSchema,
   storyProfileInputSchema,
   storyUpdateInputSchema,
   contentMediaInputSchema,
@@ -12,7 +13,7 @@ const identity = z.object({ actorUserId: z.string().uuid(), contentId: z.string(
 const version = z.object({ expectedVersion: z.number().int().nonnegative() });
 const selection = version.extend({ revisionId: z.string().uuid() });
 type Command = { actorUserId: string | null; contentId: string; input: unknown };
-const saveSchema = contentInputSchema.omit({ status: true, publishedAt: true }).partial();
+const saveSchema = contentUpdateSchema.omit({ status: true, publishedAt: true });
 export function createContentLifecycleService(repository: ContentLifecycleRepository) {
   async function mutate(
     command: Command,

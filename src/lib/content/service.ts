@@ -13,6 +13,7 @@ import {
   contentMediaInputSchema,
   contentMediaUploadTargetSchema,
   contentInputSchema,
+  contentUpdateSchema,
   linkSearchSchema,
   notificationDraftStatusSchema,
   publicContentSearchSchema,
@@ -427,7 +428,7 @@ export function createContentService({
         if (!content) throw new Error("Content item not found");
         return { ...content, version: result.version, revisionId: result.revisionId };
       }
-      const parsed = contentInputSchema.partial().parse(input);
+      const parsed = contentUpdateSchema.parse(input);
       const current = await repo.getAdminContent(contentId);
       if (!current) throw new Error("Content item not found");
 

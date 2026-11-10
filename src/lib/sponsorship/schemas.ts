@@ -49,7 +49,7 @@ export const sponsorshipPaymentProofMetadataSchema = z.object({
 
 export type SponsorshipPaymentProofMetadata = z.infer<typeof sponsorshipPaymentProofMetadataSchema>;
 
-const createSponsorshipPledgeSchema = (termsVersion: z.ZodType<string, z.ZodTypeDef, unknown>) =>
+const createSponsorshipPledgeSchema = (termsVersion: z.ZodType<string, unknown>) =>
   z
     .object({
       language: sponsorshipLanguageSchema,

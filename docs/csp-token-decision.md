@@ -1,4 +1,4 @@
-# CSP `script-src 'unsafe-inline'` and admin JWT in web storage — decision note
+﻿# CSP `script-src 'unsafe-inline'` and admin JWT in web storage — decision note
 
 **Date:** 2026-11-10
 **Source:** 2026-11-09 audit (AUDIT R4 / REPORT §3 item 3), task backlog-security-20261110.
@@ -77,6 +77,7 @@ layers still apply:
   `style-src` still carries `'unsafe-inline'` on purpose (React style attributes, which a style
   nonce cannot cover); `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'` and the
   report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are unchanged.
+
 - The browser Supabase client keeps the session in `localStorage` through a coordinated
   storage adapter ([`src/lib/supabase.ts`](../src/lib/supabase.ts)); every admin API call
   sends `Authorization: Bearer <access token>` from [`src/lib/admin/session.ts`](../src/lib/admin/session.ts).
@@ -199,40 +200,51 @@ No behaviour was changed in the batch that wrote this note beyond the private do
 recorded in [`BUGS.md`](BUGS.md) and [`FIX_REPORT.md`](FIX_REPORT.md). The CSP half was implemented
 afterwards, on 2026-11-10, by the nonce task described under Option B.
 
-## Appendix — zod 3 → 4 assessment (GHSA-mrhx-c7xc-m3w5)
+## Appendix — zod 3 → 4 upgrade (completed 2026-11-10)
 
-Attempted in the worktree on 2026-11-10: `bun add zod@^4` (resolved **4.6.5**; bunfig's
-24 h `minimumReleaseAge` guard withheld newer patch releases) then `bunx tsc --noEmit`.
+The planned upgrade from the assessment below is implemented. The direct dependency is
+**zod 4.6.6** in `package.json`/`bun.lock`: the first release line that carries the fix for
+GHSA-mrhx-c7xc-m3w5, and the newest version bunfig's 24 h `minimumReleaseAge` guard accepted
+(4.6.7 was still too new).
 
-- **Typecheck errors: 113** in 18 files (threshold for keeping the upgrade was < 40).
-  By category:
-  - **34** — [`src/lib/volunteers/policy/jsonSchema.ts`](../src/lib/volunteers/policy/jsonSchema.ts)
-    hand-rolls a JSON-Schema converter against zod internals (`schema._def.typeName`,
-    `_def.checks`, `_def.minLength`…). zod 4 removed that shape; the clean fix is to delete the
-    converter and use zod 4's built-in `z.toJSONSchema()` (medium effort, one file, needs its
-    policy-schema tests re-approved).
-  - **57** — inferred *input* types changed for schemas with `.optional()`/`.default()`/
-    `.catch()` (`TS2345`/`TS2339` clusters in `adoptions/repository.server.test.ts` 23,
-    `content/contentListRead.server.test.ts` 22, plus policy/CRM test fixtures). Mechanical but
-    wide: fixtures and call sites must be re-typed, and some of the divergence is real
-    (zod 4 distinguishes input and output more strictly), so each needs a look rather than a
-    blanket cast.
-  - **10** — `z.record(valueSchema)` is no longer accepted; now `z.record(keySchema, valueSchema)`
-    (`TS2554`) in `content/repository.server.ts` (4), `crm/exportJobs.http.server.ts`,
-    `publicAdoption/schemas.ts`, `routes/api/admin/sponsorships/pledges/-recordPaymentUpload.ts`.
-    Mechanical.
-  - **4** — `ZodIssueCode` renames (`invalid_string`→`invalid_format`, `invalid_literal`→
-    `invalid_value`, `invalid_enum_value`/`invalid_union_discriminator` removed) in
-    `components/admin/volunteers/policySettingsLogic.ts`. Mechanical.
-  - **8** — minor typing shifts (`ZodTypeDef` no longer exported in `sponsorship/schemas.ts`,
-    `TS2769`/`TS18048`/`TS7015` misc).
-- **Outcome: reverted.** `git checkout -- package.json bun.lock` + `bun install --frozen-lockfile
-  --ignore-scripts` restored zod 3.25.76; `bunx tsc --noEmit` is clean again.
-- **Recommended plan:** a dedicated upgrade task (estimate 1–2 days plus review):
-  1. Bump to the first version that includes the fix (4.6.6+, respecting `minimumReleaseAge`)
-     and use `z.toJSONSchema()` to replace the hand-rolled converter.
-  2. Sweep the `z.record` call sites and issue-code switches (mechanical).
-  3. Re-type the test fixtures; treat TS2345 clusters as real input/output divergence.
-  4. Run the full suite (schema tests are dense) and re-check `bun audit`; exposure today is
-     bounded by the 8 MB admin / 1 MB public body caps, so this is a planned upgrade, not an
-     incident.
+What changed:
+
+- `src/lib/volunteers/policy/jsonSchema.ts`: the hand-rolled zod 3 `_def` walker is now a small
+  typed adapter over zod 4's `_zod.def`/check definitions. It still produces the exact restricted
+  JSON Schema pinned in `20260913065257_volunteer_policy_validation.sql` (the migration-sync test
+  and the byte-hash test in `messages.test.ts` pass unchanged), so the database matcher needed no
+  migration. `z.toJSONSchema()` was evaluated and rejected: it emits draft-2020-12 keywords
+  (`format`, `oneOf`, `$schema`) that the fixed SQL matcher does not understand, and it cannot
+  reproduce the pinned schema byte for byte.
+- `z.record(valueSchema)` → `z.record(z.string(), valueSchema)` at every call site.
+- `ZodIssueCode` renames: the policy screen maps `invalid_format`/`invalid_value` (and the union,
+  key and element codes) instead of `invalid_string`/`invalid_literal`/`invalid_enum_value`.
+- zod 4 applies a field's inner `.default()` through `.partial()`/`.optional()`. Every PATCH
+  schema built that way (content, documents, adoption statuses, volunteer activities, CRM
+  supporter) is now an explicit all-optional schema with no defaults, and a supporter update
+  keeps `tags` absent unless they were sent. Runtime validation is unchanged; a PATCH no longer
+  parses defaults into fields the caller did not send (that would have overwritten them).
+- Stricter parsed types: optional search fields are genuinely optional again (they were
+  `transform`-wrapped), so fixtures and call sites typecheck without blanket casts. Test fixtures
+  that used non-RFC UUIDs (payment public config) now use RFC 4122 ids, because zod 4's `uuid()`
+  enforces the version/variant nibbles; production ids are RFC v4, so behaviour there is unchanged.
+- TanStack Router: routes passed a raw zod schema as `validateSearch`; zod 4 implements Standard
+  Schema, whose parsed output the router types as required link search params. The routes now use
+  `src/lib/searchValidator.ts`, which exposes the schema's optional input separately from its
+  parsed output, so `<Link search>` stays optional while `Route.useSearch()` keeps the parsed type.
+- `z.ZodTypeDef` is no longer exported: `src/lib/sponsorship/schemas.ts` types the terms schema as
+  `z.ZodType<string, unknown>`.
+
+Measured result: `tsc` errors **139 → 0** (the first, reverted attempt measured 113 with 4.6.5;
+the stricter 4.6.6 uuid and patch semantics added the rest), `bun run lint` 0 errors (the same 56
+pre-existing warnings), focused zod suites 337 pass / 1 skip / 0 fail, and the full-suite numbers
+match the zod 3 baseline exactly: 7,818 pass, 753 skip, 129 fail — the 129 are the known
+Windows-sandbox/environment failures (browser-launch and python/pdf cases), and the set of failing
+files is identical before and after.
+
+Remaining advisories: `bun audit` still lists `zod <4.6.6` through transitive build/dev copies —
+`@tanstack/router-generator` and the start plugin resolve 4.6.5 (inside their own `^4.5.4` range)
+and `chromium-bidi` (Lighthouse dev tooling) pins zod 3.25.76. Forcing those with overrides would
+be unrelated dependency churn and a build-tool risk, so only the direct app dependency is fixed;
+the nested copies are tooling-only. The rest of the audit is the pre-existing build/dev tooling
+set (esbuild, js-yaml, …), unchanged by this upgrade.

@@ -40,16 +40,19 @@ const MAX_LISTED_ISSUES = 10;
 /** Which of the texts for zod's own issues fits a problem the policy has no message for. */
 function issueTextKey(issue: ZodIssue): string {
   switch (issue.code) {
+    // zod 4 renamed the old invalid_string code to invalid_format.
     case "invalid_type":
     case "too_small":
     case "too_big":
-    case "invalid_string":
+    case "invalid_format":
     case "unrecognized_keys":
       return issue.code;
-    case "invalid_enum_value":
-    case "invalid_literal":
+    // A literal, enum or union mismatch is one staff-facing "choose a listed option".
+    case "invalid_value":
     case "invalid_union":
-    case "invalid_union_discriminator":
+    case "invalid_key":
+    case "invalid_element":
+    case "not_multiple_of":
       return "invalid_option";
     default:
       return "other";

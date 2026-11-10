@@ -46,7 +46,7 @@ const budgetSchema = z.object({
   submissions: z.number().int().nonnegative().max(512),
   fixtures: z.number().int().nonnegative().max(12),
   roles: z.number().int().nonnegative().max(2),
-  scripts: z.record(z.number().int().nonnegative().max(1)),
+  scripts: z.record(z.string(), z.number().int().nonnegative().max(1)),
   status: z.literal("active"),
 });
 let initialCatalog: unknown;
@@ -233,7 +233,7 @@ beforeAll(async () => {
       testSha256: z.string(),
       candidateSha256: z.string(),
       sourceManifestSha256: z.string(),
-      scripts: z.record(z.string()),
+      scripts: z.record(z.string(), z.string()),
       maxSubmissionsPerRun: z.literal(512),
       maxAttemptsPerRun: z.literal(12),
     })
@@ -288,6 +288,7 @@ beforeAll(async () => {
   );
   const ports = z
     .record(
+      z.string(),
       z
         .array(
           z.object({

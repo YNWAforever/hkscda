@@ -823,10 +823,10 @@ const publishedEnvelopeSchema = z.object({
     z.object({
       published_at: z.string().nullable(),
       snapshot: z.object({
-        content: z.record(z.unknown()),
-        profile: z.record(z.unknown()).nullable(),
-        updates: z.array(z.record(z.unknown())),
-        media: z.array(z.record(z.unknown())),
+        content: z.record(z.string(), z.unknown()),
+        profile: z.record(z.string(), z.unknown()).nullable(),
+        updates: z.array(z.record(z.string(), z.unknown())),
+        media: z.array(z.record(z.string(), z.unknown())),
       }),
     }),
   ),

@@ -1,6 +1,7 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+﻿import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { pageHead } from "@/lib/pageHead";
 import { z } from "zod";
+import { searchValidator } from "../lib/searchValidator";
 
 import { AnimalGrid } from "../components/site/AnimalGrid";
 import { PublicPageFrame } from "../components/site/PublicPageFrame";
@@ -15,7 +16,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/sponsors")({
-  validateSearch: searchSchema,
+  validateSearch: searchValidator(searchSchema),
   // Server-rendered through the shared projection. The previous browser query
   // paginated with range() and no order(), so the same animal could appear on two
   // pages or on none - the G-01 defect, present here as well as on the species

@@ -1,4 +1,4 @@
-import { describe, expect, mock, test } from "bun:test";
+﻿import { describe, expect, mock, test } from "bun:test";
 
 import { createPaymentPublicConfigHandlers } from "./http.server";
 import { createPaymentPublicConfigService, type PaymentPublicConfigActor } from "./service";
@@ -82,7 +82,7 @@ describe("createPaymentPublicConfigHandlers", () => {
         method: "POST",
         body: JSON.stringify({ expectedVersion: 1, idempotencyKey: "a".repeat(32) }),
       }),
-      { id: "11111111-1111-1111-1111-111111111111" },
+      { id: "11111111-1111-4111-8111-111111111111" },
     );
 
     expect(response.status).toBe(403);
@@ -103,7 +103,7 @@ describe("createPaymentPublicConfigHandlers", () => {
         method: "POST",
         body: JSON.stringify({ expectedVersion: 1, idempotencyKey: "a".repeat(32) }),
       }),
-      { id: "11111111-1111-1111-1111-111111111111" },
+      { id: "11111111-1111-4111-8111-111111111111" },
     );
 
     expect(response.status).toBe(200);
@@ -118,7 +118,7 @@ describe("createPaymentPublicConfigHandlers", () => {
   test("get returns 404 for a missing row", async () => {
     const handlers = buildHandlers(TREASURER);
     const response = await handlers.get(new Request("http://x"), {
-      id: "11111111-1111-1111-1111-111111111111",
+      id: "11111111-1111-4111-8111-111111111111",
     });
 
     expect(response.status).toBe(404);

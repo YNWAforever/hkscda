@@ -18,6 +18,10 @@ async function runDashboard(script: string) {
       {
         name: "isolated-animal-dashboard",
         setup(build) {
+          const markZod = (path: string) =>
+            path.replaceAll("\\", "/").includes("/node_modules/zod/")
+              ? { path, namespace: "zod-src" as const }
+              : undefined;
           build.onResolve({ filter: /^\./ }, (args) => {
             const path = resolve(args.resolveDir, args.path);
             // Bun 1.3 drops the barrel binding in the session/identity cycle; resolve
@@ -27,7 +31,15 @@ async function runDashboard(script: string) {
             if (path === resolve(import.meta.dir, "../supabase"))
               return { path: "auth", namespace: "fixture" };
             const name = stubs.get(path);
-            return name ? { path: name, namespace: "fixture" } : undefined;
+            if (name) return { path: name, namespace: "fixture" };
+            // Same Bun 1.3 barrel optimizer drops zod/v4/core `util` and checks
+            // re-exports (`util.normalizeParams`, `_uppercase2`, …). Loading zod
+            // through a side-effecting namespace keeps those bindings alive.
+            return markZod(path) ?? markZod(`${path}.js`) ?? markZod(resolve(path, "index.js"));
+          });
+          build.onResolve({ filter: /^zod($|\/)/ }, (args) => {
+            const resolved = Bun.resolveSync(args.path, args.resolveDir);
+            return markZod(resolved) ?? { path: resolved };
           });
           build.onLoad({ filter: /.*/, namespace: "fixture" }, ({ path }) => ({
             loader: "js",
@@ -35,6 +47,10 @@ async function runDashboard(script: string) {
               path === "auth"
                 ? 'export const supabase={auth:{getSession:async()=>({data:{session:{access_token:"synthetic-only",user:{id:"synthetic-user"}}}})}};'
                 : `export const ${path}=()=>null;`,
+          }));
+          build.onLoad({ filter: /.*/, namespace: "zod-src" }, async ({ path }) => ({
+            loader: "js",
+            contents: `${await Bun.file(path).text()}\n;void globalThis;`,
           }));
         },
       },

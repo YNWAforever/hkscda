@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { searchValidator } from "../../../lib/searchValidator";
 
 import { AdminLayout } from "../../../components/admin/AdminLayout";
 import { AdoptionGuideReleaseManagement } from "../../../components/admin/content/AdoptionGuideReleaseManagement";
@@ -10,7 +11,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/admin/content/adoption-guides")({
-  validateSearch: searchSchema,
+  validateSearch: searchValidator(searchSchema),
   ssr: false,
   beforeLoad: ({ context }) => requireAdminPageAccess("contentManagement", context.queryClient),
   component: AdminAdoptionGuideReleasesPage,

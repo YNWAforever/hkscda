@@ -12,11 +12,9 @@ import {
 
 const optionalTrimmed = z
   .string()
-  .optional()
-  .transform((value) => {
-    const trimmed = value?.trim();
-    return trimmed ? trimmed : undefined;
-  });
+  .trim()
+  .transform((value) => (value ? value : undefined))
+  .optional();
 
 const booleanSearch = z
   .preprocess(
@@ -28,7 +26,8 @@ const booleanSearch = z
     },
     z.enum(["true", "false"]).optional(),
   )
-  .transform((value) => (value === undefined ? undefined : value === "true"));
+  .transform((value) => (value === undefined ? undefined : value === "true"))
+  .optional();
 
 // Junk falls back to page 1 as before, but a huge page is refused: page × pageSize is an
 // int4 offset in crm_read_supporters, and 50,000,000 overflowed it into a 500 (BUG-18).
@@ -49,6 +48,14 @@ const normalizedTags = z
   .optional()
   .default([])
   .transform((tags) => [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))]);
+
+// The update schema must leave `tags` absent when the request did not send them (zod 4 applies
+// an inner default through `.optional()`), or every other edit would clear the supporter's tags.
+const optionalNormalizedTags = z
+  .array(z.string().trim().max(SUPPORTER_TAG_MAX))
+  .max(SUPPORTER_TAGS_MAX)
+  .transform((tags) => [...new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0))])
+  .optional();
 
 function normalizeRoles(roles: string[], ctx: z.RefinementCtx) {
   const roleSet = new Set<string>(supporterRoles);
@@ -79,19 +86,15 @@ const normalizedRoles = z
 
 const optionalNormalizedRoles = z
   .array(z.string())
-  .optional()
-  .transform((roles, ctx) => (roles === undefined ? undefined : normalizeRoles(roles, ctx)));
+  .transform((roles, ctx) => normalizeRoles(roles, ctx))
+  .optional();
 
 const nullableTrimmed = z
   .string()
+  .trim()
+  .transform((value) => (value ? value : null))
   .nullable()
-  .optional()
-  .transform((value) => {
-    if (value === undefined) return undefined;
-    if (value === null) return null;
-    const trimmed = value.trim();
-    return trimmed ? trimmed : null;
-  });
+  .optional();
 
 const supporterSearchObject = z.object({
   q: optionalTrimmed,
@@ -143,7 +146,7 @@ export const supporterUpdateSchema = z.object({
     message: `Phone must be at most ${SUPPORTER_PHONE_MAX} characters`,
   }),
   language: z.enum(crmLanguages).optional(),
-  tags: normalizedTags.optional(),
+  tags: optionalNormalizedTags,
   roles: optionalNormalizedRoles,
   deleted: z.boolean().optional(),
 });
@@ -186,8 +189,8 @@ export const manualDonationSchema = z
       .string()
       .trim()
       .max(120)
-      .optional()
-      .transform((value) => value || undefined),
+      .transform((value) => value || undefined)
+      .optional(),
     receiptRequested: z.boolean(),
     consents: z
       .object({

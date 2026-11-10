@@ -33,24 +33,25 @@ const boundedPageSize = numberFromInput(z.number().int().min(1))
   .catch(25)
   .transform((value) => Math.min(value, 50));
 
+/** A search box value: an absent, blank or untrimmed string becomes undefined (an optional key). */
+const searchText = z
+  .string()
+  .trim()
+  .transform((value) => (value ? value : undefined))
+  .optional();
+
 export const volunteerActivitySearchSchema = z
   .object({
     status: z.enum(volunteerActivityStatuses).optional(),
     type: z.enum(volunteerActivityTypes).optional(),
-    q: optionalTrimmed.optional().transform((value) => value ?? undefined),
+    q: searchText,
     page: boundedPage.default(1),
     pageSize: boundedPageSize.default(25),
   })
-  .transform((value) => ({
-    status: value.status,
-    type: value.type,
-    q: value.q,
-    page: value.page,
-    pageSize: value.pageSize,
-  }));
+  .transform((value) => ({ ...value }));
 
 export const volunteerRegistrationSearchSchema = z.object({
-  q: optionalTrimmed.optional().transform((value) => value ?? undefined),
+  q: searchText,
   activityId: z.string().uuid().optional(),
   status: z.enum(volunteerRegistrationStatuses).optional(),
   attendanceStatus: z.enum(volunteerAttendanceStatuses).optional(),
@@ -58,21 +59,32 @@ export const volunteerRegistrationSearchSchema = z.object({
   pageSize: boundedPageSize.default(25),
 });
 
-const adminActivityFieldsSchema = z.object({
-  idempotencyKey: z.string().uuid().optional(),
+const adminActivityFields = {
+  idempotencyKey: z.string().uuid(),
   type: z.enum(volunteerActivityTypes),
   title: trimmed.min(1).max(160),
   description: optionalTrimmed,
   startsAt: z.string().datetime(),
-  endsAt: z.string().datetime().nullable().optional().default(null),
+  endsAt: z.string().datetime().nullable(),
   location: trimmed.min(1).max(160),
   capacity: numberFromInput(z.number().int().min(1).max(500)),
-  minAge: numberFromInput(z.number().int().min(0).max(120)).nullable().optional().default(null),
-  underagePolicy: z.enum(volunteerUnderagePolicies).default("allow_with_guardian_pending"),
-  autoApprove: z.boolean().default(false),
-  allowWaitlist: z.boolean().default(true),
-  status: z.enum(volunteerActivityStatuses).default("draft"),
+  minAge: numberFromInput(z.number().int().min(0).max(120)).nullable(),
+  underagePolicy: z.enum(volunteerUnderagePolicies),
+  autoApprove: z.boolean(),
+  allowWaitlist: z.boolean(),
+  status: z.enum(volunteerActivityStatuses),
   registrationModes: z.array(z.enum(volunteerRegistrationTypes)).min(1),
+} as const;
+
+const adminActivityFieldsSchema = z.object({
+  ...adminActivityFields,
+  idempotencyKey: adminActivityFields.idempotencyKey.optional(),
+  endsAt: adminActivityFields.endsAt.optional().default(null),
+  minAge: adminActivityFields.minAge.optional().default(null),
+  underagePolicy: adminActivityFields.underagePolicy.default("allow_with_guardian_pending"),
+  autoApprove: adminActivityFields.autoApprove.default(false),
+  allowWaitlist: adminActivityFields.allowWaitlist.default(true),
+  status: adminActivityFields.status.default("draft"),
 });
 
 /**
@@ -96,8 +108,28 @@ function endsAtOrAfterStart(
 
 export const adminActivityInputSchema = adminActivityFieldsSchema.superRefine(endsAtOrAfterStart);
 
-export const adminActivityUpdateSchema = adminActivityFieldsSchema
-  .partial()
+/**
+ * A PATCH body: every field optional and none applies its own default. zod 4 keeps an inner
+ * default when a field is made optional (`.partial()`), so an update that changed only the
+ * title would also write the default capacity switches and status.
+ */
+export const adminActivityUpdateSchema = z
+  .object({
+    idempotencyKey: adminActivityFields.idempotencyKey.optional(),
+    type: adminActivityFields.type.optional(),
+    title: adminActivityFields.title.optional(),
+    description: adminActivityFields.description.optional(),
+    startsAt: adminActivityFields.startsAt.optional(),
+    endsAt: adminActivityFields.endsAt.optional(),
+    location: adminActivityFields.location.optional(),
+    capacity: adminActivityFields.capacity.optional(),
+    minAge: adminActivityFields.minAge.optional(),
+    underagePolicy: adminActivityFields.underagePolicy.optional(),
+    autoApprove: adminActivityFields.autoApprove.optional(),
+    allowWaitlist: adminActivityFields.allowWaitlist.optional(),
+    status: adminActivityFields.status.optional(),
+    registrationModes: adminActivityFields.registrationModes.optional(),
+  })
   .extend({ expectedUpdatedAt: z.string().datetime({ offset: true }) })
   .superRefine(endsAtOrAfterStart);
 

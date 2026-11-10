@@ -12,11 +12,9 @@ export const statusCategories = [
 
 const optionalTrimmed = z
   .string()
-  .optional()
-  .transform((value) => {
-    const trimmed = value?.trim();
-    return trimmed ? trimmed : undefined;
-  });
+  .trim()
+  .transform((value) => (value ? value : undefined))
+  .optional();
 
 const nullableOptionalTrimmed = optionalTrimmed.nullable().optional();
 
@@ -46,7 +44,7 @@ const defaultTaskType = z
     return trimmed ? trimmed : "followup";
   });
 
-export const statusInputSchema = z.object({
+const statusFields = {
   category: z.enum(statusCategories),
   key: z
     .string()
@@ -54,14 +52,37 @@ export const statusInputSchema = z.object({
     .regex(/^[a-z][a-z0-9_]*$/),
   labelZh: z.string().trim().min(1),
   labelEn: z.string().trim().min(1),
-  sortOrder: z.coerce.number().int().min(0).default(0),
-  color: z.string().trim().min(1).default("slate"),
-  isActive: z.boolean().default(true),
-  isClosing: z.boolean().default(false),
-  isFinal: z.boolean().default(false),
+  sortOrder: z.coerce.number().int().min(0),
+  color: z.string().trim().min(1),
+  isActive: z.boolean(),
+  isClosing: z.boolean(),
+  isFinal: z.boolean(),
+} as const;
+
+export const statusInputSchema = z.object({
+  ...statusFields,
+  sortOrder: statusFields.sortOrder.default(0),
+  color: statusFields.color.default("slate"),
+  isActive: statusFields.isActive.default(true),
+  isClosing: statusFields.isClosing.default(false),
+  isFinal: statusFields.isFinal.default(false),
 });
 
-export const statusUpdateSchema = statusInputSchema.partial().extend({
+/**
+ * A PATCH body: every field optional and none applies its own default. zod 4 keeps an inner
+ * default when a field is made optional (`.partial()`), so a PATCH that changed only a label
+ * would also write the default sort order and switches.
+ */
+export const statusUpdateSchema = z.object({
+  category: statusFields.category.optional(),
+  key: statusFields.key.optional(),
+  labelZh: statusFields.labelZh.optional(),
+  labelEn: statusFields.labelEn.optional(),
+  sortOrder: statusFields.sortOrder.optional(),
+  color: statusFields.color.optional(),
+  isActive: statusFields.isActive.optional(),
+  isClosing: statusFields.isClosing.optional(),
+  isFinal: statusFields.isFinal.optional(),
   delete: z.boolean().optional(),
 });
 
