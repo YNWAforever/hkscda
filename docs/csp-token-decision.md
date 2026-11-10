@@ -11,9 +11,11 @@
   tokens in `HttpOnly; Secure; SameSite=Strict` cookies and the browser keeps only the short-lived
   access token in module memory. The 180+ data endpoints keep their Bearer/`requireAdmin` contract,
   so the authorization and RLS layers did not move.
+- **Trusted Types:** a second, Report-Only policy ships on every response
+  (`require-trusted-types-for 'script'; trusted-types 'none'`), reporting DOM-XSS sinks to the same
+  collector. It blocks nothing; enforcement is a later decision after the report stream is reviewed.
 - **Deliberately unchanged:** `style-src 'unsafe-inline'` (React style attributes cannot carry a
-  style nonce), and the cookie-only data-endpoint model (Option C). Trusted Types in Report-Only is
-  the natural next layer; it is not scheduled.
+  style nonce), and the cookie-only data-endpoint model (Option C).
 
 ## What exists today
 
@@ -27,6 +29,24 @@
   `style-src` still carries `'unsafe-inline'` on purpose (React style attributes, which a style
   nonce cannot cover); `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'` and the
   report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are unchanged.
+
+- **Trusted Types Report-Only (2026-11-10).** Every response also carries a separate
+  `Content-Security-Policy-Report-Only` header built by `buildTrustedTypesReportOnlyPolicy()` in the
+  same module:
+
+  ```
+  require-trusted-types-for 'script'; trusted-types 'none'; report-uri /api/csp-report; report-to csp
+  ```
+
+  It is static (no nonce, like the enforcing header's baseline fallback), report-only by design, and
+  Chromium-only (other browsers ignore the header). `require-trusted-types-for 'script'` reports
+  assignments of plain strings to DOM-XSS sinks (`innerHTML`, `script.src`, `eval`, ...);
+  `trusted-types 'none'` is the strictest baseline (no policy may be created), so the collected
+  reports show the entire surface that would need a policy before enforcement is considered.
+  Reports flow through the same collector as the main policy: rate-limited, size-capped, normalised
+  (`require-trusted-types-for` / `trusted-types` directives are kept) and logged with
+  `console.error("CSP violations")` in the Vercel log stream. Details and promotion criteria are in
+  [Trusted Types Report-Only](#trusted-types-report-only-implemented-2026-11-10) below.
 
 - **Nonce plumbing.** `src/server.ts` generates 16 random bytes (Web Crypto) as a base64 nonce per
   request and runs the Start handler inside an `AsyncLocalStorage` store
@@ -56,6 +76,35 @@
   refresh → **401** with cookie clearing, `/api/admin/me` without a token → **401**, `/admin/login`
   → **200**.
 
+### Trusted Types Report-Only (implemented 2026-11-10)
+
+The DOM-XSS gap the nonce cannot close: the nonce authenticates the script elements the server
+emits, but an injected string that reaches a DOM sink such as `element.innerHTML = ...` still
+executes inside an already-trusted script. `require-trusted-types-for 'script'` is the browser
+mechanism that surfaces exactly those sinks.
+
+- **Why Report-Only first.** Same two-phase approach the nonce used: collect real reports, tune,
+  then enforce. Report-Only cannot break a page, so it is safe to ship on every response including
+  the admin surfaces.
+- **Baseline chosen: `trusted-types 'none'`.** Any policy creation is reported too, so the first
+  report window shows whether the app (or a third-party script) already relies on
+  `trustedTypes.createPolicy`. After review, enforcement should carry the smallest vetted allow-list
+  of policy names and sanitizer entry points, never `'allow-duplicates'` or a catch-all
+  `default` policy.
+- **Where the reports go.** The same `report-uri`/`report-to` endpoints, so `/api/csp-report`
+  normalises them with no new route: `violated-directive`/`effective-directive` are
+  `require-trusted-types-for` or `trusted-types`, and the collector already caps the body
+  (16 KiB), the count (20 per request) and the rate (60/min/IP).
+- **Promotion criteria.** Enforce only after a real traffic window where every reported sink is
+  either (a) already trusted/sanitised, or (b) covered by a named policy the app deliberately
+  installs. Do not enforce with `trusted-types 'none'` while legitimate sinks still report: that
+  breaks the feature rather than the injection.
+- **Tests:** `security-headers.test.ts` (both headers present, TT policy shape, no fetch directives
+  in the Report-Only string), `security-headers.nonce.test.ts` (the static Report-Only header
+  survives the nonced path) and `-cspReport.test.ts` (both Trusted Types wire formats normalise).
+- **Verification:** response headers on the live site should show the enforcing CSP and the static
+  Trusted Types Report-Only policy side by side.
+
 ### Residual risks (accepted, documented)
 
 - The access token is in JS memory for the tab lifetime, so an XSS during that window can still ride
@@ -64,6 +113,8 @@
 - The nonce removes the injected-inline-script class but not an injected _external_ script loaded by
   an already-nonced script — that is what `'strict-dynamic'` trades for loader compatibility.
 - `style-src 'unsafe-inline'` remains until React style attributes are migrated to classes.
+- Trusted Types is _measured_, not enforced: a real DOM-XSS sink is surfaced in the report stream
+  but still executes until `require-trusted-types-for 'script'` is promoted after report review.
 - The HTML nonce stamping is a response rewrite; it deliberately leaves JSON/API bodies untouched.
 
 ## Option A — hardened status quo (superseded 2026-11-10)
@@ -71,7 +122,7 @@
 The pre-BFF cheap layers: keep the SDK storage model and `'unsafe-inline'`, add a Report-Only
 Trusted Types policy, shorten the admin token lifetime, and monitor the existing CSP report
 pipeline. Superseded by the session BFF (token half) and Option B (CSP half); the Report-Only
-Trusted Types item is still the recommended next layer.
+Trusted Types item shipped on 2026-11-10 (see "What exists today").
 
 ## Option B — nonce CSP (`script-src 'nonce-…' 'strict-dynamic'`) — implemented 2026-11-10
 
@@ -95,8 +146,8 @@ concurrent awaits) and `csp-nonce-wiring.test.ts` (server → router propagation
 `<script>` remains).
 
 **Follow-ups:** none required for the rollout; the live production check above replaced the
-staging-QA step that the implementation branch planned. Trusted Types Report-Only remains open as
-an optional next layer.
+staging-QA step that the implementation branch planned. Trusted Types Report-Only shipped on
+2026-11-10 (see "What exists today").
 
 ## Option C — HttpOnly SameSite cookies for the data endpoints too (not needed now)
 
@@ -125,11 +176,13 @@ window but still allow session-riding XSS; that is exactly the residual risk the
 ## Recommendation / next steps
 
 1. **Shipped (2026-11-10):** bounded session BFF + nonce CSP; see the status block above.
-2. **Next optional CSP layer:** Report-Only `require-trusted-types-for 'script'` (Chromium-only,
-   safe to report first) to surface DOM-XSS sinks; promote only after the report volume is
-   understood.
-3. **Housekeeping:** migrate remaining React inline styles to classes so `style-src
-'unsafe-inline'` can be dropped in a later step.
+2. **Shipped (2026-11-10):** Trusted Types in Report-Only
+   (`require-trusted-types-for 'script'; trusted-types 'none'`) with the same collector; see
+   "What exists today". It measures DOM-XSS sinks without blocking.
+3. **Next:** review the Trusted Types report volume over a real traffic window. If clean, enforce
+   `require-trusted-types-for 'script'` with a minimal vetted policy allow-list (never a catch-all
+   `default` policy). In parallel, migrate the remaining React inline styles to classes so
+   `style-src 'unsafe-inline'` can be dropped.
 4. **Only if the admin threat model requires it:** full Option C, behind a flag and its own
    security review.
 

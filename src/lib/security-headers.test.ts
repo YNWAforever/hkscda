@@ -10,6 +10,7 @@ import {
   CSP_REPORT_GROUP,
   CSP_REPORT_PATH,
   SECURITY_HEADERS,
+  TRUSTED_TYPES_REPORT_ONLY,
 } from "./security-headers";
 
 describe("applySecurityHeaders", () => {
@@ -21,10 +22,13 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
     expect(result.headers.get("Strict-Transport-Security")).toContain("max-age=");
     expect(result.headers.get("Permissions-Policy")).toContain("geolocation=()");
-    // Enforcing, not report-only (BP-5).
+    // Enforcing, not report-only (BP-5). The Report-Only slot carries the separate
+    // Trusted Types layer being measured, never a standby copy of the main policy.
     const csp = result.headers.get("Content-Security-Policy");
     expect(csp).toBeTruthy();
-    expect(result.headers.get("Content-Security-Policy-Report-Only")).toBeNull();
+    expect(result.headers.get("Content-Security-Policy-Report-Only")).toContain(
+      "require-trusted-types-for 'script'",
+    );
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("https://www.googletagmanager.com");
     expect(csp).toContain("https://maps.googleapis.com");
@@ -56,11 +60,34 @@ describe("applySecurityHeaders", () => {
     expect(result.headers.get("X-Frame-Options")).toBe("SAMEORIGIN");
   });
 
-  test("ships CSP enforcing", () => {
-    // Report-Only was the tuning phase. It ended when WP-1 self-hosted the fonts
-    // and removed the last third-party style and font origin.
+  test("ships the main CSP enforcing and Trusted Types in Report-Only", () => {
+    // Report-Only was the tuning phase for the main policy. It ended when WP-1
+    // self-hosted the fonts and removed the last third-party style and font origin.
+    // The Report-Only slot is now a different, additional policy (Trusted Types),
+    // so the main CSP is still the only enforcing one.
     expect(SECURITY_HEADERS["Content-Security-Policy"]).toBeDefined();
-    expect(SECURITY_HEADERS["Content-Security-Policy-Report-Only"]).toBeUndefined();
+    expect(SECURITY_HEADERS["Content-Security-Policy"]).not.toContain("report-only");
+
+    const reportOnly = SECURITY_HEADERS["Content-Security-Policy-Report-Only"];
+    expect(reportOnly).toBe(TRUSTED_TYPES_REPORT_ONLY);
+    expect(reportOnly).not.toBe(SECURITY_HEADERS["Content-Security-Policy"]);
+  });
+
+  test("the Trusted Types layer measures sinks without blocking", () => {
+    const reportOnly = SECURITY_HEADERS["Content-Security-Policy-Report-Only"]!;
+
+    // require-trusted-types-for is the directive that surfaces DOM-XSS sinks;
+    // trusted-types 'none' is the strictest baseline (no policy may be created yet),
+    // so the collected reports show the whole surface before enforcement.
+    expect(reportOnly).toContain("require-trusted-types-for 'script'");
+    expect(reportOnly).toContain("trusted-types 'none'");
+    // It must never look like an enforcing CSP: no fetch/resource directives, so an
+    // accidental promotion of this string to the enforcing header cannot block pages.
+    expect(reportOnly).not.toContain("script-src");
+    expect(reportOnly).not.toContain("default-src");
+    // Same collector as the main policy, so TT violations are not silent.
+    expect(reportOnly).toContain(`report-uri ${CSP_REPORT_PATH}`);
+    expect(reportOnly).toContain(`report-to ${CSP_REPORT_GROUP}`);
   });
 
   test("routes violations to a collector so an enforced block is visible", () => {

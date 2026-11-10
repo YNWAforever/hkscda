@@ -1183,6 +1183,12 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   deliberately for React style attributes. Live production check: a fresh nonce per response and
   zero un-nonced inline scripts on `/`, `/report/audit`, `/admin/login`. See
   [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **Trusted Types (DOM-XSS sinks) — measured 2026-11-10.** A separate, static
+  `Content-Security-Policy-Report-Only` policy (`require-trusted-types-for 'script';
+trusted-types 'none'`) now reports plain-string assignments to DOM sinks to the same
+  `/api/csp-report` collector. It blocks nothing and is Chromium-only; enforcing
+  `require-trusted-types-for` remains a later decision after the report stream is reviewed. See
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
 - **Admin bearer token in web storage (AUDIT R4) — fixed 2026-11-10.** The admin session moved
   behind an `HttpOnly`/`Secure`/`SameSite=Strict` cookie session BFF; the browser keeps only a
   memory-only access token, legacy `sb-*-auth-token` entries are purged, and a guard test forbids

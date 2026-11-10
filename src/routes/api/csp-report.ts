@@ -7,10 +7,11 @@ import {
   retryAfterSeconds,
 } from "../../lib/security/rate-limit.server";
 
-// Browsers POST here when the Report-Only policy in lib/security-headers.ts is
-// violated. This endpoint exists so the allow-list can be tuned against real
-// traffic before CSP is switched from Report-Only to enforcing — without a
-// collector, violations only surface in the console of whoever has devtools open.
+// Browsers POST here when either CSP policy in lib/security-headers.ts is violated:
+// the enforcing policy (an actually blocked resource) and the Trusted Types
+// Report-Only policy (a DOM-XSS sink that would be blocked once enforced). This
+// endpoint keeps both streams visible - without a collector they only surface in
+// the console of whoever has devtools open.
 //
 // The body is attacker-influenced (any page can be made to emit a report), so it
 // is rate limited, size-capped, and only ever logged — never persisted or trusted.
