@@ -29,6 +29,13 @@
 //
 // Violations are still reported: report-uri and report-to are kept, so an
 // enforced block is visible rather than silent.
+//
+// A second policy ships separately in `Content-Security-Policy-Report-Only`
+// (2026-11-10): Trusted Types for script, the next layer after script-src. It is
+// report-only by design - it measures DOM-XSS sinks without blocking anything -
+// and reuses the same collector. `trusted-types 'none'` is the strictest baseline:
+// it reports every place that would need a Trusted Types policy before enforcement
+// is considered. Chromium-only; other browsers ignore the header.
 /** Where the browser POSTs CSP violation reports. See routes/api/csp-report.ts. */
 export const CSP_REPORT_PATH = "/api/csp-report";
 /** Reporting API group name, declared by the `Reporting-Endpoints` header. */
@@ -99,6 +106,25 @@ export const CONTENT_SECURITY_POLICY = buildContentSecurityPolicy(
   import.meta.env.VITE_SUPABASE_URL,
 );
 
+/**
+ * Trusted Types in Report-Only: the next CSP layer after the nonce migration.
+ * `require-trusted-types-for 'script'` reports DOM-XSS sinks (innerHTML,
+ * script.src, eval, ...) that receive a plain string; `trusted-types 'none'`
+ * additionally reports any attempt to create a policy, so the report stream shows
+ * the full surface that would need a policy before enforcing. The policy is static
+ * (no nonce), so it never varies per response.
+ */
+export function buildTrustedTypesReportOnlyPolicy(): string {
+  return [
+    "require-trusted-types-for 'script'",
+    "trusted-types 'none'",
+    `report-uri ${CSP_REPORT_PATH}`,
+    `report-to ${CSP_REPORT_GROUP}`,
+  ].join("; ");
+}
+
+export const TRUSTED_TYPES_REPORT_ONLY = buildTrustedTypesReportOnlyPolicy();
+
 export const SECURITY_HEADERS: Record<string, string> = {
   "Reporting-Endpoints": `${CSP_REPORT_GROUP}="${CSP_REPORT_PATH}"`,
   "X-Content-Type-Options": "nosniff",
@@ -107,6 +133,7 @@ export const SECURITY_HEADERS: Record<string, string> = {
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+  "Content-Security-Policy-Report-Only": TRUSTED_TYPES_REPORT_ONLY,
 };
 
 const SAFE_NONCE = /^[A-Za-z0-9+/]+={0,2}$/;

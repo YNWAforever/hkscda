@@ -831,10 +831,20 @@ React style attributes cannot carry a style nonce.
 'unsafe-inline'`, and **0 inline script tags without the matching nonce**; `style-src
 'unsafe-inline'` is still present as documented.
 
+**Trusted Types Report-Only (2026-11-10).** A second, static
+`Content-Security-Policy-Report-Only` header now ships on every response:
+`require-trusted-types-for 'script'; trusted-types 'none'; report-uri /api/csp-report; report-to csp`.
+It blocks nothing and reports DOM-XSS sinks (plain-string assignments to `innerHTML`, `script.src`,
+`eval`, ...) to the same collector, which already normalises both report wire formats. Chromium-only;
+other browsers ignore the header. The Report-Only slot no longer holds a standby copy of the main
+policy, so the enforcing CSP remains the only blocking one. Tests: `security-headers.test.ts`,
+`security-headers.nonce.test.ts`, `-cspReport.test.ts`. Promotion criteria and the report-review
+plan are in [`docs/csp-token-decision.md`](csp-token-decision.md).
+
 **Residual risk.** `'strict-dynamic'` keeps third-party loaders working but does not stop an
-injected external script loaded by an already-nonced script; Trusted Types in Report-Only is the
-next optional layer. Details, options and rejected alternatives are in
-[`docs/csp-token-decision.md`](csp-token-decision.md).
+injected external script loaded by an already-nonced script; Trusted Types now measures DOM-XSS
+sinks but stays report-only until the report window is reviewed. Details, options and rejected
+alternatives are in [`docs/csp-token-decision.md`](csp-token-decision.md).
 
 ## Dependency upgrade — zod 4 (2026-11-10)
 

@@ -103,6 +103,49 @@ describe("normalizeCspReports", () => {
     expect(report?.documentUri).toBeUndefined();
     expect(report?.blockedUri).toBeUndefined();
   });
+
+  test("normalizes Trusted Types violations from both wire formats", () => {
+    // require-trusted-types-for violations travel through the same reporting
+    // machinery as fetch directives; keeping the directive fields is what lets the
+    // Trusted Types Report-Only layer be tuned from this same stream.
+    expect(
+      normalizeCspReports({
+        "csp-report": {
+          "document-uri": "https://hkscda.vercel.app/",
+          "violated-directive": "require-trusted-types-for 'script'",
+          "effective-directive": "require-trusted-types-for",
+          "blocked-uri": "inline",
+          disposition: "report",
+        },
+      }),
+    ).toMatchObject([
+      {
+        documentUri: "https://hkscda.vercel.app/",
+        violatedDirective: "require-trusted-types-for 'script'",
+        effectiveDirective: "require-trusted-types-for",
+        blockedUri: "inline",
+        disposition: "report",
+      },
+    ]);
+
+    expect(
+      normalizeCspReports([
+        {
+          type: "csp-violation",
+          body: {
+            documentURL: "https://hkscda.vercel.app/admin",
+            effectiveDirective: "trusted-types",
+            disposition: "report",
+          },
+        },
+      ]),
+    ).toMatchObject([
+      {
+        documentUri: "https://hkscda.vercel.app/admin",
+        effectiveDirective: "trusted-types",
+      },
+    ]);
+  });
 });
 
 test("CSP report stops reading once the byte cap is crossed", async () => {

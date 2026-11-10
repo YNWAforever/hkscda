@@ -7,6 +7,7 @@ import {
   CSP_REPORT_PATH,
   SECURITY_HEADERS,
   stampHtmlScriptNonces,
+  TRUSTED_TYPES_REPORT_ONLY,
   withNonceStampedScripts,
 } from "./security-headers";
 
@@ -73,6 +74,13 @@ describe("nonce-based script-src", () => {
     );
     // The shared constant is not mutated by a request.
     expect(SECURITY_HEADERS["Content-Security-Policy"]).not.toContain("nonce-");
+  });
+
+  test("the static Trusted Types Report-Only header still ships on nonced responses", () => {
+    const response = applySecurityHeaders(new Response("ok"), "bm9uY2U");
+    expect(response.headers.get("Content-Security-Policy-Report-Only")).toBe(
+      TRUSTED_TYPES_REPORT_ONLY,
+    );
   });
 
   test("still does not overwrite a CSP the handler set itself", () => {
