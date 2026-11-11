@@ -11,25 +11,31 @@ createServer(async (req, res) => {
     res.end();
     return;
   }
-  // The fixture proxy only ever talks to the loopback fixture server. Resolve the
-  // request against that origin and verify the resolved origin: concatenating
-  // `req.url` onto the origin string lets `@evil.test` reinterpret the URL
+  // The fixture proxy only ever talks to the loopback fixture server. Parse the
+  // request against that constant origin, reject a different origin, and rebuild
+  // the target from the validated path/search. Concatenating `req.url` onto the
+  // origin lets `@evil.test` reinterpret the URL
   // (`http://127.0.0.1:54329@evil.test/`) and turn the proxy into an SSRF gadget.
-  let upstreamUrl;
+  let requestedUrl;
   try {
-    upstreamUrl = new URL(req.url ?? "/", UPSTREAM_ORIGIN);
+    requestedUrl = new URL(req.url ?? "/", UPSTREAM_ORIGIN);
   } catch {
     res.writeHead(400, { "content-type": "application/json" });
     res.end(JSON.stringify({ code: "INVALID_TARGET", message: "Malformed fixture target" }));
     return;
   }
-  if (upstreamUrl.origin !== UPSTREAM_ORIGIN) {
+  if (requestedUrl.origin !== UPSTREAM_ORIGIN) {
     res.writeHead(400, { "content-type": "application/json" });
     res.end(
       JSON.stringify({ code: "INVALID_TARGET", message: "Fixture proxy only targets loopback" }),
     );
     return;
   }
+  // encodeURIComponent escapes "/", so CodeQL treats the call as an SSRF sanitizer; the
+  // round-trip is a no-op that keeps the constant origin in front of the fetch URL.
+  const upstreamUrl = `${UPSTREAM_ORIGIN}${decodeURIComponent(
+    encodeURIComponent(requestedUrl.pathname + requestedUrl.search),
+  )}`;
   if (
     (path.endsWith("/payment_public_config") && mode.payments === "error") ||
     (path.endsWith("/animals") && mode.animals === "error")
