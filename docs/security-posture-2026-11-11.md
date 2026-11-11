@@ -97,6 +97,25 @@ Mitigations that bound the accepted risk:
 Re-run `bun audit` after toolchain updates; revisit the table if any advisory becomes reachable from
 the server runtime.
 
+## Code scanning triage (CodeQL default setup)
+
+The first scan (commit `29e0b37b`) produced 31 alerts; 6 were `actions/missing-workflow-permissions`
+pointing at the workflow as it was before PR #245 and closed on the next analysis. The remaining 25
+were reviewed individually; every finding was either fixed in code or dismissed with a recorded
+reason, so the baseline is now deliberate rather than noisy:
+
+| Finding                                                                                                | Location                                                         | Disposition                                                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `js/request-forgery` (SSRF)                                                                            | `scripts/fixtures/public-failure-proxy.mjs`                      | **Fixed.** The proxy resolved `req.url` by string concatenation, so `@evil.test` could reinterpret the target; it now resolves against the loopback origin and rejects any other origin.                                               |
+| `js/incomplete-url-substring-sanitization` (3)                                                         | `scripts/scrape-hkscda.js`                                       | **Fixed.** `startsWith(BASE)` would follow `https://hkscda.com.evil.test` with the authenticated browser context; replaced with parsed-origin comparison (`isOnBase`).                                                                 |
+| `js/clear-text-logging` (5)                                                                            | `scripts/seed-admin.js`                                          | False positive: local seeder prints the operator-supplied target email/name/role; the password is printed as `[hidden]` and no secret is logged.                                                                                       |
+| `js/incomplete-sanitization` / `js/incomplete-multi-character-sanitization` / `js/bad-tag-filter` (13) | test files under `src/**` and `scripts/verify-live-readiness.ts` | Used in tests / false positive: regexes strip tags from rendered markup to compare visible text, or remove `<script>` blocks before searching for stable `h2` ids; they are inspection helpers, never sanitizers on a production path. |
+| `py/clear-text-storage-sensitive-data` (2)                                                             | `scripts/local-volunteer/{run-app,provision}.py`                 | Used in tests: disposable loopback acceptance stack; fixture credentials are generated locally and written to `chmod 600` files.                                                                                                       |
+| `py/weak-sensitive-data-hashing`, `js/weak-cryptographic-algorithm` (2)                                | `docs/evidence/**`                                               | Won't fix: captured audit evidence (third-party source copies), never executed by the app or CI.                                                                                                                                       |
+
+The dismissal comments are on the alerts themselves; re-run the queries when a scan flags new code,
+not by dismissing a whole rule.
+
 ## Residual items (tracked elsewhere)
 
 - `style-src 'unsafe-inline'` removal: inline-style inventory (12 components, 22 style objects, plus

@@ -25,6 +25,20 @@ import path from "node:path";
 // Output URLs are always rewritten to PUBLIC_BASE regardless of scrape target.
 const BASE = process.env.SCRAPE_BASE || "https://hkscda.com";
 const PUBLIC_BASE = "https://hkscda.com";
+const BASE_ORIGIN = new URL(BASE).origin;
+
+/**
+ * True when the URL belongs to the configured scrape origin. A `startsWith(BASE)` check also
+ * accepts `https://hkscda.com.evil.test/...`, and following such a link with the real browser
+ * context would hand a third-party page the session cookies; compare parsed origins instead.
+ */
+const isOnBase = (value) => {
+  try {
+    return new URL(value).origin === BASE_ORIGIN;
+  } catch {
+    return false;
+  }
+};
 const CATEGORIES = [
   { type: "cat", url: `${BASE}/animals/cat` },
   { type: "dog", url: `${BASE}/animals/dog` },
@@ -394,7 +408,7 @@ async function main() {
         for (const card of cards) animals.push(parseCard(card, type));
 
         const next = await page.evaluate(findNextPageInPage);
-        pageUrl = next && next !== pageUrl && next.startsWith(BASE) ? next : null;
+        pageUrl = next && next !== pageUrl && isOnBase(next) ? next : null;
         pageNo += 1;
         if (pageUrl) await sleep(PAGE_DELAY_MS);
       }
@@ -405,9 +419,7 @@ async function main() {
     if (!SKIP_DETAILS) {
       const withDetails = animals.filter(
         (a) =>
-          a.detail_url &&
-          a.detail_url.startsWith(BASE) &&
-          !CATEGORIES.some((c) => a.detail_url === c.url),
+          a.detail_url && isOnBase(a.detail_url) && !CATEGORIES.some((c) => a.detail_url === c.url),
       );
       console.log(`\nVisiting ${withDetails.length} detail page(s)…`);
       for (const a of withDetails) {
@@ -459,7 +471,11 @@ async function main() {
     await browser.close();
   }
 
-  const toPublic = (u) => (u && u.startsWith(BASE) ? PUBLIC_BASE + u.slice(BASE.length) : u);
+  const toPublic = (u) => {
+    if (!u || !isOnBase(u)) return u;
+    const parsed = new URL(u);
+    return PUBLIC_BASE + parsed.pathname + parsed.search + parsed.hash;
+  };
   for (const a of animals) {
     a.detail_url = toPublic(a.detail_url);
     a.photo_url = toPublic(a.photo_url);

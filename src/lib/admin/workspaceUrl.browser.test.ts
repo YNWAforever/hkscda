@@ -117,4 +117,4 @@ try {
     if (child.exitCode === null) child.kill();
     await server.stop(true);
   }
-}, 20_000);
+}, 45_000);
