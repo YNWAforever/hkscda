@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 const control = "docs/evidence/frontend-wave2/fixture-mode.json";
+const UPSTREAM_ORIGIN = "http://127.0.0.1:54329";
 createServer(async (req, res) => {
   const mode = JSON.parse(await readFile(control, "utf8").catch(() => "{}"));
   const path = new URL(req.url, "http://127.0.0.1:54330").pathname;
@@ -8,6 +9,25 @@ createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204);
     res.end();
+    return;
+  }
+  // The fixture proxy only ever talks to the loopback fixture server. Resolve the
+  // request against that origin and verify the resolved origin: concatenating
+  // `req.url` onto the origin string lets `@evil.test` reinterpret the URL
+  // (`http://127.0.0.1:54329@evil.test/`) and turn the proxy into an SSRF gadget.
+  let upstreamUrl;
+  try {
+    upstreamUrl = new URL(req.url ?? "/", UPSTREAM_ORIGIN);
+  } catch {
+    res.writeHead(400, { "content-type": "application/json" });
+    res.end(JSON.stringify({ code: "INVALID_TARGET", message: "Malformed fixture target" }));
+    return;
+  }
+  if (upstreamUrl.origin !== UPSTREAM_ORIGIN) {
+    res.writeHead(400, { "content-type": "application/json" });
+    res.end(
+      JSON.stringify({ code: "INVALID_TARGET", message: "Fixture proxy only targets loopback" }),
+    );
     return;
   }
   if (
@@ -30,7 +50,7 @@ createServer(async (req, res) => {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   const body = Buffer.concat(chunks);
-  const upstream = await fetch("http://127.0.0.1:54329" + req.url, {
+  const upstream = await fetch(upstreamUrl, {
     method: req.method,
     headers: {
       accept: req.headers.accept ?? "application/json",
