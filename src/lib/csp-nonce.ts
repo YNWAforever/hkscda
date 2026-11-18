@@ -55,6 +55,20 @@ export function currentCspNonce(): string | undefined {
 }
 
 /**
+ * The nonce of the document currently rendered in the browser, read back from the
+ * `meta[property=csp-nonce]` that the root route publishes. `currentCspNonce()` is
+ * undefined on the client, so code that creates a `<style>` (or script) element after
+ * hydration - the chart's CSS-variable block - reads it here instead. Returns
+ * undefined outside a browser or before the meta tag exists.
+ */
+export function cspNonceFromDocument(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const meta = document.querySelector('meta[property="csp-nonce"]');
+  const value = meta?.getAttribute("content") ?? undefined;
+  return value && /^[A-Za-z0-9+/]+={0,2}$/.test(value) ? value : undefined;
+}
+
+/**
  * A fresh CSP nonce: 16 random bytes as base64. The optional source is for tests; production uses
  * the platform Web Crypto (`crypto.getRandomValues`, available on the Node runtime Vercel uses and
  * in the browser).

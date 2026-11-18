@@ -78,7 +78,11 @@ jobs:
   # removed so a real failure here is reported as a real failure, not masked
   # as success.
   brand-verify:
-    runs-on: ubuntu-latest
+    # Pinned to 24.04: `ubuntu-latest` migrated to Ubuntu 26.04 in October 2026 and
+    # Playwright 1.60 cannot install its browsers there ("Playwright does not support
+    # chromium on ubuntu26.04-x64"). Move back to ubuntu-latest once Playwright ships
+    # 26.04 support. No product code depends on the runner image.
+    runs-on: ubuntu-24.04
     needs: verify
     timeout-minutes: 20
     steps:
@@ -181,7 +185,8 @@ jobs:
   # Non-blocking until proven green repeatedly, then promote via branch
   # protection -- the same process already used for brand-verify itself.
   a11y-verify:
-    runs-on: ubuntu-latest
+    # Pinned to 24.04 for the same Playwright/Ubuntu-26.04 reason as brand-verify.
+    runs-on: ubuntu-24.04
     needs: verify
     timeout-minutes: 20
     continue-on-error: true
@@ -438,7 +443,8 @@ jobs:
   # once that's actually observed, not on the same "green 5 times" timeline
   # used for the deterministic checks.
   performance-verify:
-    runs-on: ubuntu-latest
+    # Pinned to 24.04 for the same Playwright/Ubuntu-26.04 reason as brand-verify.
+    runs-on: ubuntu-24.04
     # Lighthouse TBT is CPU-sensitive. Run after the other browser and Docker
     # jobs finish so their contention cannot decide whether this gate passes.
     needs:

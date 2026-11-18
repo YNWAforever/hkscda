@@ -3,10 +3,16 @@
 **Date:** 2026-11-09, updated 2026-11-10.
 **Source:** 2026-11-09 audit (AUDIT R4 / REPORT §3 item 3), task backlog-security-20261110.
 
-**Status: both halves are implemented and live (2026-11-10, PR #240, merge `57816730`).**
+**Status: both halves are implemented and live (2026-11-10, PR #240, merge `57816730`); the style-src
+element nonce followed on 2026-11-18.**
 
 - **CSP:** `script-src` is nonce-based (`'self' 'nonce-<per-request>' 'strict-dynamic' <hosts>`);
   `'unsafe-inline'` is gone from `script-src`. Verified on production.
+- **CSP styles (2026-11-18):** inline `<style>` elements now require the same per-request nonce
+  (`style-src-elem 'self' 'nonce-<per-request>'`); the error page's inline block moved to
+  `/error.css` and the chart's CSS-variable block reads the nonce on server and client. The only
+  remaining `'unsafe-inline'` is the explicit `style-src-attr` allowance for React/third-party style
+  attributes, which no nonce can cover (see residual risks).
 - **Admin session:** the admin JWT no longer lives in web storage. A bounded session BFF keeps the
   tokens in `HttpOnly; Secure; SameSite=Strict` cookies and the browser keeps only the short-lived
   access token in module memory. The 180+ data endpoints keep their Bearer/`requireAdmin` contract,
@@ -14,8 +20,9 @@
 - **Trusted Types:** a second, Report-Only policy ships on every response
   (`require-trusted-types-for 'script'; trusted-types 'none'`), reporting DOM-XSS sinks to the same
   collector. It blocks nothing; enforcement is a later decision after the report stream is reviewed.
-- **Deliberately unchanged:** `style-src 'unsafe-inline'` (React style attributes cannot carry a
-  style nonce), and the cookie-only data-endpoint model (Option C).
+- **Deliberately unchanged:** `style-src-attr 'unsafe-inline'` (React style attributes cannot carry a
+  style nonce, and Google Maps injects style attributes), and the cookie-only data-endpoint model
+  (Option C).
 
 ## What exists today
 
@@ -26,9 +33,13 @@
   script-src 'self' 'nonce-<per-request base64 nonce>' 'strict-dynamic' https://www.googletagmanager.com https://maps.googleapis.com https://challenges.cloudflare.com
   ```
 
-  `style-src` still carries `'unsafe-inline'` on purpose (React style attributes, which a style
-  nonce cannot cover); `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'` and the
-  report endpoint (`/api/csp-report`, `report-uri` + `report-to`) are unchanged.
+  `style-src` no longer allows inline elements: `style-src-elem 'self' 'nonce-<per-request>'` (the
+  nonce is stamped on every `<style>` tag in the SSR markup and read back from
+  `meta[property=csp-nonce]` by the chart when it mounts on the client), and the error page links
+  `/error.css` instead of carrying a style block. Only `style-src-attr 'unsafe-inline'` remains, for
+  React style attributes and third-party widgets (see residual risks). `object-src 'none'`,
+  `frame-ancestors 'none'`, `base-uri 'self'` and the report endpoint (`/api/csp-report`,
+  `report-uri` + `report-to`) are unchanged.
 
 - **Trusted Types Report-Only (2026-11-10).** Every response also carries a separate
   `Content-Security-Policy-Report-Only` header built by `buildTrustedTypesReportOnlyPolicy()` in the
@@ -105,6 +116,28 @@ mechanism that surfaces exactly those sinks.
 - **Verification:** response headers on the live site should show the enforcing CSP and the static
   Trusted Types Report-Only policy side by side.
 
+### style-src element nonce (implemented 2026-11-18)
+
+- The enforcing policy now emits
+  `style-src 'self'; style-src-elem 'self' 'nonce-<request>'; style-src-attr 'unsafe-inline'`.
+  The fallback `style-src` carries no `'unsafe-inline'`, so an inline style element without the
+  nonce is blocked in every browser that supports CSP3 directive splitting.
+- The server-side nonce stamping pass (previously scripts only) now also stamps `<style>` tags in
+  HTML responses (`stampHtmlNonces` / `withNonceStampedMarkup`), which covers SSR markup and any
+  HTML rendered before the request nonce exists.
+- `src/components/ui/chart.tsx` puts the nonce on its CSS-variable `<style>`: `currentCspNonce()`
+  during SSR, and `cspNonceFromDocument()` (the root route's `meta[property=csp-nonce]`) for a chart
+  mounted by client-side navigation.
+- `src/lib/error-page.ts` carries no inline style at all: its CSS moved to `public/error.css`,
+  linked from the page, because the static error page renders outside the request-nonce scope.
+- **Tests:** `security-headers.nonce.test.ts` (no `'unsafe-inline'` in `style-src`/`style-src-elem`,
+  the request nonce present when supplied, only `style-src-attr` keeps the allowance, nonce stamped
+  onto style tags, JSON bodies untouched), and `csp-nonce-wiring.test.ts` (chart reads the nonce
+  back on the client; error page has no inline style and links `/error.css`).
+- **Residual:** React style attributes (data-driven colours/offsets) and Google Maps keep the
+  explicit `style-src-attr 'unsafe-inline'` allowance; removing that is the next step once the
+  attributes (and the map integration) are migrated to classes.
+
 ### Residual risks (accepted, documented)
 
 - The access token is in JS memory for the tab lifetime, so an XSS during that window can still ride
@@ -112,7 +145,13 @@ mechanism that surfaces exactly those sinks.
 - Cross-tab sign-out lands on the next 401/refresh rather than a broadcast.
 - The nonce removes the injected-inline-script class but not an injected _external_ script loaded by
   an already-nonced script — that is what `'strict-dynamic'` trades for loader compatibility.
-- `style-src 'unsafe-inline'` remains until React style attributes are migrated to classes.
+- `style-src-attr 'unsafe-inline'` remains for React style attributes (data-driven colours/offsets)
+  and Google Maps, which injects style attributes that no nonce can cover. Inline `<style>` elements
+  are no longer allowed without the per-request nonce. Browser floor for the split directives:
+  Chrome 75+, Edge 79+, Firefox 108+, Safari 15.4+; older browsers ignore `style-src-attr` and fall
+  back to `style-src 'self'`, so their inline attributes are blocked and layout can degrade (reported
+  as `effectiveDirective: style-src-attr`). The Vite target is modern browsers, so this is accepted;
+  monitor the report stream before considering a legacy fallback.
 - Trusted Types is _measured_, not enforced: a real DOM-XSS sink is surfaced in the report stream
   but still executes until `require-trusted-types-for 'script'` is promoted after report review.
 - The HTML nonce stamping is a response rewrite; it deliberately leaves JSON/API bodies untouched.
@@ -138,8 +177,9 @@ constraints, kept here for the record:
   `head.scripts` (JSON-LD) and any HTML the framework emits earlier. The server-side stamping pass
   is the safety net for the last case.
 
-**Tests:** `security-headers.nonce.test.ts` (exact directive, no `'unsafe-inline'`,
-`style-src` unchanged, reporting kept, pre-set header ignored, per-response header),
+**Tests:** `security-headers.nonce.test.ts` (exact script directive, no `'unsafe-inline'` in
+`script-src`/`style-src`/`style-src-elem`, style-attr allowance, nonce stamped onto script and
+style tags, reporting kept, pre-set header ignored, per-response header),
 `csp-nonce.test.ts`, `csp-nonce.server.test.ts` (generation, per-request isolation across
 concurrent awaits) and `csp-nonce-wiring.test.ts` (server → router propagation, nonce getter,
 `meta[property=csp-nonce]`, server-only store, error page has no inline handler, no un-nonced
@@ -181,8 +221,9 @@ window but still allow session-riding XSS; that is exactly the residual risk the
    "What exists today". It measures DOM-XSS sinks without blocking.
 3. **Next:** review the Trusted Types report volume over a real traffic window. If clean, enforce
    `require-trusted-types-for 'script'` with a minimal vetted policy allow-list (never a catch-all
-   `default` policy). In parallel, migrate the remaining React inline styles to classes so
-   `style-src 'unsafe-inline'` can be dropped.
+   `default` policy). In parallel, migrate the remaining React style attributes (and the map
+   integration) to classes so `style-src-attr 'unsafe-inline'` can be dropped; the inline `<style>`
+   element half shipped on 2026-11-18.
 4. **Only if the admin threat model requires it:** full Option C, behind a flag and its own
    security review.
 

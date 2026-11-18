@@ -891,3 +891,28 @@ pins zod 3.25.76), left as tooling-only rather than forcing overrides.
 
 **Deploy.** Code-only dependency upgrade; no migration, route-tree or environment change. The
 zod 4 bundle replaces zod 3 on the next build.
+
+## CSP style-src element nonce (2026-11-18)
+
+Completes the AUDIT R4 CSP item: `'unsafe-inline'` is gone from every style directive except the
+explicit `style-src-attr` attribute allowance.
+
+- `src/lib/security-headers.ts`: the policy now emits `style-src 'self'` (legacy fallback),
+  `style-src-elem 'self' 'nonce-<per-request>'` and `style-src-attr 'unsafe-inline'`. The nonce
+  stamping pass, previously scripts only, stamps `<style>` tags as well
+  (`stampHtmlNonces` / `withNonceStampedMarkup` in `src/server.ts`).
+- `src/components/ui/chart.tsx`: the shadcn CSS-variable style block carries the nonce from
+  `currentCspNonce()` during SSR and from the root route's `meta[property=csp-nonce]`
+  (`cspNonceFromDocument()`) when a chart mounts via client-side navigation.
+- `src/lib/error-page.ts` + `public/error.css`: the static 500 page no longer carries an inline
+  style block; its CSS is an external stylesheet, because that page renders outside the
+  request-nonce scope. Its "Try again" control already became a plain link when script nonces
+  shipped.
+- **Residual:** React style attributes (data-driven colours, progress widths, safe-area offsets)
+  and Google Maps keep `style-src-attr 'unsafe-inline'`; no nonce can cover an attribute. Removing
+  that allowance needs those attributes migrated to classes (and a decision on the map), and is
+  tracked in `docs/csp-token-decision.md`.
+- **Tests:** `security-headers.nonce.test.ts` (style directives, nonce interpolation, stamping of
+  script+style tags, JSON untouched, only `style-src-attr` keeps `'unsafe-inline'`),
+  `csp-nonce-wiring.test.ts` (chart nonce source, error page has no inline style and links
+  `/error.css`), plus the existing CSP report collector tests.

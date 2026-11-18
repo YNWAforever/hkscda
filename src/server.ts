@@ -1,7 +1,7 @@
 import { consumeLastCapturedError, withRequestErrorCapture } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 import { createCspNonce, runWithCspNonce } from "./lib/csp-nonce.server";
-import { applySecurityHeaders, withNonceStampedScripts } from "./lib/security-headers";
+import { applySecurityHeaders, withNonceStampedMarkup } from "./lib/security-headers";
 import { assertUpstashConfigFromEnv } from "./lib/security/rate-limit.server";
 import { assertTurnstileConfigFromEnv } from "./lib/security/turnstile.server";
 
@@ -59,13 +59,13 @@ export default {
           const handler = await getServerEntry();
           const response = await handler.fetch(request, env, ctx);
           return applySecurityHeaders(
-            await withNonceStampedScripts(await normalizeCatastrophicSsrResponse(response), nonce),
+            await withNonceStampedMarkup(await normalizeCatastrophicSsrResponse(response), nonce),
             nonce,
           );
         } catch (error) {
           console.error(error);
           return applySecurityHeaders(
-            await withNonceStampedScripts(
+            await withNonceStampedMarkup(
               new Response(renderErrorPage(), {
                 status: 500,
                 headers: { "content-type": "text/html; charset=utf-8" },

@@ -6,9 +6,9 @@ import {
   CSP_REPORT_GROUP,
   CSP_REPORT_PATH,
   SECURITY_HEADERS,
-  stampHtmlScriptNonces,
+  stampHtmlNonces,
   TRUSTED_TYPES_REPORT_ONLY,
-  withNonceStampedScripts,
+  withNonceStampedMarkup,
 } from "./security-headers";
 
 const directive = (policy: string, name: string) =>
@@ -38,15 +38,6 @@ describe("nonce-based script-src", () => {
     expect(scriptSrc).toContain("https://www.googletagmanager.com");
     expect(scriptSrc).toContain("https://maps.googleapis.com");
     expect(scriptSrc).toContain("https://challenges.cloudflare.com");
-  });
-
-  test("keeps style-src unsafe-inline for React style attributes and the error page", () => {
-    for (const policy of [
-      SECURITY_HEADERS["Content-Security-Policy"]!,
-      buildContentSecurityPolicy(undefined, "bm9uY2U"),
-    ]) {
-      expect(directive(policy, "style-src")).toBe("style-src 'self' 'unsafe-inline'");
-    }
   });
 
   test("keeps the violation reporting directives", () => {
@@ -91,32 +82,73 @@ describe("nonce-based script-src", () => {
     expect(result.headers.get("Content-Security-Policy")).toBe("default-src 'none'");
   });
 
-  test("stampHtmlScriptNonces adds the nonce to script tags that lack one", () => {
+  test("stampHtmlNonces adds the nonce to script and style tags that lack one", () => {
     const html =
-      '<script type="module" src="/app.js"></script><script>window.x=1</script><script nonce="already">ok</script>';
-    expect(stampHtmlScriptNonces(html, "Zmlyc3Qtbm9uY2U=")).toBe(
-      '<script nonce="Zmlyc3Qtbm9uY2U=" type="module" src="/app.js"></script><script nonce="Zmlyc3Qtbm9uY2U=">window.x=1</script><script nonce="already">ok</script>',
+      '<script type="module" src="/app.js"></script><style>body{color:red}</style><script nonce="already">ok</script><style nonce="already">p{}</style>';
+    expect(stampHtmlNonces(html, "Zmlyc3Qtbm9uY2U=")).toBe(
+      '<script nonce="Zmlyc3Qtbm9uY2U=" type="module" src="/app.js"></script><style nonce="Zmlyc3Qtbm9uY2U=">body{color:red}</style><script nonce="already">ok</script><style nonce="already">p{}</style>',
     );
   });
 
-  test("stampHtmlScriptNonces ignores a nonce that is not safe to interpolate", () => {
-    const html = "<script>window.x=1</script>";
-    expect(stampHtmlScriptNonces(html, 'x"><script>')).toBe(html);
+  test("stampHtmlNonces ignores a nonce that is not safe to interpolate", () => {
+    const html = "<script>window.x=1</script><style>body{}</style>";
+    expect(stampHtmlNonces(html, 'x"><script>')).toBe(html);
   });
 
-  test("withNonceStampedScripts stamps HTML and leaves JSON unread as-is", async () => {
-    const html = await withNonceStampedScripts(
-      new Response("<script>window.x=1</script>", {
+  test("withNonceStampedMarkup stamps HTML and leaves JSON unread as-is", async () => {
+    const html = await withNonceStampedMarkup(
+      new Response("<script>window.x=1</script><style>body{}</style>", {
         headers: { "content-type": "text/html; charset=utf-8" },
       }),
       "Zmlyc3Qtbm9uY2U=",
     );
-    expect(await html.text()).toBe('<script nonce="Zmlyc3Qtbm9uY2U=">window.x=1</script>');
+    expect(await html.text()).toBe(
+      '<script nonce="Zmlyc3Qtbm9uY2U=">window.x=1</script><style nonce="Zmlyc3Qtbm9uY2U=">body{}</style>',
+    );
     const json = new Response(JSON.stringify({ ok: true }), {
       headers: { "content-type": "application/json" },
     });
-    const untouched = await withNonceStampedScripts(json, "Zmlyc3Qtbm9uY2U=");
+    const untouched = await withNonceStampedMarkup(json, "Zmlyc3Qtbm9uY2U=");
     expect(untouched).toBe(json);
     expect(await untouched.json()).toEqual({ ok: true });
+  });
+});
+
+describe("nonce-based style-src", () => {
+  test("inline <style> elements require the request nonce", () => {
+    const baseline = directive(SECURITY_HEADERS["Content-Security-Policy"]!, "style-src");
+    expect(baseline).toBe("style-src 'self'");
+    expect(SECURITY_HEADERS["Content-Security-Policy"]).not.toContain(
+      "style-src 'self' 'unsafe-inline'",
+    );
+
+    const csp = buildContentSecurityPolicy(undefined, "bm9uY2U");
+    expect(directive(csp, "style-src-elem")).toBe("style-src-elem 'self' 'nonce-bm9uY2U'");
+    expect(directive(csp, "style-src")).toBe("style-src 'self'");
+    // The only surviving 'unsafe-inline' in the whole policy is the attribute directive.
+    expect(csp.match(/'unsafe-inline'/g)).toHaveLength(1);
+    expect(directive(csp, "style-src-attr")).toBe("style-src-attr 'unsafe-inline'");
+  });
+
+  test("style attributes keep their explicit, documented allowance", () => {
+    // React style attributes (data-driven colours, offsets) and third-party widgets
+    // (Google Maps) set style="..." and no nonce can cover an attribute, so the
+    // attribute directive is the one place 'unsafe-inline' remains. A block here is
+    // reported as effectiveDirective: style-src-attr.
+    for (const policy of [
+      SECURITY_HEADERS["Content-Security-Policy"]!,
+      buildContentSecurityPolicy(undefined, "bm9uY2U"),
+    ]) {
+      expect(directive(policy, "style-src-attr")).toBe("style-src-attr 'unsafe-inline'");
+      expect(directive(policy, "style-src")).not.toContain("'unsafe-inline'");
+      expect(directive(policy, "style-src-elem") ?? "").not.toContain("'unsafe-inline'");
+    }
+  });
+
+  test("the chart's runtime style element reads the nonce back from the document", () => {
+    // ChartStyle is rendered on the server (request nonce in scope) and again during
+    // client-side navigation (currentCspNonce() is undefined then), so it falls back to
+    // the meta[property=csp-nonce] the root route publishes.
+    expect(directive(buildContentSecurityPolicy(), "style-src-elem")).toBe("style-src-elem 'self'");
   });
 });
