@@ -118,9 +118,11 @@ not by dismissing a whole rule.
 
 ## Residual items (tracked elsewhere)
 
-- `style-src 'unsafe-inline'` removal: inline-style inventory (12 components, 22 style objects, plus
-  shadcn `chart.tsx`/`sidebar.tsx` and the error page's inline `<style>`) and the nonce plan are in
-  [`csp-token-decision.md`](csp-token-decision.md).
+- Inline `<style>` elements: **fixed 2026-11-18** — `style-src-elem` now requires the per-request
+  nonce (server stamps style tags, the chart's CSS-variable block reads the nonce on server and
+  client, and the error page links `/error.css`). Remaining work is the explicit
+  `style-src-attr 'unsafe-inline'` allowance for React style attributes (22 sites in 12 components)
+  and Google Maps; plan and residual in [`csp-token-decision.md`](csp-token-decision.md).
 - Leaked-password protection (HIBP) is Supabase-Pro gated; see
   [`database-advisors-2026-11-10.md`](database-advisors-2026-11-10.md).
 - Trusted Types Report-Only report review → enforcement; see

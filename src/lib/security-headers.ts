@@ -22,10 +22,16 @@
 // the host sources that follow it are only read by browsers that do not support
 // `'strict-dynamic'` yet, which is why they stay.
 //
-// `style-src` keeps `'unsafe-inline'`: React style attributes (and the error page's
-// inline `<style>`) are inline styles, and a style nonce covers only `<style>`
-// elements, never `style="..."` attributes. Removing it would need every inline
-// style migrated to classes first; forcing that split is a separate change.
+// `style-src` now uses the same per-request nonce for `<style>` elements (2026-11-11
+// follow-up): src/server.ts stamps the nonce onto style tags in the SSR markup, and
+// components that create a style element at runtime (the chart CSS-variable block)
+// read the nonce back from the `meta[property=csp-nonce]` the root route publishes.
+// The static error page carries no inline style at all - its CSS is linked from
+// /error.css. `style-src-attr` keeps `'unsafe-inline'` because React style
+// attributes (`style={{...}}`, widely used for data-driven colours/offsets) and
+// third-party widgets (Google Maps injects style attributes) cannot carry a nonce;
+// that attribute allowance is the documented residual, and a blocked attribute is
+// reported as `effectiveDirective: style-src-attr` through the same collector.
 //
 // Violations are still reported: report-uri and report-to are kept, so an
 // enforced block is visible rather than silent.
@@ -76,6 +82,8 @@ export function buildContentSecurityPolicy(supabaseUrl?: string, nonce?: string)
   const scriptSources = ["'self'"];
   if (safeNonce) scriptSources.push(`'nonce-${safeNonce}'`, "'strict-dynamic'");
   scriptSources.push(...SCRIPT_HOST_SOURCES);
+  const styleSources = ["'self'"];
+  if (safeNonce) styleSources.push(`'nonce-${safeNonce}'`);
   return [
     "default-src 'self'",
     "base-uri 'self'",
@@ -83,9 +91,12 @@ export function buildContentSecurityPolicy(supabaseUrl?: string, nonce?: string)
     "frame-ancestors 'none'",
     `img-src 'self' data: https:${configuredSource}`,
     "font-src 'self' data:",
-    // React style attributes (`style={{...}}`) and the error page's inline <style> need this; a
-    // style nonce cannot cover style attributes, so it is kept deliberately (see the file header).
-    "style-src 'self' 'unsafe-inline'",
+    // `style-src` is the legacy fallback (no inline element is allowed); modern browsers
+    // use the two specific directives below. `style-src-attr` must stay inline because
+    // React and third-party widgets set style attributes (see the file header).
+    "style-src 'self'",
+    `style-src-elem ${styleSources.join(" ")}`,
+    "style-src-attr 'unsafe-inline'",
     `script-src ${scriptSources.join(" ")}`,
     // Turnstile renders in an iframe. Without this the widget cannot mount and
     // every Turnstile-gated form fails closed.
@@ -139,22 +150,25 @@ export const SECURITY_HEADERS: Record<string, string> = {
 const SAFE_NONCE = /^[A-Za-z0-9+/]+={0,2}$/;
 
 /**
- * Put the request nonce on every `<script>` tag that does not already have one.
- * TanStack/Nitro may emit hydration scripts before this request's nonce exists
- * (a reused router, or HTML rendered at build time). The CSP header always
- * carries a fresh nonce, so those tags must be stamped here or the browser
- * blocks them. The nonce charset cannot break out of the double-quoted attribute.
+ * Put the request nonce on every `<script>` and `<style>` tag that does not already
+ * have one. TanStack/Nitro may emit hydration scripts before this request's nonce
+ * exists (a reused router, or HTML rendered at build time), and the chart's
+ * CSS-variable block is a style element. The CSP header always carries a fresh
+ * nonce, so those tags must be stamped here or the browser blocks them. The nonce
+ * charset cannot break out of the double-quoted attribute.
  */
-export function stampHtmlScriptNonces(html: string, nonce: string): string {
+export function stampHtmlNonces(html: string, nonce: string): string {
   if (!SAFE_NONCE.test(nonce)) return html;
-  return html.replace(/<script\b(?![^>]*\bnonce\s*=)/gi, `<script nonce="${nonce}"`);
+  return html
+    .replace(/<script\b(?![^>]*\bnonce\s*=)/gi, `<script nonce="${nonce}"`)
+    .replace(/<style\b(?![^>]*\bnonce\s*=)/gi, `<style nonce="${nonce}"`);
 }
 
 /**
- * For HTML responses, stamp the request nonce onto script tags, then return a
- * new body. Non-HTML responses (JSON APIs) are left unread and unchanged.
+ * For HTML responses, stamp the request nonce onto script and style tags, then
+ * return a new body. Non-HTML responses (JSON APIs) are left unread and unchanged.
  */
-export async function withNonceStampedScripts(
+export async function withNonceStampedMarkup(
   response: Response,
   nonce?: string,
 ): Promise<Response> {
@@ -162,7 +176,7 @@ export async function withNonceStampedScripts(
   const contentType = response.headers.get("content-type") ?? "";
   if (contentType && !contentType.toLowerCase().includes("text/html")) return response;
   const html = await response.text();
-  const stamped = stampHtmlScriptNonces(html, nonce);
+  const stamped = stampHtmlNonces(html, nonce);
   if (stamped === html) {
     return new Response(html, {
       status: response.status,

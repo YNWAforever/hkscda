@@ -10,7 +10,7 @@ describe("CSP nonce propagation wiring", () => {
     const server = read("src/server.ts");
     expect(server).toContain("const nonce = createCspNonce();");
     expect(server).toContain("runWithCspNonce(nonce,");
-    expect(server).toContain("withNonceStampedScripts");
+    expect(server).toContain("withNonceStampedMarkup");
     // Both the normal response and the 500 fallback carry the same request nonce.
     expect(server.match(/applySecurityHeaders\(/g)?.length).toBe(2);
     expect(server.match(/applySecurityHeaders\([\s\S]*?nonce[),]/g)?.length).toBe(2);
@@ -42,9 +42,12 @@ describe("CSP nonce propagation wiring", () => {
     expect(shared).not.toMatch(/require\(["']node:/);
   });
 
-  test("the static error page carries no inline script or event handler", () => {
+  test("the static error page carries no inline script, style or event handler", () => {
     const errorPage = read("src/lib/error-page.ts");
     expect(errorPage).not.toContain("<script");
+    expect(errorPage).not.toContain("<style");
+    expect(errorPage).toContain('<link rel="stylesheet" href="/error.css" />');
+    expect(read("public/error.css")).toContain("place-items: center");
     expect(errorPage).not.toContain("onclick=");
     expect(errorPage).not.toContain("onload=");
     // "Try again" is a plain same-URL link, which needs no script.
@@ -63,6 +66,28 @@ describe("CSP nonce propagation wiring", () => {
     expect(inlineScriptFiles).toEqual([]);
   });
 
+  test("the only inline style element in application code is the nonced chart block", () => {
+    const tsxFiles = [...new Bun.Glob("**/*.tsx").scanSync({ cwd: join(root, "src") })].filter(
+      (path) => !path.includes(".test."),
+    );
+    const inlineStyleFiles = tsxFiles
+      .filter((path) => readFileSync(join(root, "src", path), "utf8").includes("<style"))
+      .map((path) => path.replaceAll("\\", "/"));
+    // A style element without the request nonce is blocked by style-src-elem; keeping this list
+    // short and explicit makes a new unnonced <style> a test failure, not a silent block.
+    expect(inlineStyleFiles).toEqual(["components/ui/chart.tsx"]);
+  });
+  test("the chart CSS-variable style element reads the nonce on server and client", () => {
+    const chart = read("src/components/ui/chart.tsx");
+    expect(chart).toContain("cspNonceFromDocument");
+    expect(chart).toContain("currentCspNonce");
+    // The style element itself must carry the nonce prop; without it the server stamp is the
+    // only chance, and a chart mounted by client-side navigation would be blocked.
+    expect(chart).toMatch(/<style\s+nonce=\{nonce\}/);
+    const shared = read("src/lib/csp-nonce.ts");
+    expect(shared).toContain('meta[property="csp-nonce"]');
+    expect(shared).toContain("export function cspNonceFromDocument");
+  });
   test("the JSON-LD report pages put their data block in nonce-stamped head scripts", () => {
     for (const route of ["src/routes/report/audit.tsx", "src/routes/report/adoption.tsx"]) {
       const source = read(route);

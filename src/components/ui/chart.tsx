@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
+import { cspNonceFromDocument, currentCspNonce } from "@/lib/csp-nonce";
 import { cn } from "@/lib/utils";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -62,6 +63,9 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = "Chart";
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+  // style-src is nonce-based: the SSR pass reads the request nonce, and a chart mounted after
+  // hydration (client-side navigation) reads the same nonce back from the document meta tag.
+  const nonce = currentCspNonce() ?? cspNonceFromDocument();
   const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color);
 
   if (!colorConfig.length) {
@@ -70,6 +74,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      nonce={nonce}
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

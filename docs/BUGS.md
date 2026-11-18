@@ -1183,6 +1183,13 @@ migration, `20261110100000_admin_editor_revision_fences.sql`. See
   deliberately for React style attributes. Live production check: a fresh nonce per response and
   zero un-nonced inline scripts on `/`, `/report/audit`, `/admin/login`. See
   [`docs/csp-token-decision.md`](csp-token-decision.md).
+- **CSP `style-src` element nonce — fixed 2026-11-18.** Inline `<style>` elements now require the
+  per-request nonce (`style-src-elem 'self' 'nonce-<per-request>'`); the server stamping pass covers
+  style tags as well as scripts, the chart's CSS-variable block carries the nonce on server and
+  client, and the static 500 page links `/error.css` instead of carrying a style block. The only
+  `'unsafe-inline'` left in the policy is the explicit `style-src-attr` allowance for React and
+  third-party style attributes, which cannot carry a nonce. See
+  [`docs/csp-token-decision.md`](csp-token-decision.md).
 - **Trusted Types (DOM-XSS sinks) — measured 2026-11-10.** A separate, static
   `Content-Security-Policy-Report-Only` policy (`require-trusted-types-for 'script';
 trusted-types 'none'`) now reports plain-string assignments to DOM sinks to the same
