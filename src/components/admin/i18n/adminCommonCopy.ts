@@ -76,6 +76,7 @@ export interface AdminCopy {
     updatingPassword: string;
     passwordTooShort: string;
     passwordMismatch: string;
+    passwordUnchanged: string;
     invalidRecoveryLink: string;
     passwordUpdated: string;
     setPasswordTitle: string;
@@ -282,6 +283,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       updatingPassword: "正在更新...",
       passwordTooShort: "密碼至少需要 8 個字元。",
       passwordMismatch: "兩次輸入的密碼不相符。",
+      passwordUnchanged: "請使用與目前密碼不同的新密碼。",
       invalidRecoveryLink: "重設連結無效或已過期，請重新申請。",
       passwordUpdated: "密碼已更新，請使用新密碼登入。",
       setPasswordTitle: "設定密碼",
@@ -458,6 +460,7 @@ export const adminCommonCopy = defineAdminCopy<AdminCopy>({
       updatingPassword: "Updating...",
       passwordTooShort: "Password must be at least 8 characters.",
       passwordMismatch: "The passwords do not match.",
+      passwordUnchanged: "Choose a password that differs from your current password.",
       invalidRecoveryLink: "This reset link is invalid or has expired. Please request a new one.",
       passwordUpdated: "Your password has been updated. Sign in with your new password.",
       setPasswordTitle: "Set your password",

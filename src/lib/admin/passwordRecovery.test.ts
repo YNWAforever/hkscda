@@ -100,6 +100,25 @@ describe("admin password recovery", () => {
     expect(calls).toEqual(["update:new-password", "sign-out"]);
   });
 
+  test("keeps the recovery session open when Supabase rejects the current password", async () => {
+    let signedOut = false;
+    const result = await completeAdminPasswordReset({
+      auth: makeAuth({
+        updateUser: async () => ({
+          error: { code: "same_password", message: "New password should be different" },
+        }),
+        signOut: async () => {
+          signedOut = true;
+          return { error: null };
+        },
+      }),
+      password: "current-password",
+      confirmation: "current-password",
+    });
+    expect(result).toEqual({ ok: false, reason: "same_password" });
+    expect(signedOut).toBe(false);
+  });
+
   test("does not call Supabase when client validation fails", async () => {
     let updateCalls = 0;
     const result = await completeAdminPasswordReset({

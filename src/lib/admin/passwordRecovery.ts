@@ -1,6 +1,6 @@
 export const ADMIN_PASSWORD_MIN_LENGTH = 8;
 
-type AuthError = Error | { message: string } | null;
+type AuthError = { message: string; code?: string } | null;
 
 export interface PasswordRecoveryAuth {
   resetPasswordForEmail(
@@ -11,7 +11,7 @@ export interface PasswordRecoveryAuth {
   signOut(): Promise<{ error: AuthError }>;
 }
 
-export type PasswordRecoveryFailure = "too_short" | "mismatch" | "provider_error";
+export type PasswordRecoveryFailure = "too_short" | "mismatch" | "same_password" | "provider_error";
 export type PasswordRecoveryResult = { ok: true } | { ok: false; reason: PasswordRecoveryFailure };
 
 export function normalizeAdminEmail(email: string) {
@@ -65,7 +65,12 @@ export async function completeAdminPasswordReset(args: {
   if (validation) return { ok: false, reason: validation };
 
   const { error } = await args.auth.updateUser({ password: args.password });
-  if (error) return { ok: false, reason: "provider_error" };
+  if (error) {
+    return {
+      ok: false,
+      reason: error.code === "same_password" ? "same_password" : "provider_error",
+    };
+  }
 
   await args.auth.signOut();
   return { ok: true };
