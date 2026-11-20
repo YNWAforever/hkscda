@@ -82,6 +82,7 @@ function AdminResetPasswordController({
   function getFailureMessage(reason: PasswordRecoveryFailure) {
     if (reason === "too_short") return copy.login.passwordTooShort;
     if (reason === "mismatch") return copy.login.passwordMismatch;
+    if (reason === "same_password") return copy.login.passwordUnchanged;
     return copy.login.updateError;
   }
 
